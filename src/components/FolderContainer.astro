@@ -1,0 +1,22 @@
+---
+
+interface Props {
+  index: number
+  backgroundClass: string
+  title: string
+  customClass?:string
+}
+
+const { index, backgroundClass, title, customClass } = Astro.props
+---
+
+<section id="folder" class={`relative mt-4 -translate-x-full will-change-transform drop-shadow-sm bg-r ${backgroundClass} ${customClass}`}>
+  <span class={`block folder-clip-path absolute top-0 left-0  w-4/5 rounded-tl-lg h-full -z-10 -translate-y-10 pt-4 pl-8 ${backgroundClass}`}>
+        {index.toString().padStart(2,'0')}
+    </span>
+  <div class={`p-12 pl-8 pt-2 h-full font-light text-gray-900 rounded-tr-lg ${backgroundClass}`}>
+      <h3 class="text-3xl font-medium md:font-light md:text-5xl pb-4">{title}</h3>
+  <div id="content-folder" class="border-t-1 border-dotted pt-8 h-full">
+      <slot />
+  </div>
+</section>

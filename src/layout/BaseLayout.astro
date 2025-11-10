@@ -1,0 +1,49 @@
+---
+import '../styles/global.css'
+
+import { ClientRouter, slide } from 'astro:transitions';
+import Themes from 'astro-themes'
+import Navbar from '../components/Navbar.astro';
+import ListFolders from '../components/ListFolders.astro'
+import Footer from '../components/Footer.astro';
+
+interface Props {
+	title: string;
+}
+
+const { title } : Props = Astro.props;
+---
+
+<html lang="en" transition:animate={slide({ duration: 500 })} >
+	<head>
+		<meta charset="utf-8" />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<meta name="viewport" content="width=device-width" />
+		<meta name="generator" content={Astro.generator} />
+		<title>Porfolio | {title}</title>
+		<Themes defaultTheme="dark" />
+		<ClientRouter />
+	</head>
+	<body class="bg-white min-h-svh flex flex-col justify-between dark:bg-gray-900 transition-colors duration-500 select-none ">
+		<Navbar />
+				<main class="pb-20 md:pb-32">
+					<slot />
+				</main>
+        <ListFolders />
+				<Footer />
+		</body>
+</html>
+
+<script>
+import setupFoldersAnimation from "../utils/foldersAnimation";
+import setupFolderAnimation from "../utils/setupFolderAnimation";
+import setupFooterAnimation from "../utils/setupFooterAnimation";
+
+function setupGsapAnimations() {
+	setupFoldersAnimation();
+	setupFooterAnimation();
+	setupFolderAnimation()
+}
+
+document.addEventListener('astro:page-load', setupGsapAnimations);
+</script>

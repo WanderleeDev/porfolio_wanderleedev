@@ -1,0 +1,16 @@
+---
+import LangSelector from "./LangSelector.astro";
+import ThemeBtn from "./ThemeBtn.astro";
+---
+
+<nav class="relative w-full py-8 flex justify-between items-center shadow" transition:persist="navbar">
+    <ul id="navbar" class="flex flex-row justify-between items-center absolute left-0 right-0 px-8">
+        <li>
+            <p>Wanderlee Max | Frontend developer</p>
+        </li>
+        <li class="flex items-center gap-2"> 
+            <LangSelector />
+            <ThemeBtn/>
+        </li>
+    </ul>
+</nav>

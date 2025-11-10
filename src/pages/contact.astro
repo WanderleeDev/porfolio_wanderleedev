@@ -1,0 +1,16 @@
+---
+import { sections } from "../data";
+import BaseLayout from "../layout/BaseLayout.astro";
+import SubPageLayout from "../layout/SubPageLayout.astro";
+import ContactForm from "../components/ContactForm.astro";
+
+const data = sections.flat().find(section => section.name === 'contact');
+---
+<BaseLayout title="contact">
+  {
+    data && (
+    <SubPageLayout title={data.name} backgroundColor={data.backgroundColor} index={data.index}>
+      <ContactForm endpoint="https://formspree.io/f/REPLACE_ME" />
+    </SubPageLayout>)
+  }
+</BaseLayout>

@@ -1,0 +1,49 @@
+---
+import { randomTranslate } from "../utils"
+
+const developText = 'Develop by WanderleeDev 2025'
+const externaLinks = [
+  {
+    name: "LinkedIn",
+    url: "https://www.linkedin.com/in/wanderlee-max/",
+  },
+  {
+    name: "Github",
+    url: "https://github.com/WanderleeDev",
+  },
+  {
+    name: "Porfolio",
+    url: ""
+  }
+]
+
+
+ ---
+ <footer class="min-h-svh flex flex-col justify-between bg-[#202020] overflow-hidden">
+  <div class="flex justify-center items-center flex-1">
+   <video class="size-80 block aspect-square select-none pointer-events-none" autoplay src="https://framerusercontent.com/assets/eRZcys000MshO4J4rEcvOKVqQ.webm" loop preload="auto" muted></video>
+  </div>
+  
+  <div>
+    <ul class="flex flex-col xs:flex-row px-4 xs:p-0 gap-2 overflow-hidden text-gray-200 justify-evenly uppercase text-sm">
+     {
+       externaLinks.map(link => (
+         <li class="footer-link translate-y-full opacity-0">
+           <a class="link-porfolio" href={link.url}>
+             {link.name}
+           </a>  
+         </li>
+       ))
+     }
+    </ul>
+    <p class="mt-auto text-center text-lg sm:text-3xl lg:text-5xl xl:text-7xl -tracking-wider text-neutral-500 overflow-hidden relative min-h-28 sm:min-h-40 content-center sm:my-4" id="footer-content" aria-label={developText}>
+     {
+       developText.split('').map(char => (
+         <span class={`char relative inline-block opacity-0  will-change-transform ${randomTranslate()}`} aria-hidden="true"> 
+             {char === ' ' ? '\u00A0' : char}
+         </span>
+       ))
+     }
+    </p>
+  </div>
+</footer>

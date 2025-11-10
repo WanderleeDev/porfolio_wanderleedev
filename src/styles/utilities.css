@@ -1,0 +1,17 @@
+@import "tailwindcss";
+
+@layer utilities {
+  .folder-clip-path {
+    clip-path: polygon(0 0, 45% 0, 70% 100%, 0% 100%);
+  }
+
+  .vertical {  
+    writing-mode: vertical-rl;
+    text-orientation: mixed;
+    transform: rotate(180deg);
+  }
+
+  .disabled {
+    @apply bg-stone-100 text-stone-400/50 drop-shadow-none transition-colors
+  }
+}

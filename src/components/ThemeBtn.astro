@@ -1,0 +1,49 @@
+---
+import { Icon } from 'astro-iconify'
+---
+
+<button id="btnTheme" class="hover:bg-gray-300 dark:hover:bg-gray-600 rounded-full p-1  cursor-pointer">
+  <span class="sr-only">Toggle Theme</span>
+  <Icon class="dark:hidden size-5" name="heroicons-outline:sun" />
+  <Icon class="hidden dark:block size-5" name="heroicons-outline:moon" />
+</button>
+
+<script>
+  function getThemeAttr(attr: string) {
+    return document.documentElement.attributes.getNamedItem(attr)?.value?.trim()
+  }
+
+  function applyTheme(theme: string): void {
+      const newTheme = theme === 'light' ? 'dark' : 'light'  
+      document.dispatchEvent(new CustomEvent('set-theme', { detail: newTheme }))
+  }
+
+  function toggleTheme(): void {
+    const currentTheme = localStorage.getItem('theme')?.trim() 
+    const preferencesTheme = getThemeAttr('data-theme-preference'); 
+    const attrDocumentTheme = getThemeAttr('data-theme');
+    const themes: Record<string, string> = {
+      light: "light",
+      dark: "dark"
+    }
+
+    if (currentTheme && themes[currentTheme]) {
+      return applyTheme(currentTheme);
+    }
+
+    const backupTheme = preferencesTheme || attrDocumentTheme || themes.dark;
+
+    return applyTheme(backupTheme)
+  }
+
+  function setupDarkMode() {
+    const btnTheme = document.querySelector('#btnTheme')
+    
+    if (!btnTheme) return;
+
+    btnTheme?.addEventListener('click', toggleTheme);
+  }
+
+  document.addEventListener('astro:page-load',setupDarkMode);
+</script>
+

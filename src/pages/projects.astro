@@ -1,0 +1,38 @@
+---
+import BaseLayout from "../layout/BaseLayout.astro";
+import SubPageLayout from "../layout/SubPageLayout.astro";
+import { main_projects, sections } from "../data";
+import CardProject from "../components/CardProject.astro";
+import FolderContainer from "../components/FolderContainer.astro";
+
+
+const {name, images, index, backgroundColor} = sections.flat().find(section => section.name === 'projects')!;
+const projects = main_projects;
+---
+<BaseLayout title={name}>
+  <SubPageLayout title={name} backgroundColor={backgroundColor} index={index}>
+    <FolderContainer index={index} title={name} backgroundClass={backgroundColor} customClass="h-full">
+      <ul class="grid sm:grid-cols-2 md:grid-cols-3 gap-8">
+        {
+          projects.map(({ title, image, label, demo_url },i) => (
+            <a href={demo_url} target="_blank" title={label} rel="noopener noreferrer" >
+              <span class="sr-only">{label}</span>
+              <CardProject
+                index={(i + 1).toString(10).padStart(2, '0')}
+                bgCustomClass={backgroundColor}
+                thumbnail={`/${image}`}
+                name={title}
+              />
+            </a>
+          ))
+        }
+      </ul>
+    </FolderContainer>
+  </SubPageLayout>
+</BaseLayout>
+
+<script>
+  import setAnimationCards from '../utils/setAnimationCards'
+  
+  document.addEventListener('astro:page-load', setAnimationCards);
+</script>

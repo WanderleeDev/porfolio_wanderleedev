@@ -6,6 +6,7 @@ import Themes from 'astro-themes'
 import Navbar from '../components/Navbar.astro';
 import ListFolders from '../components/ListFolders.astro'
 import Footer from '../components/Footer.astro';
+import BgPattern from '../components/BgPattern.astro';
 
 interface Props {
 	title: string;
@@ -25,12 +26,10 @@ const { title } : Props = Astro.props;
 		<ClientRouter />
 	</head>
 	<body class="bg-white min-h-svh flex flex-col justify-between dark:bg-gray-900 transition-colors duration-500 select-none ">
-		<Navbar />
-				<main class="pb-20 md:pb-32">
-					<slot />
-				</main>
-        <ListFolders />
-				<Footer />
+			<Navbar />
+			<main>
+				<slot />
+			</main>
 		</body>
 </html>
 

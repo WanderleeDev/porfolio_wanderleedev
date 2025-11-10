@@ -1,0 +1,27 @@
+---
+import LinkCard from './LinkCard.astro'
+
+interface Props {
+  customClass: string
+}
+
+const { customClass } = Astro.props
+const sections = [
+	'projects',
+	'stack',
+	'extras',
+	'contact'
+]
+---
+
+<nav class={`content-center ${customClass} `}>
+	<ul class="mx-auto w-full max-w-5xl flex flex-wrap justify-center gap-4">
+		{
+			sections.map((section, i) => (
+				<li>
+					<LinkCard title={section} url={section} />
+				</li>
+			))
+		}
+	</ul>
+</nav>

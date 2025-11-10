@@ -3,12 +3,12 @@ import LangSelector from "./LangSelector.astro";
 import ThemeBtn from "./ThemeBtn.astro";
 ---
 
-<nav class="relative w-full py-8 flex justify-between items-center shadow" transition:persist="navbar">
-    <ul id="navbar" class="flex flex-row justify-between items-center absolute left-0 right-0 px-8">
+<nav class="fixed to-0% left-0 right-0 " transition:persist="navbar">
+    <ul id="navbar" class="flex flex-row justify-between items-center max-md:bg-black/40 max-md:backdrop-blur-md max-md:border-1 max-md:rounded-4xl px-2 md:py-2">
         <li>
-            <p class="text-sm">
+            <p class="font-semibold sm:text-sm sm:text-gray-100 sm:font-normal">
                 Wanderlee Max
-                <span class=" text-amber-600 font-semibold">| Frontend developer</span>
+                <span class=" text-amber-600 font-semibold hidden sm:inline">| Frontend developer</span>
             </p>
         </li>
         <li class="flex items-center gap-2"> 

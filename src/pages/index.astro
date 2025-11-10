@@ -1,7 +1,12 @@
 ---
-import Overview from "../components/Overview.astro";
+import ProfileHero from "../components/ProfileHero.astro";
 import BaseLayout from "../layout/BaseLayout.astro";
+import NavigationHero from '../components/NavigationHero.astro'
 ---
 <BaseLayout title="Wanderlee Porfolio 2025">
-	<Overview />
+	 <article class="min-h-svh grid grid-cols-12 grid-rows-2 md:grid-rows-12">
+		<ProfileHero customClass="col-[1/-1] md:col-[5/9] md:row-[1/-1]" />
+		<NavigationHero customClass="col-[1/-1] md:row-[1/-1] md:z-10" />
+	</article>
+  </figure>
 </BaseLayout>

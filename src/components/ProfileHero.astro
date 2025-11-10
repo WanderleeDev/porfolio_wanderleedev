@@ -1,0 +1,32 @@
+---
+interface Props {
+  customClass: string
+}
+
+const { customClass } = Astro.props
+---
+
+<figure class={`content-center ${customClass}`}>
+  <div class="max-md:relative max-md:w-full max-md:h-full max-md:-z-10 md:size-80 xl:size-96 md:mask-[url(/mask-profile.webp)] md:bg-cover bg-center md:bg-no-repeat md:mask-size-[110%_90%] md:mask-center md:mask-no-repeat object-cover md:mx-auto">
+    <video class="pointer-events-none select-none max-md:absolute max-md:inset-0 w-full h-full max-md:object-cover max-md:object-center max-md:dark:mask-b-from-50% max-md:dark:mask-b-to-98% max-md:mask-b-from-80% max-md:mask-b-to-100% max-md:brightness-75"  autoplay poster="tom_fallback.webp" loop muted>
+      Tu navegador no soporta la etiqueta de video.
+      <source src="tom_programmer.mp4" type="video/mp4">
+    </video>
+  </div
+  <nav>
+    <ul class="flex justify-center items-center gap-4">
+      <li>
+        <a>cv</a>
+      </li>
+      <li>
+        <a>email</a>
+      </li>
+    </ul>	
+  </nav>
+  <figcaption class="text-center">
+    <p class=" sr-only md:not-sr-only text-sm md:w-max">
+      Wanderlee Max
+      <span class=" text-amber-600 font-semibold">| Frontend developer</span>
+    </p>
+  </figcaption>
+</figure>

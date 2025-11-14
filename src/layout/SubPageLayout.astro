@@ -12,7 +12,7 @@ const { title = "Sub section", backgroundColor, index } : Props = Astro.props;
 const titleCapitalized = toCapitalize(title);
 ---
 <section class="grid md:grid-cols-12 p-4 min-h-dvh" >
-  <header class="md:col-[1/4] flex flex-col justify-self-start  overflow-hidden w-full">
+  <header class="hidden md:col-[1/4] md:flex flex-col justify-self-start  overflow-hidden w-full">
     <a class="uppercase flex items-center gap-2 text-xs sm:text-sm pl-4 group" href="/">
       <Icon class="w-6 group-hover:scale-90 transition-transform duration-200" name="heroicons:arrow-long-left" />
       <span class="group-hover:translate-x-2 transition-transform duration-300">

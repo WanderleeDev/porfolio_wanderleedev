@@ -1,0 +1,11 @@
+---
+interface Props {
+  customClass?: string
+}
+
+const { customClass } = Astro.props
+---
+<strong class={`font-black sm:text-sm sm:font-normal ${customClass ? customClass : ''}`}>
+    Wanderlee Max
+    <span class="text-transparent font-black hidden sm:inline bg-pattern-2 bg-clip-text text-lg">| Frontend developer</span>
+</strong>

@@ -4,9 +4,8 @@ import '../styles/global.css'
 import { ClientRouter, slide } from 'astro:transitions';
 import Themes from 'astro-themes'
 import Navbar from '../components/Navbar.astro';
-import ListFolders from '../components/ListFolders.astro'
-import Footer from '../components/Footer.astro';
 import BgPattern from '../components/BgPattern.astro';
+import Footer from '../components/Footer.astro';
 
 interface Props {
 	title: string;
@@ -25,12 +24,15 @@ const { title } : Props = Astro.props;
 		<Themes defaultTheme="dark" />
 		<ClientRouter />
 	</head>
-	<body class="bg-white min-h-svh flex flex-col justify-between dark:bg-gray-900 transition-colors duration-500 select-none ">
+	<body class="bg-white min-h-svh flex flex-col justify-between dark:bg-gray-900 transition-colors duration-500 select-none overflow-x-hidden">
+		<BgPattern>
 			<Navbar />
 			<main>
 				<slot />
 			</main>
-		</body>
+		</BgPattern>
+		<Footer />
+	</body>
 </html>
 
 <script>
@@ -39,9 +41,7 @@ import setupFolderAnimation from "../utils/setupFolderAnimation";
 import setupFooterAnimation from "../utils/setupFooterAnimation";
 
 function setupGsapAnimations() {
-	setupFoldersAnimation();
 	setupFooterAnimation();
-	setupFolderAnimation()
 }
 
 document.addEventListener('astro:page-load', setupGsapAnimations);

@@ -1,12 +1,39 @@
 ---
-import ProfileHero from "../components/ProfileHero.astro";
 import BaseLayout from "../layout/BaseLayout.astro";
-import NavigationHero from '../components/NavigationHero.astro'
+import Extras from "../sections/Extras.astro";
+import HeroNavigation from "../sections/HeroNavigation.astro";
+import Projects from "../sections/Projects.astro";
+import Skills from "../sections/Skills.astro";
+import Contact from "./contact.astro";
+
 ---
+
 <BaseLayout title="Wanderlee Porfolio 2025">
-	 <article class="min-h-svh grid grid-cols-12 grid-rows-2 md:grid-rows-12">
-		<ProfileHero customClass="col-[1/-1] md:col-[5/9] md:row-[1/-1]" />
-		<NavigationHero customClass="col-[1/-1] md:row-[1/-1] md:z-10" />
-	</article>
-  </figure>
+	<HeroNavigation />
+	<Skills />
+	<Projects />
+	<Extras />
+	<Contact />
 </BaseLayout>
+
+<script>
+  import gsap from 'gsap';
+  import Lenis from 'lenis'
+  import { $, $$ } from '../utils/selectors'
+  import { ScrollTrigger } from 'gsap/all';
+import { setLenisNavigation } from '../utils/setLenisNavigation';
+
+	document.addEventListener('astro:page-load', () => {
+		gsap.registerPlugin(ScrollTrigger)
+
+		const lenis = new Lenis()
+		lenis.on("scroll", ScrollTrigger.update)
+			
+		gsap.ticker.add((time) => {
+			lenis.raf(time * 1000)
+		})
+		
+		gsap.ticker.lagSmoothing(0) 
+		setLenisNavigation(lenis)
+	})
+</script>

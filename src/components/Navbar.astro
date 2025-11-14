@@ -1,15 +1,15 @@
 ---
 import LangSelector from "./LangSelector.astro";
+import PersonalTagline from "./PersonalTagline.astro";
 import ThemeBtn from "./ThemeBtn.astro";
 ---
 
-<nav class="fixed to-0% left-0 right-0 " transition:persist="navbar">
+<nav class="fixed to-0% left-0 right-0 z-50" transition:persist="navbar">
     <ul id="navbar" class="flex flex-row justify-between items-center max-md:bg-black/40 max-md:backdrop-blur-md max-md:border-1 max-md:rounded-4xl px-2 md:py-2">
         <li>
-            <p class="font-semibold sm:text-sm sm:text-gray-100 sm:font-normal">
-                Wanderlee Max
-                <span class=" text-amber-600 font-semibold hidden sm:inline">| Frontend developer</span>
-            </p>
+            <h1>
+                <PersonalTagline customClass="uppercase" />
+            </h1>
         </li>
         <li class="flex items-center gap-2"> 
             <LangSelector />

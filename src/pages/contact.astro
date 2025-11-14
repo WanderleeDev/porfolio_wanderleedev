@@ -1,16 +1,16 @@
 ---
 import { sections } from "../data";
-import BaseLayout from "../layout/BaseLayout.astro";
 import SubPageLayout from "../layout/SubPageLayout.astro";
 import ContactForm from "../components/ContactForm.astro";
 
 const data = sections.flat().find(section => section.name === 'contact');
 ---
-<BaseLayout title="contact">
+<section id="contact" class="min-h-dvh">
+  <h2 class="sr-only">Extras</h2>
   {
     data && (
     <SubPageLayout title={data.name} backgroundColor={data.backgroundColor} index={data.index}>
       <ContactForm endpoint="https://formspree.io/f/REPLACE_ME" />
     </SubPageLayout>)
   }
-</BaseLayout>
+</section>

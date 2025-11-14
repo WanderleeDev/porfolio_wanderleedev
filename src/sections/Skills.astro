@@ -1,0 +1,24 @@
+---
+import Icon from "astro-iconify"
+import { skills } from "../data"
+---
+<section id="skills" class="min-h-dvh">
+  <h2 class="sr-only">Skills</h2>
+  {
+    skills.map(({ title, techs }) => (
+      <figure class="h-dvh grid place-content-center-safe w-4/5 mx-auto">
+        <figcaption>{ title }</figcaption>
+        <ul class="flex gap-24 justify-center items-center flex-wrap">
+          {
+            techs.map(({ color, icon }) => (
+              <li>
+                <Icon class="size-8 mx-auto" name={icon} />
+                <span>{icon.replace('devicon:', '')}</span>
+              </li>
+            ))
+          }
+        </ul>
+      </figure>
+    ))
+  }
+</section>

@@ -1,0 +1,17 @@
+---
+import { main_projects } from "../data"
+---
+<section id="projects" class="min-h-dvh">
+  <h2 class="sr-only">Projects</h2>
+  <ul class="grid place-content-center items-center gap-4 grid-cols-2 w-4/5 mx-auto min-h-dvh">
+    {
+      main_projects.map(({ title, demo_url, image, description }, i) => (
+        <li class="">
+          <a target="_blank" href={demo_url} rel="noopener noreferrer">
+            <img class="aspect-video object-cover rounded-lg w-full" src={image} alt={title} />
+          </a>
+        </li>
+      ))
+    }
+  </ul>
+</section>

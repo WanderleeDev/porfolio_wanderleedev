@@ -5,13 +5,21 @@
     clip-path: polygon(0 0, 45% 0, 70% 100%, 0% 100%);
   }
 
-  .vertical {  
+  .vertical {
     writing-mode: vertical-rl;
     text-orientation: mixed;
     transform: rotate(180deg);
   }
 
   .disabled {
-    @apply bg-stone-100 text-stone-400/50 drop-shadow-none transition-colors
+    @apply bg-stone-100 text-stone-400/50 drop-shadow-none transition-colors;
+  }
+
+  .circle-clip-path {
+    clip-path: circle(0% at 50% 50%);
+  }
+
+  .circle-clip-path-full {
+    clip-path: circle(50% at 50% 50%);
   }
 }

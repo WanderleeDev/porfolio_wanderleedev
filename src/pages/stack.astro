@@ -2,42 +2,26 @@
 import BaseLayout from "../layout/BaseLayout.astro";
 import SubPageLayout from "../layout/SubPageLayout.astro";
 import { sections, skills } from "../data";
-import FolderContainer from "../components/FolderContainer.astro";
-import Icon from "astro-iconify";
+import PhysicsList from "../components/PhysicsList";
+import TechTags from "../components/PhysicsList";
 
 const data = sections.flat().find(section => section.name === 'stack')!;
-
+const techTags = [
+    'React',
+    'TypeScript',
+    'Node.js',
+    'Python',
+    'Matter.js',
+    'CSS3',
+    'HTML5',
+    'Vue',
+    'Angular',
+    'Svelte'
+  ];
 ---
 <BaseLayout title={data.name}>
   <SubPageLayout title={data.name} backgroundColor={data.backgroundColor} index={data.index}>
-    <FolderContainer index={data.index} title={data.name} backgroundClass={data.backgroundColor}>
-      <div class="grid grid-cols-1 sm:grid-cols-5 gap-6 p-4 @container">
-        {
-          skills.map(({ title, techs }, i) => (
-        <article class={`
-          relative overflow-hidden
-          ${i === 1 ? 'sm:col-[3/6] sm:row-[1/4]' : 'sm:col-[1/3]'}
-          bg-white/10 backdrop-blur-sm border border-white/10 rounded-lg p-6 hover:bg-white/30 transition-all shadow-md @container
-        `}>
-          <span class={`absolute inset-x-0 top-0 h-1 ${data.backgroundColor}`}></span>
-
-          <h3 class="pb-6 text-xl font-bold text-center border-b border-white/20">{title}</h3>
-          <ul class="flex gap-6 flex-wrap items-center justify-center mt-6">
-          {
-        techs.map(({ icon, color }) => (
-          <li class="flex items-center justify-center flex-col gap-3 hover:scale-110 transition-transform">
-        <Icon name={icon} class="size-6 sm:size-8" style={`color: ${color}`} />
-        <span class="text-xs opacity-75 hidden md:block">
-          {icon.replace('devicon:', '')}
-        </span>
-          </li>
-        ))
-          }
-          </ul>
-        </article>
-          ))
-        }
-      </div>
-    </FolderContainer>
+    <TechTags tags={techTags} />
   </SubPageLayout>
 </BaseLayout>
+

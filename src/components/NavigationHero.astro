@@ -8,20 +8,25 @@ interface Props {
 const { customClass } = Astro.props
 const sections = [
 	'projects',
-	'stack',
 	'extras',
+	'skills',
 	'contact'
 ]
 ---
 
-<nav class={`content-center ${customClass} `}>
-	<ul class="mx-auto w-full max-w-5xl flex flex-wrap justify-center gap-4">
-		{
-			sections.map((section, i) => (
-				<li>
-					<LinkCard title={section} url={section} />
-				</li>
-			))
-		}
-	</ul>
-</nav>
+<ul class={`mx-auto w-full max-w-5xl flex flex-wrap justify-center gap-4 md:h-auto md:gap-0 mx-auto ${customClass}`}>
+	{
+		sections.map((section, i) => (
+			<li class={
+				`link-section
+				${i === 0 ? 'col-[2/5] row-[3/5]': '' }
+				${i === 1 ? 'col-[9/12] row-[5/7]': '' }
+				${i === 2 ? 'col-[2/5] row-[8/10]': '' }
+				${i === 3 ? 'col-[9/12] row-[10/12]': '' }
+				` 
+			}>
+				<LinkCard title={section} url={`#${section}`} />
+			</li>
+		))
+	}
+</ul>

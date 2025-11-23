@@ -1,12 +1,10 @@
 import gsap from "gsap";
-import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import { $ } from "./selectors";
 
-function setupFooterAnimation() {
-  gsap.registerPlugin(ScrollTrigger)
-  
-  const containerText = document.querySelector('#footer-content')
+export function footerAnimation() {
+  const containerText = $('#footer-content')
   const chars = containerText?.querySelectorAll('.char')
-  const links = document.querySelectorAll('.footer-link')
+  const links = gsap.utils.toArray<HTMLElement>('.footer-link')
 
  if (!containerText || !chars?.length || !links?.length) return;
 
@@ -35,5 +33,3 @@ function setupFooterAnimation() {
     stagger: 0.15
   }, "+=0.05")
 }
-
-export default setupFooterAnimation;

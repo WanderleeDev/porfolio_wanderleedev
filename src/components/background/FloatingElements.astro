@@ -1,0 +1,73 @@
+---
+
+---
+
+<div class="floating-elements hidden lg:block">
+  <div class="float-element float-element-1"></div>
+  <div class="float-element float-element-2"></div>
+  <div class="float-element float-element-3"></div>
+</div>
+
+<style>
+  .floating-elements {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+
+  .float-element {
+    position: absolute;
+    border-radius: 50%;
+    background: linear-gradient(
+      135deg,
+      rgba(99, 102, 241, 0.2),
+      rgba(168, 85, 247, 0.2)
+    );
+    filter: blur(2px);
+  }
+
+  .float-element-1 {
+    width: 60px;
+    height: 60px;
+    top: 10%;
+    right: 10%;
+    animation: floatAround 15s ease-in-out infinite;
+  }
+
+  .float-element-2 {
+    width: 40px;
+    height: 40px;
+    top: 60%;
+    right: 5%;
+    animation: floatAround 12s ease-in-out infinite reverse;
+  }
+
+  .float-element-3 {
+    width: 30px;
+    height: 30px;
+    top: 35%;
+    right: 20%;
+    animation: floatAround 18s ease-in-out infinite;
+    animation-delay: -5s;
+  }
+
+  @keyframes floatAround {
+    0%,
+    100% {
+      transform: translate(0, 0) rotate(0deg);
+      opacity: 0.3;
+    }
+    25% {
+      transform: translate(20px, -20px) rotate(90deg);
+      opacity: 0.6;
+    }
+    50% {
+      transform: translate(0, -40px) rotate(180deg);
+      opacity: 0.3;
+    }
+    75% {
+      transform: translate(-20px, -20px) rotate(270deg);
+      opacity: 0.6;
+    }
+  }
+</style>

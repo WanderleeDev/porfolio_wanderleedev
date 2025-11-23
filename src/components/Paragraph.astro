@@ -1,0 +1,16 @@
+---
+interface Props {
+  content?: string;
+  customClass?: string;
+  id?: string;
+}
+
+const { content, id, customClass = "" } = Astro.props;
+---
+
+<p
+  id={id}
+  class={`text-[5vw] xs:text-[4vw] sm:text-[3vw] md:text-[2vw] lg:text-[1.3vw] leading-snug ${customClass}`}
+>
+  {content ? content : <slot />}
+</p>

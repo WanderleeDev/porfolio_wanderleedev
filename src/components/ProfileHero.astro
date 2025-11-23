@@ -1,32 +1,70 @@
 ---
-import PersonalTagline from './PersonalTagline.astro'
-import Icon from 'astro-iconify'
+import PersonalTagline from "./PersonalTagline.astro";
+import Icon from "astro-iconify";
 
 interface Props {
-  customClass: string
+  customClass: string;
 }
 
-const { customClass } = Astro.props
+const { customClass } = Astro.props;
+const externalLinks = [
+  {
+    url: "https://github.com/WanderleeDev",
+    icon: "github",
+    label: "GitHub Profile",
+  },
+  {
+    url: "",
+    icon: "download",
+    label: "Download CV",
+  },
+  {
+    url: "https://github.com/WanderleeDev",
+    icon: "linkedin",
+    label: "LinkedIn Profile",
+  },
+];
 ---
 
-<figure class={`content-center ${customClass}`}>
-  <div class="max-md:relative max-md:w-full max-md:h-full max-md:z-10 md:size-80 xl:size-96 md:mask-[url(/mask-profile.webp)] md:bg-cover bg-center md:bg-no-repeat md:mask-size-[110%_90%] md:mask-center md:mask-no-repeat object-cover md:mx-auto">
-    <video class="pointer-events-none select-none max-md:absolute max-md:inset-0 w-full h-full max-md:object-cover max-md:object-center max-md:dark:mask-b-from-50% max-md:dark:mask-b-to-98% max-md:mask-b-from-80% max-md:mask-b-to-100% max-md:brightness-75" autoplay poster="tom_fallback.webp" loop muted>
+<header class={`content-center ${customClass}`}>
+  <div
+    class="max-md:relative max-md:w-full max-md:h-full max-md:z-10 md:size-80 xl:size-96 md:mask-[url(/mask-profile.webp)] md:bg-cover bg-center md:bg-no-repeat md:mask-size-[110%_90%] md:mask-center md:mask-no-repeat object-cover md:mx-auto"
+  >
+    <video
+      class="pointer-events-none select-none max-md:absolute max-md:inset-0 w-full h-full max-md:object-cover max-md:object-center max-md:dark:mask-b-from-50% max-md:dark:mask-b-to-98% max-md:mask-b-from-80% max-md:mask-b-to-100% max-md:brightness-75"
+      autoplay
+      poster="tom_fallback.webp"
+      loop
+      muted
+    >
       Tu navegador no soporta la etiqueta de video.
-      <source src="tom_programmer.mp4" type="video/mp4">
+      <source src="tom_programmer.mp4" type="video/mp4" />
     </video>
   </div>
-  <figcaption class="justify-center items-center flex flex-col gap-4">
-    <PersonalTagline customClass='sr-only md:not-sr-only text-sm md:w-max' />
-    <div class="flex mx-auto gap-4 w-fit dark:text-gray-100 text-gray-900">
-      <a class="cursor-pointer overflow-hidden rounded-full relative group" href="https://github.com/WanderleeDev" target="_blank" rel="noopener noreferrer">
-        <span class="bg-pattern-2 absolute inset-0 z-0 scale-0 group-hover:scale-100  duration-300 rounded-full"></span>
-        <Icon class="size-9 rounded-full relative z-10 p-1 pointer-events-none group-hover:scale-90  duration-300" name="mdi:github" />
-      </a>
-      <a class="cursor-pointer overflow-hidden rounded-full relative group" download="WanderleeDev.pdf" target="_blank" rel="noopener noreferrer">
-        <span class="bg-pattern-2 absolute inset-0 z-0 scale-0 group-hover:scale-100  duration-300 rounded-full"></span>
-        <Icon class="size-9 rounded-full relative z-10 p-1 pointer-events-none group-hover:scale-90  duration-300" name="mdi:download" />
-      </a>
-    </div>
-  </figcaption>
-</figure>
+  <div
+    class="justify-center items-center flex flex-col gap-4 -translate-y-full md:translate-y-0 z-10 relative"
+  >
+    <h1>
+      <PersonalTagline customClass="text-center" />
+    </h1>
+    <nav class="flex mx-auto gap-4 w-fit" aria-label="Social media links">
+      {
+        externalLinks.map(({ icon, url, label }) => (
+          <a
+            class="group relative overflow-hidden rounded-full bg-white/5 dark:bg-white/5 backdrop-blur-sm border border-gray-300/30 dark:border-white/10 p-2 transition-all duration-300 hover:bg-gray-200/50 dark:hover:bg-white/10 hover:border-gray-400/50 dark:hover:border-white/20 hover:scale-110 hover:shadow-[0_8px_24px_rgba(99,102,241,0.2)]"
+            href={`${icon !== "download" ? url : null}`}
+            target="_blank"
+            download={`${icon === "download" ? "WanderleeDev.pdf" : null}`}
+            rel="noopener noreferrer"
+            aria-label={label}
+          >
+            <Icon
+              class="size-8 relative z-10 pointer-events-none text-gray-700 dark:text-gray-300 group-hover:text-gray-900 dark:group-hover:text-white transition-colors duration-300"
+              name={`mdi:${icon}`}
+            />
+          </a>
+        ))
+      }
+    </nav>
+  </div>
+</header>

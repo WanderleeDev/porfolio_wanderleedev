@@ -1,0 +1,118 @@
+---
+import LinkMinimal from "./LinkMinimal.astro";
+import PersonalTagline from "./PersonalTagline.astro";
+import Icon from "astro-iconify";
+import { sections_links } from "../data";
+---
+
+<button
+  id="navBtn"
+  class="group relative overflow-hidden rounded-full bg-white/5 dark:bg-white/5 backdrop-blur-sm border border-gray-300/30 dark:border-white/10 p-2 transition-all duration-300 hover:bg-gray-200/50 dark:hover:bg-white/10 hover:border-gray-400/50 dark:hover:border-white/20 hover:scale-110 hover:shadow-[0_8px_24px_rgba(99,102,241,0.2)]"
+>
+  <div
+    class="btn-menu-lines relative z-2 flex h-[14px] w-[20px] flex-col justify-between"
+  >
+    <span
+      class="btn-menu-line h-0.5 w-full rounded-[10px] bg-white origin-top-left transition-transform duration-400 ease-in-out group-[.show]:rotate-38"
+    ></span>
+    <span
+      class="btn-menu-line h-0.5 w-full rounded-[10px] bg-white transition-transform duration-200 ease-in-out group-[.show]:scale-y-0"
+    ></span>
+    <span
+      class="btn-menu-line h-0.5 w-full rounded-[10px] bg-white origin-bottom-left transition-transform duration-400 ease-in-out group-[.show]:-rotate-38"
+    ></span>
+  </div>
+</button>
+
+<div>
+  <nav
+    id="navMenu"
+    class="fixed bg-black inset-0 shadow-lg -z-10 -translate-y-full pointer-events-none grid md:grid-cols-[1.3fr_.7fr] min-h-svh gradient"
+    inert
+  >
+    <div class="hidden md:flex md:flex-col md:justify-center md:items-center">
+      <div
+        class="max-md:relative max-md:w-full max-md:h-full max-md:z-10 md:size-80 xl:size-120 md:mask-[url(/mask-profile.webp)] md:bg-cover bg-center md:bg-no-repeat md:mask-size-[110%_90%] md:mask-center md:mask-no-repeat object-cover md:mx-auto"
+      >
+        <video
+          class="pointer-events-none select-none max-md:absolute max-md:inset-0 w-full h-full max-md:object-cover max-md:object-center max-md:dark:mask-b-from-50% max-md:dark:mask-b-to-98% max-md:mask-b-from-80% max-md:mask-b-to-100% max-md:brightness-75"
+          autoplay
+          poster="tom_fallback.webp"
+          loop
+          muted
+        >
+          Tu navegador no soporta la etiqueta de video.
+          <source src="tom_programmer.mp4" type="video/mp4" />
+        </video>
+      </div>
+      <PersonalTagline />
+    </div>
+
+    <div
+      class="flex flex-col justify-center items-center md:items-start bg-transparent"
+    >
+      {
+        sections_links.map(({ name, icon, label }) => (
+          <LinkMinimal
+            name={name}
+            url={`#${name}`}
+            label={label}
+            customClass="navMenu-link flex items-center gap-2 p-4 text-[2.3vw]"
+          >
+            <Icon class="size-[3vw]" name={icon} />
+          </LinkMinimal>
+        ))
+      }
+    </div>
+  </nav>
+</div>
+
+<script>
+  import gsap from "gsap";
+  import { $ } from "../utils/selectors";
+  import { CustomEase } from "gsap/all";
+  import { getLenisInstance } from "../utils/lenisInstance";
+
+  function setMenuAnimation() {
+    const navBtn = $("#navBtn");
+    const navMenu = $("#navMenu");
+    const mainContainer = $("#main-container");
+    const lenis = getLenisInstance();
+    let toggled = false;
+    const tl = gsap.timeline({ paused: true });
+
+    tl.to(navMenu, {
+      y: 0,
+      ease: "power2.out",
+      pointerEvents: "auto",
+      duration: 1,
+    }).to(
+      mainContainer,
+      {
+        y: "100dvh",
+        duration: 1,
+      },
+      "<"
+    );
+
+    navBtn?.addEventListener("click", () => {
+      if (!toggled) {
+        lenis.stop();
+        tl.play();
+        toggled = true;
+        navMenu?.removeAttribute("inert");
+        window.document.body.style.overflow = "hidden";
+        navBtn?.classList.add("show");
+      } else {
+        lenis.start();
+        tl.reverse();
+        toggled = false;
+        navMenu?.setAttribute("inert", "");
+        window.document.body.style.overflow = "none";
+        navBtn?.classList.remove("show");
+      }
+    });
+  }
+
+  document.addEventListener("astro:page-load", setMenuAnimation);
+</script>

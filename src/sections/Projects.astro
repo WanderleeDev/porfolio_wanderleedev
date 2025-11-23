@@ -1,14 +1,47 @@
 ---
-import { main_projects } from "../data"
+import { main_projects } from "../data";
+import Title from "../components/Title.astro";
 ---
-<section id="projects" class="min-h-dvh">
-  <h2 class="sr-only">Projects</h2>
-  <ul class="grid place-content-center items-center gap-4 grid-cols-2 w-4/5 mx-auto min-h-dvh">
+
+<section id="projects" class="min-h-dvh relative">
+  <header
+    class="text-center pt-8 pb-4 px-4 md:absolute md:top-2/4 md:left-2/4 md:-translate-x-2/4 md:-translate-y-2/4 md:text-[5vw] flex justify-center flex-col items-center z-10 md:pt-0 md:pb-0 md:px-0"
+  >
+    <Title id="projects-title" customClass="mb-4 md:mb-0 md:scale-0">
+      Projects
+    </Title>
+    <p
+      id="projects-description"
+      class="text-base leading-snug max-w-md mx-auto md:w-[40ch] md:text-[1.3vw] md:will-change-transform md:origin-center md:translate-y-20"
+    >
+      My personal selection of frontend projects, where I highlight examples
+      that showcase my approach to web development focused on quality and the
+      user.
+    </p>
+  </header>
+
+  <ul
+    class="grid place-content-center items-center gap-4 md:gap-6 grid-cols-1 md:grid-cols-2 w-[90%] md:w-4/5 mx-auto min-h-dvh pt-4 md:py-0"
+  >
     {
-      main_projects.map(({ title, demo_url, image, description }, i) => (
-        <li class="">
-          <a target="_blank" href={demo_url} rel="noopener noreferrer">
-            <img class="aspect-video object-cover rounded-lg w-full" src={image} alt={title} />
+      main_projects.map(({ title, demo_url, image }, i) => (
+        <li class="card will-change-transform group">
+          <a
+            class="overflow-hidden rounded-2xl block relative bg-white/5 border border-white/10 transition-all duration-300 hover:border-white/20"
+            target="_blank"
+            href={demo_url}
+            rel="noopener noreferrer"
+          >
+            <img
+              class="aspect-video object-cover w-full group-hover:scale-105 transition-all duration-500 group-hover:brightness-75"
+              src={image}
+              alt={title}
+            />
+            <span
+              class={`absolute bottom-0 px-4 md:px-6 py-2 text-gray-100 font-bold opacity-0 group-hover:opacity-100 duration-300 transition-opacity text-base md:text-[1.5vw] ${i % 2 === 0 ? "right-0" : "left-0"}`}
+            >
+              {title}
+            </span>
           </a>
         </li>
       ))

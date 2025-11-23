@@ -1,22 +1,140 @@
 ---
+import Title from "../components/Title.astro";
+import Paragraph from "../components/Paragraph.astro";
+import FrameworkCard from "../components/FrameworkCard.astro";
+import CardGlassBase from "../components/shared/CardGlassBase.astro";
+import DecorativeAccent from "../components/shared/DecorativeAccent.astro";
 
+const extras = [
+  {
+    title: "React",
+    icon: "devicon:react",
+    url: "https://react-showcase-three.vercel.app/",
+    color: "from-cyan-500/20 to-blue-500/20",
+    hoverColor: "hover:from-cyan-500/30 hover:to-blue-500/30",
+  },
+  {
+    title: "Angular",
+    icon: "devicon:angular",
+    url: "https://entry-page-angular.vercel.app/en-US/",
+    color: "from-red-500/20 to-pink-500/20",
+    hoverColor: "hover:from-red-500/30 hover:to-pink-500/30",
+  },
+  {
+    title: "Vue",
+    icon: "devicon:vuejs",
+    url: "https://vue-showcase-8bg.pages.dev/",
+    color: "from-green-500/20 to-emerald-500/20",
+    hoverColor: "hover:from-green-500/30 hover:to-emerald-500/30",
+  },
+];
+
+const statsData = [
+  {
+    value: "3+",
+    label: "Frameworks",
+    gradient: "bg-linear-to-r from-cyan-400 to-blue-400",
+  },
+  {
+    value: "100%",
+    label: "Passion",
+    gradient: "bg-linear-to-r from-purple-400 to-pink-400",
+  },
+];
 ---
-<section id="extras" class="min-h-dvh">
-  <h2 class="sr-only">Extras</h2>
-  <div class="grid grid-cols-2 place-content-center items-center w-4/5 mx-auto h-full min-h-dvh">
-    <p>
-      Sigue explorando: estos proyectos también cuentan mi historia como desarrollador.
-    </p>
-    <ul>
-      <li>
-        <a href="http://" target="_blank" rel="noopener noreferrer">React</a>
-      </li>
-      <li>
-        <a href="http://" target="_blank" rel="noopener noreferrer">Angular</a>
-      </li>
-      <li>
-        <a href="http://" target="_blank" rel="noopener noreferrer">Vue</a>
-      </li>
-    </ul>
+
+<section
+  id="extras"
+  class="extras-section relative min-h-dvh content-center overflow-hidden py-20 lg:py-0"
+>
+  <div class="relative max-w-7xl mx-auto px-4 lg:px-8">
+    <div class="grid h-full lg:grid-cols-2 gap-12 lg:gap-16 lg:items-center">
+      <header class="extras-header space-y-6">
+        <DecorativeAccent />
+        <Title customClass="extras-title"> Extras </Title>
+
+        <Paragraph customClass="extras-description opacity-90">
+          Sigue explorando: estos proyectos también cuentan mi historia como
+          desarrollador.
+        </Paragraph>
+
+        <div class="stats-grid hidden lg:grid lg:grid-cols-2 gap-4 mt-12">
+          {
+            statsData.map(({ value, label, gradient }) => (
+              <CardGlassBase>
+                <div
+                  class={`text-3xl font-bold ${gradient} bg-clip-text text-transparent`}
+                >
+                  {value}
+                </div>
+                <div class="text-sm text-gray-400 mt-1">{label}</div>
+              </CardGlassBase>
+            ))
+          }
+        </div>
+      </header>
+
+      <div class="extras-cards-container relative">
+        <ul class="grid grid-cols-1 md:grid-cols-12 gap-6 relative z-10">
+          {
+            extras.map(({ title, icon, url, color, hoverColor }, i) => (
+              <li
+                class={`extras-card-item
+                ${i === 0 ? "md:col-span-6" : ""}
+                ${i === 1 ? "md:col-span-6" : ""}
+                ${i === 2 ? "md:col-span-12" : ""}
+              `}
+              >
+                <a
+                  href={url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="block h-full"
+                  aria-label={`Ver proyecto ${title}`}
+                >
+                  <FrameworkCard
+                    title={title}
+                    icon={icon}
+                    color={color}
+                    hoverColor={hoverColor}
+                  />
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+    </div>
   </div>
 </section>
+
+<style>
+  /* Cards Animation */
+  .extras-card-item {
+    animation: fadeInUp 0.6s ease-out forwards;
+    opacity: 0;
+  }
+
+  .extras-card-item:nth-child(1) {
+    animation-delay: 0.1s;
+  }
+
+  .extras-card-item:nth-child(2) {
+    animation-delay: 0.2s;
+  }
+
+  .extras-card-item:nth-child(3) {
+    animation-delay: 0.3s;
+  }
+
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+</style>

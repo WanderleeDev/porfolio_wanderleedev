@@ -1,0 +1,22 @@
+---
+
+interface Props {
+  name: string,
+  label: string,
+  url: string,
+  customClass?: string
+}
+
+const {label, name, url, customClass = ''} = Astro.props
+---
+
+<a 
+  class={`relative delay-200 after:absolute after:bg-gray-200 after:w-full after:h-full after:left-0 after:scale-y-0 after:px-2 after:-z-10 after:origin-bottom hover:after:scale-y-100 after:delay-100 after:transition-transform after:duration-300 hover:text-black duration-200 before:absolute before:bg-gray-200 before:w-full before:h-full before:left-0 before:scale-y-[0.05] before:origin-bottom before:opacity-0 hover:before:opacity-100 hover:before:duration-200 ${customClass}`} 
+  href={url}
+  rel="noopener noreferrer"
+>
+  <slot />
+  <span>
+    { label.trim() || name}
+  </span>
+</a>  

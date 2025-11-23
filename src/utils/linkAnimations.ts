@@ -1,12 +1,12 @@
-	import gsap from "gsap";
+import gsap from "gsap";
 
-function setHeroAnimation() {
-	const links: NodeListOf<HTMLDListElement> = document.querySelectorAll('.link-section')
-	
+export function setLinkAnimation() {
+	const links = gsap.utils.toArray<HTMLElement>('.link-section')
+  
 	if (!links?.length) return
-	
+  
 	const tl = gsap.timeline()
-	
+  
 	gsap.set(links, { 
 		opacity: 0,
 		y: () => Math.ceil(Math.random() * 2) % 2 === 0 ? 30  : -30 
@@ -35,5 +35,3 @@ function setHeroAnimation() {
 		}
 	});
 }
-
-export default setHeroAnimation;

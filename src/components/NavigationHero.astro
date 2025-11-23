@@ -14,15 +14,15 @@ const sections = [
 ]
 ---
 
-<ul class={`mx-auto w-full max-w-5xl flex flex-wrap justify-center gap-4 md:h-auto md:gap-0 mx-auto ${customClass}`}>
+<ul class={`mx-auto w-full max-w-5xl p-4 flex flex-col xs:flex-row flex-wrap justify-center gap-4 sm:gap-12 md:h-auto md:gap-0 ${customClass}`}>
 	{
 		sections.map((section, i) => (
 			<li class={
 				`link-section
-				${i === 0 ? 'col-[2/5] row-[3/5]': '' }
-				${i === 1 ? 'col-[9/12] row-[5/7]': '' }
-				${i === 2 ? 'col-[2/5] row-[8/10]': '' }
-				${i === 3 ? 'col-[9/12] row-[10/12]': '' }
+				${i === 0 ? 'md:col-[2/5] md:row-[3/5]': '' }
+				${i === 1 ? 'md:col-[9/12] md:row-[5/7]': '' }
+				${i === 2 ? 'md:col-[2/5] md:row-[8/10]': '' }
+				${i === 3 ? 'md:col-[9/12] md:row-[10/12]': '' }
 				` 
 			}>
 				<LinkCard title={section} url={`#${section}`} />

@@ -3,12 +3,7 @@
 @custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
 
 @theme {
-  --font-sans-variable: 'DM Sans Variable', sans-serif;
-  --font-dm-mono: 'DM Mono', monospace;
-
-  --color-folder-1: #D9D9D9;
-  --color-folder-2: #ABABAB;
-  --color-folder-3: #FFE430;
-
-  --breakpoint-xs: 400px
+  --font-sans-variable: "DM Sans Variable", sans-serif;
+  --font-dm-mono: "DM Mono", monospace;
+  --breakpoint-xs: 400px;
 }

@@ -1,0 +1,222 @@
+---
+import FloatingElements from "../components/background/FloatingElements.astro";
+import ContactForm from "../components/ContactForm.astro";
+import Paragraph from "../components/Paragraph.astro";
+import DecorativeAccent from "../components/shared/DecorativeAccent.astro";
+import Title from "../components/Title.astro";
+---
+
+<section
+  id="contact"
+  class="contact-section relative min-h-dvh p-4 lg:p-8 overflow-hidden"
+>
+  <div
+    class="contact-container relative max-w-7xl mx-auto grid gap-12 lg:grid-cols-2 lg:gap-16 lg:items-center min-h-dvh py-12 lg:py-0"
+  >
+    <header class="contact-header relative z-10">
+      <div class="header-content space-y-6">
+        <DecorativeAccent />
+
+        <Title customClass="contact-title"> Get in touch </Title>
+
+        <Paragraph customClass="contact-description opacity-90">
+          Do you have a project or want to develop one? Fill out the form and I
+          will get in touch with you soon.
+        </Paragraph>
+
+        <div class="contact-info-cards space-y-4 mt-12">
+          <div class="info-card group">
+            <div class="icon-wrapper">
+              <svg
+                class="w-6 h-6"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+                ></path>
+              </svg>
+            </div>
+            <div>
+              <p class="text-sm opacity-70">Email</p>
+              <p class="font-medium">your@email.com</p>
+            </div>
+          </div>
+
+          <div class="info-card group">
+            <div class="icon-wrapper">
+              <svg
+                class="w-6 h-6"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+                ></path>
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+              </svg>
+            </div>
+            <div>
+              <p class="text-sm opacity-70">Location</p>
+              <p class="font-medium">Your City, Country</p>
+            </div>
+          </div>
+
+          <div class="info-card group">
+            <div class="icon-wrapper">
+              <svg
+                class="w-6 h-6"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+              </svg>
+            </div>
+            <div>
+              <p class="text-sm opacity-70">Response Time</p>
+              <p class="font-medium">Within 24 hours</p>
+            </div>
+          </div>
+        </div>
+
+        <FloatingElements />
+      </div>
+    </header>
+
+    <div class="contact-form-wrapper relative z-10">
+      <ContactForm />
+    </div>
+  </div>
+
+  <style>
+    .contact-section {
+      position: relative;
+    }
+
+    /* Accent Line Animation */
+    .accent-line {
+      animation: expandLine 10s ease-out forwards;
+      transform-origin: left;
+    }
+
+    @keyframes expandLine {
+      from {
+        transform: scaleX(0);
+      }
+      to {
+        transform: scaleX(1);
+      }
+    }
+
+    /* Contact Info Cards */
+    .info-card {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 1.25rem;
+      background: rgba(255, 255, 255, 0.03);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 1rem;
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+
+    .info-card:hover {
+      background: rgba(255, 255, 255, 0.06);
+      border-color: rgba(99, 102, 241, 0.3);
+      transform: translateX(8px);
+      box-shadow: 0 8px 32px rgba(99, 102, 241, 0.1);
+    }
+
+    .icon-wrapper {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 3rem;
+      height: 3rem;
+      background: linear-gradient(
+        135deg,
+        rgba(99, 102, 241, 0.2),
+        rgba(168, 85, 247, 0.2)
+      );
+      border-radius: 0.75rem;
+      color: rgb(167, 139, 250);
+      transition: all 0.3s ease;
+    }
+
+    .info-card:hover .icon-wrapper {
+      background: linear-gradient(
+        135deg,
+        rgba(99, 102, 241, 0.4),
+        rgba(168, 85, 247, 0.4)
+      );
+      transform: rotate(5deg) scale(1.1);
+    }
+
+    /* Form Glass Card */
+    .form-glass-card {
+      background: rgba(255, 255, 255, 0.03);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 2rem;
+      padding: 2.5rem;
+      box-shadow:
+        0 8px 32px rgba(0, 0, 0, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .form-glass-card::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(99, 102, 241, 0.5),
+        rgba(168, 85, 247, 0.5),
+        transparent
+      );
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 1024px) {
+      .form-glass-card {
+        padding: 1.5rem;
+      }
+
+      .contact-info-cards {
+        margin-top: 2rem;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .form-glass-card {
+        padding: 1.25rem;
+        border-radius: 1.5rem;
+      }
+    }
+  </style>
+</section>

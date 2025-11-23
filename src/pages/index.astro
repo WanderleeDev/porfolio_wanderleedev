@@ -3,9 +3,8 @@ import BaseLayout from "../layout/BaseLayout.astro";
 import Extras from "../sections/Extras.astro";
 import HeroNavigation from "../sections/HeroNavigation.astro";
 import Projects from "../sections/Projects.astro";
+import Contact from "../sections/Contact.astro";
 import Skills from "../sections/Skills.astro";
-import Contact from "./contact.astro";
-
 ---
 
 <BaseLayout title="Wanderlee Porfolio 2025">
@@ -15,25 +14,3 @@ import Contact from "./contact.astro";
 	<Extras />
 	<Contact />
 </BaseLayout>
-
-<script>
-  import gsap from 'gsap';
-  import Lenis from 'lenis'
-  import { $, $$ } from '../utils/selectors'
-  import { ScrollTrigger } from 'gsap/all';
-import { setLenisNavigation } from '../utils/setLenisNavigation';
-
-	document.addEventListener('astro:page-load', () => {
-		gsap.registerPlugin(ScrollTrigger)
-
-		const lenis = new Lenis()
-		lenis.on("scroll", ScrollTrigger.update)
-			
-		gsap.ticker.add((time) => {
-			lenis.raf(time * 1000)
-		})
-		
-		gsap.ticker.lagSmoothing(0) 
-		setLenisNavigation(lenis)
-	})
-</script>

@@ -3,50 +3,8 @@ import Presentation from '../components/Presentation.astro'
 import ProfileHero from '../components/ProfileHero.astro'
 import NavigationHero from '../components/NavigationHero.astro'
 ---
-<section id="hero" class="min-h-svh grid grid-cols-12 grid-rows-2 md:grid-rows-12  md:place-items-center">
+<section id="home" class="min-h-svh grid md:grid-cols-12 grid-rows-2 md:grid-rows-12  md:place-items-center">
   <Presentation />
   <ProfileHero customClass="col-[1/-1] md:col-[5/9] md:row-[1/-1]" />
-  <NavigationHero customClass="col-[1/-1] md:row-[1/-1] md:contents" />
+  <NavigationHero customClass="col-[1/-1] md:row-[1/-1] md:contents self-center" />
 </section>
-
-<script>
-  import gsap from "gsap";
-
-	function setHeroAnimation() {
-  	const links: NodeListOf<HTMLDListElement> = document.querySelectorAll('.link-section')
-    
-  	if (!links?.length) return
-    
-  	const tl = gsap.timeline()
-    
-  	gsap.set(links, { 
-  		opacity: 0,
-  		y: () => Math.ceil(Math.random() * 2) % 2 === 0 ? 30  : -30 
-  	});
-  
-  	tl.to(links, {
-  		opacity: 1,
-  		y: 0,
-  		ease: "expo.out",
-  		duration: 1.2,
-  		stagger: 0.125,
-  		onComplete: () => {
-  	  	links.forEach((el) => {
-  	    	const floatY = gsap.utils.random(8, 14);
-  	    	const floatDur = gsap.utils.random(1.2, 2);
-  	    	const floatDelay = gsap.utils.random(0, 1);
-  	    	gsap.to(el, {
-  	    	  y: `+=${floatY}`,
-  	    	  duration: floatDur,
-  	    	  ease: "sine.inOut",
-  	    	  repeat: -1,
-  	    	  yoyo: true,
-  	    	  delay: floatDelay
-  	    	});
-  	  	});
-  		}
-  	});
-  }
-
-	document.addEventListener('astro:page-load', setHeroAnimation)
-</script>

@@ -6,11 +6,8 @@ export function setLenisNavigation(lenisInstance: Lenis): void {
     link.addEventListener("click", (e: Event) => {
       e.preventDefault();
       const targetId = link.getAttribute("href");
-      console.log(targetId);
 
       const targetEl = $(targetId ?? "#hero");
-
-      console.log(targetEl);
 
       if (targetEl) {
         lenisInstance.scrollTo(targetEl);

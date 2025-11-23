@@ -1,15 +1,16 @@
 import gsap from "gsap";
 import { SplitText } from "gsap/all";
+import { $ } from "./selectors";
 
-function setPresentationAnimate() { 
+export function presentationAnimate() { 
   const KEY_PRESENTATION = 'hasSeenPresentation'
   const isViewPresentation = localStorage.getItem(KEY_PRESENTATION) 
-  const presentationOverlay = document.querySelector('#presentation-overlay');
-  const verticalDivider = document.querySelector('#vertical-divider');
-  const greetingText = document.querySelector('.greeting-text');
-  const introText = document.querySelector('.intro-text');
-  const roleTitle = document.querySelector("#role-title");
-  const revealBlock = document.querySelector('#reveal-block');  
+  const presentationOverlay = $('#presentation-overlay');
+  const verticalDivider = $('#vertical-divider');
+  const greetingText = $('.greeting-text');
+  const introText = $('.intro-text');
+  const roleTitle = $("#role-title");
+  const revealBlock = $('#reveal-block');  
 
   if (isViewPresentation)  {
     (presentationOverlay as HTMLElement).style.display = 'none'
@@ -27,12 +28,11 @@ function setPresentationAnimate() {
     return
   }
 
-  gsap.registerPlugin(SplitText);
-
   const greetingSplit = SplitText.create(greetingText, { type: 'chars' });
   const introSplit = SplitText.create(introText, { type: 'chars' });
   const allChars = [...greetingSplit.chars, ...introSplit.chars]; 
-  const presentationTimeline = gsap.timeline(); 
+  const presentationTimeline = gsap.timeline();
+
   presentationTimeline
     .set(allChars, { yPercent: 130 })
     .set(roleTitle, { opacity: 0 })
@@ -94,5 +94,3 @@ function setPresentationAnimate() {
       }
   })
 }
-
-export default setPresentationAnimate;

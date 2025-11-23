@@ -1,24 +1,141 @@
 ---
-import Icon from "astro-iconify"
-import { skills } from "../data"
+import Icon from "astro-iconify";
+import { skills } from "../data";
+import Title from "../components/Title.astro";
+
+const masLengthContainer = `${skills.length * 100}vw`;
 ---
-<section id="skills" class="min-h-dvh">
-  <h2 class="sr-only">Skills</h2>
-  {
-    skills.map(({ title, techs }) => (
-      <figure class="h-dvh grid place-content-center-safe w-4/5 mx-auto">
-        <figcaption>{ title }</figcaption>
-        <ul class="flex gap-24 justify-center items-center flex-wrap">
-          {
-            techs.map(({ color, icon }) => (
-              <li>
-                <Icon class="size-8 mx-auto" name={icon} />
-                <span>{icon.replace('devicon:', '')}</span>
-              </li>
-            ))
-          }
-        </ul>
-      </figure>
-    ))
-  }
-</section>
+
+<div id="skills" class="relative h-dvh overflow-hidden">
+  <div
+    id="skills-wrapper"
+    class="flex flex-row"
+    style={{ width: masLengthContainer }}
+  >
+    <svg
+      class="absolute top-1/5 left-2/4 -translate-x-1/2 z-10 w-2/4"
+      viewBox="0 0 900 10"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        d="M9.89998 6C9.43671 8.28224 7.41896 10 5 10C2.23858 10 0 7.76142 0 5C0 2.23858 2.23858 0 5 0C7.41896 0 9.43671 1.71776 9.89998 4H220.1C220.563 1.71776 222.581 0 225 0C227.419 0 229.437 1.71776 229.9 4H445.1C445.563 1.71776 447.581 0 450 0C452.419 0 454.437 1.71776 454.9 4H670.1C670.563 1.71776 672.581 0 675 0C677.419 0 679.437 1.71776 679.9 4H890.1C890.563 1.71776 892.581 0 895 0C897.761 0 900 2.23858 900 5C900 7.76142 897.761 10 895 10C892.581 10 890.563 8.28224 890.1 6H679.9C679.437 8.28224 677.419 10 675 10C672.581 10 670.563 8.28224 670.1 6H454.9C454.437 8.28224 452.419 10 450 10C447.581 10 445.563 8.28224 445.1 6H229.9C229.437 8.28224 227.419 10 225 10C222.581 10 220.563 8.28224 220.1 6H9.89998Z"
+        fill="#D9D9D9"></path>
+      <mask
+        id="mask0_0_1"
+        style="mask-type:alpha"
+        maskUnits="userSpaceOnUse"
+        x="0"
+        y="0"
+        width="900"
+        height="10"
+      >
+        <path
+          d="M9.89998 6C9.43671 8.28224 7.41896 10 5 10C2.23858 10 0 7.76142 0 5C0 2.23858 2.23858 0 5 0C7.41896 0 9.43671 1.71776 9.89998 4H220.1C220.563 1.71776 222.581 0 225 0C227.419 0 229.437 1.71776 229.9 4H445.1C445.563 1.71776 447.581 0 450 0C452.419 0 454.437 1.71776 454.9 4H670.1C670.563 1.71776 672.581 0 675 0C677.419 0 679.437 1.71776 679.9 4H890.1C890.563 1.71776 892.581 0 895 0C897.761 0 900 2.23858 900 5C900 7.76142 897.761 10 895 10C892.581 10 890.563 8.28224 890.1 6H679.9C679.437 8.28224 677.419 10 675 10C672.581 10 670.563 8.28224 670.1 6H454.9C454.437 8.28224 452.419 10 450 10C447.581 10 445.563 8.28224 445.1 6H229.9C229.437 8.28224 227.419 10 225 10C222.581 10 220.563 8.28224 220.1 6H9.89998Z"
+          fill="#D9D9D9"></path>
+      </mask>
+      <g mask="url(#mask0_0_1)">
+        <rect
+          id="mask-scroller"
+          y="-49"
+          height="99"
+          width="0%"
+          fill="rgb(56 189 248 / 85%)"></rect>
+      </g>
+    </svg>
+
+    {
+      skills.map(({ techs, title }, i) => (
+        <div class="slide w-screen min-h-screen bg-black p-8 md:p-12 flex flex-col items-center justify-center text-white border-0">
+          <Title customClass="mb-6 md:mb-8 title overflow-hidden">
+            {title}
+          </Title>
+          <div class="flex flex-wrap gap-3 md:gap-4 justify-center md:justify-start max-w-4xl">
+            {techs.map(({ color, icon }) => (
+              <span
+                class="tag inline-flex items-center gap-2 px-3 py-2 md:px-4 md:py-2.5 lg:px-5 lg:py-3
+           rounded-full text-xs md:text-sm lg:text-base font-medium border-2 bg-white/20
+           transition-all duration-300 hover:scale-105 hover:bg-white/30"
+                style={{ borderColor: color }}
+              >
+                <Icon
+                  name={icon}
+                  class="size-5 md:size-6 lg:size-10"
+                  style={{ color: color }}
+                />
+                <span class="font-semibold">
+                  {icon.replace("devicon:", "")}
+                </span>
+              </span>
+            ))}
+          </div>
+        </div>
+      ))
+    }
+
+    <!-- <div class="slide w-screen h-screen bg-black" /> -->
+  </div>
+</div>
+
+<script>
+  import gsap from "gsap";
+  import { $ } from "../utils/selectors";
+
+  document.addEventListener("astro:page-load", () => {
+    const container = $("#skills");
+    const wrapper = $("#skills-wrapper");
+    const sections = gsap.utils.toArray<HTMLElement>(".slide");
+    const mask = $("#mask-scroller");
+
+    let scrollTween = gsap.to(sections, {
+      xPercent: -100 * (sections.length - 1),
+      ease: "none",
+      duration: 1,
+      scrollTrigger: {
+        trigger: container,
+        scrub: 1,
+        pin: true,
+        pinSpacing: true,
+        end: "+=3000",
+      },
+    });
+
+    gsap.to(mask, {
+      width: "100%",
+      scrollTrigger: {
+        trigger: container,
+        start: "top left",
+        end: "bottom 0%",
+        scrub: 1,
+      },
+    });
+
+    sections.forEach((section, i) => {
+      const title = section.querySelector<HTMLElement>(".title");
+      const splitTitle = SplitText.create(title, { type: "chars" });
+      const tags = section.querySelectorAll<HTMLElement>(".tag");
+      const tl = gsap.timeline({
+        scrollTrigger: {
+          trigger: section,
+          start: "left 80%",
+          containerAnimation: scrollTween,
+          toggleActions: "play none none reverse",
+        },
+      });
+
+      gsap.set(splitTitle.chars, { yPercent: 100 });
+      gsap.set(tags, { opacity: 0, xPercent: 100 });
+
+      tl.to(splitTitle.chars, {
+        yPercent: 0,
+        duration: 0.2,
+      }).to(tags, {
+        opacity: 1,
+        xPercent: 0,
+        duration: 0.2,
+        stagger: 0.015,
+        ease: "elastic.in",
+      });
+    });
+  });
+</script>

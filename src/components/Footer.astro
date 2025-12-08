@@ -1,6 +1,7 @@
 ---
 import Icon from "astro-iconify";
 import Paragraph from "./typography/Paragraph.astro";
+import { Image } from "astro:assets";
 
 const developText = "Developed by WanderleeDev 2025";
 const socialLinks = [
@@ -32,20 +33,13 @@ const socialLinks = [
       <div
         class="relative w-80 h-80 md:w-96 md:h-96 lg:w-104 lg:h-104 overflow-hidden"
       >
-        <video
+        <Image
+          inferSize={true}
+          loading="lazy"
+          src="https://res.cloudinary.com/dy8gpozi6/image/upload/v1765154077/tom_f0v8qy.webp"
+          alt="Hero Image"
           class="w-full h-full object-cover pointer-events-none select-none md:mask-[url(https://res.cloudinary.com/dy8gpozi6/image/upload/v1765157809/mask-profile_raa16q.webp)] md:mask-size-[110%_90%] md:mask-center md:mask-no-repeat"
-          autoplay
-          poster="https://res.cloudinary.com/dy8gpozi6/image/upload/v1765158281/tom_fallback_wjtohv.webp"
-          preload="none"
-          loop
-          muted
-        >
-          Tu navegador no soporta la etiqueta de video.
-          <source
-            src="https://res.cloudinary.com/dy8gpozi6/video/upload/v1765154153/tom_programmer_t1cr61.mp4"
-            type="video/mp4"
-          />
-        </video>
+        />
       </div>
     </div>
 

@@ -72,7 +72,8 @@ export const main_projects = [
       "Created an intuitive shopping experience with 40% faster checkout process and improved user retention through persistent cart functionality.",
     demo_url: "https://clior.vercel.app/",
     technologies: ["angular", "sass", "typeScript", "flowbite"],
-    image: "clior.webp",
+    image:
+      "https://res.cloudinary.com/dy8gpozi6/image/upload/v1765154110/clior_biw8pq.webp",
     label: "view ecommerce demo",
   },
   {
@@ -87,7 +88,8 @@ export const main_projects = [
       "Showcased advanced Angular skills and state management patterns, demonstrating ability to build complex, interactive applications.",
     demo_url: "https://github.com/",
     technologies: ["angular", "tailwindCss", "typeScript", "ngrx"],
-    image: "ubuntu.webp",
+    image:
+      "https://res.cloudinary.com/dy8gpozi6/image/upload/v1765154111/ubuntu_e1zsgq.webp",
     label: "view ubuntu demo",
   },
   {
@@ -102,7 +104,8 @@ export const main_projects = [
       "Achieved 95+ Lighthouse score with unique visual identity, demonstrating ability to blend creativity with performance.",
     demo_url: "https://retro-blog-two.vercel.app/",
     technologies: ["astro", "css", "typeScript"],
-    image: "retro_blog.webp",
+    image:
+      "https://res.cloudinary.com/dy8gpozi6/image/upload/v1765154110/retro_blog_fejpmv.webp",
     label: "view retro blog demo",
   },
   {
@@ -117,7 +120,8 @@ export const main_projects = [
       "Delivered a responsive design that scales perfectly from mobile to 4K displays, showcasing advanced CSS and responsive design skills.",
     demo_url: "https://dainty-pika-231bcd.netlify.app/",
     technologies: ["vue", "tailwindCss", "typeScript"],
-    image: "nintendo_shots.webp",
+    image:
+      "https://res.cloudinary.com/dy8gpozi6/image/upload/v1765154111/nintendo_shots_b0pr6w.webp",
     label: "view switch 2 clone demo",
   },
 ];

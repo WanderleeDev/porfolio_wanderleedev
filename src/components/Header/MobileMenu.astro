@@ -1,4 +1,7 @@
 ---
+import Icon from "astro-iconify";
+import ExternalLink from "../ExternalLink.astro";
+
 interface Props {
   id: string;
   sections: {
@@ -8,20 +11,46 @@ interface Props {
 }
 
 const { id, sections } = Astro.props;
+const socialLinks = [
+  {
+    name: "LinkedIn",
+    url: "https://www.linkedin.com/in/wanderlee-max/",
+    icon: "mdi:linkedin",
+  },
+  {
+    name: "Github",
+    url: "https://github.com/WanderleeDev",
+    icon: "mdi:github",
+  },
+  {
+    name: "Portfolio",
+    url: "",
+    icon: "mdi:briefcase",
+  },
+];
 ---
 
 <div
   id={id}
   class="fixed inset-0 w-full h-screen bg-black/60 backdrop-blur-2xl z-40 flex flex-col items-center justify-center gap-8 opacity-0 pointer-events-none transition-all duration-300"
 >
-  {
-    sections.map(({ name }) => (
-      <a
-        href={`#${name}`}
-        class="mobile-link text-white text-3xl font-fira-sans-extra-condensed font-bold tracking-widest hover:text-amber-400 transition-colors capitalize"
-      >
-        {name}
-      </a>
-    ))
-  }
+  <nav class="flex flex-col gap-16 justify-center items-center h-4/5">
+    {
+      sections.map(({ name }) => (
+        <a
+          href={`#${name}`}
+          class="mobile-link text-white text-3xl font-fira-sans-extra-condensed font-bold tracking-widest hover:text-amber-400 transition-colors capitalize"
+        >
+          {name}
+        </a>
+      ))
+    }
+  </nav>
+  <div class="flex flex-row flex-wrap gap-4 h-1/5 justify-center items-center">
+    {
+      socialLinks.map(({ name, url, icon }) => (
+        <ExternalLink name={name} url={url} icon={icon} />
+      ))
+    }
+  </div>
 </div>

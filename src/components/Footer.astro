@@ -1,7 +1,7 @@
 ---
-import Icon from "astro-iconify";
 import Paragraph from "./typography/Paragraph.astro";
 import { Image } from "astro:assets";
+import ExternalLink from "./ExternalLink.astro";
 
 const developText = "Developed by WanderleeDev 2025";
 const socialLinks = [
@@ -29,21 +29,23 @@ const socialLinks = [
   <div
     class="grid grid-cols-1 md:grid-cols-2 h-full place-content-center gap-8 md:gap-12 px-4"
   >
-    <div class="md:items-center md:justify-center hidden md:flex">
+    <div class="md:items-center md:justify-center flex">
       <div
-        class="relative w-80 h-80 md:w-96 md:h-96 lg:w-104 lg:h-104 overflow-hidden"
+        class="relative w-80 h-80 md:w-96 md:h-96 lg:w-104 lg:h-104 overflow-hidden mx-auto"
       >
         <Image
           inferSize={true}
           loading="lazy"
           src="https://res.cloudinary.com/dy8gpozi6/image/upload/v1765154077/tom_f0v8qy.webp"
           alt="Hero Image"
-          class="w-full h-full object-cover pointer-events-none select-none md:mask-[url(https://res.cloudinary.com/dy8gpozi6/image/upload/v1765157809/mask-profile_raa16q.webp)] md:mask-size-[110%_90%] md:mask-center md:mask-no-repeat"
+          class="w-full h-full object-cover pointer-events-none select-none mask-[url(https://res.cloudinary.com/dy8gpozi6/image/upload/v1765157809/mask-profile_raa16q.webp)] mask-size-[110%_90%] mask-center mask-no-repeat"
         />
       </div>
     </div>
 
-    <div class="flex flex-col gap-6 w-full max-w-lg">
+    <div
+      class="flex flex-col gap-6 w-full max-w-lg justify-self-center self-center"
+    >
       <Paragraph
         customClass="text-neutral-400 md:text-lg leading-relaxed text-center md:text-left"
       >
@@ -56,21 +58,7 @@ const socialLinks = [
           {
             socialLinks.map((link) => (
               <li>
-                <a
-                  href={link.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label={link.name}
-                  class="group flex items-center gap-4 px-5 py-3 rounded-lg border border-neutral-700 text-neutral-400 hover:text-white hover:border-neutral-500 hover:bg-neutral-800/30 transition-all duration-300"
-                >
-                  <Icon
-                    name={link.icon}
-                    class="w-5 h-5 transition-transform duration-300 group-hover:scale-110"
-                  />
-                  <span class="text-sm font-medium tracking-wide">
-                    {link.name}
-                  </span>
-                </a>
+                <ExternalLink {...link} />
               </li>
             ))
           }

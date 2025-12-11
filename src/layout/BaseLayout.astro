@@ -1,8 +1,8 @@
 ---
 import "../styles/global.css";
 import Footer from "../components/Footer.astro";
-import Header from "../components/Header.astro";
 import firaSansWoff2 from "@fontsource/fira-sans-extra-condensed/files/fira-sans-extra-condensed-latin-700-normal.woff2?url";
+import Header from "../components/Header/index.astro";
 ---
 
 <html lang="en">
@@ -57,8 +57,8 @@ import firaSansWoff2 from "@fontsource/fira-sans-extra-condensed/files/fira-sans
   <body
     class="min-h-svh flex flex-col justify-between duration-500 select-none"
   >
+    <Header />
     <main id="main-container" class="flex flex-col gap-20 bg-gradient-dark">
-      <Header />
       <slot />
     </main>
     <div class="min-h-dvh" aria-hidden="true"></div>

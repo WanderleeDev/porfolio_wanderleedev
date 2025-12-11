@@ -1,0 +1,23 @@
+---
+interface Props {
+  sections: {
+    name: string;
+    label: string;
+  }[];
+}
+
+const { sections } = Astro.props;
+---
+
+<nav class="flex flex-row gap-10 capitalize items-center">
+  {
+    sections.map(({ name }) => (
+      <a
+        href={`#${name}`}
+        class="text-white text-sm font-fira-sans-extra-condensed text-[1.3vw] font-bold tracking-wider hover:text-amber-400 transition-colors py-2 hidden md:block"
+      >
+        {name}
+      </a>
+    ))
+  }
+</nav>

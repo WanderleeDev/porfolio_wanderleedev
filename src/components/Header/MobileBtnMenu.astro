@@ -1,0 +1,27 @@
+---
+import Icon from "astro-iconify";
+interface Props {
+  id: string;
+}
+
+const { id } = Astro.props;
+---
+
+<button
+  id={id}
+  class="md:hidden size-8 md:size-12 block relative z-50 opacity-90"
+>
+  <Icon
+    name="ri:menu-line"
+    id="menu-icon"
+    class="text-white absolute inset-0 size-full transition-transform duration-300"
+    color="white"
+  />
+  <Icon
+    name="ri:close-line"
+    id="close-icon"
+    class="text-white absolute inset-0 size-full scale-0 opacity-0 transition-transform duration-300"
+    color="white"
+  />
+  <span class="sr-only">Menu mobile</span>
+</button>

@@ -1,0 +1,27 @@
+---
+interface Props {
+  id: string;
+  sections: {
+    name: string;
+    label: string;
+  }[];
+}
+
+const { id, sections } = Astro.props;
+---
+
+<div
+  id={id}
+  class="fixed inset-0 w-full h-screen bg-black/60 backdrop-blur-2xl z-40 flex flex-col items-center justify-center gap-8 opacity-0 pointer-events-none transition-all duration-300"
+>
+  {
+    sections.map(({ name }) => (
+      <a
+        href={`#${name}`}
+        class="mobile-link text-white text-3xl font-fira-sans-extra-condensed font-bold tracking-widest hover:text-amber-400 transition-colors capitalize"
+      >
+        {name}
+      </a>
+    ))
+  }
+</div>

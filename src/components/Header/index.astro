@@ -1,0 +1,120 @@
+---
+import { sections_links } from "../../data";
+import Logo from "./Logo.astro";
+import DesktopMenu from "./DesktopMenu.astro";
+import MobileMenu from "./MobileMenu.astro";
+import MobileBtnMenu from "./MobileBtnMenu.astro";
+---
+
+<div>
+  <header
+    id="header"
+    class="fixed left-0 right-0 w-11/12 mx-auto flex flex-row gap-2 justify-between items-center py-2 will-change-transform origin-center z-50"
+  >
+    <h1 class="sr-only">WanderleeDev Portfolio</h1>
+    <Logo />
+    <DesktopMenu sections={sections_links} />
+    <MobileBtnMenu id="mobile-menu-btn" />
+  </header>
+
+  <MobileMenu id="mobile-menu" sections={sections_links} />
+</div>
+
+<script>
+  import {
+    gsap,
+    GsapBreakpoints,
+    type GsapBreakpointsType,
+  } from "../../utils/gsapConfig";
+  import { $, $$ } from "../../utils/selectors";
+
+  function animateHeader() {
+    const headerElement = $("#header");
+    const mm = gsap.matchMedia();
+
+    mm.add({ ...GsapBreakpoints }, (context) => {
+      let { isDesktop, isMobile, isTablet, reduceMotion } =
+        context.conditions as GsapBreakpointsType;
+
+      if (reduceMotion) {
+        gsap.set(headerElement, { clearProps: "all" });
+        return;
+      }
+
+      const maxWidth = isMobile ? "90%" : isTablet ? "70%" : "50%";
+
+      gsap.to(headerElement, {
+        width: maxWidth,
+        ease: "none",
+        top: "1rem",
+        backgroundColor: "rgba(255, 255, 255, 0.1)",
+        backdropFilter: "blur(10px)",
+        borderRadius: "2rem",
+        padding: "0.5rem 1rem",
+        border: ".1rem solid rgba(255, 255, 255, 0.1)",
+        scrollTrigger: {
+          trigger: headerElement,
+          start: "top top",
+          end: "+=300",
+          scrub: 1,
+        },
+      });
+    });
+  }
+
+  animateHeader();
+
+  function toggleMenu() {
+    const btn = $("#mobile-menu-btn");
+    const menu = $("#mobile-menu");
+    const menuIcon = $("#menu-icon");
+    const closeIcon = $("#close-icon");
+    const links = $$(".mobile-link");
+
+    if (!btn || !menu || !menuIcon || !closeIcon) return;
+
+    let isOpen = false;
+
+    const tl = gsap.timeline({ paused: true });
+
+    tl.to(menu, {
+      opacity: 1,
+      pointerEvents: "all",
+      duration: 0.3,
+      ease: "power2.out",
+    }).from(
+      links,
+      {
+        y: 20,
+        opacity: 0,
+        stagger: 0.1,
+        duration: 0.4,
+        ease: "power2.out",
+      },
+      "-=0.1"
+    );
+
+    const toggle = () => {
+      isOpen = !isOpen;
+      if (isOpen) {
+        tl.play();
+        gsap.to(menuIcon, { scale: 0, opacity: 0, duration: 0.3 });
+        gsap.to(closeIcon, { scale: 1, opacity: 1, duration: 0.3 });
+      } else {
+        tl.reverse();
+        gsap.to(menuIcon, { scale: 1, opacity: 1, duration: 0.3 });
+        gsap.to(closeIcon, { scale: 0, opacity: 0, duration: 0.3 });
+      }
+    };
+
+    btn.addEventListener("click", toggle);
+
+    links?.forEach((link) => {
+      link.addEventListener("click", () => {
+        if (isOpen) toggle();
+      });
+    });
+  }
+
+  toggleMenu();
+</script>

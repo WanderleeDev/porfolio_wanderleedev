@@ -1,0 +1,27 @@
+---
+import { Image } from "astro:assets";
+import Icon from "astro-iconify";
+---
+
+<figure class="flex items-center gap-2">
+  <div class="relative size-8 md:size-12 aspect-square rounded-full">
+    <Image
+      id="avatar-header"
+      inferSize={true}
+      loading="lazy"
+      src="https://res.cloudinary.com/dy8gpozi6/image/upload/v1740447261/meme_gato_rwte5r.webp"
+      alt="Hero Image"
+      class="size-full relative z-10 rounded-full"
+    />
+    <Icon
+      name="ri:code-s-slash-line"
+      class="absolute inset-0 p-1 size-full text-white border-white/50 border-2 rounded-full md:p-2"
+    />
+  </div>
+  <figcaption
+    class="text-white text-base font-fira-sans-extra-condensed md:text-[1.3vw] font-bold tracking-wider"
+  >
+    Wanderlee
+    <span class="tracking-normal text-amber-400">Dev</span>
+  </figcaption>
+</figure>

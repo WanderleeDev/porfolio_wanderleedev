@@ -1,5 +1,4 @@
 ---
-import Icon from "astro-iconify";
 import ExternalLink from "../ExternalLink.astro";
 
 interface Props {
@@ -54,3 +53,76 @@ const socialLinks = [
     }
   </div>
 </div>
+
+<script>
+  import { $, $$ } from "../../utils/selectors";
+  import {
+    gsap,
+    GsapBreakpoints,
+    type GsapBreakpointsType,
+  } from "../../utils/gsapConfig";
+
+  function toggleMenu() {
+    const btn = $("#mobile-menu-btn");
+    const menu = $("#mobile-menu");
+    const menuIcon = $("#menu-icon");
+    const closeIcon = $("#close-icon");
+    const links = $$(".mobile-link");
+
+    if (!btn || !menu || !menuIcon || !closeIcon || !links?.length) return;
+
+    const mm = gsap.matchMedia();
+    let isOpen = false;
+
+    const tl = gsap.timeline({ paused: true });
+
+    tl.to(menuIcon, { scale: 0, opacity: 0, duration: 0.2 })
+      .to(closeIcon, { scale: 1, opacity: 1, duration: 0.2 }, "<")
+      .to(
+        menu,
+        {
+          opacity: 1,
+          pointerEvents: "all",
+          duration: 0.3,
+          ease: "power2.out",
+        },
+        "-=0.1"
+      )
+      .from(
+        links,
+        {
+          y: 20,
+          opacity: 0,
+          stagger: 0.1,
+          duration: 0.4,
+          ease: "power2.out",
+        },
+        "-=0.1"
+      );
+
+    const toggle = () => {
+      isOpen ? tl.reverse() : tl.play();
+      isOpen = !isOpen;
+    };
+
+    btn.addEventListener("click", toggle);
+
+    links.forEach((link) => link.addEventListener("click", toggle));
+
+    mm.add({ ...GsapBreakpoints }, (context) => {
+      let { isMobile } = context.conditions as GsapBreakpointsType;
+
+      if (isMobile) {
+        gsap.set([menu, menuIcon, closeIcon, links], { clearProps: "all" });
+        tl.invalidate().progress(0).pause();
+        isOpen = false;
+        return;
+      }
+
+      isOpen = false;
+      gsap.set([menu, menuIcon, closeIcon, links], { clearProps: "all" });
+    });
+  }
+
+  toggleMenu();
+</script>

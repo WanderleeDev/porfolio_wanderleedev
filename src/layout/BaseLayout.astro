@@ -58,10 +58,13 @@ import Header from "../components/Header/index.astro";
     class="min-h-svh flex flex-col justify-between duration-500 select-none"
   >
     <Header />
-    <main id="main-container" class="flex flex-col gap-20 bg-gradient-dark">
+    <main
+      id="main-container"
+      class="flex flex-col gap-20 bg-gradient-dark relative z-10"
+    >
       <slot />
     </main>
-    <div class="min-h-dvh" aria-hidden="true"></div>
+    <div class="min-h-dvh pointer-events-none" aria-hidden="true"></div>
     <Footer />
   </body>
 </html>

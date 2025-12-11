@@ -26,14 +26,15 @@ import MobileBtnMenu from "./MobileBtnMenu.astro";
     GsapBreakpoints,
     type GsapBreakpointsType,
   } from "../../utils/gsapConfig";
-  import { $, $$ } from "../../utils/selectors";
+  import { $ } from "../../utils/selectors";
 
   function animateHeader() {
     const headerElement = $("#header");
+    const fotterElement = $("#footer");
     const mm = gsap.matchMedia();
 
     mm.add({ ...GsapBreakpoints }, (context) => {
-      let { isDesktop, isMobile, isTablet, reduceMotion } =
+      let { isMobile, isTablet, reduceMotion } =
         context.conditions as GsapBreakpointsType;
 
       if (reduceMotion) {
@@ -59,62 +60,15 @@ import MobileBtnMenu from "./MobileBtnMenu.astro";
           scrub: 1,
         },
       });
-    });
-  }
 
-  animateHeader();
-
-  function toggleMenu() {
-    const btn = $("#mobile-menu-btn");
-    const menu = $("#mobile-menu");
-    const menuIcon = $("#menu-icon");
-    const closeIcon = $("#close-icon");
-    const links = $$(".mobile-link");
-
-    if (!btn || !menu || !menuIcon || !closeIcon) return;
-
-    let isOpen = false;
-
-    const tl = gsap.timeline({ paused: true });
-
-    tl.to(menu, {
-      opacity: 1,
-      pointerEvents: "all",
-      duration: 0.3,
-      ease: "power2.out",
-    }).from(
-      links,
-      {
-        y: 20,
+      gsap.to(headerElement, {
+        scrollTrigger: {
+          trigger: fotterElement,
+        },
         opacity: 0,
-        stagger: 0.1,
-        duration: 0.4,
-        ease: "power2.out",
-      },
-      "-=0.1"
-    );
-
-    const toggle = () => {
-      isOpen = !isOpen;
-      if (isOpen) {
-        tl.play();
-        gsap.to(menuIcon, { scale: 0, opacity: 0, duration: 0.3 });
-        gsap.to(closeIcon, { scale: 1, opacity: 1, duration: 0.3 });
-      } else {
-        tl.reverse();
-        gsap.to(menuIcon, { scale: 1, opacity: 1, duration: 0.3 });
-        gsap.to(closeIcon, { scale: 0, opacity: 0, duration: 0.3 });
-      }
-    };
-
-    btn.addEventListener("click", toggle);
-
-    links?.forEach((link) => {
-      link.addEventListener("click", () => {
-        if (isOpen) toggle();
       });
     });
   }
 
-  toggleMenu();
+  animateHeader();
 </script>

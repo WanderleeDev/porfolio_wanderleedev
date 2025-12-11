@@ -159,13 +159,13 @@ export const sections_links = [
     label: "Projects",
   },
   {
-    name: "contact",
-    icon: "ri:mail-line",
-    label: "Contact",
-  },
-  {
     name: "extras",
     icon: "ri:archive-2-line",
     label: "Extras",
+  },
+  {
+    name: "contact",
+    icon: "ri:mail-line",
+    label: "Contact",
   },
 ];

@@ -27,8 +27,13 @@ export const es = {
     },
   ],
   footer: {
-    developedBy: "Desarrollado por WanderleeDev 2025",
+    developedBy: "WanderleeDev © 2025",
     socialLinksAria: "Enlaces a redes sociales",
+    description: "Disponible para colaboraciones y nuevos proyectos.",
+    viewCode: {
+      text: "Ver Código",
+      url: "https://github.com/WanderleeDev/porfolio_2025",
+    },
   },
 
   badge: {
@@ -62,9 +67,9 @@ export const es = {
   },
 
   skills: {
-    sectionTitle: "Mis Habilidades",
+    sectionTitle: "Tecnologías",
     sectionDescription:
-      "Una muestra de mis competencias técnicas y experiencia, reflejando las herramientas y tecnologías que utilizo en mis proyectos.",
+      "Herramientas modernas que utilizo para construir experiencias web rápidas, escalables y accesibles.",
     list: [
       {
         title: "Mi Stack",
@@ -193,47 +198,46 @@ export const es = {
   },
 
   extras: {
-    sectionTitle: "Extras",
-    sectionDescription:
-      "Sigue explorando: estos proyectos también cuentan mi historia como desarrollador.",
+    sectionTitle: "Laboratorio",
+    sectionDescription: "Experimentos y demos donde pruebo nuevas tecnologías.",
     stats: [
       {
-        value: "3+",
-        label: "Frameworks",
+        value: "Continuo",
+        label: "Aprendizaje",
         gradient: "bg-linear-to-r from-cyan-400 to-blue-400",
       },
       {
-        value: "100%",
-        label: "Pasión",
+        value: "Frontend",
+        label: "Enfoque",
         gradient: "bg-linear-to-r from-purple-400 to-pink-400",
       },
     ],
     list: [
       {
-        title: "Angular Projects",
+        title: "Ecosistema Angular",
         icon: "Angular",
-        description: "Algunos de mis proyectos hechos con Angular.",
+        description: "Explora mis aplicaciones y componentes.",
         link: "https://entry-page-angular.vercel.app/",
       },
       {
-        title: "React Projects",
+        title: "Ecosistema React",
         icon: "React",
         link: "https://react-showcase-three.vercel.app/",
-        description: "Algunos de mis proyectos hechos con React y Nextjs.",
+        description: "Explora mis aplicaciones y componentes.",
       },
       {
-        title: "Vue Projects",
+        title: "Ecosistema Vue",
         icon: "Vuejs",
         link: "https://vue-showcase-8bg.pages.dev/",
-        description: "Algunos de mis proyectos hechos con Vue.",
+        description: "Explora mis aplicaciones y componentes.",
       },
     ],
   },
 
   contactSection: {
-    title: "Contáctame",
+    title: "Hablemos",
     description:
-      "¿Tienes algún proyecto o quieres desarrollar uno? Completa el formulario y me pondré en contacto contigo pronto.",
+      "¿Listo para empezar tu próximo proyecto? Envíame un mensaje y lo hacemos realidad.",
     info: [
       {
         icon: "mdi:email-outline",
@@ -257,7 +261,7 @@ export const es = {
     {
       name: "skills",
       icon: "ri:code-s-slash-line",
-      label: "Habilidades",
+      label: "Tecnologías",
     },
     {
       name: "projects",
@@ -267,12 +271,12 @@ export const es = {
     {
       name: "extras",
       icon: "ri:archive-2-line",
-      label: "Extras",
+      label: "Laboratorio",
     },
     {
       name: "contact",
-      icon: "ri:mail-line",
-      label: "Contacto",
+      icon: "ri:chat-1-line",
+      label: "Hablemos",
     },
   ],
 };

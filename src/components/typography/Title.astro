@@ -10,7 +10,7 @@ const { content, id, customClass = "" } = Astro.props;
 
 <h2
   id={id}
-  class={`title-animate text-[12vw] xs:text-[10vw] font-extrabold overflow-hidden inline-block sm:text-[8vw] md:text-[6vw] lg:text-[5vw] text-white ${customClass}`}
+  class={`title-animate text-[12vw] xs:text-[10vw] font-extrabold uppercase overflow-hidden inline-block sm:text-[8vw] md:text-[6vw] lg:text-[5vw] text-white tracking-tighter ${customClass}`}
 >
   {content ? content : <slot />}
 </h2>

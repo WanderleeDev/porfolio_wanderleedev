@@ -2,6 +2,7 @@
 import Paragraph from "./typography/Paragraph.astro";
 import { Image } from "astro:assets";
 import ExternalLink from "./ExternalLink.astro";
+import { Icon } from "astro-iconify";
 import { getTranslations } from "../i18n/utils";
 
 const lang = Astro.currentLocale as "es" | "en";
@@ -15,7 +16,7 @@ const socialLinks = t("social");
   class="min-h-svh flex flex-col justify-between bg-[#202020] overflow-hidden fixed inset-0 top-0 z-0"
 >
   <div
-    class="grid grid-cols-1 md:grid-cols-2 h-full place-content-center gap-8 md:gap-12 px-4"
+    class="grid grid-cols-1 md:grid-cols-2 h-full place-content-center gap-6 md:gap-10 px-4"
   >
     <div class="md:items-center md:justify-center flex">
       <div
@@ -32,16 +33,12 @@ const socialLinks = t("social");
     </div>
 
     <div
-      class="flex flex-col gap-6 w-full max-w-lg justify-self-center self-center"
+      class="flex flex-col gap-4 w-full max-w-lg justify-self-center self-center"
     >
       <Paragraph
         customClass="text-neutral-400 md:text-lg leading-relaxed text-center md:text-left"
       >
-        {
-          lang === "es"
-            ? "Siéntete libre de contactarme para colaboraciones o simplemente una charla amistosa. Siempre abierto a nuevas oportunidades y proyectos interesantes."
-            : "Feel free to reach out for collaborations or just a friendly chat. Always open to new opportunities and interesting projects."
-        }
+        {footerText.description}
       </Paragraph>
 
       <nav aria-label={footerText.socialLinksAria}>
@@ -55,17 +52,32 @@ const socialLinks = t("social");
           }
         </ul>
       </nav>
+
+      <div class="mt-2 text-center md:text-left">
+        <a
+          href={footerText.viewCode.url}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="inline-flex items-center gap-2 text-xs text-neutral-500 hover:text-neutral-300 transition-colors duration-300 font-dm-mono"
+        >
+          <Icon name="mdi:code-tags" class="w-4 h-4 pointer-events-none" />
+          <span class="pointer-events-none">{footerText.viewCode.text}</span>
+        </a>
+      </div>
     </div>
   </div>
+
+  <div class="w-full border-t border-neutral-700/30 my-6"></div>
+
   <p
-    class="mt-auto text-center text-lg sm:text-3xl lg:text-5xl xl:text-7xl -tracking-wider text-neutral-500 overflow-hidden relative min-h-28 sm:min-h-40 content-center sm:my-4 font-dm-mono"
+    class="text-center text-lg sm:text-3xl lg:text-5xl xl:text-7xl -tracking-wider text-neutral-500 overflow-hidden relative min-h-24 sm:min-h-32 content-center font-fira-sans-extra-condensed"
     id="footer-content"
     aria-label={footerText.developedBy}
   >
     {
       footerText.developedBy.split("").map((char) => (
         <span
-          class={`char relative inline-block  will-change-transform`}
+          class={`char relative inline-block  will-change-transform font-inherit`}
           aria-hidden="true"
         >
           {char === " " ? "\u00A0" : char}

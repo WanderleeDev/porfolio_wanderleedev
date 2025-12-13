@@ -43,7 +43,10 @@ const presentationT = t("presentation");
             {presentationT.accent}
           </span>
         </span>
-        <span id="presentation-middle" class="font-inherit">
+        <span
+          id="presentation-middle"
+          class="font-inherit inline-block relative -z-10"
+        >
           {presentationT.middle}
         </span>
       </span>
@@ -55,7 +58,7 @@ const presentationT = t("presentation");
         </span>
         <span
           id="presentation-end-highlight"
-          class="font-inherit text-yellow-500"
+          class="font-inherit text-yellow-500 inline-block"
         >
           {presentationT.end_highlight}
         </span>
@@ -77,8 +80,8 @@ const presentationT = t("presentation");
         const accentElement = $("#presentation-accent");
         const accentText = $("#presentation-accent-text");
 
-        const presentationStart = $("#presentation-start");
         const presentationStartImage = $("#presentation-start-image");
+        const presentationStart = $("#presentation-start");
         const presentationAccent = $("#presentation-accent");
         const presentationAccentText = $("#presentation-accent-text");
         const presentationMiddle = $("#presentation-middle");
@@ -104,40 +107,46 @@ const presentationT = t("presentation");
           return;
         }
 
-        const endHighlightPrefixSplit = new SplitText(
-          presentationEndHighlight,
+        const presentationEndPrefixSplit = new SplitText(
+          presentationEndPrefix,
           { type: "chars" }
         );
-
-        gsap.set(accentElement, { scaleX: 0 });
-        gsap.set(accentText, { opacity: 0, scale: 20 });
-        gsap.set(presentationMiddle, { opacity: 0 });
-        gsap.set(presentationEndPrefix, { opacity: 0, y: "100%" });
-        gsap.set(endHighlightPrefixSplit.chars, {
+        const presentationStartSplit = new SplitText(presentationStart, {
+          type: "chars",
+        });
+        gsap.set(presentationStartSplit.chars, {
           className: "inline-block will-change-transform font-inherit",
           scale: 0,
-          opacity: 0,
         });
-        gsap.set(badge, {
-          opacity: 0,
-          x: 100,
-          rotate: 45,
+        gsap.set(accentElement, { scaleX: 0 });
+        gsap.set([accentText, presentationEndHighlight], { opacity: 0 });
+        gsap.set(accentText, { scale: 20 });
+        gsap.set(presentationEndHighlight, { scale: 0 });
+        gsap.set(presentationMiddle, { y: "100%", opacity: 0 });
+        gsap.set(presentationEndPrefixSplit.chars, {
+          className: "inline-block will-change-transform font-inherit",
+          y: "-100%",
         });
+        gsap.set(badge, { opacity: 0, x: 100, rotate: 45 });
         gsap.set(badgeOuter, { opacity: 0 });
-        gsap.set(presentationStart, { opacity: 0, x: "-100%" });
 
         const tl = gsap.timeline();
 
-        tl.to(
-          presentationStart,
-
-          {
-            opacity: 1,
-            x: "0%",
-            ease: "power3.out",
-            duration: 1,
-          }
-        )
+        tl.to(presentationStartSplit.chars, {
+          scale: 1,
+          ease: "back.out(1.7)",
+          duration: 1,
+          stagger: 0.05,
+          onStart: () => {
+            presentationStartImage.classList.add("animate-spin");
+          },
+          onComplete: () => {
+            setTimeout(
+              () => presentationStartImage.classList.remove("animate-spin"),
+              300
+            );
+          },
+        })
           .to(accentElement, {
             scaleX: 1.05,
             transformOrigin: "left",
@@ -149,6 +158,25 @@ const presentationT = t("presentation");
             scale: 1,
             duration: 0.7,
             ease: "power3.out",
+          })
+          .to(presentationMiddle, {
+            y: "0%",
+            duration: 0.7,
+            ease: "power3.out",
+            opacity: 1,
+          })
+          .to(presentationEndPrefixSplit.chars, {
+            opacity: 1,
+            y: "0%",
+            duration: 0.4,
+            ease: "power3.out",
+            stagger: 0.05,
+          })
+          .to(presentationEndHighlight, {
+            scale: 1,
+            duration: 0.3,
+            opacity: 1,
+            ease: "back.out(1.7)",
           })
           .to(
             avatarHeader,
@@ -180,62 +208,7 @@ const presentationT = t("presentation");
               ease: "power3.out",
             },
             "-=0.2"
-          )
-          .to(presentationMiddle, {
-            opacity: 1,
-            duration: 0.7,
-            ease: "power3.out",
-          })
-          .to(presentationEndPrefix, {
-            opacity: 1,
-            y: "0%",
-            duration: 0.7,
-            ease: "power3.out",
-          })
-          .to(endHighlightPrefixSplit.chars, {
-            opacity: 1,
-            scale: 1,
-            transformOrigin: "bottom",
-            duration: 0.7,
-            ease: "power3.out",
-            stagger: 0.05,
-          });
-
-        // tl.to(accentElement, {
-        //   scaleX: 1.05,
-        //   transformOrigin: "left",
-        //   duration: 1,
-        //   ease: "power3.out",
-        // })
-        //   .to(accentText, {
-        //     opacity: 1,
-        //     scale: 1,
-        //     duration: 0.7,
-        //     ease: "power3.out",
-        //   })
-        //   .to(avatarHeader, {
-        //     opacity: 0,
-        //     duration: 0.7,
-        //     x: "-100%",
-        //     rotate: -25,
-        //     ease: "power3.out",
-        //   })
-        //   .to(badge, {
-        //     opacity: 1,
-        //     duration: 0.7,
-        //     x: "0",
-        //     rotate: 8,
-        //     ease: "power3.out",
-        //   })
-        //   .to(
-        //     badgeOuter,
-        //     {
-        //       opacity: 1,
-        //       duration: 0.4,
-        //       ease: "power3.out",
-        //     },
-        //     "-=0.2"
-        //   );
+          );
       }
 
       animatePresentation();

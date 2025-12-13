@@ -16,202 +16,197 @@ const presentationT = t("presentation");
     id="presentation"
     class="relative z-10 mx-auto text-center text-balance font-bold leading-[0.95] font-fira-sans-extra-condensed flex flex-col justify-center items-center gap-1 text-stone-100 font-banner h-fit w-fit"
   >
-    <>
-      <span class="font-inherit relative">
-        <span id="presentation-start" class="font-inherit inline-block">
-          {presentationT.start}
-        </span>
-        <Image
-          id="presentation-start-image"
-          src="https://cdn.prod.website-files.com/650adb68d76aea2d4f381df5/651c8c15c7a7f650f1c3b9b5_star.webp"
-          alt="Star"
-          height={200}
-          width={200}
-          class="size-20 absolute left-0 top-2/4 -translate-y-1/2 -translate-x-full -z-10"
-        />
+    <span class="font-inherit relative">
+      <span id="presentation-start" class="font-inherit inline-block">
+        {presentationT.start}
       </span>
-      <span class="font-inherit">
-        <span class="relative font-inherit inline-block">
-          <span
-            id="presentation-accent"
-            class="absolute inset-0 -translate-x-4 w-full h-full -skew-x-12 bg-yellow-500 -z-10 rounded-tr-4xl will-change-transform rounded-bl-4xl mix-blend-difference scale-105 origin-left"
-          ></span>
-          <span
-            id="presentation-accent-text"
-            class="font-inherit z-10 text-gray-900 inline-block mix-blend-plus-darker"
-          >
-            {presentationT.accent}
-          </span>
-        </span>
+      <Image
+        id="presentation-start-image"
+        src="https://cdn.prod.website-files.com/650adb68d76aea2d4f381df5/651c8c15c7a7f650f1c3b9b5_star.webp"
+        alt="Star"
+        height={200}
+        width={200}
+        class="size-20 absolute left-0 top-2/4 -translate-y-1/2 -translate-x-full -z-10"
+      />
+    </span>
+    <span class="font-inherit">
+      <span class="relative font-inherit inline-block">
         <span
-          id="presentation-middle"
-          class="font-inherit inline-block relative -z-10"
+          id="presentation-accent"
+          class="absolute inset-0 -translate-x-4 w-full h-full -skew-x-12 bg-yellow-500 -z-10 rounded-tr-4xl will-change-transform rounded-bl-4xl mix-blend-difference scale-105 origin-left"
+        ></span>
+        <span
+          id="presentation-accent-text"
+          class="font-inherit z-10 text-gray-900 inline-block mix-blend-plus-darker"
         >
-          {presentationT.middle}
+          {presentationT.accent}
         </span>
       </span>
       <span
-        class="relative font-[inherit] inline-block first-letter:skew-x-12 overflow-hidden"
+        id="presentation-middle"
+        class="font-inherit inline-block relative -z-10"
       >
-        <span id="presentation-end-prefix" class="font-inherit inline-block">
-          {presentationT.end_prefix}
-        </span>
-        <span
-          id="presentation-end-highlight"
-          class="font-inherit text-yellow-500 inline-block"
-        >
-          {presentationT.end_highlight}
-        </span>
+        {presentationT.middle}
       </span>
-      <>
-        <span
-          class="rotate-12 absolute -z-10 top-10/12 left-7/12 md:top-0 md:right-0 md:left-auto md:-translate-y-1/4 md:translate-x-1/12"
-        >
-          <BadgeLink />
-        </span>
-      </>
-    </>
-
-    <script>
-      import { gsap, SplitText } from "../utils/gsapConfig";
-      import { $ } from "../utils/selectors";
-
-      function animatePresentation() {
-        const accentElement = $("#presentation-accent");
-        const accentText = $("#presentation-accent-text");
-
-        const presentationStartImage = $("#presentation-start-image");
-        const presentationStart = $("#presentation-start");
-        const presentationAccent = $("#presentation-accent");
-        const presentationAccentText = $("#presentation-accent-text");
-        const presentationMiddle = $("#presentation-middle");
-        const presentationEndPrefix = $("#presentation-end-prefix");
-        const presentationEndHighlight = $("#presentation-end-highlight");
-
-        const avatarHeader = $("#avatar-header");
-        const badge = $("#badge");
-        const badgeOuter = $("#badge-outer");
-
-        if (
-          !presentationStart ||
-          !presentationStartImage ||
-          !presentationAccent ||
-          !presentationAccentText ||
-          !presentationMiddle ||
-          !presentationEndPrefix ||
-          !presentationEndHighlight ||
-          !avatarHeader ||
-          !badge ||
-          !badgeOuter
-        ) {
-          return;
-        }
-
-        const presentationEndPrefixSplit = new SplitText(
-          presentationEndPrefix,
-          { type: "chars" }
-        );
-        const presentationStartSplit = new SplitText(presentationStart, {
-          type: "chars",
-        });
-        gsap.set(presentationStartSplit.chars, {
-          className: "inline-block will-change-transform font-inherit",
-          scale: 0,
-        });
-        gsap.set(accentElement, { scaleX: 0 });
-        gsap.set([accentText, presentationEndHighlight], { opacity: 0 });
-        gsap.set(accentText, { scale: 20 });
-        gsap.set(presentationEndHighlight, { scale: 0 });
-        gsap.set(presentationMiddle, { y: "100%", opacity: 0 });
-        gsap.set(presentationEndPrefixSplit.chars, {
-          className: "inline-block will-change-transform font-inherit",
-          y: "-100%",
-        });
-        gsap.set(badge, { opacity: 0, x: 100, rotate: 45 });
-        gsap.set(badgeOuter, { opacity: 0 });
-
-        const tl = gsap.timeline();
-
-        tl.to(presentationStartSplit.chars, {
-          scale: 1,
-          ease: "back.out(1.7)",
-          duration: 1,
-          stagger: 0.05,
-          onStart: () => {
-            presentationStartImage.classList.add("animate-spin");
-          },
-          onComplete: () => {
-            setTimeout(
-              () => presentationStartImage.classList.remove("animate-spin"),
-              300
-            );
-          },
-        })
-          .to(accentElement, {
-            scaleX: 1.05,
-            transformOrigin: "left",
-            duration: 1,
-            ease: "power3.out",
-          })
-          .to(accentText, {
-            opacity: 1,
-            scale: 1,
-            duration: 0.7,
-            ease: "power3.out",
-          })
-          .to(presentationMiddle, {
-            y: "0%",
-            duration: 0.7,
-            ease: "power3.out",
-            opacity: 1,
-          })
-          .to(presentationEndPrefixSplit.chars, {
-            opacity: 1,
-            y: "0%",
-            duration: 0.4,
-            ease: "power3.out",
-            stagger: 0.05,
-          })
-          .to(presentationEndHighlight, {
-            scale: 1,
-            duration: 0.3,
-            opacity: 1,
-            ease: "back.out(1.7)",
-          })
-          .to(
-            avatarHeader,
-            {
-              opacity: 0,
-              duration: 0.7,
-              x: "-100%",
-              rotate: -25,
-              ease: "power3.out",
-            },
-            "<"
-          )
-          .to(
-            badge,
-            {
-              opacity: 1,
-              duration: 0.7,
-              x: "0",
-              rotate: 8,
-              ease: "power3.out",
-            },
-            "-=0.2"
-          )
-          .to(
-            badgeOuter,
-            {
-              opacity: 1,
-              duration: 0.4,
-              ease: "power3.out",
-            },
-            "-=0.2"
-          );
-      }
-
-      animatePresentation();
-    </script>
+    </span>
+    <span
+      class="relative font-[inherit] inline-block first-letter:skew-x-12 overflow-hidden"
+    >
+      <span id="presentation-end-prefix" class="font-inherit inline-block">
+        {presentationT.end_prefix}
+      </span>
+      <span
+        id="presentation-end-highlight"
+        class="font-inherit text-yellow-500 inline-block"
+      >
+        {presentationT.end_highlight}
+      </span>
+    </span>
+    <span
+      class="rotate-12 absolute -z-10 top-10/12 left-7/12 md:top-0 md:right-0 md:left-auto md:-translate-y-1/4 md:translate-x-1/12"
+    >
+      <BadgeLink />
+    </span>
   </p>
 </section>
+
+<script>
+  import { gsap, SplitText } from "../utils/gsapConfig";
+  import { $ } from "../utils/selectors";
+
+  function animatePresentation() {
+    const accentElement = $("#presentation-accent");
+    const accentText = $("#presentation-accent-text");
+
+    const presentationStartImage = $("#presentation-start-image");
+    const presentationStart = $("#presentation-start");
+    const presentationAccent = $("#presentation-accent");
+    const presentationAccentText = $("#presentation-accent-text");
+    const presentationMiddle = $("#presentation-middle");
+    const presentationEndPrefix = $("#presentation-end-prefix");
+    const presentationEndHighlight = $("#presentation-end-highlight");
+
+    const avatarHeader = $("#avatar-header");
+    const badge = $("#badge");
+    const badgeOuter = $("#badge-outer");
+
+    if (
+      !presentationStart ||
+      !presentationStartImage ||
+      !presentationAccent ||
+      !presentationAccentText ||
+      !presentationMiddle ||
+      !presentationEndPrefix ||
+      !presentationEndHighlight ||
+      !avatarHeader ||
+      !badge ||
+      !badgeOuter
+    ) {
+      return;
+    }
+
+    const presentationEndPrefixSplit = new SplitText(presentationEndPrefix, {
+      type: "chars",
+    });
+    const presentationStartSplit = new SplitText(presentationStart, {
+      type: "chars",
+    });
+    gsap.set(presentationStartSplit.chars, {
+      className: "inline-block will-change-transform font-inherit",
+      scale: 0,
+    });
+    gsap.set(accentElement, { scaleX: 0 });
+    gsap.set([accentText, presentationEndHighlight], { opacity: 0 });
+    gsap.set(accentText, { scale: 20 });
+    gsap.set(presentationEndHighlight, { scale: 0 });
+    gsap.set(presentationMiddle, { y: "100%", opacity: 0 });
+    gsap.set(presentationEndPrefixSplit.chars, {
+      className: "inline-block will-change-transform font-inherit",
+      y: "-100%",
+    });
+    gsap.set(badge, { opacity: 0, x: 100, rotate: 45 });
+    gsap.set(badgeOuter, { opacity: 0 });
+
+    const tl = gsap.timeline();
+
+    tl.to(presentationStartSplit.chars, {
+      scale: 1,
+      ease: "back.out(1.7)",
+      duration: 1,
+      stagger: 0.05,
+      onStart: () => {
+        presentationStartImage.classList.add("animate-spin");
+      },
+      onComplete: () => {
+        setTimeout(
+          () => presentationStartImage.classList.remove("animate-spin"),
+          300
+        );
+      },
+    })
+      .to(accentElement, {
+        scaleX: 1.05,
+        transformOrigin: "left",
+        duration: 1,
+        ease: "power3.out",
+      })
+      .to(accentText, {
+        opacity: 1,
+        scale: 1,
+        duration: 0.7,
+        ease: "power3.out",
+      })
+      .to(presentationMiddle, {
+        y: "0%",
+        duration: 0.7,
+        ease: "power3.out",
+        opacity: 1,
+      })
+      .to(presentationEndPrefixSplit.chars, {
+        opacity: 1,
+        y: "0%",
+        duration: 0.4,
+        ease: "power3.out",
+        stagger: 0.05,
+      })
+      .to(presentationEndHighlight, {
+        scale: 1,
+        duration: 0.3,
+        opacity: 1,
+        ease: "back.out(1.7)",
+      })
+      .to(
+        avatarHeader,
+        {
+          opacity: 0,
+          duration: 0.7,
+          x: "-100%",
+          rotate: -25,
+          ease: "power3.out",
+        },
+        "<"
+      )
+      .to(
+        badge,
+        {
+          opacity: 1,
+          duration: 0.7,
+          x: "0",
+          rotate: 8,
+          ease: "power3.out",
+        },
+        "-=0.2"
+      )
+      .to(
+        badgeOuter,
+        {
+          opacity: 1,
+          duration: 0.4,
+          ease: "power3.out",
+        },
+        "-=0.2"
+      );
+  }
+
+  animatePresentation();
+</script>

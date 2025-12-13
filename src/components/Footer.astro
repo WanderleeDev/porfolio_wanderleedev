@@ -74,15 +74,104 @@ const socialLinks = t("social");
     id="footer-content"
     aria-label={footerText.developedBy}
   >
-    {
-      footerText.developedBy.split("").map((char) => (
-        <span
-          class={`char relative inline-block  will-change-transform font-inherit`}
-          aria-hidden="true"
-        >
-          {char === " " ? "\u00A0" : char}
-        </span>
-      ))
-    }
+    {footerText.developedBy}
   </p>
 </footer>
+
+<script>
+  import { gsap, SplitText } from "../utils/gsapConfig";
+  import { $ } from "../utils/selectors";
+
+  function animateFooter() {
+    const description = $("#footer .text-neutral-400");
+    const socialLinks = gsap.utils.toArray("#footer nav li");
+    const viewCodeLink = $("#footer .font-dm-mono");
+    const separator = $("#footer .border-t");
+    const bannerText = $("#footer-content");
+
+    if (
+      !description ||
+      !socialLinks.length ||
+      !viewCodeLink ||
+      !separator ||
+      !bannerText
+    ) {
+      return;
+    }
+
+    const descriptionSplit = new SplitText(description, { type: "words" });
+    const bannerSplit = new SplitText(bannerText, { type: "chars" });
+
+    gsap.set(bannerSplit.chars, {
+      className:
+        "+=char relative inline-block will-change-transform font-inherit",
+    });
+
+    const tl = gsap.timeline({
+      scrollTrigger: {
+        trigger: "#main-container",
+        start: "bottom bottom",
+        end: "bottom top",
+        toggleActions: "play none none reverse",
+      },
+    });
+
+    tl.fromTo(
+      bannerSplit.chars,
+      { y: 50, opacity: 0 },
+      {
+        y: 0,
+        opacity: 1,
+        duration: 0.4,
+        stagger: {
+          each: 0.01,
+          from: "start",
+          ease: "power2.out",
+        },
+      },
+      0
+    )
+      .fromTo(
+        separator,
+        { scaleX: 0, opacity: 0 },
+        { scaleX: 1, opacity: 1, duration: 0.4, ease: "power2.inOut" },
+        "<0.2"
+      )
+      .fromTo(
+        descriptionSplit.words,
+        { opacity: 0, y: 20 },
+        {
+          opacity: 1,
+          y: 0,
+          duration: 0.2,
+          stagger: 0.02,
+          ease: "power3.out",
+        },
+        "<0.2"
+      )
+      .fromTo(
+        socialLinks,
+        { opacity: 0, x: -20 },
+        {
+          opacity: 1,
+          x: 0,
+          duration: 0.2,
+          stagger: 0.05,
+          ease: "power2.out",
+        },
+        "<"
+      )
+      .fromTo(
+        viewCodeLink,
+        { opacity: 0, y: 10 },
+        { opacity: 1, y: 0, duration: 0.2, ease: "power2.out" },
+        "<"
+      );
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", animateFooter);
+  } else {
+    animateFooter();
+  }
+</script>

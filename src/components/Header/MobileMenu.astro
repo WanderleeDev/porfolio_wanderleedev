@@ -8,6 +8,7 @@ interface Props {
   sections: {
     name: string;
     label: string;
+    attr_data: string;
   }[];
 }
 
@@ -23,9 +24,10 @@ const socialLinks = t("social");
 >
   <nav class="flex flex-col gap-12 justify-center items-center h-4/5">
     {
-      sections.map(({ name, label }) => (
+      sections.map(({ name, label, attr_data }) => (
         <a
           href={`#${name}`}
+          data-section={attr_data}
           class="mobile-link text-white text-3xl font-fira-sans-extra-condensed font-bold tracking-widest hover:text-amber-400 transition-colors capitalize"
         >
           {label}

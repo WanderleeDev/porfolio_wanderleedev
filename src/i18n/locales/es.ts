@@ -45,6 +45,7 @@ export const es = {
     middle: "una",
     end_prefix: "historia a la",
     end_highlight: "vez.",
+    attr_data: "presentation",
   },
   form: {
     name: {
@@ -123,12 +124,13 @@ export const es = {
         ],
       },
     ],
+    attr_data: "skills",
   },
 
   projects: {
     sectionTitle: "Proyectos",
     sectionDescription:
-      "Mi selección personal de proyectos frontend, donde destaco ejemplos que muestran mi enfoque en el desarrollo web centrado en la calidad y el usuario.",
+      "Proyectos fullstack que demuestran mi dominio en frontend, backend y arquitectura de aplicaciones.",
     list: [
       {
         title: "Ecommerce",
@@ -195,6 +197,7 @@ export const es = {
         label: "ver demo switch 2 clone",
       },
     ],
+    attr_data: "projects",
   },
 
   extras: {
@@ -208,7 +211,7 @@ export const es = {
       },
       {
         value: "Frontend",
-        label: "Enfoque",
+        label: "Especialidad",
         gradient: "bg-linear-to-r from-purple-400 to-pink-400",
       },
     ],
@@ -232,6 +235,7 @@ export const es = {
         description: "Explora mis aplicaciones y componentes.",
       },
     ],
+    attr_data: "extras",
   },
 
   contactSection: {
@@ -255,28 +259,33 @@ export const es = {
         value: "Dentro de 24 horas",
       },
     ],
+    attr_data: "contact",
   },
 
   navLinks: [
     {
-      name: "skills",
-      icon: "ri:code-s-slash-line",
-      label: "Tecnologías",
-    },
-    {
       name: "projects",
       icon: "ri:folder-2-line",
       label: "Proyectos",
+      attr_data: "projects",
+    },
+    {
+      name: "skills",
+      icon: "ri:code-s-slash-line",
+      label: "Tecnologías",
+      attr_data: "skills",
     },
     {
       name: "extras",
       icon: "ri:archive-2-line",
       label: "Laboratorio",
+      attr_data: "extras",
     },
     {
       name: "contact",
       icon: "ri:chat-1-line",
       label: "Hablemos",
+      attr_data: "contact",
     },
   ],
 };

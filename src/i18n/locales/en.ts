@@ -44,6 +44,7 @@ export const en = {
     middle: "one",
     end_prefix: "story at",
     end_highlight: "a time.",
+    attr_data: "presentation",
   },
   form: {
     name: {
@@ -122,12 +123,13 @@ export const en = {
         ],
       },
     ],
+    attr_data: "skills",
   },
 
   projects: {
     sectionTitle: "Projects",
     sectionDescription:
-      "My personal selection of frontend projects, where I highlight examples that showcase my approach to web development focused on quality and the user.",
+      "Fullstack projects showcasing my expertise in frontend, backend, and application architecture.",
     list: [
       {
         title: "Ecommerce",
@@ -194,6 +196,7 @@ export const en = {
         label: "view switch 2 clone demo",
       },
     ],
+    attr_data: "projects",
   },
 
   extras: {
@@ -207,7 +210,7 @@ export const en = {
       },
       {
         value: "Frontend",
-        label: "Focus",
+        label: "Specialty",
         gradient: "bg-linear-to-r from-purple-400 to-pink-400",
       },
     ],
@@ -231,6 +234,7 @@ export const en = {
         description: "Explore my applications and components.",
       },
     ],
+    attr_data: "extras",
   },
 
   contactSection: {
@@ -254,28 +258,33 @@ export const en = {
         value: "Within 24 hours",
       },
     ],
+    attr_data: "contact",
   },
 
   navLinks: [
     {
-      name: "skills",
-      icon: "ri:code-s-slash-line",
-      label: "Tech",
-    },
-    {
       name: "projects",
       icon: "ri:folder-2-line",
       label: "Projects",
+      attr_data: "projects",
+    },
+    {
+      name: "skills",
+      icon: "ri:code-s-slash-line",
+      label: "Tech",
+      attr_data: "skills",
     },
     {
       name: "extras",
       icon: "ri:archive-2-line",
       label: "Playground",
+      attr_data: "extras",
     },
     {
       name: "contact",
       icon: "ri:chat-1-line",
       label: "Let's Talk",
+      attr_data: "contact",
     },
   ],
 };

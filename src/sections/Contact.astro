@@ -12,7 +12,11 @@ const t = getTranslations(lang);
 const contactT = t("contactSection");
 ---
 
-<section id="contact" class="relative min-h-dvh p-4 lg:p-8 overflow-hidden">
+<section
+  id="contact"
+  data-section={contactT.attr_data}
+  class="section-page relative min-h-dvh p-4 lg:p-8 overflow-hidden"
+>
   <div
     class="relative max-w-7xl mx-auto grid gap-12 lg:grid-cols-2 lg:gap-16 lg:items-center min-h-dvh py-12 lg:py-0"
   >

@@ -15,7 +15,8 @@ const statsData = extrasT.stats;
 
 <section
   id="extras"
-  class="extras-section relative min-h-dvh content-center overflow-hidden py-20 lg:py-0"
+  data-section={extrasT.attr_data}
+  class="extras-section section-page relative min-h-dvh content-center overflow-hidden py-20 lg:py-0"
 >
   <div class="relative max-w-7xl mx-auto px-4 lg:px-8">
     <div class="grid h-full lg:grid-cols-2 gap-12 lg:gap-16 lg:items-center">
@@ -46,17 +47,15 @@ const statsData = extrasT.stats;
   import { createRevealSectionTL } from "../utils/createRevealSectionTL";
 
   function animateExtrasSection() {
-    const cardsFrameworks = gsap.utils.toArray<HTMLElement>(".card-framework");
+    const cardsFrameworks = gsap.utils.toArray<HTMLElement>(".card-wrapper");
     const cardStats = gsap.utils.toArray<HTMLElement>(".stats-card");
     const mainTl = createRevealSectionTL(
       "#extras-title",
       "#extras-description"
     );
 
-    if (!cardsFrameworks.length || !cardStats.length || !mainTl) return;
-
-    mainTl
-      .fromTo(
+    if (mainTl && cardStats.length) {
+      mainTl.fromTo(
         cardStats,
         { opacity: 0, y: 20 },
         {
@@ -67,19 +66,32 @@ const statsData = extrasT.stats;
           ease: "power3.out",
         },
         "<"
-      )
-      .fromTo(
-        cardsFrameworks,
-        { opacity: 0, x: 50 },
+      );
+    }
+
+    if (!cardsFrameworks.length) return;
+
+    cardsFrameworks.forEach((card) => {
+      gsap.fromTo(
+        card,
         {
+          opacity: 0,
+          x: 100,
+        },
+        {
+          scrollTrigger: {
+            trigger: card,
+            start: "top 80%",
+            end: "top 20%",
+            toggleActions: "play none none reverse",
+          },
           opacity: 1,
           x: 0,
-          transformOrigin: "left",
           ease: "power3.out",
-          stagger: 0.15,
-        },
-        "<"
+          duration: 0.2,
+        }
       );
+    });
   }
 
   animateExtrasSection();

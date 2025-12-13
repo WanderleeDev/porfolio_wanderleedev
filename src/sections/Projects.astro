@@ -9,7 +9,11 @@ const t = getTranslations(lang);
 const projectsT = t("projects");
 ---
 
-<section id="projects" class="min-h-dvh relative py-20 overflow-x-hidden">
+<section
+  id="projects"
+  data-section={projectsT.attr_data}
+  class="section-page min-h-dvh relative py-20 overflow-x-hidden"
+>
   <header
     class="pt-8 pb-4 px-4 lg:absolute lg:top-2/4 lg:left-2/4 lg:-translate-x-2/4 lg:-translate-y-2/4 lg:text-[5vw] flex justify-center flex-col z-10 lg:pt-0 lg:pb-0 lg:px-0 lg:items-center lg:text-center"
   >

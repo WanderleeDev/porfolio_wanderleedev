@@ -29,7 +29,7 @@ const sections_links = ui[lang].navLinks;
     GsapBreakpoints,
     type GsapBreakpointsType,
   } from "../../utils/gsapConfig";
-  import { $ } from "../../utils/selectors";
+  import { $, $$ } from "../../utils/selectors";
 
   function animateHeader() {
     const headerElement = $("#header");
@@ -78,5 +78,53 @@ const sections_links = ui[lang].navLinks;
     });
   }
 
+  function observerNav() {
+    const sections = $$(".section-page");
+    const navLinks = $$(".mobile-link, .desktop-link");
+
+    console.log("Sections found:", sections?.length);
+    console.log("Nav links found:", navLinks?.length);
+
+    if (!sections?.length || !navLinks?.length) return;
+
+    const observerOptions = {
+      root: null,
+      rootMargin: "0px",
+      threshold: 0.3,
+    } as const;
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          const activeSection = entry.target.getAttribute("data-section");
+          console.log("Active section:", activeSection);
+
+          navLinks.forEach((link) => {
+            const linkSection = link.getAttribute("data-section");
+            console.log("Comparing:", linkSection, "===", activeSection);
+
+            if (linkSection === activeSection) {
+              console.log("Adding active to:", link);
+              link.style.color = "#fbbf24"; // amber-400
+            } else {
+              console.log("Removing active from:", link);
+              link.style.color = ""; // reset to default
+            }
+          });
+        }
+      });
+    }, observerOptions);
+
+    sections.forEach((section) => {
+      console.log("Observing section:", section.getAttribute("data-section"));
+      observer.observe(section);
+    });
+
+    return () => {
+      observer.disconnect();
+    };
+  }
+
   animateHeader();
+  observerNav();
 </script>

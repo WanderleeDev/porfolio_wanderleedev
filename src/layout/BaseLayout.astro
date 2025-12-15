@@ -38,14 +38,14 @@ const metaT = t("metadata");
     <title>{metaT.title}</title>
     <meta property="og:title" content={metaT.title} />
     <meta property="og:description" content={metaT.description} />
-    <meta property="og:image" content="/tom.webp" />
+    <meta property="og:image" content={metaT.thumbnail} />
     <meta property="og:url" content="https://wanderleev.dev" />
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content={metaT.title} />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={metaT.title} />
     <meta name="twitter:description" content={metaT.description} />
-    <meta name="twitter:image" content="/tom.webp" />
+    <meta name="twitter:image" content={metaT.thumbnail} />
   </head>
   <body
     class="min-h-svh flex flex-col justify-between duration-500 select-none"

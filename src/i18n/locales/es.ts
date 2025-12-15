@@ -8,6 +8,8 @@ export const es = {
       "Portafolio de WanderleeDev, desarrollador web mostrando proyectos y habilidades.",
     keywords:
       "portafolio, WanderleeDev, desarrollador web, proyectos, habilidades",
+    thumbnail:
+      "https://res.cloudinary.com/dy8gpozi6/image/upload/v1765775796/porfolio_es_u4q2rs.webp",
   },
   social: [
     {

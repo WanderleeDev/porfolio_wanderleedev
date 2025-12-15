@@ -7,6 +7,8 @@ export const en = {
     description:
       "Portfolio of WanderleeDev, a web developer showcasing projects and skills.",
     keywords: "portfolio, WanderleeDev, web developer, projects, skills",
+    thumbnail:
+      "https://res.cloudinary.com/dy8gpozi6/image/upload/v1765775796/porfolio_en_onrfod.webp",
   },
   social: [
     {

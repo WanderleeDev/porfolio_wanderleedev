@@ -109,7 +109,7 @@ export const es = {
         ],
       },
       {
-        title: "Otros",
+        title: "Familiarizado con",
         techs: [
           { color: "#42b883", icon: "devicon:vuejs" },
           { color: "#00DC82", icon: "devicon:nuxtjs" },

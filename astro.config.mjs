@@ -7,6 +7,10 @@ export default defineConfig({
     plugins: [tailwindcss()],
   },
 
+  image: {
+    domains: ["res.cloudinary.com"],
+  },
+
   integrations: [],
   i18n: {
     defaultLocale: "es",

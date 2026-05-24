@@ -77,8 +77,8 @@ export const es = {
       {
         title: "Mi Stack",
         techs: [
-          { color: "#13AA52", icon: "devicon:mongodb" },
-          { color: "#9e9e9e", icon: "devicon:express" },
+          { color: "#336791", icon: "devicon:postgresql" },
+          { color: "#E0234E", icon: "devicon:nestjs" },
           { color: "#DD0031", icon: "devicon:angular" },
           { color: "#339933", icon: "devicon:nodejs" },
         ],
@@ -221,20 +221,16 @@ export const es = {
       {
         title: "Ecosistema Angular",
         icon: "Angular",
-        description: "Explora mis aplicaciones y componentes.",
+        description: "Arquitectura robusta con gestión de estado avanzada usando NgRx y programación reactiva con RxJS.",
+        capsules: ["TypeScript", "Signals", "RxJS", "NgRx Store", "NgRx Signals", "Angular Material", "Angular CDK", "Angular CLI", "Reactive Forms"],
         link: "https://entry-page-angular.vercel.app/",
       },
       {
         title: "Ecosistema React",
         icon: "React",
+        description: "Aplicaciones altamente interactivas construidas sobre Next.js, optimizadas para rendimiento y SEO.",
+        capsules: ["Zustand", "TypeScript", "Next.js", "React Hook Form", "Zod", "React Query", "Axios", "Shadcn"],
         link: "https://react-showcase-three.vercel.app/",
-        description: "Explora mis aplicaciones y componentes.",
-      },
-      {
-        title: "Ecosistema Vue",
-        icon: "Vuejs",
-        link: "https://vue-showcase-8bg.pages.dev/",
-        description: "Explora mis aplicaciones y componentes.",
       },
     ],
     attr_data: "playground",

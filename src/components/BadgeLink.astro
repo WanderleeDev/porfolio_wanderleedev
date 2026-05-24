@@ -22,7 +22,7 @@ const badgeT = t("badge");
     height={300}
     width={300}
     style={{ animationDuration: "7s" }}
-    class="absolute inset-0 bg-black z-10 not-motion-reduce:animate-spin pointer-events-none opacity-0"
+    class="absolute inset-0 z-10 not-motion-reduce:animate-spin pointer-events-none opacity-0"
   />
   <Image
     id="badge-inner"
@@ -31,7 +31,7 @@ const badgeT = t("badge");
     alt="Star"
     height={200}
     width={200}
-    class="size-[18vw] md:size-[8vw] absolute inset-0 z-10 top-1/2 -translate-y-1/2 left-1/2 -translate-x-1/2 contrast-75 pointer-events-none group-hover:scale-90 transition-all duration-500 ease-in-out group-hover:rotate-6 group-hover:grayscale-75 rounded-full"
+    class="size-[18vw] md:size-[8vw] absolute z-10 top-1/2 -translate-y-1/2 left-1/2 -translate-x-1/2 contrast-75 pointer-events-none group-hover:scale-90 transition-all duration-500 ease-in-out group-hover:rotate-6 group-hover:grayscale-75 rounded-full"
   />
   <span class="sr-only">{badgeT.label}</span>
 </a>

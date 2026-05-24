@@ -6,6 +6,8 @@ interface Props {
     title: string;
     icon: string;
     link: string;
+    description?: string;
+    capsules?: string[];
   }[];
 }
 
@@ -15,22 +17,23 @@ const getColors = (title: string) => {
   const lower = title.toLowerCase();
   if (lower.includes("react"))
     return {
-      color: "from-cyan-500/20 to-blue-500/20",
-      hoverColor: "hover:from-cyan-500/30 hover:to-blue-500/30",
+      borderColor: "border-cyan-500/20 hover:border-cyan-400/40",
+      shadowColor: "shadow-cyan-500/5",
+      glowColor: "bg-cyan-500/10",
+      primaryColor: "#00d8ff",
     };
   if (lower.includes("angular"))
     return {
-      color: "from-red-500/20 to-pink-500/20",
-      hoverColor: "hover:from-red-500/30 hover:to-pink-500/30",
-    };
-  if (lower.includes("vue"))
-    return {
-      color: "from-green-500/20 to-emerald-500/20",
-      hoverColor: "hover:from-green-500/30 hover:to-emerald-500/30",
+      borderColor: "border-red-500/20 hover:border-red-400/40",
+      shadowColor: "shadow-red-500/5",
+      glowColor: "bg-red-500/10",
+      primaryColor: "#E0234E",
     };
   return {
-    color: "from-gray-500/20 to-slate-500/20",
-    hoverColor: "hover:from-gray-500/30 hover:to-slate-500/30",
+    borderColor: "border-gray-500/20 hover:border-gray-400/40",
+    shadowColor: "shadow-gray-500/5",
+    glowColor: "bg-gray-500/10",
+    primaryColor: "#ffffff",
   };
 };
 
@@ -40,22 +43,23 @@ const extrasWithColors = extras.map((e) => ({
 }));
 ---
 
-<div class="extras-cards-container relative">
-  <ul class="grid grid-cols-1 md:grid-cols-12 gap-6 relative z-10">
+<div class="extras-cards-container relative w-full">
+  <div class="absolute -top-12 -left-12 w-48 h-48 bg-indigo-500/5 rounded-full blur-3xl pointer-events-none" />
+  <div class="absolute -bottom-12 -right-12 w-48 h-48 bg-purple-500/5 rounded-full blur-3xl pointer-events-none" />
+
+  <ul class="flex flex-col gap-8 relative z-10 w-full">
     {
-      extrasWithColors.map(({ title, icon, link, color, hoverColor }, i) => (
-        <li
-          class={`extras-card-item
-                ${i === 0 ? "md:col-span-6" : ""}
-                ${i === 1 ? "md:col-span-6" : ""}
-                ${i === 2 ? "md:col-span-12" : ""}
-              `}
-        >
+      extrasWithColors.map(({ title, icon, link, description, capsules, borderColor, shadowColor, glowColor, primaryColor }) => (
+        <li class="extras-card-item w-full">
           <FrameworkCard
             title={title}
+            description={description || ""}
+            capsules={capsules || []}
             icon={`devicon:${icon.toLowerCase()}`}
-            color={color}
-            hoverColor={hoverColor}
+            borderColor={borderColor}
+            shadowColor={shadowColor}
+            glowColor={glowColor}
+            primaryColor={primaryColor}
             href={link}
           />
         </li>

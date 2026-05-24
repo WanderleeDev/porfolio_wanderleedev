@@ -3,50 +3,146 @@ import Icon from "astro-iconify";
 
 interface Props {
   title: string;
+  description: string;
+  capsules: string[];
   icon: string;
-  color: string;
-  hoverColor: string;
+  borderColor: string;
+  shadowColor: string;
+  glowColor: string;
+  primaryColor: string;
   href: string;
 }
 
-const { title, icon, color, hoverColor, href } = Astro.props;
+const { title, description, capsules, icon, shadowColor, glowColor, primaryColor, href } = Astro.props;
 ---
 
-<a
-  href={href}
-  target="_blank"
-  rel="noopener noreferrer"
-  class={`card-wrapper group relative overflow-hidden h-full block bg-linear-to-br ${color} ${hoverColor} backdrop-blur-sm border border-white/10 rounded-2xl p-1 transition-all duration-500 hover:scale-[1.02] hover:border-white/20 
-    `}
+<div
+  class={`outer-bevel-card group relative p-[1px] ${shadowColor} transition-all duration-500 hover:scale-[1.01]`}
+  style={`--primary: ${primaryColor};`}
 >
+  <div class="absolute inset-0 bg-white/10 group-hover:bg-[linear-gradient(135deg,rgba(255,255,255,0.15)_0%,var(--primary)_100%)] transition-all duration-500 pointer-events-none" />
+
   <div
-    class="h-full bg-black/40 backdrop-blur-md rounded-xl p-6 flex items-center gap-4 pointer-events-none"
+    class="inner-bevel-card bg-slate-950/85 backdrop-blur-xl p-6 md:p-8 lg:p-10 flex flex-col lg:flex-row gap-8 lg:gap-12 items-stretch"
   >
-    <div
-      class="icon-wrapper relative shrink-0 w-16 h-16 flex items-center justify-center rounded-xl bg-white/5 backdrop-blur-sm border border-white/10 transition-all duration-300 group-hover:scale-110 group-hover:rotate-3
-        after:content-[''] after:absolute after:inset-[-4px] after:bg-[linear-gradient(45deg,transparent,rgba(255,255,255,0.1),transparent)] after:rounded-2xl after:opacity-0 after:transition-opacity after:duration-300 group-hover:after:opacity-100"
-    >
-      <Icon class="w-10 h-10" name={icon} />
+    <div 
+      class={`absolute -top-24 -left-24 w-48 h-48 rounded-full blur-3xl opacity-10 group-hover:opacity-25 transition-all duration-500 ${glowColor}`} 
+    />
+
+    <div class="flex flex-col justify-between lg:w-[38%] shrink-0 space-y-6">
+      <div class="space-y-6">
+        <div class="flex items-center justify-between">
+          <div
+            class="icon-bevel-outer p-[1px]"
+          >
+            <div class="icon-bevel-inner w-16 h-16 flex items-center justify-center bg-white/5 border border-white/5 transition-all duration-300 group-hover:scale-105 group-hover:rotate-2">
+              <Icon class="w-10 h-10 relative z-10" name={icon} style={{ color: primaryColor }} />
+            </div>
+          </div>
+        </div>
+
+        <div class="space-y-3">
+          <h3 class="text-2xl md:text-3xl font-extrabold text-white tracking-wide">{title}</h3>
+          <p class="text-sm text-gray-400 leading-relaxed font-light text-pretty">{description}</p>
+        </div>
+      </div>
+
+      <a
+        href={href}
+        target="_blank"
+        rel="noopener noreferrer"
+        class="inline-flex items-center justify-between w-full px-5 py-3 rounded-lg border border-white/5 bg-white/[0.02] text-sm font-semibold text-white/70 hover:text-white hover:bg-white/[0.05] hover:border-white/10 transition-all duration-300 group/btn font-sans"
+      >
+        <span>Explorar Showroom</span>
+        <Icon 
+          name="ri:arrow-right-line" 
+          class="w-4 h-4 group-hover/btn:translate-x-1.5 transition-transform duration-300"
+          style={{ color: primaryColor }}
+        />
+      </a>
     </div>
 
-    <div class="flex-1 min-w-0">
-      <h3 class="text-xl font-bold text-white mb-1 truncate">{title}</h3>
-      <p class="text-sm text-gray-400 truncate">Ver showcase completo</p>
+    <div class="flex-1 flex flex-col justify-center">
+      <div class="space-y-4">
+        <h4 class="text-[10px] md:text-xs font-semibold uppercase tracking-wider text-white/30 pl-1">Ecosistema Tecnológico</h4>
+        <div class="flex flex-wrap gap-2.5">
+          {capsules.map((cap) => (
+            <span 
+              class="capsule-pill text-xs md:text-sm font-semibold tracking-wide uppercase px-4 py-2.5 bg-white/5 hover:bg-[var(--primary-glow)] border border-white/5 hover:border-[var(--primary)] text-gray-300 hover:text-white rounded-full transition-all duration-300 cursor-default shadow-sm hover:shadow-[0_0_12px_var(--primary-glow)] select-none"
+              style={{
+                '--primary': primaryColor,
+                '--primary-glow': `${primaryColor}15`
+              }}
+            >
+              {cap}
+            </span>
+          ))}
+        </div>
+      </div>
     </div>
   </div>
-</a>
+</div>
 
 <style>
-  .card-wrapper:hover .icon-wrapper::after {
-    animation: rotate 3s linear infinite;
+  /* Base Bevel Variables */
+  :root {
+    --card-bevel: 20px;
   }
 
-  @keyframes rotate {
-    from {
-      transform: rotate(0deg);
-    }
-    to {
-      transform: rotate(360deg);
-    }
+  /* Outer Card Bevel Clip-path */
+  .outer-bevel-card {
+    clip-path: polygon(
+      0 var(--card-bevel),
+      var(--card-bevel) 0,
+      calc(100% - var(--card-bevel)) 0,
+      100% var(--card-bevel),
+      100% calc(100% - var(--card-bevel)),
+      calc(100% - var(--card-bevel)) 100%,
+      var(--card-bevel) 100%,
+      0 calc(100% - var(--card-bevel))
+    );
+  }
+
+  /* Inner Card Bevel Clip-path (same shape to nest perfectly inside) */
+  .inner-bevel-card {
+    clip-path: polygon(
+      0 var(--card-bevel),
+      var(--card-bevel) 0,
+      calc(100% - var(--card-bevel)) 0,
+      100% var(--card-bevel),
+      100% calc(100% - var(--card-bevel)),
+      calc(100% - var(--card-bevel)) 100%,
+      var(--card-bevel) 100%,
+      0 calc(100% - var(--card-bevel))
+    );
+  }
+
+  /* Brand Icon Bevel Box */
+  .icon-bevel-outer {
+    --icon-bevel: 8px;
+    clip-path: polygon(
+      0 var(--icon-bevel),
+      var(--icon-bevel) 0,
+      calc(100% - var(--icon-bevel)) 0,
+      100% var(--icon-bevel),
+      100% calc(100% - var(--icon-bevel)),
+      calc(100% - var(--icon-bevel)) 100%,
+      var(--icon-bevel) 100%,
+      0 calc(100% - var(--icon-bevel))
+    );
+    background: rgba(255,255,255,0.1);
+  }
+  .icon-bevel-inner {
+    --icon-bevel: 8px;
+    clip-path: polygon(
+      0 var(--icon-bevel),
+      var(--icon-bevel) 0,
+      calc(100% - var(--icon-bevel)) 0,
+      100% var(--icon-bevel),
+      100% calc(100% - var(--icon-bevel)),
+      calc(100% - var(--icon-bevel)) 100%,
+      var(--icon-bevel) 100%,
+      0 calc(100% - var(--icon-bevel))
+    );
   }
 </style>

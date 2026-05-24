@@ -1,7 +1,6 @@
 ---
 import Paragraph from "./typography/Paragraph.astro";
 import { Image } from "astro:assets";
-import ExternalLink from "./ExternalLink.astro";
 import { Icon } from "astro-iconify";
 import { getTranslations } from "../i18n/utils";
 
@@ -13,70 +12,162 @@ const socialLinks = t("social");
 
 <footer
   id="footer"
-  class="min-h-svh flex flex-col justify-between bg-[#202020] overflow-hidden fixed inset-0 top-0 z-0"
+  class="min-h-svh flex flex-col justify-between bg-slate-950 overflow-hidden fixed inset-0 top-0 z-0"
 >
+  <div class="absolute inset-0 bg-[linear-gradient(to_right,#0f172a_1px,transparent_1px),linear-gradient(to_bottom,#0f172a_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] opacity-30 pointer-events-none" />
+
   <div
-    class="grid grid-cols-1 md:grid-cols-2 h-full place-content-center gap-6 md:gap-10 px-4"
+    class="grid grid-cols-1 md:grid-cols-2 flex-1 place-content-center gap-12 md:gap-16 px-6 lg:px-12 max-w-7xl w-full mx-auto relative z-10"
   >
     <div class="md:items-center md:justify-center flex">
       <div
         class="relative w-80 h-80 md:w-96 md:h-96 lg:w-104 lg:h-104 overflow-hidden mx-auto"
       >
         <Image
-          inferSize={true}
+          width={500}
+          height={500}
           loading="lazy"
           src="https://res.cloudinary.com/dy8gpozi6/image/upload/v1765154077/tom_f0v8qy.webp"
           alt="Hero Image"
-          class="w-full h-full object-cover pointer-events-none select-none mask-[url(https://res.cloudinary.com/dy8gpozi6/image/upload/v1765157809/mask-profile_raa16q.webp)] mask-size-[110%_90%] mask-center mask-no-repeat"
+          class="w-full h-full object-cover pointer-events-none select-none"
+          style={{
+            maskImage: "url(https://res.cloudinary.com/dy8gpozi6/image/upload/v1765157809/mask-profile_raa16q.webp)",
+            WebkitMaskImage: "url(https://res.cloudinary.com/dy8gpozi6/image/upload/v1765157809/mask-profile_raa16q.webp)",
+            maskSize: "110% 90%",
+            WebkitMaskSize: "110% 90%",
+            maskPosition: "center",
+            WebkitMaskPosition: "center",
+            maskRepeat: "no-repeat",
+            WebkitMaskRepeat: "no-repeat"
+          }}
         />
       </div>
     </div>
 
     <div
-      class="flex flex-col gap-4 w-full max-w-lg justify-self-center self-center"
+      class="flex flex-col gap-6 w-full max-w-lg justify-self-center self-center"
     >
       <Paragraph
-        customClass="text-neutral-400 md:text-lg leading-relaxed text-center md:text-left"
+        customClass="text-neutral-400 md:text-lg leading-relaxed text-center md:text-left font-light text-pretty"
       >
         {footerText.description}
       </Paragraph>
 
-      <nav aria-label={footerText.socialLinksAria}>
-        <ul class="flex flex-col gap-3">
+      <nav aria-label={footerText.socialLinksAria} class="w-full">
+        <ul class="flex flex-col gap-4 w-full">
           {
-            socialLinks.map((link) => (
-              <li>
-                <ExternalLink {...link} />
-              </li>
-            ))
+            socialLinks.map((link) => {
+              const getSocialColors = (name: string) => {
+                const lower = name.toLowerCase();
+                if (lower.includes("linkedin")) return { border: "hover:border-blue-500/30", text: "hover:text-blue-400", bg: "hover:bg-blue-500/5", glow: "hover:shadow-[0_0_15px_rgba(59,130,246,0.1)]" };
+                if (lower.includes("github")) return { border: "hover:border-neutral-400/30", text: "hover:text-white", bg: "hover:bg-white/5", glow: "hover:shadow-[0_0_15px_rgba(255,255,255,0.05)]" };
+                return { border: "hover:border-amber-500/30", text: "hover:text-amber-400", bg: "hover:bg-amber-500/5", glow: "hover:shadow-[0_0_15px_rgba(245,158,11,0.1)]" };
+              };
+              const colors = getSocialColors(link.name);
+              return (
+                <li class="w-full">
+                  <a
+                    href={link.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="social-link-bevel-outer group/link block p-[1px] transition-all duration-300 hover:scale-[1.02]"
+                  >
+                    <div 
+                      class={`social-link-bevel-inner bg-slate-900/40 backdrop-blur-sm border border-white/5 px-6 py-4 flex items-center justify-between transition-all duration-300 group-hover/link:bg-slate-950/60 ${colors.border} ${colors.text} ${colors.bg} ${colors.glow}`}
+                    >
+                      <div class="flex items-center gap-4">
+                        <Icon name={link.icon} class="w-5 h-5 text-neutral-400 group-hover/link:scale-110 transition-transform duration-300" />
+                        <span class="text-sm font-semibold tracking-wider uppercase text-neutral-300 group-hover/link:text-white transition-colors duration-300">{link.name}</span>
+                      </div>
+                      <Icon name="ri:arrow-right-up-line" class="w-4 h-4 text-neutral-500 group-hover/link:text-white group-hover/link:translate-x-0.5 group-hover/link:-translate-y-0.5 transition-all duration-300" />
+                    </div>
+                  </a>
+                </li>
+              );
+            })
           }
         </ul>
       </nav>
 
-      <div class="mt-2 text-center md:text-left">
+      <div class="mt-4 text-center md:text-left">
         <a
           href={footerText.viewCode.url}
           target="_blank"
           rel="noopener noreferrer"
-          class="inline-flex items-center gap-2 text-xs text-neutral-500 hover:text-neutral-300 transition-colors duration-300 font-dm-mono"
+          class="inline-flex items-center gap-2 text-xs text-neutral-500 hover:text-neutral-300 transition-colors duration-300 font-dm-mono px-3 py-1.5 rounded-full border border-white/5 bg-white/[0.02] hover:bg-white/[0.05] hover:border-white/10"
         >
-          <Icon name="mdi:code-tags" class="w-4 h-4 pointer-events-none" />
+          <Icon name="mdi:code-tags" class="w-4 h-4 pointer-events-none text-indigo-400" />
           <span class="pointer-events-none">{footerText.viewCode.text}</span>
         </a>
       </div>
     </div>
   </div>
 
-  <div class="w-full border-t border-neutral-700/30 my-6"></div>
+  <div class="w-full border-t border-neutral-900 my-6 relative">
+    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-4 h-4 bg-slate-950 border border-neutral-800 rotate-45 flex items-center justify-center">
+      <div class="w-1.5 h-1.5 bg-indigo-500 rotate-45" />
+    </div>
+  </div>
 
   <p
-    class="text-center text-3xl lg:text-5xl xl:text-7xl -tracking-wider text-neutral-500 overflow-hidden relative min-h-24 sm:min-h-32 content-center font-fira-sans-extra-condensed"
+    class="text-center text-3xl lg:text-5xl xl:text-7xl -tracking-wider text-neutral-600 overflow-hidden relative min-h-24 sm:min-h-32 content-center font-fira-sans-extra-condensed select-none font-bold"
     id="footer-content"
     aria-label={footerText.developedBy}
   >
     {footerText.developedBy}
   </p>
 </footer>
+
+<style>
+  /* Bevel shapes for footer elements */
+  .footer-image-bevel-outer {
+    --footer-bevel: 24px;
+    clip-path: polygon(
+      0 var(--footer-bevel),
+      var(--footer-bevel) 0,
+      100% 0,
+      100% calc(100% - var(--footer-bevel)),
+      calc(100% - var(--footer-bevel)) 100%,
+      0 100%
+    );
+  }
+  
+  .footer-image-bevel-inner {
+    --footer-bevel: 24px;
+    clip-path: polygon(
+      0 var(--footer-bevel),
+      var(--footer-bevel) 0,
+      100% 0,
+      100% calc(100% - var(--footer-bevel)),
+      calc(100% - var(--footer-bevel)) 100%,
+      0 100%
+    );
+  }
+
+  .social-link-bevel-outer {
+    --link-bevel: 12px;
+    clip-path: polygon(
+      0 var(--link-bevel),
+      var(--link-bevel) 0,
+      100% 0,
+      100% calc(100% - var(--link-bevel)),
+      calc(100% - var(--link-bevel)) 100%,
+      0 100%
+    );
+  }
+  
+  .social-link-bevel-inner {
+    --link-bevel: 12px;
+    clip-path: polygon(
+      0 var(--link-bevel),
+      var(--link-bevel) 0,
+      100% 0,
+      100% calc(100% - var(--link-bevel)),
+      calc(100% - var(--link-bevel)) 100%,
+      0 100%
+    );
+  }
+</style>
 
 <script>
   import { gsap, SplitText } from "../utils/gsapConfig";

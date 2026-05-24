@@ -1,12 +1,16 @@
 @import "tailwindcss";
 
 @layer base {
-  * {
+  html, body {
     cursor: url("/cursor.svg"), auto;
   }
 
-  :where(a, button):hover {
-    cursor: url("/pointer.svg"), auto;
+  a, button, [role="button"], input[type="submit"], input[type="button"], select, .cursor-pointer {
+    cursor: url("/pointer.svg"), auto !important;
+  }
+
+  a *, button * {
+    cursor: inherit !important;
   }
 
   :where(h1, h2, h3, h4, h5, h6) {

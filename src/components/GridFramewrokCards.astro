@@ -50,7 +50,7 @@ const extrasWithColors = extras.map((e) => ({
   <ul class="flex flex-col gap-8 relative z-10 w-full">
     {
       extrasWithColors.map(({ title, icon, link, description, capsules, borderColor, shadowColor, glowColor, primaryColor }) => (
-        <li class="extras-card-item w-full">
+        <li class="card-wrapper extras-card-item w-full">
           <FrameworkCard
             title={title}
             description={description || ""}

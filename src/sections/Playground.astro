@@ -40,34 +40,25 @@ const extraProjects = playgroundT.list;
 
   function animateExtrasSection() {
     const cardsFrameworks = gsap.utils.toArray<HTMLElement>(".card-wrapper");
-    createRevealSectionTL(
-      "#extras-title",
-      "#extras-description"
+    const tl = createRevealSectionTL("#extras-title", "#extras-description");
+
+    if (!tl || !cardsFrameworks.length) return;
+
+    tl.fromTo(
+      cardsFrameworks,
+      {
+        opacity: 0,
+        y: 20,
+      },
+      {
+        opacity: 1,
+        y: 0,
+        duration: 0.2,
+        stagger: 0.1,
+        ease: "power3.out",
+      },
+      "<",
     );
-
-    if (!cardsFrameworks.length) return;
-
-    cardsFrameworks.forEach((card) => {
-      gsap.fromTo(
-        card,
-        {
-          opacity: 0,
-          y: 60,
-        },
-        {
-          scrollTrigger: {
-            trigger: card,
-            start: "top 85%",
-            end: "top 30%",
-            toggleActions: "play none none reverse",
-          },
-          opacity: 1,
-          y: 0,
-          ease: "power3.out",
-          duration: 0.5,
-        }
-      );
-    });
   }
 
   animateExtrasSection();

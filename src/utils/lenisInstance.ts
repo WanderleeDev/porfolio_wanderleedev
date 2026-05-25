@@ -9,10 +9,3 @@ export function getLenisInstance(): Lenis {
 
   return lenisInstance;
 }
-
-export function destroyLenis() {
-  if (lenisInstance) {
-    lenisInstance.destroy();
-    lenisInstance = null;
-  }
-}

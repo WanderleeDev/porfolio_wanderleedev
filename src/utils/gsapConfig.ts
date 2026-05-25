@@ -1,7 +1,6 @@
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { SplitText } from "gsap/SplitText";
-import { Flip } from "gsap/Flip";
 import { getLenisInstance } from "./lenisInstance";
 
 const GsapBreakpoints = {
@@ -17,7 +16,7 @@ type GsapBreakpointsType = Record<keyof typeof GsapBreakpoints, boolean>;
 const lenis = getLenisInstance();
 lenis.on("scroll", ScrollTrigger.update);
 
-gsap.registerPlugin(ScrollTrigger, SplitText, Flip);
+gsap.registerPlugin(ScrollTrigger, SplitText);
 
 gsap.ticker.add((time) => {
   lenis.raf(time * 1000);
@@ -27,7 +26,6 @@ export {
   gsap,
   ScrollTrigger,
   SplitText,
-  Flip,
   GsapBreakpoints,
   type GsapBreakpointsType,
 };

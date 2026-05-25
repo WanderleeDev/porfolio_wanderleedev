@@ -122,14 +122,12 @@ const endpoint = `https://formspree.io/f/${formId}`;
 </div>
 
 <style>
-  /* Form Bevel Variables */
   :root {
     --form-bevel: 32px;
     --input-bevel: 10px;
     --btn-bevel: 12px;
   }
 
-  /* Outer Form Bevel Clip-path */
   .outer-bevel-form {
     clip-path: polygon(
       0 var(--form-bevel),
@@ -143,7 +141,6 @@ const endpoint = `https://formspree.io/f/${formId}`;
     );
   }
 
-  /* Inner Form Bevel Clip-path */
   .inner-bevel-form {
     clip-path: polygon(
       0 var(--form-bevel),
@@ -157,7 +154,6 @@ const endpoint = `https://formspree.io/f/${formId}`;
     );
   }
 
-  /* Input Field Bevels */
   .input-bevel-outer {
     clip-path: polygon(
       0 var(--input-bevel),
@@ -183,7 +179,6 @@ const endpoint = `https://formspree.io/f/${formId}`;
     );
   }
 
-  /* Textarea Bevels */
   .textarea-bevel-outer {
     clip-path: polygon(
       0 var(--input-bevel),
@@ -209,7 +204,6 @@ const endpoint = `https://formspree.io/f/${formId}`;
     );
   }
 
-  /* Button Bevels */
   .btn-bevel-outer {
     clip-path: polygon(
       0 var(--btn-bevel),

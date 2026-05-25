@@ -115,12 +115,10 @@ const {
 </div>
 
 <style>
-  /* Base Bevel Variables */
   :root {
     --card-bevel: 20px;
   }
 
-  /* Outer Card Bevel Clip-path */
   .outer-bevel-card {
     clip-path: polygon(
       0 var(--card-bevel),
@@ -134,7 +132,6 @@ const {
     );
   }
 
-  /* Inner Card Bevel Clip-path (same shape to nest perfectly inside) */
   .inner-bevel-card {
     clip-path: polygon(
       0 var(--card-bevel),
@@ -148,7 +145,6 @@ const {
     );
   }
 
-  /* Brand Icon Bevel Box */
   .icon-bevel-outer {
     --icon-bevel: 8px;
     clip-path: polygon(

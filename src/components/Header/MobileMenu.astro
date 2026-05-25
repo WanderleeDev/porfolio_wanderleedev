@@ -17,7 +17,6 @@ const lang = Astro.currentLocale as "es" | "en";
 const t = getTranslations(lang);
 const socialLinks = t("social");
 
-// Rich descriptive subtitles for each section, localized
 const subtitles = {
   es: {
     projects: "Trabajos destacados y aplicaciones",
@@ -40,7 +39,6 @@ const subtitles = {
 >
   <div class="h-2 flex-shrink-0"></div>
 
-  {/* Unified Navigation Stack */}
   <div class="flex flex-col gap-4 w-full max-w-sm my-auto">
     {
       sections.map(({ name, label, attr_data }, index) => {
@@ -49,25 +47,25 @@ const subtitles = {
         
         const themeDetails = [
           {
-            accentColor: "#22d3ee", // Cyan for Projects
+            accentColor: "#22d3ee",
             activeGlow: "rgba(6, 182, 212, 0.15)",
             borderGrad: "from-cyan-500/20 to-white/5 hover:from-cyan-500/40 hover:to-white/15",
             hoverText: "group-hover:text-cyan-400"
           },
           {
-            accentColor: "#34d399", // Emerald for Skills
+            accentColor: "#34d399",
             activeGlow: "rgba(16, 185, 129, 0.15)",
             borderGrad: "from-emerald-500/20 to-white/5 hover:from-emerald-500/40 hover:to-white/15",
             hoverText: "group-hover:text-emerald-400"
           },
           {
-            accentColor: "#f472b6", // Fuchsia for Lab
+            accentColor: "#f472b6",
             activeGlow: "rgba(217, 70, 239, 0.15)",
             borderGrad: "from-fuchsia-500/20 to-white/5 hover:from-fuchsia-500/40 hover:to-white/15",
             hoverText: "group-hover:text-fuchsia-400"
           },
           {
-            accentColor: "#fb7185", // Rose for Contact
+            accentColor: "#fb7185",
             activeGlow: "rgba(244, 63, 94, 0.15)",
             borderGrad: "from-rose-500/20 to-white/5 hover:from-rose-500/40 hover:to-white/15",
             hoverText: "group-hover:text-rose-400"
@@ -112,7 +110,6 @@ const subtitles = {
     }
   </div>
 
-  {/* Footer Settings Row with Stylized Divider and Beveled lower controls */}
   <div id="menu-footer" class="flex flex-col gap-4 items-center w-full max-w-sm flex-shrink-0">
     <div class="w-full border-t border-white/10 my-4 relative flex-shrink-0">
       <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-4 h-4 bg-slate-950 border border-white/10 rotate-45 flex items-center justify-center">
@@ -158,7 +155,6 @@ const subtitles = {
 </div>
 
 <style>
-  /* 8px Diagonal Bevel Clip Paths applied directly to link blocks */
   .canvas-link {
     clip-path: polygon(8px 0px, calc(100% - 8px) 0px, 100% 8px, 100% calc(100% - 8px), calc(100% - 8px) 100%, 8px 100%, 0px calc(100% - 8px), 0px 8px);
     cursor: pointer !important;
@@ -168,7 +164,6 @@ const subtitles = {
     clip-path: polygon(8px 0px, calc(100% - 8px) 0px, 100% 8px, 100% calc(100% - 8px), calc(100% - 8px) 100%, 8px 100%, 0px calc(100% - 8px), 0px 8px);
   }
 
-  /* Social links beveled corner clip paths (pronounced 8px corners) */
   .social-beveled-link {
     clip-path: polygon(8px 0px, calc(100% - 8px) 0px, 100% 8px, 100% calc(100% - 8px), calc(100% - 8px) 100%, 8px 100%, 0px calc(100% - 8px), 0px 8px);
     cursor: pointer !important;
@@ -178,7 +173,6 @@ const subtitles = {
     clip-path: polygon(8px 0px, calc(100% - 8px) 0px, 100% 8px, 100% calc(100% - 8px), calc(100% - 8px) 100%, 8px 100%, 0px calc(100% - 8px), 0px 8px);
   }
 
-  /* Active states styling */
   .canvas-link.active {
     border-color: var(--accent-color) !important;
     background-image: linear-gradient(135deg, var(--accent-color) 40%, rgba(255, 255, 255, 0.05)) !important;
@@ -189,7 +183,6 @@ const subtitles = {
     background-color: rgba(3, 7, 18, 0.95) !important;
   }
 
-  /* Active text colors are forced to Amber (#fbbf24) */
   .canvas-link.active .prefix-num,
   .canvas-link.active .link-label {
     color: #fbbf24 !important;
@@ -214,7 +207,6 @@ const subtitles = {
     const footer = $("#menu-footer");
     const menuIcon = $("#menu-icon");
     const closeIcon = $("#close-icon");
-    // Click triggers are the nav links and the social links
     const links = $$(".canvas-link, .social-beveled-link");
 
     if (
@@ -297,7 +289,6 @@ const subtitles = {
     btn.addEventListener("click", toggle);
     links.forEach((link) => link.addEventListener("click", toggle));
 
-    // Close when clicking outside link buttons on empty backdrop areas
     menu.addEventListener("click", (e) => {
       if (isOpen && e.target === menu) {
         toggle();
@@ -319,13 +310,11 @@ const subtitles = {
     });
   }
 
-  // Self-contained scroll synchronization for active link states
   function syncActiveSection() {
     const pageSections = $$(".section-page");
     const canvasLinks = $$(".canvas-link");
     if (!pageSections?.length || !canvasLinks?.length) return;
 
-    // Use multiple thresholds to get accurate intersectionRatio calculations
     const observerOptions = {
       root: null,
       rootMargin: "-20% 0px -40% 0px",
@@ -342,7 +331,6 @@ const subtitles = {
         );
       });
 
-      // Find the section that has the highest intersection ratio
       let activeSection = "";
       let maxRatio = 0;
 
@@ -353,7 +341,6 @@ const subtitles = {
         }
       });
 
-      // If we are at the top/hero section (presentation) or no section is visible, remove active highlights
       if (!activeSection || activeSection === "presentation") {
         canvasLinks.forEach((link) => link.classList.remove("active"));
         return;

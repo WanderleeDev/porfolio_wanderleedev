@@ -26,8 +26,8 @@ const {
 ---
 
 <div
-  class={`outer-bevel-card group relative p-[1px] ${shadowColor} transition-all duration-500 hover:scale-[1.01]`}
-  style={`--primary: ${primaryColor};`}
+  class={`clip-bevel group relative p-[1px] ${shadowColor} transition-all duration-500 hover:scale-[1.01]`}
+  style={`--primary: ${primaryColor}; --bv: 20px;`}
 >
   <div
     class="absolute inset-0 bg-white/10 group-hover:bg-[linear-gradient(135deg,rgba(255,255,255,0.15)_0%,var(--primary)_100%)] transition-all duration-500 pointer-events-none"
@@ -35,7 +35,8 @@ const {
   </div>
 
   <div
-    class="inner-bevel-card bg-slate-950/85 backdrop-blur-xl p-6 md:p-8 lg:p-10 flex flex-col lg:flex-row gap-8 lg:gap-12 items-stretch"
+    class="clip-bevel bg-slate-950/85 backdrop-blur-xl p-6 md:p-8 lg:p-10 flex flex-col lg:flex-row gap-8 lg:gap-12 items-stretch"
+    style="--bv: 20px;"
   >
     <div
       class={`absolute -top-24 -left-24 w-48 h-48 rounded-full blur-3xl opacity-10 group-hover:opacity-25 transition-all duration-500 ${glowColor}`}
@@ -45,9 +46,10 @@ const {
     <div class="flex flex-col justify-between lg:w-[38%] shrink-0 space-y-6">
       <div class="space-y-6">
         <div class="flex items-center justify-between">
-          <div class="icon-bevel-outer p-[1px]">
+          <div class="clip-bevel p-[1px] bg-white/10" style="--bv: 8px;">
             <div
-              class="icon-bevel-inner w-16 h-16 flex items-center justify-center bg-white/5 border border-white/5 transition-all duration-300 group-hover:scale-105 group-hover:rotate-2"
+              class="clip-bevel w-16 h-16 flex items-center justify-center bg-white/5 border border-white/5 transition-all duration-300 group-hover:scale-105 group-hover:rotate-2"
+              style="--bv: 8px;"
             >
               <Icon
                 class="w-10 h-10 relative z-10"
@@ -80,8 +82,8 @@ const {
       >
         <span>Explorar Showroom</span>
         <Icon
-          name="ri:arrow-right-line"
-          class="w-4 h-4 group-hover/btn:translate-x-1.5 transition-transform duration-300"
+          name="ri:arrow-right-up-line"
+          class="w-4 h-4 group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5 transition-transform duration-300"
           style={{ color: primaryColor }}
         />
       </a>
@@ -114,62 +116,3 @@ const {
   </div>
 </div>
 
-<style>
-  :root {
-    --card-bevel: 20px;
-  }
-
-  .outer-bevel-card {
-    clip-path: polygon(
-      0 var(--card-bevel),
-      var(--card-bevel) 0,
-      calc(100% - var(--card-bevel)) 0,
-      100% var(--card-bevel),
-      100% calc(100% - var(--card-bevel)),
-      calc(100% - var(--card-bevel)) 100%,
-      var(--card-bevel) 100%,
-      0 calc(100% - var(--card-bevel))
-    );
-  }
-
-  .inner-bevel-card {
-    clip-path: polygon(
-      0 var(--card-bevel),
-      var(--card-bevel) 0,
-      calc(100% - var(--card-bevel)) 0,
-      100% var(--card-bevel),
-      100% calc(100% - var(--card-bevel)),
-      calc(100% - var(--card-bevel)) 100%,
-      var(--card-bevel) 100%,
-      0 calc(100% - var(--card-bevel))
-    );
-  }
-
-  .icon-bevel-outer {
-    --icon-bevel: 8px;
-    clip-path: polygon(
-      0 var(--icon-bevel),
-      var(--icon-bevel) 0,
-      calc(100% - var(--icon-bevel)) 0,
-      100% var(--icon-bevel),
-      100% calc(100% - var(--icon-bevel)),
-      calc(100% - var(--icon-bevel)) 100%,
-      var(--icon-bevel) 100%,
-      0 calc(100% - var(--icon-bevel))
-    );
-    background: rgba(255, 255, 255, 0.1);
-  }
-  .icon-bevel-inner {
-    --icon-bevel: 8px;
-    clip-path: polygon(
-      0 var(--icon-bevel),
-      var(--icon-bevel) 0,
-      calc(100% - var(--icon-bevel)) 0,
-      100% var(--icon-bevel),
-      100% calc(100% - var(--icon-bevel)),
-      calc(100% - var(--icon-bevel)) 100%,
-      var(--icon-bevel) 100%,
-      0 calc(100% - var(--icon-bevel))
-    );
-  }
-</style>

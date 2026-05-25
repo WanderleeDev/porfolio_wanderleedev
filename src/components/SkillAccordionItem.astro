@@ -15,8 +15,6 @@ if (title.toLowerCase().includes("front")) {
   innerGridClass = "grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3.5";
 }
 
-const bevelClip =
-  "polygon(0 12px, 12px 0, calc(100% - 12px) 0, 100% 12px, 100% calc(100% - 12px), calc(100% - 12px) 100%, 12px 100%, 0 calc(100% - 12px))";
 ---
 
 <details
@@ -27,21 +25,21 @@ const bevelClip =
   style={{ "--accordion-theme-color": themeColor }}
 >
   <summary
-    class="relative w-full p-px cursor-pointer text-left block focus:outline-none transition-all duration-300 list-none [&::-webkit-details-marker]:hidden bg-white/5 group-open:bg-(--accordion-theme-color)"
-    style={{ clipPath: bevelClip }}
+    class="clip-bevel group/summary relative w-full p-[1px] pb-[3px] cursor-pointer text-left block focus:outline-none transition-all duration-300 list-none [&::-webkit-details-marker]:hidden bg-white/5 hover:bg-white/10 group-open:bg-(--accordion-theme-color) group-open:hover:bg-(--accordion-theme-color)"
+    style="--bv: 12px;"
   >
     <div
-      class="bg-slate-950/70 backdrop-blur-md px-4 py-4 flex items-center justify-between"
-      style={{ clipPath: bevelClip }}
+      class="clip-bevel bg-slate-950/70 group-hover/summary:bg-slate-900/60 backdrop-blur-md px-4 py-4 flex items-center justify-between transition-colors duration-300"
+      style="--bv: 12px;"
     >
       <div class="flex items-center gap-3">
         <span
-          class="text-xs font-mono text-white/30 transition-colors duration-300 group-open:text-white"
+          class="text-xs font-mono text-white/30 transition-colors duration-300 group-hover/summary:text-white/50 group-open:text-white"
         >
           {(index + 1).toString().padStart(2, "0")}
         </span>
         <span
-          class="text-sm font-semibold text-white/60 transition-colors duration-300 group-open:text-white"
+          class="text-sm font-semibold text-white/60 transition-colors duration-300 group-hover/summary:text-white/80 group-open:text-white"
         >
           {title}
         </span>

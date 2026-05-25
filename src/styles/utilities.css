@@ -20,4 +20,17 @@
       line-height: 0.95;
     }
   }
+
+  .clip-bevel {
+    clip-path: polygon(
+      0 var(--bv, 12px),
+      var(--bv, 12px) 0,
+      calc(100% - var(--bv, 12px)) 0,
+      100% var(--bv, 12px),
+      100% calc(100% - var(--bv, 12px)),
+      calc(100% - var(--bv, 12px)) 100%,
+      var(--bv, 12px) 100%,
+      0 calc(100% - var(--bv, 12px))
+    );
+  }
 }

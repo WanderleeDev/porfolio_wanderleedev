@@ -15,49 +15,37 @@ const skills = skillsT.list;
 <section
   id="skills"
   data-section={skillsT.attr_data}
-  class="section-page relative min-h-dvh py-20 px-4 md:px-8 flex flex-col items-center justify-center overflow-x-clip"
+  class="section-page relative min-h-dvh py-20 px-4 lg:px-8 flex flex-col items-center justify-center overflow-x-clip"
 >
-  <div class="max-w-7xl w-full mx-auto">
-    <div class="w-full flex flex-col gap-12 lg:gap-16 max-lg:absolute max-lg:pointer-events-none max-lg:opacity-0 max-lg:h-0 max-lg:w-0 max-lg:overflow-hidden">
-      <header class="space-y-6 w-full relative z-10">
-        <DecorativeAccent />
-        <Title customClass="skills-title">
-          {skillsT.sectionTitle}
-        </Title>
-        <Paragraph customClass="skills-text w-full">
-          {skillsT.sectionDescription}
-        </Paragraph>
-      </header>
+  <div class="max-w-7xl w-full mx-auto flex flex-col gap-12 lg:gap-16">
+    <header class="space-y-6 w-full relative z-10">
+      <DecorativeAccent />
+      <Title customClass="skills-title">
+        {skillsT.sectionTitle}
+      </Title>
+      <Paragraph customClass="skills-text w-full">
+        {skillsT.sectionDescription}
+      </Paragraph>
+    </header>
 
+    <div class="w-full max-lg:absolute max-lg:pointer-events-none max-lg:opacity-0 max-lg:h-0 max-lg:w-0 max-lg:overflow-hidden">
       <SkillDesktopDeck skills={skills} />
     </div>
 
-    <div class="w-full flex flex-col space-y-8 mt-6 lg:absolute lg:pointer-events-none lg:opacity-0 lg:h-0 lg:w-0 lg:overflow-hidden">
-      <header class="relative z-10 space-y-6 flex flex-col">
-        <DecorativeAccent />
-        <Title customClass="skills-title-mobile">
-          {skillsT.sectionTitle}
-        </Title>
-        <Paragraph customClass="skills-text-mobile w-full">
-          {skillsT.sectionDescription}
-        </Paragraph>
-      </header>
-
-      <div class="w-full space-y-4" id="skills-accordion">
-        {
-          skills.map(({ title, techs, accent }, index) => {
-            return (
-              <SkillAccordionItem
-                title={title}
-                techs={techs}
-                index={index}
-                themeColor={accent}
-                isFirst={index === 0}
-              />
-            );
-          })
-        }
-      </div>
+    <div class="w-full space-y-4 lg:absolute lg:pointer-events-none lg:opacity-0 lg:h-0 lg:w-0 lg:overflow-hidden" id="skills-accordion">
+      {
+        skills.map(({ title, techs, accent }, index) => {
+          return (
+            <SkillAccordionItem
+              title={title}
+              techs={techs}
+              index={index}
+              themeColor={accent}
+              isFirst={index === 0}
+            />
+          );
+        })
+      }
     </div>
   </div>
 </section>
@@ -69,5 +57,4 @@ const skills = skillsT.list;
   import { createRevealSectionTL } from "../utils/createRevealSectionTL";
 
   createRevealSectionTL(".skills-title", ".skills-text");
-  createRevealSectionTL(".skills-title-mobile", ".skills-text-mobile");
 </script>

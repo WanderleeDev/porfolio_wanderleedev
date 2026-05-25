@@ -1,0 +1,279 @@
+---
+import Icon from "astro-iconify";
+import FloatingElements from "./FloatingElements.astro";
+
+interface Props {
+  skills: {
+    title: string;
+    accent: string;
+    techs: { color: string; icon: string }[];
+  }[];
+}
+
+const { skills } = Astro.props;
+---
+
+<div
+  class="skills-deck relative grid grid-cols-[2fr_3fr] gap-x-12 lg:gap-x-16 h-[430px] lg:h-[460px]"
+>
+  {
+    skills.map((_, i) => (
+      <input
+        type="radio"
+        id={`skills-tab-${i}`}
+        name="skills-deck"
+        checked={i === 0}
+        hidden
+      />
+    ))
+  }
+
+  <div
+    class="col-start-1 row-start-1 flex flex-col gap-2 justify-center relative z-10"
+  >
+    {
+      skills.map(({ title, accent }, i) => (
+        <label
+          for={`skills-tab-${i}`}
+          data-tab={i}
+          class="skill-tab-label relative w-full p-[1px] cursor-pointer select-none flex items-stretch transition-all duration-300 bg-white/5"
+          style={{ "--tab-accent": accent }}
+        >
+          <div class="skill-tab-inner w-full bg-slate-950/70 backdrop-blur-md px-4 py-3 flex items-center gap-3">
+            <span class="tab-num text-xs font-mono text-white/30 transition-colors duration-300">
+              {(i + 1).toString().padStart(2, "0")}
+            </span>
+            <span class="tab-text text-sm font-semibold text-white/60 transition-colors duration-300">
+              {title}
+            </span>
+            <div
+              class="tab-dot ml-auto w-1.5 h-1.5 rounded-full opacity-0 scale-90 transition-all duration-300"
+              style={{
+                backgroundColor: accent,
+                boxShadow: `0 0 8px ${accent}`,
+              }}
+            />
+          </div>
+        </label>
+      ))
+    }
+
+    <FloatingElements />
+  </div>
+
+  {
+    skills.map(({ title, techs, accent }, i) => {
+      let innerGrid = "grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-3";
+      if (title.toLowerCase().includes("front")) {
+        innerGrid =
+          "grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-5 gap-2 sm:gap-3";
+      }
+
+      return (
+        <article
+          data-card={i}
+          class="col-start-2 row-start-1 self-stretch opacity-0 pointer-events-none z-0 scale-90 transition-all duration-500 ease-out origin-top outer-bevel p-[1px] shadow-2xl"
+          style={{ background: accent }}
+        >
+          <div
+            class="inner-bevel w-full h-full flex flex-col p-4 sm:p-6 relative z-10"
+            style="background: linear-gradient(135deg, rgba(15,23,42,0.96) 0%, rgba(9,15,30,0.99) 100%);"
+          >
+            <div
+              class="absolute -top-20 -right-20 w-44 h-44 rounded-full blur-3xl opacity-10 pointer-events-none -z-10"
+              style={{ backgroundColor: accent }}
+            />
+            <div
+              class="absolute -bottom-20 -left-20 w-44 h-44 rounded-full blur-3xl opacity-5 pointer-events-none -z-10"
+              style={{ backgroundColor: accent }}
+            />
+
+            <div class="h-full flex flex-col relative z-10">
+              <div class="pb-4 mb-4 border-b border-white/10 flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                  <div
+                    class="w-2.5 h-2.5 rounded-full animate-pulse"
+                    style={{
+                      backgroundColor: accent,
+                      boxShadow: `0 0 8px ${accent}`,
+                    }}
+                  />
+                  <h3 class="text-base sm:text-lg md:text-xl font-bold tracking-wide text-white/95">
+                    {title}
+                  </h3>
+                </div>
+                <span class="text-[10px] md:text-xs font-semibold uppercase tracking-wider text-white/30 font-mono">
+                  {(i + 1).toString().padStart(2, "00")}
+                </span>
+              </div>
+
+              <div class="flex-1 overflow-y-auto pr-1 custom-scrollbar">
+                <div class={innerGrid}>
+                  {techs.map((tech) => (
+                    <div class="flex flex-col items-center justify-center p-2 sm:p-3 rounded-xl border border-white/5 bg-white/[0.02] transition-all duration-300 hover:border-white/15 hover:bg-white/[0.06] hover:-translate-y-0.5 group">
+                      <div class="relative flex items-center justify-center p-0.5 sm:p-1">
+                        <div
+                          class="absolute inset-0 rounded-full blur-md opacity-0 group-hover:opacity-40 transition-opacity duration-300 pointer-events-none"
+                          style={{ backgroundColor: tech.color }}
+                        />
+                        <Icon
+                          name={tech.icon}
+                          class="w-7 h-7 sm:w-8 sm:h-8 lg:w-9 lg:h-9 relative z-10 transition-transform duration-300 group-hover:scale-110"
+                          style={{ color: tech.color }}
+                        />
+                      </div>
+                      <span class="text-[9px] capitalize sm:text-[10px] lg:text-xs mt-1.5 sm:mt-2 font-medium text-white/50 group-hover:text-white transition-colors duration-300 text-center truncate w-full px-0.5">
+                        {tech.icon.includes("greensock")
+                          ? "gsap"
+                          : tech.icon.split(":")[1]}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        </article>
+      );
+    })
+  }
+</div>
+
+<style>
+  .outer-bevel,
+  .inner-bevel {
+    --bv: 24px;
+    clip-path: polygon(
+      0 var(--bv),
+      var(--bv) 0,
+      calc(100% - var(--bv)) 0,
+      100% var(--bv),
+      100% calc(100% - var(--bv)),
+      calc(100% - var(--bv)) 100%,
+      var(--bv) 100%,
+      0 calc(100% - var(--bv))
+    );
+  }
+
+  .skill-tab-label,
+  .skill-tab-inner {
+    --bv: 12px;
+    clip-path: polygon(
+      0 var(--bv),
+      var(--bv) 0,
+      calc(100% - var(--bv)) 0,
+      100% var(--bv),
+      100% calc(100% - var(--bv)),
+      calc(100% - var(--bv)) 100%,
+      var(--bv) 100%,
+      0 calc(100% - var(--bv))
+    );
+  }
+
+  .skills-deck:has(#skills-tab-0:checked) .skill-tab-label[data-tab="0"],
+  .skills-deck:has(#skills-tab-1:checked) .skill-tab-label[data-tab="1"],
+  .skills-deck:has(#skills-tab-2:checked) .skill-tab-label[data-tab="2"],
+  .skills-deck:has(#skills-tab-3:checked) .skill-tab-label[data-tab="3"],
+  .skills-deck:has(#skills-tab-4:checked) .skill-tab-label[data-tab="4"] {
+    background-color: var(--tab-accent);
+  }
+
+  .skills-deck:has(#skills-tab-0:checked)
+    .skill-tab-label[data-tab="0"]
+    .tab-num,
+  .skills-deck:has(#skills-tab-0:checked)
+    .skill-tab-label[data-tab="0"]
+    .tab-text,
+  .skills-deck:has(#skills-tab-1:checked)
+    .skill-tab-label[data-tab="1"]
+    .tab-num,
+  .skills-deck:has(#skills-tab-1:checked)
+    .skill-tab-label[data-tab="1"]
+    .tab-text,
+  .skills-deck:has(#skills-tab-2:checked)
+    .skill-tab-label[data-tab="2"]
+    .tab-num,
+  .skills-deck:has(#skills-tab-2:checked)
+    .skill-tab-label[data-tab="2"]
+    .tab-text,
+  .skills-deck:has(#skills-tab-3:checked)
+    .skill-tab-label[data-tab="3"]
+    .tab-num,
+  .skills-deck:has(#skills-tab-3:checked)
+    .skill-tab-label[data-tab="3"]
+    .tab-text,
+  .skills-deck:has(#skills-tab-4:checked)
+    .skill-tab-label[data-tab="4"]
+    .tab-num,
+  .skills-deck:has(#skills-tab-4:checked)
+    .skill-tab-label[data-tab="4"]
+    .tab-text {
+    color: white;
+  }
+
+  .skills-deck:has(#skills-tab-0:checked)
+    .skill-tab-label[data-tab="0"]
+    .tab-dot,
+  .skills-deck:has(#skills-tab-1:checked)
+    .skill-tab-label[data-tab="1"]
+    .tab-dot,
+  .skills-deck:has(#skills-tab-2:checked)
+    .skill-tab-label[data-tab="2"]
+    .tab-dot,
+  .skills-deck:has(#skills-tab-3:checked)
+    .skill-tab-label[data-tab="3"]
+    .tab-dot,
+  .skills-deck:has(#skills-tab-4:checked)
+    .skill-tab-label[data-tab="4"]
+    .tab-dot {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  .skills-deck:has(#skills-tab-0:checked) article[data-card="0"],
+  .skills-deck:has(#skills-tab-1:checked) article[data-card="1"],
+  .skills-deck:has(#skills-tab-2:checked) article[data-card="2"],
+  .skills-deck:has(#skills-tab-3:checked) article[data-card="3"],
+  .skills-deck:has(#skills-tab-4:checked) article[data-card="4"] {
+    opacity: 1;
+    pointer-events: auto;
+    z-index: 30;
+    transform: scale(1) translateY(0) rotate(0deg);
+  }
+
+  .skills-deck:has(#skills-tab-0:checked) article[data-card="4"],
+  .skills-deck:has(#skills-tab-1:checked) article[data-card="0"],
+  .skills-deck:has(#skills-tab-2:checked) article[data-card="1"],
+  .skills-deck:has(#skills-tab-3:checked) article[data-card="2"],
+  .skills-deck:has(#skills-tab-4:checked) article[data-card="3"] {
+    opacity: 0.8;
+    pointer-events: none;
+    z-index: 20;
+    transform: scale(0.96) translateY(12px) rotate(1.5deg);
+  }
+
+  .skills-deck:has(#skills-tab-0:checked) article[data-card="3"],
+  .skills-deck:has(#skills-tab-1:checked) article[data-card="4"],
+  .skills-deck:has(#skills-tab-2:checked) article[data-card="0"],
+  .skills-deck:has(#skills-tab-3:checked) article[data-card="1"],
+  .skills-deck:has(#skills-tab-4:checked) article[data-card="2"] {
+    opacity: 0.5;
+    pointer-events: none;
+    z-index: 10;
+    transform: scale(0.92) translateY(24px) rotate(-2.5deg);
+  }
+
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 4px;
+  }
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 9999px;
+  }
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.15);
+  }
+</style>

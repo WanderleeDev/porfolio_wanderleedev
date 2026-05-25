@@ -1,57 +1,15 @@
 ---
-import FloatingElements from "../components/FloatingElements.astro";
 import DecorativeAccent from "../components/base/DecorativeAccent.astro";
 import Paragraph from "../components/typography/Paragraph.astro";
 import Title from "../components/typography/Title.astro";
-import SkillCardStacking from "../components/SkillCardStacking.astro";
+import SkillDesktopDeck from "../components/SkillDesktopDeck.astro";
+import SkillAccordionItem from "../components/SkillAccordionItem.astro";
 import { getTranslations } from "../i18n/utils";
-import Icon from "astro-iconify";
 
 const lang = Astro.currentLocale as "es" | "en";
 const t = getTranslations(lang);
 const skillsT = t("skills");
 const skills = skillsT.list;
-
-const getCardThemeColor = (title: string) => {
-  const lower = title.toLowerCase();
-  if (lower.includes("stack")) return "#f59e0b"; // Amber
-  if (lower.includes("front")) return "#06b6d4"; // Cyan
-  if (lower.includes("back")) return "#e0234e"; // NestJS Red
-  if (lower.includes("herr") || lower.includes("tool")) return "#10b981"; // Emerald
-  return "#8b5cf6"; // Purple default
-};
-
-const formatTechName = (icon: string) => {
-  const name = icon.split(":")[1];
-  const mapping: Record<string, string> = {
-    postgresql: "PostgreSQL",
-    nestjs: "NestJS",
-    angular: "Angular",
-    nodejs: "Node.js",
-    html5: "HTML5",
-    css3: "CSS3",
-    javascript: "JavaScript",
-    typescript: "TypeScript",
-    react: "React",
-    nextjs: "Next.js",
-    astro: "Astro",
-    sass: "Sass",
-    tailwindcss: "Tailwind CSS",
-    ngrx: "NgRx",
-    python: "Python",
-    fastapi: "FastAPI",
-    java: "Java",
-    spring: "Spring Boot",
-    vuejs: "Vue.js",
-    nuxtjs: "Nuxt.js",
-    bootstrap: "Bootstrap",
-    git: "Git",
-    github: "GitHub",
-    docker: "Docker",
-    trello: "Trello",
-  };
-  return mapping[name] || (name.charAt(0).toUpperCase() + name.slice(1));
-};
 ---
 
 <section
@@ -60,580 +18,56 @@ const formatTechName = (icon: string) => {
   class="section-page relative min-h-dvh py-20 px-4 md:px-8 flex flex-col items-center justify-center overflow-x-clip"
 >
   <div class="max-w-7xl w-full mx-auto">
-    <div class="hidden lg:grid grid-cols-12 gap-12 lg:gap-16 items-center">
-      <header class="relative z-10 lg:col-span-5 space-y-8 flex flex-col justify-center h-full">
-        <div class="space-y-6">
-          <DecorativeAccent />
-
-          <Title customClass="skills-title">
-            {skillsT.sectionTitle}
-          </Title>
-          <Paragraph customClass="skills-text max-w-xl">
-            {skillsT.sectionDescription}
-          </Paragraph>
-        </div>
-
-        <nav class="flex flex-col gap-3 w-full" id="skills-tabs">
-          {skills.map(({ title }, index) => {
-            const themeColor = getCardThemeColor(title);
-            return (
-              <button
-                class="category-tab outer-bevel-category-tab relative w-full p-[1px] cursor-pointer text-left block transition-all duration-300 select-none"
-                data-index={index}
-                data-theme-color={themeColor}
-                style={{ background: "rgba(255, 255, 255, 0.05)" }}
-              >
-                <div
-                  class="inner-bevel-category-tab bg-slate-950/70 backdrop-blur-md px-4 py-3 flex items-center gap-3"
-                >
-                  <span class="category-tab-num text-xs font-mono text-white/30 transition-colors duration-300">
-                    {(index + 1).toString().padStart(2, "0")}
-                  </span>
-                  <span class="category-tab-text text-sm font-semibold text-white/60 transition-colors duration-300">
-                    {title}
-                  </span>
-                  <div 
-                    class="category-tab-dot ml-auto w-1.5 h-1.5 rounded-full opacity-0 scale-50 transition-all duration-300"
-                    style={{ backgroundColor: themeColor, boxShadow: `0 0 8px ${themeColor}` }}
-                  />
-                </div>
-              </button>
-            );
-          })}
-        </nav>
-
-        <FloatingElements />
+    <div class="w-full flex flex-col gap-12 lg:gap-16 max-lg:absolute max-lg:pointer-events-none max-lg:opacity-0 max-lg:h-0 max-lg:w-0 max-lg:overflow-hidden">
+      <header class="space-y-6 w-full relative z-10">
+        <DecorativeAccent />
+        <Title customClass="skills-title">
+          {skillsT.sectionTitle}
+        </Title>
+        <Paragraph customClass="skills-text w-full">
+          {skillsT.sectionDescription}
+        </Paragraph>
       </header>
 
-      <div class="lg:col-span-7 w-full flex justify-center items-center py-8">
-        <SkillCardStacking skills={skills} />
-      </div>
+      <SkillDesktopDeck skills={skills} />
     </div>
 
-    <div class="lg:hidden w-full flex flex-col space-y-8 mt-6">
+    <div class="w-full flex flex-col space-y-8 mt-6 lg:absolute lg:pointer-events-none lg:opacity-0 lg:h-0 lg:w-0 lg:overflow-hidden">
       <header class="relative z-10 space-y-6 flex flex-col">
         <DecorativeAccent />
         <Title customClass="skills-title-mobile">
           {skillsT.sectionTitle}
         </Title>
-        <Paragraph customClass="skills-text-mobile max-w-xl">
+        <Paragraph customClass="skills-text-mobile w-full">
           {skillsT.sectionDescription}
         </Paragraph>
       </header>
 
       <div class="w-full space-y-4" id="skills-accordion">
-        {skills.map(({ title, techs }, index) => {
-          const themeColor = getCardThemeColor(title);
-          
-          let innerGridClass = "grid grid-cols-2 sm:grid-cols-3 gap-2.5 sm:gap-3.5";
-          if (title.toLowerCase().includes("front")) {
-            innerGridClass = "grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3.5";
-          }
-
-          return (
-            <div class="accordion-item w-full" data-index={index}>
-              <button
-                class="accordion-header outer-bevel-accordion-header relative w-full p-[1px] cursor-pointer text-left block focus:outline-none transition-all duration-300"
-                style={{ background: "rgba(255, 255, 255, 0.05)" }}
-                data-theme-color={themeColor}
-              >
-                <div
-                  class="inner-bevel-accordion-header bg-slate-950/70 backdrop-blur-md px-4 py-4 flex items-center justify-between"
-                >
-                  <div class="flex items-center gap-3">
-                    <span class="accordion-header-num text-xs font-mono text-white/30 transition-colors duration-300">
-                      {(index + 1).toString().padStart(2, "0")}
-                    </span>
-                    <span class="accordion-header-text text-sm font-semibold text-white/60 transition-colors duration-300">
-                      {title}
-                    </span>
-                    <div 
-                      class="accordion-header-dot w-1.5 h-1.5 rounded-full opacity-0 scale-50 transition-all duration-300"
-                      style={{ backgroundColor: themeColor, boxShadow: `0 0 8px ${themeColor}` }}
-                    />
-                  </div>
-                  <Icon
-                    name="mdi:chevron-down"
-                    class="accordion-header-chevron w-5 h-5 text-white/40 transition-transform duration-300"
-                  />
-                </div>
-              </button>
-
-              <div class="accordion-panel overflow-hidden h-0 transition-all duration-300 ease-out">
-                <div class="py-4 px-2 sm:px-4">
-                  <div class={innerGridClass}>
-                    {techs.map((tech) => (
-                      <div 
-                        class="tech-tile flex flex-col items-center justify-center p-2.5 rounded-xl border border-white/5 bg-white/[0.02] transition-all duration-300 hover:border-white/15 hover:bg-white/[0.06] hover:-translate-y-0.5 group"
-                      >
-                        <div class="relative flex items-center justify-center p-0.5">
-                          <div 
-                            class="absolute inset-0 rounded-full blur-md opacity-0 group-hover:opacity-40 transition-opacity duration-300 pointer-events-none"
-                            style={{ backgroundColor: tech.color }}
-                          />
-                          <Icon
-                            name={tech.icon}
-                            class="w-8 h-8 relative z-10 transition-transform duration-300 group-hover:scale-110"
-                            style={{ color: tech.color }}
-                          />
-                        </div>
-                        <span class="text-[10px] mt-1.5 font-medium text-white/50 group-hover:text-white transition-colors duration-300 text-center truncate w-full px-0.5">
-                          {formatTechName(tech.icon)}
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </div>
-          );
-        })}
+        {
+          skills.map(({ title, techs, accent }, index) => {
+            return (
+              <SkillAccordionItem
+                title={title}
+                techs={techs}
+                index={index}
+                themeColor={accent}
+                isFirst={index === 0}
+              />
+            );
+          })
+        }
       </div>
     </div>
   </div>
 </section>
 
 <style>
-  .scrollbar-none::-webkit-scrollbar {
-    display: none;
-  }
-  .scrollbar-none {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-  }
-
-  /* Accordion Header Bevel Clip Path shapes */
-  .outer-bevel-accordion-header {
-    --accordion-bevel: 12px;
-    clip-path: polygon(
-      0 var(--accordion-bevel),
-      var(--accordion-bevel) 0,
-      calc(100% - var(--accordion-bevel)) 0,
-      100% var(--accordion-bevel),
-      100% calc(100% - var(--accordion-bevel)),
-      calc(100% - var(--accordion-bevel)) 100%,
-      var(--accordion-bevel) 100%,
-      0 calc(100% - var(--accordion-bevel))
-    );
-  }
-  
-  .inner-bevel-accordion-header {
-    --accordion-bevel: 12px;
-    clip-path: polygon(
-      0 var(--accordion-bevel),
-      var(--accordion-bevel) 0,
-      calc(100% - var(--accordion-bevel)) 0,
-      100% var(--accordion-bevel),
-      100% calc(100% - var(--accordion-bevel)),
-      calc(100% - var(--accordion-bevel)) 100%,
-      var(--accordion-bevel) 100%,
-      0 calc(100% - var(--accordion-bevel))
-    );
-  }
-
-  /* Category Tab Bevel Clip Path shapes */
-  .outer-bevel-category-tab {
-    --tab-bevel: 12px;
-    clip-path: polygon(
-      0 var(--tab-bevel),
-      var(--tab-bevel) 0,
-      calc(100% - var(--tab-bevel)) 0,
-      100% var(--tab-bevel),
-      100% calc(100% - var(--tab-bevel)),
-      calc(100% - var(--tab-bevel)) 100%,
-      var(--tab-bevel) 100%,
-      0 calc(100% - var(--tab-bevel))
-    );
-  }
-  
-  .inner-bevel-category-tab {
-    --tab-bevel: 12px;
-    clip-path: polygon(
-      0 var(--tab-bevel),
-      var(--tab-bevel) 0,
-      calc(100% - var(--tab-bevel)) 0,
-      100% var(--tab-bevel),
-      100% calc(100% - var(--tab-bevel)),
-      calc(100% - var(--tab-bevel)) 100%,
-      var(--tab-bevel) 100%,
-      0 calc(100% - var(--tab-bevel))
-    );
-  }
 </style>
 
 <script>
   import { createRevealSectionTL } from "../utils/createRevealSectionTL";
-  import { gsap } from "../utils/gsapConfig";
-  import { $$, $ } from "../utils/selectors";
 
   createRevealSectionTL(".skills-title", ".skills-text");
   createRevealSectionTL(".skills-title-mobile", ".skills-text-mobile");
-
-  function initInteractiveDeck() {
-    const tabs = $$<HTMLButtonElement>(".category-tab");
-    const cards = $$<HTMLElement>(".skill-card");
-    const N = cards.length;
-    let activeIndex = 0;
-    let isAnimating = false;
-
-    if (!tabs || !cards || N === 0) return;
-
-    // Helper to calculate stack styling for each card
-    function getCardLayout(index: number, activeIdx: number) {
-      const diff = (index - activeIdx + N) % N;
-      if (diff === 0) {
-        return {
-          zIndex: N + 10,
-          scale: 1,
-          y: 0,
-          x: 0,
-          rotate: 0,
-          opacity: 1,
-          pointerEvents: "auto" as const
-        };
-      } else if (diff === 1) {
-        return {
-          zIndex: N + 5,
-          scale: 0.96,
-          y: 12,
-          x: 6,
-          rotate: 1.5,
-          opacity: 0.8,
-          pointerEvents: "none" as const
-        };
-      } else if (diff === 2) {
-        return {
-          zIndex: N,
-          scale: 0.92,
-          y: 24,
-          x: -12,
-          rotate: -3,
-          opacity: 0.5,
-          pointerEvents: "none" as const
-        };
-      } else {
-        return {
-          zIndex: N - diff,
-          scale: 0.88,
-          y: 36,
-          x: 18,
-          rotate: 4.5,
-          opacity: 0,
-          pointerEvents: "none" as const
-        };
-      }
-    }
-
-    // Function to change the active card and update UI
-    function updateActiveCard(targetIdx: number, flyOutDirection: number = 0) {
-      if (isAnimating) return;
-      isAnimating = true;
-
-      // Update active tab styles
-      tabs.forEach((tab, index) => {
-        const dot = tab.querySelector(".category-tab-dot");
-        const num = tab.querySelector(".category-tab-num");
-        const text = tab.querySelector(".category-tab-text");
-        const activeThemeColor = tab.getAttribute("data-theme-color") || "";
-
-        if (index === targetIdx) {
-          tab.style.background = activeThemeColor;
-          
-          if (dot) dot.classList.remove("opacity-0", "scale-50");
-          if (dot) dot.classList.add("opacity-100", "scale-100");
-          if (num) {
-            num.classList.remove("text-white/30");
-            num.classList.add("text-white");
-          }
-          if (text) {
-            text.classList.remove("text-white/60");
-            text.classList.add("text-white");
-          }
-          
-          // Scroll active tab into view on mobile
-          tab.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" });
-        } else {
-          tab.style.background = "rgba(255, 255, 255, 0.05)";
-          
-          if (dot) {
-            dot.classList.add("opacity-0", "scale-50");
-            dot.classList.remove("opacity-100", "scale-100");
-          }
-          if (num) {
-            num.classList.add("text-white/30");
-            num.classList.remove("text-white");
-          }
-          if (text) {
-            text.classList.add("text-white/60");
-            text.classList.remove("text-white");
-          }
-        }
-      });
-
-      const currentCard = cards[activeIndex];
-      activeIndex = targetIdx;
-
-      if (flyOutDirection !== 0) {
-        // 1. Swipe animation for current card
-        gsap.to(currentCard, {
-          x: flyOutDirection * 220,
-          y: -20,
-          rotate: flyOutDirection * 8,
-          opacity: 0.1,
-          duration: 0.35,
-          ease: "power2.in",
-          onComplete: () => {
-            const layout = getCardLayout(cards.indexOf(currentCard), activeIndex);
-            gsap.set(currentCard, { zIndex: layout.zIndex });
-            
-            // Bring card back in from bottom of stack
-            gsap.to(currentCard, {
-              x: layout.x,
-              y: layout.y,
-              scale: layout.scale,
-              rotate: layout.rotate,
-              opacity: layout.opacity,
-              duration: 0.45,
-              ease: "power2.out"
-            });
-            
-            setTimeout(() => { isAnimating = false; }, 450);
-          }
-        });
-
-        // 2. Simultaneously animate all OTHER cards to their new layouts
-        cards.forEach((card, index) => {
-          if (card === currentCard) return;
-          const layout = getCardLayout(index, activeIndex);
-          
-          if (index === activeIndex) {
-            gsap.set(card, { zIndex: layout.zIndex });
-          }
-          
-          gsap.to(card, {
-            x: layout.x,
-            y: layout.y,
-            scale: layout.scale,
-            rotate: layout.rotate,
-            opacity: layout.opacity,
-            duration: 0.55,
-            ease: "power3.out"
-          });
-        });
-      } else {
-        // Tab click: animate all cards simultaneously
-        let animatedCount = 0;
-        cards.forEach((card, index) => {
-          const layout = getCardLayout(index, activeIndex);
-          
-          if (index === activeIndex) {
-            gsap.set(card, { zIndex: layout.zIndex });
-          }
-          
-          gsap.to(card, {
-            x: layout.x,
-            y: layout.y,
-            scale: layout.scale,
-            rotate: layout.rotate,
-            opacity: layout.opacity,
-            duration: 0.6,
-            ease: "power3.out",
-            onComplete: () => {
-              gsap.set(card, { zIndex: layout.zIndex });
-              animatedCount++;
-              if (animatedCount === N) {
-                isAnimating = false;
-              }
-            }
-          });
-        });
-      }
-    }
-
-    // Set initial layout
-    tabs.forEach((tab, index) => {
-      tab.addEventListener("click", () => {
-        if (isAnimating || index === activeIndex) return;
-        updateActiveCard(index);
-      });
-    });
-
-    cards.forEach((card, index) => {
-      const layout = getCardLayout(index, activeIndex);
-      gsap.set(card, {
-        x: layout.x,
-        y: layout.y,
-        scale: layout.scale,
-        rotate: layout.rotate,
-        opacity: layout.opacity,
-        zIndex: layout.zIndex,
-      });
-
-      card.addEventListener("click", () => {
-        if (isAnimating) return;
-        
-        const cardIdx = cards.indexOf(card);
-        // Cycle deck on active card click
-        if (cardIdx === activeIndex) {
-          const nextIdx = (activeIndex + 1) % N;
-          updateActiveCard(nextIdx, 1); // Swipe to the right
-        }
-      });
-    });
-
-    // Initialize first tab styles
-    updateActiveCard(0);
-  }
-
-  function initMobileAccordion() {
-    const items = $$<HTMLElement>(".accordion-item");
-    if (!items || items.length === 0) return;
-
-    items.forEach((item) => {
-      const header = item.querySelector(".accordion-header") as HTMLButtonElement;
-      const panel = item.querySelector(".accordion-panel") as HTMLDivElement;
-      const dot = item.querySelector(".accordion-header-dot") as HTMLDivElement;
-      const num = item.querySelector(".accordion-header-num") as HTMLSpanElement;
-      const text = item.querySelector(".accordion-header-text") as HTMLSpanElement;
-      const chevron = item.querySelector(".accordion-header-chevron") as HTMLElement;
-      
-      if (!header || !panel) return;
-
-      const themeColor = header.getAttribute("data-theme-color") || "";
-
-      header.addEventListener("click", () => {
-        const isOpen = item.classList.contains("active");
-
-        // Close all other items
-        items.forEach((otherItem) => {
-          if (otherItem !== item && otherItem.classList.contains("active")) {
-            otherItem.classList.remove("active");
-            const otherHeader = otherItem.querySelector(".accordion-header") as HTMLButtonElement;
-            const otherPanel = otherItem.querySelector(".accordion-panel") as HTMLDivElement;
-            const otherDot = otherItem.querySelector(".accordion-header-dot") as HTMLDivElement;
-            const otherNum = otherItem.querySelector(".accordion-header-num") as HTMLSpanElement;
-            const otherText = otherItem.querySelector(".accordion-header-text") as HTMLSpanElement;
-            const otherChevron = otherItem.querySelector(".accordion-header-chevron") as HTMLElement;
-
-            otherHeader.style.background = "rgba(255, 255, 255, 0.05)";
-            otherHeader.style.borderColor = "transparent";
-            
-            if (otherDot) {
-              otherDot.classList.add("opacity-0", "scale-50");
-              otherDot.classList.remove("opacity-100", "scale-100");
-            }
-            if (otherNum) {
-              otherNum.classList.add("text-white/30");
-              otherNum.classList.remove("text-white");
-            }
-            if (otherText) {
-              otherText.classList.add("text-white/60");
-              otherText.classList.remove("text-white");
-            }
-            if (otherChevron) {
-              gsap.to(otherChevron, { rotate: 0, duration: 0.3 });
-            }
-
-            // Animate panel height to 0
-            gsap.to(otherPanel, { height: 0, duration: 0.3, ease: "power2.out" });
-          }
-        });
-
-        // Toggle current item
-        if (isOpen) {
-          item.classList.remove("active");
-          header.style.background = "rgba(255, 255, 255, 0.05)";
-          header.style.borderColor = "transparent";
-          
-          if (dot) {
-            dot.classList.add("opacity-0", "scale-50");
-            dot.classList.remove("opacity-100", "scale-100");
-          }
-          if (num) {
-            num.classList.add("text-white/30");
-            num.classList.remove("text-white");
-          }
-          if (text) {
-            text.classList.add("text-white/60");
-            text.classList.remove("text-white");
-          }
-          if (chevron) {
-            gsap.to(chevron, { rotate: 0, duration: 0.3 });
-          }
-          gsap.to(panel, { height: 0, duration: 0.3, ease: "power2.out" });
-        } else {
-          item.classList.add("active");
-          header.style.background = themeColor;
-          header.style.borderColor = `${themeColor}40`;
-          
-          if (dot) {
-            dot.classList.remove("opacity-0", "scale-50");
-            dot.classList.add("opacity-100", "scale-100");
-          }
-          if (num) {
-            num.classList.remove("text-white/30");
-            num.classList.add("text-white");
-          }
-          if (text) {
-            text.classList.remove("text-white/60");
-            text.classList.add("text-white");
-          }
-          if (chevron) {
-            gsap.to(chevron, { rotate: 180, duration: 0.3 });
-          }
-          // Animate panel height to auto
-          gsap.set(panel, { height: "auto" });
-          const height = panel.clientHeight;
-          gsap.set(panel, { height: 0 });
-          gsap.to(panel, {
-            height: height,
-            duration: 0.35,
-            ease: "power2.out",
-            onComplete: () => {
-              if (item.classList.contains("active")) {
-                gsap.set(panel, { height: "auto" });
-              }
-            }
-          });
-        }
-      });
-    });
-
-    // Open first item by default
-    const firstItem = items[0];
-    if (firstItem) {
-      const header = firstItem.querySelector(".accordion-header") as HTMLButtonElement;
-      const panel = firstItem.querySelector(".accordion-panel") as HTMLDivElement;
-      const dot = firstItem.querySelector(".accordion-header-dot") as HTMLDivElement;
-      const num = firstItem.querySelector(".accordion-header-num") as HTMLSpanElement;
-      const text = firstItem.querySelector(".accordion-header-text") as HTMLSpanElement;
-      const chevron = firstItem.querySelector(".accordion-header-chevron") as HTMLElement;
-
-      const themeColor = header.getAttribute("data-theme-color") || "";
-
-      firstItem.classList.add("active");
-      header.style.background = themeColor;
-      header.style.borderColor = `${themeColor}40`;
-      if (dot) {
-        dot.classList.remove("opacity-0", "scale-50");
-        dot.classList.add("opacity-100", "scale-100");
-      }
-      if (num) {
-        num.classList.remove("text-white/30");
-        num.classList.add("text-white");
-      }
-      if (text) {
-        text.classList.remove("text-white/60");
-        text.classList.add("text-white");
-      }
-      if (chevron) {
-        gsap.set(chevron, { rotate: 180 });
-      }
-      gsap.set(panel, { height: "auto" });
-    }
-  }
-
-  // Run on page load
-  initInteractiveDeck();
-  initMobileAccordion();
 </script>

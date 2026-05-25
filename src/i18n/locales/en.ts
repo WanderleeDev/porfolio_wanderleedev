@@ -75,6 +75,7 @@ export const en = {
     list: [
       {
         title: "My Stack",
+        accent: "#f59e0b",
         techs: [
           { color: "#336791", icon: "devicon:postgresql" },
           { color: "#E0234E", icon: "devicon:nestjs" },
@@ -84,6 +85,7 @@ export const en = {
       },
       {
         title: "Frontend",
+        accent: "#06b6d4",
         techs: [
           { color: "#E44D26", icon: "devicon:html5" },
           { color: "#4884B7", icon: "devicon:css3" },
@@ -96,10 +98,12 @@ export const en = {
           { color: "#CC6699", icon: "devicon:sass" },
           { color: "#06B6D4", icon: "devicon:tailwindcss" },
           { color: "#d2227d", icon: "devicon:ngrx" },
+          { color: "#82D701", icon: "simple-icons:greensock" },
         ],
       },
       {
         title: "Backend",
+        accent: "#e0234e",
         techs: [
           { color: "#339933", icon: "devicon:nodejs" },
           { color: "#E0234E", icon: "devicon:nestjs" },
@@ -110,15 +114,18 @@ export const en = {
       },
       {
         title: "Familiar With",
+        accent: "#8b5cf6",
         techs: [
           { color: "#ffc331", icon: "devicon:python" },
           { color: "#009688", icon: "devicon:fastapi" },
           { color: "#42b883", icon: "devicon:vuejs" },
+          { color: "#ffffff", icon: "devicon:express" },
           { color: "#8C38EF", icon: "devicon:bootstrap" },
         ],
       },
       {
         title: "Tools",
+        accent: "#10b981",
         techs: [
           { color: "#F05032", icon: "devicon:git" },
           { color: "#9e9e9e", icon: "devicon:github" },

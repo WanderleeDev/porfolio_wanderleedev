@@ -92,6 +92,7 @@ export const es = {
           { color: "#007ACC", icon: "devicon:typescript" },
           { color: "#00d8ff", icon: "devicon:react" },
           { color: "#9e9e9e", icon: "devicon:nextjs" },
+          { color: "#DD0031", icon: "devicon:angular" },
           { color: "#ff5d01", icon: "devicon:astro" },
           { color: "#CC6699", icon: "devicon:sass" },
           { color: "#06B6D4", icon: "devicon:tailwindcss" },
@@ -101,9 +102,9 @@ export const es = {
       {
         title: "Backend",
         techs: [
-          { color: "#ffc331", icon: "devicon:python" },
-          { color: "#009688", icon: "devicon:fastapi" },
+          { color: "#339933", icon: "devicon:nodejs" },
           { color: "#E0234E", icon: "devicon:nestjs" },
+          { color: "#336791", icon: "devicon:postgresql" },
           { color: "#ED8B00", icon: "devicon:java" },
           { color: "#6DB33F", icon: "devicon:spring" },
         ],
@@ -111,8 +112,9 @@ export const es = {
       {
         title: "Familiarizado con",
         techs: [
+          { color: "#ffc331", icon: "devicon:python" },
+          { color: "#009688", icon: "devicon:fastapi" },
           { color: "#42b883", icon: "devicon:vuejs" },
-          { color: "#00DC82", icon: "devicon:nuxtjs" },
           { color: "#8C38EF", icon: "devicon:bootstrap" },
         ],
       },
@@ -167,20 +169,16 @@ export const es = {
         label: "ver demo ubuntu",
       },
       {
-        title: "Retro Blog",
-        description:
-          "Desarrollado con la librería Nes CSS, presenta pequeños blogs de contenido estático y usa animaciones de scroll CSS",
-        problem:
-          "Crear una experiencia de blog atractiva con estética retro única mientras se mantiene el rendimiento web moderno.",
-        solution:
-          "Aproveché Astro para generación de sitios estáticos y Nes CSS para estilo retro, implementando animaciones de scroll CSS para una experiencia de lectura interactiva.",
-        impact:
-          "Logré una puntuación Lighthouse de 95+ con identidad visual única, demostrando capacidad para mezclar creatividad con rendimiento.",
-        demo_url: "https://retro-blog-two.vercel.app/",
-        technologies: ["astro", "css", "typeScript"],
+        title: "Ngx-theme-stack",
+        description: "Biblioteca de Angular moderna y compatible con SSR para gestionar el modo oscuro, el modo claro y temas personalizados a través de Angular Signals.",
+        problem: "Crear un sistema de temas para una aplicación de Angular puede ser complejo y requerir mucho tiempo.",
+        solution: "Ngx-theme-stack proporciona una forma sencilla y eficiente de crear temas hermosos y modernos para tu aplicación de Angular.",
+        impact: "Entregué un sistema de temas que se puede utilizar para crear temas hermosos y modernos para tu aplicación de Angular.",
+        demo_url: "https://demo-ngx-theme-stack.wanderlee.site/",
+        technologies: ["angular", "typeScript"],
         image:
-          "https://res.cloudinary.com/dy8gpozi6/image/upload/v1765154110/retro_blog_fejpmv.webp",
-        label: "ver demo retro blog",
+          "https://res.cloudinary.com/dy8gpozi6/image/upload/v1779674696/thumbnail_tkxkkw.jpg",
+        label: "ver demo ngx-theme-stack",
       },
       {
         title: "Switch 2 Clone",

@@ -20,13 +20,15 @@ const { projects } = Astro.props;
 >
   {
     projects.map(({ title, demo_url, image, description, technologies }, i) => (
-      <li 
-        class="card-project will-change-transform group outer-bevel-project relative p-[1px]" 
+      <li
+        class="card-project will-change-transform group clip-bevel relative p-[1px]"
+        style="--bv: 12px;"
       >
         <div class="absolute inset-0 bg-white/10 group-hover:bg-[linear-gradient(135deg,rgba(255,255,255,0.15)_0%,#6366f1_100%)] transition-all duration-500 pointer-events-none" />
 
         <a
-          class="inner-bevel-project overflow-hidden block relative bg-slate-950/85 backdrop-blur-xl transition-all duration-300"
+          class="clip-bevel overflow-hidden block relative bg-slate-950/85 backdrop-blur-xl transition-all duration-300"
+          style="--bv: 12px;"
           target="_blank"
           href={demo_url}
           rel="noopener noreferrer"
@@ -46,7 +48,7 @@ const { projects } = Astro.props;
             <p class="pt-2 lowercase first-letter:uppercase text-neutral-200 hidden lg:block text-sm font-normal">
               {description}.
             </p>
-            
+
             <div class="flex flex-wrap gap-1.5 mt-2">
               {technologies.map((tech) => (
                 <span class="px-2.5 py-0.5 text-xs font-mono font-medium rounded-full bg-white/10 text-neutral-200 border border-white/5">
@@ -60,36 +62,6 @@ const { projects } = Astro.props;
     ))
   }
 </ul>
-
-<style>
-  .outer-bevel-project {
-    --project-bevel: 16px;
-    clip-path: polygon(
-      0 var(--project-bevel),
-      var(--project-bevel) 0,
-      calc(100% - var(--project-bevel)) 0,
-      100% var(--project-bevel),
-      100% calc(100% - var(--project-bevel)),
-      calc(100% - var(--project-bevel)) 100%,
-      var(--project-bevel) 100%,
-      0 calc(100% - var(--project-bevel))
-    );
-  }
-
-  .inner-bevel-project {
-    --project-bevel: 16px;
-    clip-path: polygon(
-      0 var(--project-bevel),
-      var(--project-bevel) 0,
-      calc(100% - var(--project-bevel)) 0,
-      100% var(--project-bevel),
-      100% calc(100% - var(--project-bevel)),
-      calc(100% - var(--project-bevel)) 100%,
-      var(--project-bevel) 100%,
-      0 calc(100% - var(--project-bevel))
-    );
-  }
-</style>
 
 <script>
   import {

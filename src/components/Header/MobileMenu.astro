@@ -49,32 +49,32 @@ const subtitles = {
           {
             accentColor: "#22d3ee",
             activeGlow: "rgba(6, 182, 212, 0.15)",
-            borderGrad: "from-cyan-500/20 to-white/5 hover:from-cyan-500/40 hover:to-white/15",
-            hoverText: "group-hover:text-cyan-400"
+            borderGrad: "from-cyan-500/20 to-white/5 hover:from-cyan-500/40 hover:to-white/15 [&.active]:from-cyan-500/40 [&.active]:to-white/15",
+            hoverText: "group-hover:text-cyan-400 group-[.active]:text-cyan-400"
           },
           {
             accentColor: "#34d399",
             activeGlow: "rgba(16, 185, 129, 0.15)",
-            borderGrad: "from-emerald-500/20 to-white/5 hover:from-emerald-500/40 hover:to-white/15",
-            hoverText: "group-hover:text-emerald-400"
+            borderGrad: "from-emerald-500/20 to-white/5 hover:from-emerald-500/40 hover:to-white/15 [&.active]:from-emerald-500/40 [&.active]:to-white/15",
+            hoverText: "group-hover:text-emerald-400 group-[.active]:text-emerald-400"
           },
           {
             accentColor: "#f472b6",
             activeGlow: "rgba(217, 70, 239, 0.15)",
-            borderGrad: "from-fuchsia-500/20 to-white/5 hover:from-fuchsia-500/40 hover:to-white/15",
-            hoverText: "group-hover:text-fuchsia-400"
+            borderGrad: "from-fuchsia-500/20 to-white/5 hover:from-fuchsia-500/40 hover:to-white/15 [&.active]:from-fuchsia-500/40 [&.active]:to-white/15",
+            hoverText: "group-hover:text-fuchsia-400 group-[.active]:text-fuchsia-400"
           },
           {
             accentColor: "#fb7185",
             activeGlow: "rgba(244, 63, 94, 0.15)",
-            borderGrad: "from-rose-500/20 to-white/5 hover:from-rose-500/40 hover:to-white/15",
-            hoverText: "group-hover:text-rose-400"
+            borderGrad: "from-rose-500/20 to-white/5 hover:from-rose-500/40 hover:to-white/15 [&.active]:from-rose-500/40 [&.active]:to-white/15",
+            hoverText: "group-hover:text-rose-400 group-[.active]:text-rose-400"
           }
         ][index] || {
           accentColor: "#ffffff",
           activeGlow: "rgba(255, 255, 255, 0.1)",
-          borderGrad: "from-white/10 to-white/5 hover:from-white/20 hover:to-white/10",
-          hoverText: "group-hover:text-white"
+          borderGrad: "from-white/10 to-white/5 hover:from-white/20 hover:to-white/10 [&.active]:from-white/20 [&.active]:to-white/10",
+          hoverText: "group-hover:text-white group-[.active]:text-white"
         };
 
         return (
@@ -85,7 +85,7 @@ const subtitles = {
             class="canvas-link p-[1px] bg-gradient-to-br transition-all duration-300 w-full group cursor-pointer"
             class:list={[themeDetails.borderGrad]}
           >
-            <div class="canvas-link-inner bg-slate-950/90 py-3.5 px-4 flex flex-row items-center gap-5 w-full group-hover:bg-slate-900/50 transition-colors">
+            <div class="canvas-link-inner bg-slate-950/90 py-3.5 px-4 flex flex-row items-center gap-5 w-full group-hover:bg-slate-900/50 group-[.active]:bg-slate-900/50 transition-colors">
               <span 
                 class="prefix-num text-xs font-semibold text-white/20 font-mono transition-colors"
                 class:list={[themeDetails.hoverText]}
@@ -99,7 +99,7 @@ const subtitles = {
                 >
                   {label}
                 </span>
-                <span class="link-subtitle text-[10px] text-white/45 font-medium tracking-wide transition-colors group-hover:text-white/80">
+                <span class="link-subtitle text-[10px] text-white/45 font-medium tracking-wide transition-colors group-hover:text-white/80 group-[.active]:text-white/80">
                   {sectionSubtitle}
                 </span>
               </div>
@@ -174,22 +174,7 @@ const subtitles = {
   }
 
   .canvas-link.active {
-    border-color: var(--accent-color) !important;
-    background-image: linear-gradient(135deg, var(--accent-color) 40%, rgba(255, 255, 255, 0.05)) !important;
     box-shadow: 0 0 15px var(--active-glow);
-  }
-
-  .canvas-link.active .canvas-link-inner {
-    background-color: rgba(3, 7, 18, 0.95) !important;
-  }
-
-  .canvas-link.active .prefix-num,
-  .canvas-link.active .link-label {
-    color: #fbbf24 !important;
-  }
-
-  .canvas-link.active .link-subtitle {
-    color: rgba(255, 255, 255, 0.8) !important;
   }
 </style>
 

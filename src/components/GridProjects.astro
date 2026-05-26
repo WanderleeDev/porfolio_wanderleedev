@@ -27,14 +27,14 @@ const { projects } = Astro.props;
         <div class="absolute inset-0 bg-white/10 group-hover:bg-[linear-gradient(135deg,rgba(255,255,255,0.15)_0%,#6366f1_100%)] transition-all duration-500 pointer-events-none" />
 
         <a
-          class="clip-bevel overflow-hidden block relative bg-slate-950/85 backdrop-blur-xl transition-all duration-300"
+          class="clip-bevel overflow-hidden block relative bg-slate-950/85 backdrop-blur-xl transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900"
           style="--bv: 12px;"
           target="_blank"
           href={demo_url}
           rel="noopener noreferrer"
         >
           <Image
-            class="aspect-video object-cover w-full group-hover:scale-105 transition-all duration-500 lg:group-hover:brightness-75 pointer-events-none"
+            class="aspect-video object-cover w-full group-hover:scale-105 group-focus-within:scale-105 transition-transform duration-700 ease-out group-hover:brightness-75 group-focus-within:brightness-75 pointer-events-none"
             loading="lazy"
             src={image}
             alt={`thumbnail for ${title}`}
@@ -42,19 +42,24 @@ const { projects } = Astro.props;
             height={450}
           />
           <div
-            class={`absolute flex flex-col inset-0 justify-end bottom-0 h-full px-4 md:px-6 py-3 pointer-events-none text-gray-100 font-bold lg:opacity-0 lg:group-hover:opacity-100 lg:group-focus-within:opacity-100 lg:duration-300 lg:transition-opacity text-base md:text-[1.5vw] ${i % 2 === 0 ? "right-0" : "left-0"} bg-black/75`}
+            class={`absolute flex flex-col inset-0 justify-end bottom-0 h-full px-4 md:px-6 py-4 pointer-events-none text-gray-100 font-bold opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 duration-500 transition-all text-base md:text-[1.5vw] ${i % 2 === 0 ? "right-0" : "left-0"} bg-gradient-to-t from-black/95 via-black/50 to-transparent`}
           >
-            <span class="font-extrabold text-lg lg:text-2xl">{title}</span>
-            <p class="pt-2 lowercase first-letter:uppercase text-neutral-200 hidden @sm:block text-sm font-normal">
-              {description}.
-            </p>
+            <div class="flex flex-col translate-y-4 group-hover:translate-y-0 group-focus-within:translate-y-0 transition-transform duration-500 ease-out">
+              <div class="flex items-center justify-between">
+                <span class="font-extrabold text-lg lg:text-2xl drop-shadow-md">{title}</span>
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5 opacity-0 -translate-x-2 translate-y-2 group-hover:opacity-100 group-hover:translate-x-0 group-hover:translate-y-0 group-focus-within:opacity-100 group-focus-within:translate-x-0 group-focus-within:translate-y-0 transition-all duration-500 ease-out"><line x1="7" y1="17" x2="17" y2="7"></line><polyline points="7 7 17 7 17 17"></polyline></svg>
+              </div>
+              <p class="pt-2 lowercase first-letter:uppercase text-neutral-200 hidden @sm:block text-sm font-normal drop-shadow-sm">
+                {description}.
+              </p>
 
-            <div class="flex flex-wrap gap-1.5 mt-2">
-              {technologies.map((tech) => (
-                <span class="px-2.5 py-0.5 text-xs font-mono font-medium rounded-full bg-white/10 text-neutral-200 border border-white/5">
-                  {tech}
-                </span>
-              ))}
+              <div class="flex flex-wrap gap-1.5 mt-3">
+                {technologies.map((tech) => (
+                  <span class="px-2.5 py-0.5 text-xs font-mono font-medium rounded-full bg-white/10 backdrop-blur-md text-neutral-100 border border-white/20 shadow-sm">
+                    {tech}
+                  </span>
+                ))}
+              </div>
             </div>
           </div>
         </a>

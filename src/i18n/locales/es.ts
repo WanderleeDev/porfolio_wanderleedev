@@ -147,12 +147,6 @@ export const es = {
         title: "Ecommerce",
         description:
           "Ecommerce con sistema de autenticación, carrito de compras, notificaciones y uso de local storage",
-        problem:
-          "Los usuarios necesitaban una experiencia de compra fluida con persistencia de datos del carrito y notificaciones en tiempo real para actualizaciones de pedidos.",
-        solution:
-          "Construí una plataforma de ecommerce completa con Angular, implementando autenticación JWT, local storage para persistencia del carrito y un sistema de notificaciones para el seguimiento de pedidos.",
-        impact:
-          "Creé una experiencia de compra intuitiva con un proceso de pago un 40% más rápido y mejor retención de usuarios a través de la funcionalidad de carrito persistente.",
         demo_url: "https://clior.vercel.app/",
         technologies: ["angular", "sass", "typeScript", "flowbite"],
         image:
@@ -163,12 +157,6 @@ export const es = {
         title: "Ubuntu desktop",
         description:
           "Copia funcional del escritorio de Ubuntu 22.0.4, calendario, terminal, editor de código entre otros",
-        problem:
-          "Demostrar gestión de estado compleja y arquitectura de componentes en un escenario de aplicación del mundo real.",
-        solution:
-          "Recreé el entorno de escritorio de Ubuntu usando Angular y NgRx para gestión de estado, implementando componentes funcionales de terminal, calendario y editor de código.",
-        impact:
-          "Mostró habilidades avanzadas en Angular y patrones de gestión de estado, demostrando capacidad para construir aplicaciones complejas e interactivas.",
         demo_url: "https://github.com/",
         technologies: ["angular", "tailwindCss", "typeScript", "ngrx"],
         image:
@@ -178,9 +166,6 @@ export const es = {
       {
         title: "Ngx-theme-stack",
         description: "Biblioteca de Angular moderna y compatible con SSR para gestionar el modo oscuro, el modo claro y temas personalizados a través de Angular Signals.",
-        problem: "Crear un sistema de temas para una aplicación de Angular puede ser complejo y requerir mucho tiempo.",
-        solution: "Ngx-theme-stack proporciona una forma sencilla y eficiente de crear temas hermosos y modernos para tu aplicación de Angular.",
-        impact: "Entregué un sistema de temas que se puede utilizar para crear temas hermosos y modernos para tu aplicación de Angular.",
         demo_url: "https://demo-ngx-theme-stack.wanderlee.site/",
         technologies: ["angular", "typeScript"],
         image:
@@ -191,12 +176,6 @@ export const es = {
         title: "Switch 2 Clone",
         description:
           "Desarrollado usando unidades de viewport para lograr un diseño responsive a mayor escala",
-        problem:
-          "Crear un clon responsive pixel-perfect de la landing page de Nintendo Switch 2 en todos los tamaños de dispositivo.",
-        solution:
-          "Utilicé Vue 3 y Tailwind CSS con unidades de viewport para escalado fluido, asegurando experiencia visual consistente en dispositivos.",
-        impact:
-          "Entregué un diseño responsive que escala perfectamente desde móviles hasta pantallas 4K, mostrando habilidades avanzadas de CSS y diseño responsive.",
         demo_url: "https://dainty-pika-231bcd.netlify.app/",
         technologies: ["vue", "tailwindCss", "typeScript"],
         image:

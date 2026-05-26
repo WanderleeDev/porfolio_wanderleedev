@@ -14,11 +14,10 @@ let innerGridClass = "grid grid-cols-2 sm:grid-cols-3 gap-2.5 sm:gap-3.5";
 if (title.toLowerCase().includes("front")) {
   innerGridClass = "grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3.5";
 }
-
 ---
 
 <details
-  class="group w-full overflow-clip [interpolate-size:allow-keywords] details-content:h-0 details-content:opacity-0 details-content:overflow-clip details-content:[transition:height_0.35s_ease,opacity_0.35s_ease,content-visibility_0.35s_ease_allow-discrete] open:details-content:h-auto open:details-content:opacity-100"
+  class="skills-accordion-item group w-full overflow-clip [interpolate-size:allow-keywords] details-content:h-0 details-content:opacity-0 details-content:overflow-clip details-content:[transition:height_0.35s_ease,opacity_0.35s_ease,content-visibility_0.35s_ease_allow-discrete] open:details-content:h-auto open:details-content:opacity-100"
   name="skills-accordion"
   data-index={index}
   open={isFirst}

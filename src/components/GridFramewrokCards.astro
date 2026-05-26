@@ -13,28 +13,31 @@ interface Props {
 
 const { extras } = Astro.props;
 
-const getColors = (title: string) => {
-  const lower = title.toLowerCase();
-  if (lower.includes("react"))
-    return {
-      borderColor: "border-cyan-500/20 hover:border-cyan-400/40",
-      shadowColor: "shadow-cyan-500/5",
-      glowColor: "bg-cyan-500/10",
-      primaryColor: "#00d8ff",
-    };
-  if (lower.includes("angular"))
-    return {
-      borderColor: "border-red-500/20 hover:border-red-400/40",
-      shadowColor: "shadow-red-500/5",
-      glowColor: "bg-red-500/10",
-      primaryColor: "#E0234E",
-    };
-  return {
+const COLOR_MAP: Record<string, { borderColor: string; shadowColor: string; glowColor: string; primaryColor: string }> = {
+  react: {
+    borderColor: "border-cyan-500/20 hover:border-cyan-400/40",
+    shadowColor: "shadow-cyan-500/5",
+    glowColor: "bg-cyan-500/10",
+    primaryColor: "#00d8ff",
+  },
+  angular: {
+    borderColor: "border-red-500/20 hover:border-red-400/40",
+    shadowColor: "shadow-red-500/5",
+    glowColor: "bg-red-500/10",
+    primaryColor: "#E0234E",
+  },
+  default: {
     borderColor: "border-gray-500/20 hover:border-gray-400/40",
     shadowColor: "shadow-gray-500/5",
     glowColor: "bg-gray-500/10",
     primaryColor: "#ffffff",
-  };
+  },
+};
+
+const getColors = (title: string) => {
+  const lower = title.toLowerCase();
+  const matchedKey = Object.keys(COLOR_MAP).find((key) => lower.includes(key));
+  return COLOR_MAP[matchedKey || "default"];
 };
 
 const extrasWithColors = extras.map((e) => ({

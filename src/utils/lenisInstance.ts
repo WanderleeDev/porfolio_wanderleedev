@@ -42,6 +42,21 @@ export function stopLenis(): void {
   lenisInstance.stop();
 }
 
+/**
+ * Park / resume the rAF loop on tab visibility change.
+ * Forgetting the resume path leaves Lenis dead after a window switch.
+ * No-op under reduced motion (getLenisInstance returns null there).
+ */
+export function handleVisibilityChange(): void {
+  if (typeof document === "undefined") return;
+  if (document.hidden) {
+    stopLenis();
+  } else if (!started && getLenisInstance()) {
+    // Was parked mid-session; re-arm now the tab is visible again.
+    startLenis();
+  }
+}
+
 export function destroyLenisInstance(): void {
   stopLenis();
   lenisInstance?.destroy();

@@ -12,6 +12,10 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 
+# local tooling state (never commit)
+.playwright-cli/
+.commandcode/
+
 
 # environment variables
 .env

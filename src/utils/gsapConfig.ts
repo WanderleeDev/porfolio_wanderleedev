@@ -1,7 +1,7 @@
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { SplitText } from "gsap/SplitText";
-import { startLenis, stopLenis } from "./lenisInstance";
+import { startLenis, handleVisibilityChange } from "./lenisInstance";
 
 const GsapBreakpoints = {
   isMobile: "(max-width: 768px)",
@@ -35,8 +35,8 @@ function bindLenisMinimal(): void {
     passive: true,
     capture: true,
   });
-  document.addEventListener("visibilitychange", () => {
-    if (document.hidden) stopLenis();
+  document.addEventListener("visibilitychange", handleVisibilityChange, {
+    passive: true,
   });
 }
 

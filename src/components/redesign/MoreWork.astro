@@ -1,0 +1,143 @@
+---
+/**
+ * More Work — Angular vs React banner.
+ * Full-width 2:1 split: red Angular half vs blue React half, divided by a
+ * single diagonal white crack (lightning switch, inline SVG).
+ *  - Logos via astro-iconify (devicon:angular / devicon:react), same as HeroFan
+ *  - Two stacked background blocks + crack SVG; each column visually centered
+ */
+import Icon from "astro-iconify";
+---
+
+<div class="vs-banner" role="img" aria-label="Angular vs React">
+  <!-- Background split: red left, blue right -->
+  <div class="vs-bg vs-bg-left" aria-hidden="true"></div>
+  <div class="vs-bg vs-bg-right" aria-hidden="true"></div>
+
+  <!-- Diagonal white crack, single SVG path on top -->
+  <svg class="vs-crack" viewBox="0 0 1200 600" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+    <path
+      class="crack-edge"
+      d="M650 0 L575 300 L643 300 L565 600"
+      fill="none"
+      stroke="#fff"
+      stroke-width="8"
+      vector-effect="non-scaling-stroke"
+    />
+  </svg>
+
+  <!-- Two centered halves -->
+  <div class="vs-half">
+    <Icon name="devicon:angular" class="vs-logo" alt="Angular" />
+    <p class="vs-label">Angular</p>
+  </div>
+  <div class="vs-half vs-half-right">
+    <Icon name="devicon:react" class="vs-logo vs-logo-react" alt="React" />
+    <p class="vs-label">React</p>
+  </div>
+</div>
+
+<script>
+  // devicon:react ships a hardcoded fill="#61dafb" on its inner <g>, which beats CSS.
+  // Strip the fill attribute so the brand blue below applies cleanly.
+  document.querySelectorAll(".vs-logo-react [fill]").forEach((el) => el.removeAttribute("fill"));
+</script>
+
+<style>
+  .vs-banner {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 2 / 1;
+    overflow: hidden;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    /* Fade casi nulo arriba y abajo — 2%/98% para un despeje prácticamente invisible */
+    mask-image: linear-gradient(to bottom, transparent 0, #000 2%, #000 98%, transparent 100%);
+    -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 2%, #000 98%, transparent 100%);
+  }
+
+  .vs-bg {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+  .vs-bg-left {
+    clip-path: polygon(0 0, 54.17% 0, 47.92% 49.5%, 53.58% 49.5%, 47.08% 100%, 0 100%);
+    background:
+      radial-gradient(50% 65% at 30% 35%, rgba(255, 110, 150, 0.55), transparent 72%),
+      radial-gradient(70% 90% at 85% 85%, rgba(60, 10, 40, 0.55), transparent 70%),
+      linear-gradient(135deg, #3a0a2e 0%, #7a1243 45%, #b81e5b 78%, #ff2d78 100%);
+  }
+  .vs-bg-right {
+    clip-path: polygon(54.17% 0, 100% 0, 100% 100%, 47.08% 100%, 53.58% 49.5%, 47.92% 49.5%);
+    background:
+      radial-gradient(60% 80% at 85% 50%, rgba(255, 255, 255, 0.18), transparent 70%),
+      radial-gradient(65% 90% at 78% 30%, rgba(180, 230, 255, 0.4), transparent 65%),
+      linear-gradient(135deg, #6f9fd8 0%, #8fc0f5 45%, #9dd0fb 75%, #c4e6ff 100%);
+  }
+
+  .vs-crack {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+  }
+  .vs-crack .crack-edge {
+    filter: drop-shadow(0 0 6px rgba(255, 255, 255, 0.25));
+  }
+
+  .vs-half {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: clamp(0.5rem, 1.2cqw, 1.25rem);
+    padding: clamp(0.5rem, 1.5cqw, 1.5rem);
+  }
+
+  .vs-logo {
+    width: clamp(96px, 20cqw, 240px);
+    height: auto;
+    display: block;
+    filter: drop-shadow(0 6px 24px rgba(255, 255, 255, 0.45)) drop-shadow(0 2px 8px rgba(0, 0, 0, 0.18));
+  }
+  .vs-logo-react {
+    width: clamp(96px, 19cqw, 230px);
+    color: #0389d1;
+  }
+  /* After the inline script strips the hardcoded fill attribute, paint brand blue.
+     Scoped CSS can't reach SVG internals, so use :global(). */
+  :global(.vs-logo-react g),
+  :global(.vs-logo-react path),
+  :global(.vs-logo-react circle) {
+    fill: #0389d1;
+  }
+
+  .vs-label {
+    margin: 0;
+    color: #fff;
+    font-family: var(--font-dm-mono, "DM Mono", monospace);
+    font-weight: 700;
+    font-size: clamp(0.85rem, 2.4cqw, 1.4rem);
+    letter-spacing: 0.4em;
+    text-indent: 0.4em;
+    text-transform: uppercase;
+    text-align: center;
+    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
+  }
+
+  @media (max-width: 640px) {
+    .vs-banner {
+      grid-template-columns: 1fr;
+      grid-template-rows: 1fr 1fr;
+      aspect-ratio: auto;
+      min-height: 60svh;
+    }
+    .vs-half {
+      min-height: 0;
+    }
+  }
+</style>

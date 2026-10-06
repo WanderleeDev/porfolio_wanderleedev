@@ -1,16 +1,50 @@
 ---
-import BaseLayout from "../layout/BaseLayout.astro";
-import Presentation from "../sections/Presentation.astro";
-import Projects from "../sections/Projects.astro";
-import Skills from "../sections/Skills.astro";
-import Playground from "../sections/Playground.astro";
-import Contact from "../sections/Contact.astro";
+/**
+ * Redesign index — Spencer Gabor language, WanderleeDev content.
+ * Standalone white page: no BaseLayout, no old header/footer, no GSAP.
+ * Pulls the global CSS so fonts, Tailwind utilities and theme vars work
+ * without the old layout chrome.
+ */
+import "../styles/global.css";
+import HeroFan from "../components/redesign/HeroFan.astro";
+import FeaturedWork from "../components/redesign/FeaturedWork.astro";
+import MoreWork from "../components/redesign/MoreWork.astro";
+import RedesignFooter from "../components/redesign/RedesignFooter.astro";
+import { getTranslations } from "../i18n/utils";
+
+const lang = Astro.currentLocale as "es" | "en";
+const t = getTranslations(lang);
+const projects = t("projects").list;
 ---
 
-<BaseLayout>
-  <Presentation />
-  <Projects />
-  <Skills />
-  <Playground />
-  <Contact />
-</BaseLayout>
+<html lang={lang}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="description" content="WanderleeDev — Fullstack, diseño y animación" />
+    <link
+      rel="icon"
+      href="/favicon_default.svg"
+      type="image/svg+xml"
+    />
+    <link
+      rel="icon"
+      href="/favicon_dark.svg"
+      type="image/svg+xml"
+      media="(prefers-color-scheme: dark)"
+    />
+    <title>WanderleeDev — Redesign</title>
+  </head>
+  <body>
+    <HeroFan />
+    <FeaturedWork
+      items={projects.map((p) => ({
+        title: p.title,
+        src: p.image,
+        alt: p.title,
+      }))}
+    />
+    <MoreWork />
+    <RedesignFooter />
+  </body>
+</html>

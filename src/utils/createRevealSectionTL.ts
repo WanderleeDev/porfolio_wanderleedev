@@ -1,5 +1,5 @@
 import { $ } from "./selectors";
-import { gsap, SplitText } from "./gsapConfig";
+import { gsap, SplitText, prefersReducedMotion } from "./gsapConfig";
 
 export function createRevealSectionTL(
   titleClass: string,
@@ -9,6 +9,10 @@ export function createRevealSectionTL(
   const paragraph = $(paragraphClass);
 
   if (!heading || !paragraph) return;
+
+  // With reduced motion, skip SplitText entirely: it fragments the DOM into
+  // hundreds of nodes (chars/lines) and forces per-scroll recalculation.
+  if (prefersReducedMotion()) return;
 
   const splitHeading = SplitText.create(heading, { type: "chars" });
   const splitParagraph = SplitText.create(paragraph, {

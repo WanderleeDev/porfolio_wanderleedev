@@ -12,7 +12,7 @@ const sections_links = ui[lang].navLinks;
 <div>
   <header
     id="header"
-    class="fixed left-0 right-0 w-11/12 mx-auto flex flex-row gap-2 justify-between items-center py-2 will-change-transform origin-center z-50"
+    class="fixed left-0 right-0 top-0 w-11/12 mx-auto flex flex-row gap-2 justify-between items-center py-2 origin-center z-50 transition-[background-color,border-radius,padding,width] duration-300"
   >
     <h1 class="sr-only">WanderleeDev Portfolio</h1>
     <Logo />
@@ -23,101 +23,4 @@ const sections_links = ui[lang].navLinks;
   <MobileMenu id="mobile-menu" sections={sections_links} />
 </div>
 
-<script>
-  import {
-    gsap,
-    GsapBreakpoints,
-    type GsapBreakpointsType,
-  } from "../../utils/gsapConfig";
-  import { $, $$ } from "../../utils/selectors";
-
-  function animateHeader() {
-    const headerElement = $("#header");
-    const mainContainer = $("#main-container");
-    const mm = gsap.matchMedia();
-
-    mm.add({ ...GsapBreakpoints }, (context) => {
-      let { isMobile, isTablet, isLargeDesktop, reduceMotion } =
-        context.conditions as GsapBreakpointsType;
-
-      if (reduceMotion) {
-        gsap.set(headerElement, { clearProps: "all" });
-        return;
-      }
-
-      const maxWidth =
-        isMobile || isTablet ? "90%" : isLargeDesktop ? "50%" : "70%";
-
-      gsap.to(headerElement, {
-        width: maxWidth,
-        ease: "none",
-        top: "1rem",
-        backgroundColor: "rgba(255, 255, 255, 0.1)",
-        backdropFilter: "blur(10px)",
-        borderRadius: "2rem",
-        padding: "0.5rem 1rem",
-        border: ".1rem solid rgba(255, 255, 255, 0.1)",
-        scrollTrigger: {
-          trigger: headerElement,
-          start: "top top",
-          end: "+=300",
-          scrub: 1,
-        },
-      });
-
-      gsap.to(headerElement, {
-        scrollTrigger: {
-          trigger: mainContainer,
-          start: "bottom bottom",
-          end: "+=100",
-          scrub: true,
-        },
-        y: -20,
-        opacity: 0,
-        pointerEvents: "none",
-      });
-    });
-  }
-
-  function observerNav() {
-    const sections = $$(".section-page");
-    const navLinks = $$(".mobile-link, .desktop-link");
-
-    if (!sections?.length || !navLinks?.length) return;
-
-    const observerOptions = {
-      root: null,
-      rootMargin: "0px",
-      threshold: 0.3,
-    } as const;
-
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          const activeSection = entry.target.getAttribute("data-section");
-
-          navLinks.forEach((link) => {
-            const linkSection = link.getAttribute("data-section");
-
-            if (linkSection === activeSection) {
-              link.style.color = "#fbbf24";
-            } else {
-              link.style.color = "";
-            }
-          });
-        }
-      });
-    }, observerOptions);
-
-    sections.forEach((section) => {
-      observer.observe(section);
-    });
-
-    return () => {
-      observer.disconnect();
-    };
-  }
-
-  animateHeader();
-  observerNav();
-</script>
+<!-- Animations initialized centrally via initAnimations() in BaseLayout. -->

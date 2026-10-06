@@ -1,16 +1,17 @@
 ---
-import { Image } from "astro:assets";
+import { cloudinary } from "../../utils/cloudinary";
 import Icon from "astro-iconify";
 ---
 
 <figure class="flex items-center gap-2">
   <div class="relative size-8 md:size-12 aspect-square rounded-full">
-    <Image
+    <img
       id="avatar-header"
       width={100}
       height={100}
       loading="lazy"
-      src="https://res.cloudinary.com/dy8gpozi6/image/upload/v1740447261/meme_gato_rwte5r.webp"
+      decoding="async"
+      src={cloudinary("https://res.cloudinary.com/dy8gpozi6/image/upload/v1740447261/meme_gato_rwte5r.webp", { w: 100 })}
       alt="Hero Image"
       class="size-full relative z-10 rounded-full"
     />

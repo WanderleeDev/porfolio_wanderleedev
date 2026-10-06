@@ -34,32 +34,4 @@ const extraProjects = playgroundT.list;
   </div>
 </section>
 
-<script>
-  import { gsap } from "../utils/gsapConfig";
-  import { createRevealSectionTL } from "../utils/createRevealSectionTL";
-
-  function animateExtrasSection() {
-    const cardsFrameworks = gsap.utils.toArray<HTMLElement>(".card-wrapper");
-    const tl = createRevealSectionTL("#extras-title", "#extras-description");
-
-    if (!tl || !cardsFrameworks.length) return;
-
-    tl.fromTo(
-      cardsFrameworks,
-      {
-        opacity: 0,
-        y: 20,
-      },
-      {
-        opacity: 1,
-        y: 0,
-        duration: 0.7,
-        stagger: 0.1,
-        ease: "power3.out",
-      },
-      "<",
-    );
-  }
-
-  animateExtrasSection();
-</script>
+<!-- Scroll reveals initialized centrally via initAnimations() in BaseLayout. -->

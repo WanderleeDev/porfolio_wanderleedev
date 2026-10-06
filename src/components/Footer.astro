@@ -1,6 +1,6 @@
 ---
 import Paragraph from "./typography/Paragraph.astro";
-import { Image } from "astro:assets";
+import { cloudinary } from "../utils/cloudinary";
 import { Icon } from "astro-iconify";
 import { getTranslations } from "../i18n/utils";
 
@@ -23,11 +23,12 @@ const socialLinks = t("social");
       <div
         class="relative w-80 h-80 md:w-96 md:h-96 lg:w-104 lg:h-104 overflow-hidden mx-auto"
       >
-        <Image
-          width={500}
-          height={500}
+        <img
+          width={400}
+          height={400}
           loading="lazy"
-          src="https://res.cloudinary.com/dy8gpozi6/image/upload/v1765154077/tom_f0v8qy.webp"
+          decoding="async"
+          src={cloudinary("https://res.cloudinary.com/dy8gpozi6/image/upload/v1765154077/tom_f0v8qy.webp", { w: 400, q: 50, f: "webp" })}
           alt="Hero Image"
           class="w-full h-full object-cover pointer-events-none select-none"
           style={{
@@ -108,7 +109,7 @@ const socialLinks = t("social");
   </div>
 
   <p
-    class="text-center text-3xl lg:text-5xl xl:text-7xl -tracking-wider text-neutral-600 overflow-hidden relative min-h-24 sm:min-h-32 content-center font-fira-sans-extra-condensed select-none font-bold"
+    class="text-center whitespace-nowrap text-[13vw] sm:text-3xl lg:text-5xl xl:text-7xl -tracking-wider text-neutral-600 overflow-hidden relative min-h-24 sm:min-h-32 content-center font-fira-sans-extra-condensed select-none font-bold"
     id="footer-content"
     aria-label={footerText.developedBy}
   >
@@ -117,100 +118,4 @@ const socialLinks = t("social");
 </footer>
 
 
-<script>
-  import { gsap, SplitText } from "../utils/gsapConfig";
-  import { $ } from "../utils/selectors";
-
-  function animateFooter() {
-    const description = $("#footer .text-neutral-400");
-    const socialLinks = gsap.utils.toArray("#footer nav li");
-    const viewCodeLink = $("#footer .font-dm-mono");
-    const separator = $("#footer .border-t");
-    const bannerText = $("#footer-content");
-
-    if (
-      !description ||
-      !socialLinks.length ||
-      !viewCodeLink ||
-      !separator ||
-      !bannerText
-    ) {
-      return;
-    }
-
-    const descriptionSplit = new SplitText(description, { type: "words" });
-    const bannerSplit = new SplitText(bannerText, { type: "chars" });
-
-    gsap.set(bannerSplit.chars, {
-      className:
-        "+=char relative inline-block will-change-transform font-inherit",
-    });
-
-    const tl = gsap.timeline({
-      scrollTrigger: {
-        trigger: "#main-container",
-        start: "bottom bottom",
-        end: "bottom top",
-        toggleActions: "play none none reverse",
-      },
-    });
-
-    tl.fromTo(
-      bannerSplit.chars,
-      { y: 50, opacity: 0 },
-      {
-        y: 0,
-        opacity: 1,
-        duration: 0.4,
-        stagger: {
-          each: 0.01,
-          from: "start",
-          ease: "power2.out",
-        },
-      },
-      0
-    )
-      .fromTo(
-        separator,
-        { scaleX: 0, opacity: 0 },
-        { scaleX: 1, opacity: 1, duration: 0.4, ease: "power2.inOut" },
-        "<0.2"
-      )
-      .fromTo(
-        descriptionSplit.words,
-        { opacity: 0, y: 20 },
-        {
-          opacity: 1,
-          y: 0,
-          duration: 0.2,
-          stagger: 0.02,
-          ease: "power3.out",
-        },
-        "<0.2"
-      )
-      .fromTo(
-        socialLinks,
-        { opacity: 0, x: -20 },
-        {
-          opacity: 1,
-          x: 0,
-          duration: 0.2,
-          stagger: 0.05,
-          ease: "power2.out",
-        },
-        "<"
-      )
-      .fromTo(
-        viewCodeLink,
-        { opacity: 0, y: 10 },
-        { opacity: 1, y: 0, duration: 0.2, ease: "power2.out" },
-        "<"
-      );
-  }
-
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", animateFooter);
-  } else {
-    animateFooter();
-  }
-</script>
+<!-- Animations initialized centrally via initAnimations() in BaseLayout. -->

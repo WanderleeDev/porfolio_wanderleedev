@@ -149,8 +149,8 @@ function initProjectCards(ctx: GsapBreakpointsType): void {
     ] as const) {
       if (!group.length) continue;
       gsap.to(group, {
-        x: () => dir * window.innerWidth * 0.08,
-        rotation: dir * 6,
+        x: () => dir * window.innerWidth * 0.2,
+        rotation: dir * 10,
         ease: "none",
         scrollTrigger: {
           trigger: container,

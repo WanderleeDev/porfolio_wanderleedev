@@ -8,12 +8,17 @@
  */
 export function cloudinary(
   src: string,
-  opts: { w?: number; q?: number | "auto" } = {}
+  opts: { w?: number; q?: number | "auto"; f?: string } = {}
 ): string {
-  const { w = 800, q = "auto" } = opts;
+  const { w = 800, q = "auto", f = "auto" } = opts;
   if (!src.includes("res.cloudinary.com")) return src;
   // Insert the transformation segment right after /upload/, e.g.
   // .../image/upload/v1234/a.webp -> .../image/upload/f_auto,q_auto,w_800/v1234/a.webp
   // If a transformation segment already exists, leave the URL untouched.
-  return src.replace(/\/upload\/(?!f_|w_|q_|c_)/, `/upload/f_auto,q_${q},w_${w}/`);
+  // NOTE: `f` must be explicit (e.g. "webp") when the source can't be
+  // re-encoded to newer formats (AVIF returns empty for some assets).
+  return src.replace(
+    /\/upload\/(?!f_|w_|q_|c_)/,
+    `/upload/f_${f},q_${q},w_${w}/`
+  );
 }

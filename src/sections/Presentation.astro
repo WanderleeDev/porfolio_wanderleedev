@@ -22,18 +22,18 @@ const presentationT = t("presentation");
       <span class="relative font-inherit inline-block">
         <span
           id="presentation-accent"
-          class="absolute inset-0 -translate-x-4 w-full h-full -skew-x-12 bg-yellow-500 -z-10 rounded-tr-4xl will-change-transform rounded-bl-4xl mix-blend-difference scale-x-0 origin-left"
+          class="absolute inset-0 -translate-x-4 w-full h-full -skew-x-12 bg-yellow-500 -z-10 rounded-tr-4xl rounded-bl-4xl mix-blend-difference scale-x-0 origin-left"
         ></span>
         <span
           id="presentation-accent-text"
-          class="font-inherit z-10 inline-block mix-blend-plus-darker opacity-0 will-change-auto"
+          class="font-inherit z-10 inline-block mix-blend-plus-darker opacity-0"
         >
           {presentationT.accent}
         </span>
       </span>
       <span
         id="presentation-middle"
-        class="font-inherit inline-block relative -z-10 opacity-0 will-change-auto"
+        class="font-inherit inline-block relative -z-10 opacity-0"
       >
         {presentationT.middle}
       </span>
@@ -41,13 +41,13 @@ const presentationT = t("presentation");
     <span class="relative font-[inherit] inline-block first-letter:skew-x-12">
       <span
         id="presentation-end-prefix"
-        class="font-inherit inline-block z-10 overflow-clip invisible will-change-transform"
+        class="font-inherit inline-block z-10 overflow-clip invisible"
       >
         {presentationT.end_prefix}
       </span>
       <span
         id="presentation-end-highlight"
-        class="font-inherit text-yellow-500 inline-block opacity-0 will-change-auto"
+        class="font-inherit text-yellow-500 inline-block opacity-0"
       >
         {presentationT.end_highlight}
       </span>
@@ -60,152 +60,4 @@ const presentationT = t("presentation");
   </p>
 </section>
 
-<script>
-  import { gsap, SplitText } from "../utils/gsapConfig";
-  import { $ } from "../utils/selectors";
-
-  function animatePresentation() {
-    if (
-      window.matchMedia("(prefers-reduced-motion: reduce)").matches
-    )
-      return;
-    const elements = [
-      "presentation-start",
-      "presentation-accent",
-      "presentation-accent-text",
-      "presentation-middle",
-      "presentation-end-prefix",
-      "presentation-end-highlight",
-      "avatar-header",
-      "badge",
-      "badge-outer",
-    ].map((id) => $(`#${id}`));
-
-    if (elements.some((el) => !el)) return;
-
-    const [
-      presentationStart,
-      accentElement,
-      accentText,
-      presentationMiddle,
-      presentationEndPrefix,
-      presentationEndHighlight,
-      avatarHeader,
-      badge,
-      badgeOuter,
-    ] = elements;
-
-    const presentationStartSplit = new SplitText(presentationStart, {
-      type: "chars",
-    });
-    const presentationEndPrefixSplit = new SplitText(presentationEndPrefix, {
-      type: "chars",
-    });
-
-    gsap.set(presentationStartSplit.chars, {
-      className: "inline-block will-change-transform font-inherit",
-      scale: 0,
-    });
-    gsap.set(accentElement, { scaleX: 0, transformOrigin: "left" });
-    gsap.set([accentText, presentationEndHighlight], { opacity: 0 });
-    gsap.set(accentText, { scale: 30 });
-    gsap.set(presentationEndHighlight, { scale: 0 });
-    gsap.set(presentationMiddle, { y: "100%", opacity: 0 });
-    gsap.set(presentationEndPrefixSplit.chars, {
-      className: "inline-block will-change-transform font-inherit",
-      y: "-100%",
-    });
-    gsap.set(badge, { opacity: 0, x: 100, rotate: 45 });
-    gsap.set(badgeOuter, { opacity: 0 });
-    gsap.set([presentationStart, presentationEndPrefix], {
-      visibility: "visible",
-    });
-
-    const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
-
-    tl.to(
-      presentationStartSplit.chars,
-      {
-        scale: 1,
-        ease: "back.out(1.7)",
-        duration: 0.5,
-        stagger: 0.03,
-      },
-      "+=0.3"
-    )
-      .to(
-        accentElement,
-        {
-          scaleX: 1.05,
-          duration: 0.4,
-        },
-        "-=0.15"
-      )
-      .to(
-        accentText,
-        {
-          opacity: 1,
-          scale: 1,
-          color: "#101828",
-          duration: 0.7,
-        },
-        "<"
-      )
-      .to(presentationMiddle, {
-        y: "0%",
-        duration: 0.3,
-        opacity: 1,
-      })
-      .to(presentationEndPrefixSplit.chars, {
-        opacity: 1,
-        y: "0%",
-        duration: 0.3,
-        stagger: 0.03,
-        overflow: "visible",
-      })
-      .to(presentationEndPrefix, {
-        keyframes: [{ y: "20%", overflow: "visible" }, { y: "0%" }],
-        duration: 0.3,
-      })
-      .to(
-        presentationEndHighlight,
-        {
-          scale: 1,
-          opacity: 1,
-          ease: "back.out(1.7)",
-          duration: 0.4,
-        },
-        "<+=0.05"
-      )
-      .to(
-        avatarHeader,
-        {
-          opacity: 0,
-          duration: 0.4,
-          x: "-100%",
-          rotate: -25,
-        },
-        "-=0.2"
-      )
-      .to(
-        badge,
-        {
-          opacity: 1,
-          duration: 0.5,
-          x: "0",
-          rotate: 8,
-        },
-        "<"
-      )
-      .to(
-        badgeOuter,
-        {
-          opacity: 1,
-          duration: 0.3,
-        },
-        "<+=0.1"
-      );
-  }
-
-  animatePresentation();
-</script>
+<!-- Animations initialized centrally via initAnimations() in BaseLayout. -->

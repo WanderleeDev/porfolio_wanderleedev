@@ -54,48 +54,4 @@ const contactT = t("contactSection");
   </div>
 </section>
 
-<script>
-  import { createRevealSectionTL } from "../utils/createRevealSectionTL";
-  import { gsap } from "../utils/gsapConfig";
-  import { $ } from "../utils/selectors";
-
-  function animateContactSection() {
-    if (
-      window.matchMedia("(prefers-reduced-motion: reduce)").matches
-    )
-      return;
-    const cardsEl = gsap.utils.toArray(".card-info");
-    const formEl = $(".contact-form");
-    const tl = createRevealSectionTL("#contact-title", "#contact-description");
-
-    if (cardsEl.length === 0 || !formEl || !tl) {
-      return;
-    }
-
-    tl.fromTo(
-      cardsEl,
-      { opacity: 0, y: 20 },
-      {
-        opacity: 1,
-        y: 0,
-        duration: 0.2,
-        stagger: 0.1,
-        ease: "power3.out",
-      },
-      "<"
-    ).fromTo(
-      formEl,
-      { opacity: 0, x: 50 },
-      {
-        opacity: 1,
-        x: 0,
-        transformOrigin: "left",
-        ease: "power3.out",
-        stagger: 0.15,
-      },
-      "<"
-    );
-  }
-
-  animateContactSection();
-</script>
+<!-- Scroll reveals initialized centrally via initAnimations() in BaseLayout. -->

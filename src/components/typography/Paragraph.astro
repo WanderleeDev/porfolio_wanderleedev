@@ -10,7 +10,7 @@ const { content, id, customClass = "" } = Astro.props;
 
 <p
   id={id}
-  class={`paragraph-animate text-[5vw] xs:text-[4vw] sm:text-[3vw] md:text-[2vw] text-white lg:text-[1.3vw] overflow-hidden leading-snug will-change-transform opacity-90 ${customClass}`}
+  class={`paragraph-animate text-[5vw] xs:text-[4vw] sm:text-[3vw] md:text-[2vw] text-white lg:text-[1.3vw] overflow-hidden leading-snug opacity-90 ${customClass}`}
 >
   {content ? content : <slot />}
 </p>

@@ -8,19 +8,6 @@
     contain-intrinsic-size: auto 100dvh;
   }
 
-  /* Header scrolled state: applied via ScrollTrigger.toggleClass.
-     Visual props live here (paint-only change per toggle), NOT animated
-     per scroll frame. maxWidth comes from --header-max-width (breakpoint). */
-  #header.header-scrolled {
-    width: var(--header-max-width, 70%);
-    top: 1rem;
-    background-color: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(10px);
-    border-radius: 2rem;
-    padding: 0.5rem 1rem;
-    border: 0.1rem solid rgba(255, 255, 255, 0.1);
-  }
-
   @media (prefers-reduced-motion: reduce) {
     .float-element {
       animation: none !important;

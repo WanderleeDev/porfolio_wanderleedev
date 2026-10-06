@@ -152,7 +152,8 @@ function initProjectCards(ctx: GsapBreakpointsType): void {
     ] as const) {
       if (!group.length) continue;
       gsap.to(group, {
-        x: () => dir * Math.min(window.innerWidth * 0.2, 140),
+        // Restored original drift (2026-10-06): full 20vw, no cap.
+        x: () => dir * window.innerWidth * 0.2,
         rotation: dir * 10,
         ease: "none",
         scrollTrigger: {
@@ -340,25 +341,28 @@ function initHeaderScroll(ctx: GsapBreakpointsType): void {
   const mainContainer = $("#main-container");
   if (!headerElement || !mainContainer) return;
 
-  // Old version animated width/padding/backgroundColor/backdrop-filter per
-  // scroll frame (layout + paint every tick). Now: toggle a class once past
-  // 80px (paint-only change per toggle), keep scrub only for the hide-out.
-  // NOTE: trigger must be the scrolling page (body), not the fixed header
-  // itself — a fixed element never crosses its own start position.
-  ScrollTrigger.create({
-    trigger: document.body,
-    start: 80,
-    end: "max",
-    toggleClass: {
-      targets: headerElement,
-      // maxWidth still varies by breakpoint, applied via CSS var.
-      className: "header-scrolled",
+  // Original header morph (exact match with 4a9d7cd): scrub:1 over the
+  // header itself. A fixed element's "top top" never crosses, so the
+  // morph resolves to its end state — the slow, subtle original feel.
+  const maxWidth =
+    ctx.isMobile || ctx.isTablet ? "90%" : ctx.isLargeDesktop ? "50%" : "70%";
+
+  gsap.to(headerElement, {
+    width: maxWidth,
+    ease: "none",
+    top: "1rem",
+    backgroundColor: "rgba(255, 255, 255, 0.1)",
+    backdropFilter: "blur(10px)",
+    borderRadius: "2rem",
+    padding: "0.5rem 1rem",
+    border: ".1rem solid rgba(255, 255, 255, 0.1)",
+    scrollTrigger: {
+      trigger: headerElement,
+      start: "top top",
+      end: "+=300",
+      scrub: 1,
     },
   });
-  headerElement.style.setProperty(
-    "--header-max-width",
-    ctx.isMobile || ctx.isTablet ? "90%" : ctx.isLargeDesktop ? "50%" : "70%"
-  );
 
   gsap.to(headerElement, {
     scrollTrigger: {

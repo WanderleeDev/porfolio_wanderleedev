@@ -39,6 +39,10 @@ const extraProjects = playgroundT.list;
   import { createRevealSectionTL } from "../utils/createRevealSectionTL";
 
   function animateExtrasSection() {
+    if (
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches
+    )
+      return;
     const cardsFrameworks = gsap.utils.toArray<HTMLElement>(".card-wrapper");
     const tl = createRevealSectionTL("#extras-title", "#extras-description");
 

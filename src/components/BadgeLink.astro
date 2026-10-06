@@ -1,5 +1,5 @@
 ---
-import { Image } from "astro:assets";
+import { cloudinary } from "../utils/cloudinary";
 import { getTranslations } from "../i18n/utils";
 
 const lang = Astro.currentLocale as "es" | "en";
@@ -14,20 +14,22 @@ const badgeT = t("badge");
   rel="noopener noreferrer"
   id="badge"
 >
-  <Image
+  <img
     id="badge-outer"
-    src="https://res.cloudinary.com/dy8gpozi6/image/upload/v1765549470/Gemini_Generated_Image_7um3ha7um3ha7um3_mliovh.webp"
+    src={cloudinary("https://res.cloudinary.com/dy8gpozi6/image/upload/v1765549470/Gemini_Generated_Image_7um3ha7um3ha7um3_mliovh.webp", { w: 300 })}
     loading="lazy"
+    decoding="async"
     alt="Star"
     height={300}
     width={300}
     style={{ animationDuration: "7s" }}
     class="absolute inset-0 z-10 not-motion-reduce:animate-spin pointer-events-none opacity-0"
   />
-  <Image
+  <img
     id="badge-inner"
-    src="https://res.cloudinary.com/dy8gpozi6/image/upload/v1740447261/meme_gato_rwte5r.webp"
+    src={cloudinary("https://res.cloudinary.com/dy8gpozi6/image/upload/v1740447261/meme_gato_rwte5r.webp", { w: 200 })}
     loading="lazy"
+    decoding="async"
     alt="Star"
     height={200}
     width={200}

@@ -13,14 +13,41 @@ const GsapBreakpoints = {
 
 type GsapBreakpointsType = Record<keyof typeof GsapBreakpoints, boolean>;
 
-const lenis = getLenisInstance();
-lenis.on("scroll", ScrollTrigger.update);
-
 gsap.registerPlugin(ScrollTrigger, SplitText);
 
-gsap.ticker.add((time) => {
-  lenis.raf(time * 1000);
-});
+// Mobile URL-bar show/hide resizes the viewport constantly; ignore them so
+// ScrollTrigger doesn't recalculate on every resize.
+ScrollTrigger.config({ ignoreMobileResize: true });
+
+// Lenis is bound lazily and only on the first real scroll: no per-frame
+// `lenis.raf` + `ScrollTrigger.update` cost while the page is idle.
+function bindLenisOnFirstScroll(): void {
+  if (typeof window === "undefined") return;
+  const onFirstScroll = () => {
+    window.removeEventListener("scroll", onFirstScroll, { capture: true } as never);
+    const lenis = getLenisInstance();
+    if (!lenis) return;
+    lenis.on("scroll", ScrollTrigger.update);
+    gsap.ticker.add((time) => {
+      lenis.raf(time * 1000);
+    });
+    gsap.ticker.lagSmoothing(0);
+  };
+  window.addEventListener("scroll", onFirstScroll, {
+    once: true,
+    passive: true,
+    capture: true,
+  });
+}
+
+bindLenisOnFirstScroll();
+
+export function prefersReducedMotion(): boolean {
+  return (
+    typeof window !== "undefined" &&
+    window.matchMedia("(prefers-reduced-motion: reduce)").matches
+  );
+}
 
 export {
   gsap,

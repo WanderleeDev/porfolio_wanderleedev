@@ -1,5 +1,5 @@
 ---
-import { Image } from "astro:assets";
+import { cloudinary } from "../utils/cloudinary";
 
 interface Props {
   projects: {
@@ -33,10 +33,11 @@ const { projects } = Astro.props;
           href={demo_url}
           rel="noopener noreferrer"
         >
-          <Image
+          <img
             class="aspect-video object-cover w-full group-hover:scale-105 group-focus-within:scale-105 transition-transform duration-700 ease-out group-hover:brightness-75 group-focus-within:brightness-75 pointer-events-none"
             loading="lazy"
-            src={image}
+            decoding="async"
+            src={cloudinary(image, { w: 800 })}
             alt={`thumbnail for ${title}`}
             width={800}
             height={450}
@@ -96,6 +97,10 @@ const { projects } = Astro.props;
   } as const;
 
   const projectCardsAnimate = () => {
+    if (
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches
+    )
+      return;
     const cards = $$<HTMLElement>(".card-project");
     const containerCards = document.querySelector("#projects");
 

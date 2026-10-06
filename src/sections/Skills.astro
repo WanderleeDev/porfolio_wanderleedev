@@ -68,6 +68,10 @@ const skills = skillsT.list;
   import { $ } from "../utils/selectors";
 
   function animateSkillsSection() {
+    if (
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches
+    )
+      return;
     const accordionItems = gsap.utils.toArray<HTMLElement>(
       ".skills-accordion-item",
     );

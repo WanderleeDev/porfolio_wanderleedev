@@ -1,6 +1,6 @@
 ---
 import Paragraph from "./typography/Paragraph.astro";
-import { Image } from "astro:assets";
+import { cloudinary } from "../utils/cloudinary";
 import { Icon } from "astro-iconify";
 import { getTranslations } from "../i18n/utils";
 
@@ -19,29 +19,16 @@ const socialLinks = t("social");
   <div
     class="grid grid-cols-1 md:grid-cols-2 flex-1 place-content-center gap-12 md:gap-16 px-6 lg:px-12 max-w-7xl w-full mx-auto relative z-10"
   >
-    <div class="md:items-center md:justify-center flex">
+    {/* TODO(perf): hero image tom_f0v8qy.webp weighs ~1.5MB even with
+        f_auto,q_60. Re-upload pre-compressed to Cloudinary (or w_400)
+        and restore the <img> below. Removed 2026-10-06 to unblock LCP. */
+    <div
+      class="md:items-center md:justify-center flex"
+      aria-hidden="true"
+    >
       <div
-        class="relative w-80 h-80 md:w-96 md:h-96 lg:w-104 lg:h-104 overflow-hidden mx-auto"
-      >
-        <Image
-          width={500}
-          height={500}
-          loading="lazy"
-          src="https://res.cloudinary.com/dy8gpozi6/image/upload/v1765154077/tom_f0v8qy.webp"
-          alt="Hero Image"
-          class="w-full h-full object-cover pointer-events-none select-none"
-          style={{
-            maskImage: "url(https://res.cloudinary.com/dy8gpozi6/image/upload/v1765157809/mask-profile_raa16q.webp)",
-            WebkitMaskImage: "url(https://res.cloudinary.com/dy8gpozi6/image/upload/v1765157809/mask-profile_raa16q.webp)",
-            maskSize: "110% 90%",
-            WebkitMaskSize: "110% 90%",
-            maskPosition: "center",
-            WebkitMaskPosition: "center",
-            maskRepeat: "no-repeat",
-            WebkitMaskRepeat: "no-repeat"
-          }}
-        />
-      </div>
+        class="relative w-80 h-80 md:w-96 md:h-96 lg:w-104 lg:h-104 overflow-hidden mx-auto rounded-full bg-gradient-to-br from-indigo-500/20 via-purple-500/10 to-transparent"
+      />
     </div>
 
     <div
@@ -122,6 +109,10 @@ const socialLinks = t("social");
   import { $ } from "../utils/selectors";
 
   function animateFooter() {
+    if (
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches
+    )
+      return;
     const description = $("#footer .text-neutral-400");
     const socialLinks = gsap.utils.toArray("#footer nav li");
     const viewCodeLink = $("#footer .font-dm-mono");

@@ -1,6 +1,18 @@
 @import "tailwindcss";
 
 @layer utilities {
+  /* Skip rendering work for below-the-fold sections until scrolled into
+     view. contain-intrinsic-size reserves layout space to avoid CLS. */
+  .section-page {
+    content-visibility: auto;
+    contain-intrinsic-size: auto 100dvh;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .float-element {
+      animation: none !important;
+    }
+  }
   .font-inherit {
     font-family: inherit;
   }

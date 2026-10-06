@@ -60,6 +60,10 @@ const contactT = t("contactSection");
   import { $ } from "../utils/selectors";
 
   function animateContactSection() {
+    if (
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches
+    )
+      return;
     const cardsEl = gsap.utils.toArray(".card-info");
     const formEl = $(".contact-form");
     const tl = createRevealSectionTL("#contact-title", "#contact-description");

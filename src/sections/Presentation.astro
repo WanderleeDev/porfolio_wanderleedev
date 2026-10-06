@@ -65,6 +65,10 @@ const presentationT = t("presentation");
   import { $ } from "../utils/selectors";
 
   function animatePresentation() {
+    if (
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches
+    )
+      return;
     const elements = [
       "presentation-start",
       "presentation-accent",

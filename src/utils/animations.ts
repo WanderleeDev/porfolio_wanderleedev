@@ -141,6 +141,9 @@ function initProjectCards(ctx: GsapBreakpointsType): void {
 
   if (ctx.isDesktop) {
     // Desktop parallax drift: transform-only (no layout props).
+    // Capped in px so cards keep their original size (grid back at
+    // lg:w-4/5) without clipping at the viewport edges: 20vw on wide
+    // screens pushed ~290px per side, beyond the available gutter.
     const even = [...cards].filter((_, i) => i % 2 === 0);
     const odd = [...cards].filter((_, i) => i % 2 !== 0);
     for (const [group, dir] of [
@@ -149,7 +152,7 @@ function initProjectCards(ctx: GsapBreakpointsType): void {
     ] as const) {
       if (!group.length) continue;
       gsap.to(group, {
-        x: () => dir * window.innerWidth * 0.2,
+        x: () => dir * Math.min(window.innerWidth * 0.2, 140),
         rotation: dir * 10,
         ease: "none",
         scrollTrigger: {

@@ -1,7 +1,7 @@
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { SplitText } from "gsap/SplitText";
-import { getLenisInstance } from "./lenisInstance";
+import { startLenis, stopLenis } from "./lenisInstance";
 
 const GsapBreakpoints = {
   isMobile: "(max-width: 768px)",
@@ -19,28 +19,28 @@ gsap.registerPlugin(ScrollTrigger, SplitText);
 // ScrollTrigger doesn't recalculate on every resize.
 ScrollTrigger.config({ ignoreMobileResize: true });
 
-// Lenis is bound lazily and only on the first real scroll: no per-frame
-// `lenis.raf` + `ScrollTrigger.update` cost while the page is idle.
-function bindLenisOnFirstScroll(): void {
+// Minimal Lenis wiring (see lenisInstance.ts):
+// - Lenis runs its own rAF loop via `autoRaf` (no gsap.ticker bridging).
+// - Only `ScrollTrigger.update` is forwarded on Lenis scroll events.
+// - The instance starts on first scroll intent and parks when the tab hides.
+function bindLenisMinimal(): void {
   if (typeof window === "undefined") return;
   const onFirstScroll = () => {
-    window.removeEventListener("scroll", onFirstScroll, { capture: true } as never);
-    const lenis = getLenisInstance();
+    const lenis = startLenis();
     if (!lenis) return;
     lenis.on("scroll", ScrollTrigger.update);
-    gsap.ticker.add((time) => {
-      lenis.raf(time * 1000);
-    });
-    gsap.ticker.lagSmoothing(0);
   };
   window.addEventListener("scroll", onFirstScroll, {
     once: true,
     passive: true,
     capture: true,
   });
+  document.addEventListener("visibilitychange", () => {
+    if (document.hidden) stopLenis();
+  });
 }
 
-bindLenisOnFirstScroll();
+bindLenisMinimal();
 
 export function prefersReducedMotion(): boolean {
   return (

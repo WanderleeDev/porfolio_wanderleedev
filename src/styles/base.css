@@ -1,6 +1,12 @@
 @import "tailwindcss";
 
 @layer base {
+  /* Lenis (`anchors: true`) owns anchor smoothing. Never set
+     `scroll-behavior: smooth` here — it fights Lenis' animation loop. */
+  html {
+    scroll-behavior: auto;
+  }
+
   html, body {
     cursor: url("/cursor.svg"), auto;
   }

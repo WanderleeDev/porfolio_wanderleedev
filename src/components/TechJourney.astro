@@ -30,7 +30,7 @@ const descriptions = journeyT.skillDescriptions;
       >
         {journeyT.introTitle}
       </h2>
-      <p class="font-sans text-soft text-[1.05rem] max-w-[44ch] m-0 capitalize">
+      <p class="font-sans text-soft text-[1.05rem] max-w-[44ch] m-0">
         {skillsT.sectionDescription}
       </p>
     </div>
@@ -45,7 +45,7 @@ const descriptions = journeyT.skillDescriptions;
           >
             {group.title}
           </h2>
-          <p class="font-sans text-soft text-[1.05rem] max-w-[44ch] m-0 mb-8 capitalize">
+          <p class="font-sans text-soft text-[1.05rem] max-w-[44ch] m-0 mb-8">
             {descriptions[group.title] ?? ""}
           </p>
           <ul class="tech-list">
@@ -62,7 +62,7 @@ const descriptions = journeyT.skillDescriptions;
                   <b class="block py-3 bg-tag font-fira-sans-extra-condensed font-black text-[clamp(1.2rem,2.5vw,1.7rem)] tracking-[-0.02em]" style={`color: ${color};`}>{name}</b>
                   <Icon
                     name={icon}
-                    class="h-full w-fit bg-tag -z-10 absolute block left-0 top-2/4 -translate-y-2/4 group-hover:top-0 group-hover:translate-y-[-105%] transition-all"
+                    class="h-full w-fit bg-tag -z-10 absolute block left-0 top-2/4 -translate-y-2/4 group-hover:top-0 group-hover:translate-y-[-101%] transition-all"
                   />
                 </li>
               );
@@ -81,7 +81,7 @@ const descriptions = journeyT.skillDescriptions;
       >
         {journeyT.outroTitle}
       </h2>
-      <p class="font-sans text-soft text-[1.05rem] max-w-[44ch] m-0 capitalize">
+      <p class="font-sans text-soft text-[1.05rem] max-w-[44ch] m-0">
         {journeyT.outroDesc}
       </p>
     </div>
@@ -199,7 +199,7 @@ const descriptions = journeyT.skillDescriptions;
       margin: 0;
       padding: 0;
       display: grid;
-      gap: 0 40px;
+      gap: 12px 40px;
       grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
       max-width: 900px;
     }

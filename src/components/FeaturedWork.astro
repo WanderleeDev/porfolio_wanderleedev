@@ -20,7 +20,7 @@ const t = getTranslations(lang);
     <h2 class="m-0 font-fira-sans-extra-condensed font-black text-[64px] uppercase tracking-tight leading-none text-ink">
       {t("featuredWork").title}
     </h2>
-    <p class="mt-1.5 font-dm-mono text-[clamp(0.7rem,1.4vw,0.9rem)] text-muted tracking-wide">
+    <p class="mt-1.5 font-sans text-[clamp(0.7rem,1.4vw,0.9rem)] text-muted tracking-wide">
       {t("featuredWork").subtitle}
     </p>
   </header>
@@ -38,13 +38,35 @@ const t = getTranslations(lang);
       ))}
     </div>
 
-    <div class="absolute bottom-10 md:bottom-14 left-1/2 -translate-x-1/2 bg-badge rounded-full px-6 md:px-8 py-3 z-10 pointer-events-none whitespace-nowrap">
-      <span
-        id="fw-badge-text"
-        class="font-dm-mono text-[clamp(0.8rem,1.6vw,1rem)] font-extrabold uppercase tracking-widest text-badge-ink block"
+    <div class="absolute bottom-10 md:bottom-14 left-1/2 -translate-x-1/2 z-10 flex items-center gap-2 md:gap-3 pointer-events-none">
+      <button
+        id="fw-prev"
+        type="button"
+        aria-label={lang === "en" ? "Previous project" : "Proyecto anterior"}
+        class="pointer-events-auto w-10 h-10 md:w-11 md:h-11 rounded-full bg-badge text-badge-ink flex items-center justify-center hover:scale-105 active:scale-95 transition-transform"
       >
-        {items[0]?.title}
-      </span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5" aria-hidden="true">
+          <path d="M15 18l-6-6 6-6" />
+        </svg>
+      </button>
+      <div class="bg-badge rounded-full px-6 md:px-8 py-3 whitespace-nowrap">
+        <span
+          id="fw-badge-text"
+          class="font-sans text-[clamp(0.8rem,1.6vw,1rem)] font-extrabold uppercase tracking-widest text-badge-ink block"
+        >
+          {items[0]?.title}
+        </span>
+      </div>
+      <button
+        id="fw-next"
+        type="button"
+        aria-label={lang === "en" ? "Next project" : "Proyecto siguiente"}
+        class="pointer-events-auto w-10 h-10 md:w-11 md:h-11 rounded-full bg-badge text-badge-ink flex items-center justify-center hover:scale-105 active:scale-95 transition-transform"
+      >
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5" aria-hidden="true">
+          <path d="M9 18l6-6-6-6" />
+        </svg>
+      </button>
     </div>
   </div>
 
@@ -178,6 +200,27 @@ const t = getTranslations(lang);
     }
 
     let throwing = false;
+
+    // ── Flechas prev/next: step relativo a la card centrada ──
+    function stepTo(dir) {
+      const cx = vw / 2;
+      const fromX = wrap(gsap.getProperty(track, "x"));
+      let bestI = 0, bestD = Infinity;
+      allCards.forEach((card, i) => {
+        const d = Math.abs(i * STEP + fromX + CARD_W / 2 - cx);
+        if (d < bestD) { bestD = d; bestI = i; }
+      });
+      const target = wrap(cx - ((bestI + dir) * STEP + CARD_W / 2));
+      gsap.to(track, {
+        x: target, duration: 0.45, ease: "power3.out", overwrite: true,
+        onUpdate() { update(gsap.getProperty(track, "x")); },
+      });
+    }
+
+    const prevBtn = document.getElementById("fw-prev");
+    const nextBtn = document.getElementById("fw-next");
+    if (prevBtn) prevBtn.onclick = () => stepTo(-1);
+    if (nextBtn) nextBtn.onclick = () => stepTo(1);
 
     const [drag] = Draggable.create(track, {
       type        : "x",

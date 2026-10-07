@@ -59,10 +59,10 @@ const descriptions = journeyT.skillDescriptions;
                   class="tech-item bg-surface relative group"
                   style={`--accent: ${color}; --tw-border-opacity: 1;`}
                 >
-                  <b class="block py-3 bg-inherit font-fira-sans-extra-condensed font-black text-[clamp(1.2rem,2.5vw,1.7rem)] tracking-[-0.02em]" style={`color: ${color};`}>{name}</b>
+                  <b class="block py-3 bg-surface font-fira-sans-extra-condensed font-black text-[clamp(1.2rem,2.5vw,1.7rem)] tracking-[-0.02em]" style={`color: ${color};`}>{name}</b>
                   <Icon
                     name={icon}
-                    class="h-full w-fit bg-inherit -z-10 absolute block left-0 top-2/4 -translate-y-2/4 group-hover:top-0 group-hover:translate-y-[-105%] transition-all"
+                    class="h-full w-fit bg-surface -z-10 absolute block left-0 top-2/4 -translate-y-2/4 group-hover:top-0 group-hover:translate-y-[-105%] transition-all"
                   />
                 </li>
               );
@@ -209,7 +209,7 @@ const descriptions = journeyT.skillDescriptions;
     }
   }
 
-  /* Overrides de theme: en utilities para ganarle a bg-inherit */
+  /* Overrides de theme: en utilities para ganarle a bg-surface */
   @layer utilities {
     /* Neón: chip translúcido para tapar el logo en reposo sin matar el glow */
     .neon .tech-item {

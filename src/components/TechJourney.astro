@@ -18,10 +18,8 @@ const descriptions = journeyT.skillDescriptions;
 <section
   id="tech-journey"
   aria-label="Tecnologías"
-  class="journey relative bg-surface text-ink overflow-x-clip"
-  style={`--panels: ${groups.length + 2}`}
+  class="journey relative bg-surface text-ink overflow-hidden"
 >
-  <div class="journey-sticky">
   <div class="track flex h-full w-max">
     <!-- Panel intro -->
     <div
@@ -101,61 +99,111 @@ const descriptions = journeyT.skillDescriptions;
     >
     </div>
   </div>
-  </div>
 </section>
+
+<script>
+  import gsap from "gsap";
+  import { ScrollTrigger } from "gsap/ScrollTrigger";
+  gsap.registerPlugin(ScrollTrigger);
+
+  function setup() {
+    const section = document.getElementById("tech-journey")!;
+    const track = section.querySelector<HTMLElement>(".track")!;
+    const progress = document.getElementById("route-progress")!;
+    if (!section || !track) return;
+
+    // Activar modo horizontal
+    section.classList.add("journey--on");
+
+    // Forzar reflow para que scrollWidth sea correcto
+    void track.offsetWidth;
+
+    const dist = () => track.scrollWidth - window.innerWidth;
+
+    // Track horizontal
+    const run = gsap.to(track, {
+      x: () => -dist(),
+      ease: "none",
+      scrollTrigger: {
+        trigger: section,
+        start: "top top",
+        end: () => "+=" + dist(),
+        pin: true,
+        scrub: 0.8,
+        invalidateOnRefresh: true,
+      },
+    });
+
+    // Barra de progreso
+    gsap.to(progress, {
+      scaleX: 1,
+      ease: "none",
+      scrollTrigger: {
+        trigger: section,
+        start: "top top",
+        end: () => "+=" + dist(),
+        scrub: true,
+        invalidateOnRefresh: true,
+      },
+    });
+
+    // Revelar cada panel al llegar
+    section.querySelectorAll<HTMLElement>(".panel").forEach((panel) => {
+      const items = panel.querySelectorAll<HTMLElement>("h2, p, .tech-item");
+      if (!items.length) return;
+      gsap.from(items, {
+        y: 36,
+        opacity: 0,
+        duration: 0.6,
+        ease: "power3.out",
+        stagger: 0.08,
+        scrollTrigger: {
+          trigger: panel,
+          containerAnimation: run,
+          start: "left 78%",
+          toggleActions: "play none none reverse",
+        },
+      });
+    });
+
+    ScrollTrigger.refresh();
+  }
+
+  // Boot idempotente: funciona en carga inicial y en navegación cliente
+  let journeyCtx: gsap.Context | null = null;
+
+  function bootJourney() {
+    journeyCtx?.revert();
+    journeyCtx = gsap.context(() => {
+      setup();
+    });
+  }
+
+  // Esperar a que todo esté pintado antes de medir scrollWidth
+  document.addEventListener("astro:page-load", bootJourney);
+  if (document.readyState === "complete") {
+    bootJourney();
+  } else {
+    window.addEventListener("load", bootJourney, { once: true });
+  }
+</script>
 
 <style>
 @layer components {
-    /* Scroll horizontal puro CSS: wrapper alto + sticky + view-timeline */
-    .journey {
-      height: calc(100vh + (var(--panels, 7) - 1) * 100vw);
-      view-timeline-name: --journey;
-      view-timeline-axis: block;
-    }
-
-    .journey-sticky {
-      position: sticky;
-      top: 0;
+    /* Modo activo — requiere JS para activarse */
+    .journey--on {
       height: 100vh;
       overflow: hidden;
     }
 
-    .track {
-      animation-name: journey-pan;
-      animation-timing-function: linear;
-      animation-fill-mode: both;
-      animation-timeline: --journey;
-      animation-range: cover 0% cover 100%;
-    }
-
-    @keyframes journey-pan {
-      to {
-        transform: translateX(calc(-100% + 100vw));
-      }
-    }
-
-    .journey .track {
+    .journey--on .track {
       height: 100%;
       align-items: stretch;
     }
 
-    .journey .panel {
+    .journey--on .panel {
       height: 100%;
       flex-shrink: 0;
-    }
-
-    #route-progress {
-      animation-name: route-grow;
-      animation-timing-function: linear;
-      animation-fill-mode: both;
-      animation-timeline: --journey;
-      animation-range: cover 0% cover 100%;
-    }
-
-    @keyframes route-grow {
-      to {
-        transform: scaleX(1);
-      }
     }
 
     .tech-list {
@@ -184,28 +232,20 @@ const descriptions = journeyT.skillDescriptions;
       padding-inline: 14px;
     }
 
-    /* Sin movimiento: apila los paneles, sin animaciones */
+    /* Fallback sin animación: apila los paneles */
     @media (prefers-reduced-motion: reduce) {
-      .journey {
-        height: auto;
-      }
-      .journey-sticky {
-        position: static;
+      .journey--on {
         height: auto;
         overflow: visible;
       }
-      .journey .track {
+      .journey--on .track {
         flex-direction: column;
         width: 100%;
         height: auto;
-        animation: none;
       }
-      .journey .panel {
+      .journey--on .panel {
         width: 100% !important;
         height: auto !important;
-      }
-      .route {
-        display: none;
       }
     }
   }

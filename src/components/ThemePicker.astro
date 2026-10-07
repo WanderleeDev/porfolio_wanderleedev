@@ -104,13 +104,23 @@ const altPath  = currentLang === "es"
         Oscuro
         <span class="theme-option__check" aria-hidden="true">✓</span>
       </button>
+      <button class="theme-option" data-theme="neon" role="option">
+        <span class="theme-option__icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 3l1.8 4.7 4.7 1.8-4.7 1.8L12 16l-1.8-4.7L5.5 9.5l4.7-1.8z"/>
+            <path d="M19 15l.9 2.1 2.1.9-2.1.9L19 21l-.9-2.1-2.1-.9 2.1-.9z"/>
+          </svg>
+        </span>
+        Neón
+        <span class="theme-option__check" aria-hidden="true">✓</span>
+      </button>
     </div>
   </div>
 
 </div>
 
 <script>
-  type Theme = "system" | "light" | "dark";
+  type Theme = "system" | "light" | "dark" | "neon";
 
   const STORAGE_KEY = "wdev-theme";
 
@@ -118,15 +128,19 @@ const altPath  = currentLang === "es"
     system: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>`,
     light:  `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>`,
     dark:   `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>`,
+    neon:   `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.8 4.7 4.7 1.8-4.7 1.8L12 16l-1.8-4.7L5.5 9.5l4.7-1.8z"/><path d="M19 15l.9 2.1 2.1.9-2.1.9L19 21l-.9-2.1-2.1-.9 2.1-.9z"/></svg>`,
   };
 
   function applyTheme(theme: Theme) {
     const root = document.documentElement;
+    root.classList.remove("dark", "neon");
     if (theme === "dark") {
       root.classList.add("dark");
       root.setAttribute("data-theme", "dark");
+    } else if (theme === "neon") {
+      root.classList.add("neon");
+      root.setAttribute("data-theme", "neon");
     } else if (theme === "light") {
-      root.classList.remove("dark");
       root.setAttribute("data-theme", "light");
     } else {
       root.removeAttribute("data-theme");
@@ -148,7 +162,7 @@ const altPath  = currentLang === "es"
 
   function getSaved(): Theme {
     const raw = localStorage.getItem(STORAGE_KEY);
-    return raw === "light" || raw === "dark" || raw === "system" ? raw : "system";
+    return raw === "light" || raw === "dark" || raw === "neon" || raw === "system" ? raw : "system";
   }
 
   function resolveSystem(): Exclude<Theme, "system"> {

@@ -126,6 +126,37 @@
   --ct-err: var(--color-dark-err);
 }
 
+/* ── Tema neón: negro con glows, secciones transparentes ── */
+.neon {
+  color-scheme: dark;
+
+  --color-surface:    transparent;
+  --color-ink:        #f2f4fa;
+  --color-soft:       #b9c0d8;
+  --color-muted:      #8b93ad;
+  --color-line:       #2a2f45;
+  --color-badge:      #1c2133;
+  --color-badge-ink:  #eef1f8;
+
+  --surface:   var(--color-surface);
+  --ink:       var(--color-ink);
+  --soft:      var(--color-soft);
+  --muted:     var(--color-muted);
+  --line:      var(--color-line);
+  --badge:     var(--color-badge);
+  --badge-ink: var(--color-badge-ink);
+
+  --ct-ink: var(--color-dark-ink);
+  --ct-acc: var(--color-dark-acc);
+  --ct-err: var(--color-dark-err);
+}
+
+.neon body {
+  background-color: #000;
+  background-image: radial-gradient(at 20% 30%, #38bdf859 0%, #0000 60%), radial-gradient(at 80% 70%, #8b5cf647 0%, #0000 70%);
+  background-attachment: fixed;
+}
+
 /* ── Base layer (fonts, cursor, scroll) ── */
 @layer base {
   html { scroll-behavior: auto; }

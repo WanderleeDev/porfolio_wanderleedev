@@ -50,6 +50,7 @@ Files listed in Scope only. No new deps. No Visual changes beyond theme correctn
 - T7 done: contact block fully themed via --ct-* (light ink/acc #4f46e5/err #dc2626, dark back to dark palette); button + links use semantic classes.
 - T8 done: Inter for non-titles (font-sans token + faces 400/500/700/800, classes renamed).
 - T9 done: carousel prev/next arrows flanking the pill (relative step + wrap).
+- T10 done: neon theme (black + sky/violet glows, transparent surface, picker option + anti-FOUC).
 - Engram mirror: pending (mem_save blocked: multiple active runtime sessions).
 
 ## Verification evidence

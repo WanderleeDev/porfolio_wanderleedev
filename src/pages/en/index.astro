@@ -41,13 +41,13 @@ console.log("DEBUG locale:", Astro.currentLocale);
     <script is:inline>
       try {
         var s = localStorage.getItem("wdev-theme") || "system";
-        if (s !== "light" && s !== "dark") s = "system";
-        var d = s === "dark" || (s === "system" && matchMedia("(prefers-color-scheme: dark)").matches);
+        if (s !== "light" && s !== "dark" && s !== "neon") s = "system";
         var r = document.documentElement;
+        var d = s === "dark" || (s === "system" && matchMedia("(prefers-color-scheme: dark)").matches);
         r.classList.toggle("dark", d);
-        if (s === "dark") r.setAttribute("data-theme", "dark");
-        else if (s === "light") r.setAttribute("data-theme", "light");
-        else r.removeAttribute("data-theme");
+        r.classList.toggle("neon", s === "neon");
+        if (s === "system") r.removeAttribute("data-theme");
+        else r.setAttribute("data-theme", s);
       } catch (e) {}
     </script>
     <style>

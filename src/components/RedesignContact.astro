@@ -10,6 +10,8 @@ const lang  = Astro.currentLocale as "es" | "en";
 const t     = getTranslations(lang);
 const info  = t("contactSection");
 const email = "wanderleedev@gmail.com";
+const kinds = info.kinds;
+const labels = info.labels;
 ---
 
 <section
@@ -21,53 +23,53 @@ const email = "wanderleedev@gmail.com";
   <div class="marquee" aria-hidden="true">
     <div class="mtrack" id="mtrack">
       {Array.from({ length: 8 }).map(() => (
-        <span>Escríbeme</span>
+        <span>{t("contactSection").marquee}</span>
       ))}
     </div>
   </div>
 
   <div class="max-w-[1000px] mx-auto px-6">
-    <h2 id="contact-heading" class="sr-only">Contacto</h2>
+    <h2 id="contact-heading" class="sr-only">{info.title}</h2>
 
     <form id="redesign-form" novalidate class="mb-0">
       <p class="sentence">
-        <span class="ln">Hola, soy
+        <span class="ln">{info.sentence.start}
           <input
             class="f"
             name="name"
-            placeholder="tu nombre"
+            placeholder={labels.find(l=>l.key==="name")?.label ?? "tu nombre"}
             autocomplete="name"
-            aria-label="Tu nombre"
+            aria-label={info.aria.name}
           />
-          y necesito
+          {info.sentence.andNeed}
         </span>
         <span class="ln">
-          <select class="f" name="kind" aria-label="Qué necesitas">
-            <option>una web nueva</option>
-            <option>rediseñar mi sitio</option>
-            <option>una app a medida</option>
-            <option>animaciones para mi producto</option>
-            <option>otra cosa</option>
+          <select class="f" name="kind" aria-label={info.aria.kind}>
+            <option>{kinds[0]}</option>
+            <option>{kinds[1]}</option>
+            <option>{kinds[2]}</option>
+            <option>{kinds[3]}</option>
+            <option>{kinds[4]}</option>
           </select>
-          para
+          {info.sentence.for}
         </span>
         <span class="ln">
           <input
             class="f"
             name="what"
-            placeholder="tu empresa o idea"
-            aria-label="Tu empresa o idea"
+            placeholder={labels.find(l=>l.key==="what")?.label ?? "tu empresa o idea"}
+            aria-label={info.aria.what}
           />.
         </span>
         <span class="ln">
-          Respóndeme en
+          {info.sentence.replyTo}
           <input
             class="f"
             name="email"
             type="email"
-            placeholder="tu@correo.com"
+            placeholder={labels.find(l=>l.key==="email")?.label ?? "tu@correo.com"}
             autocomplete="email"
-            aria-label="Tu correo"
+            aria-label={info.aria.email}
           />.
         </span>
       </p>
@@ -78,12 +80,12 @@ const email = "wanderleedev@gmail.com";
         type="submit"
         class="font-dm-mono font-bold text-[1.05rem] px-7 py-4 rounded-full border-0 bg-[var(--dark-ink)] text-[var(--dark-bg)] cursor-pointer transition-opacity hover:opacity-80"
       >
-        Abrir en mi correo
+        {info.submit}
       </button>
     </form>
 
     <p class="font-dm-mono text-[var(--dark-muted)] mt-10 text-sm">
-      ¿Prefieres escribir tú?
+      {info.preferredText}
       <a
         href={`mailto:${email}`}
         class="text-[var(--dark-ink)] font-semibold hover:underline"
@@ -109,15 +111,15 @@ const email = "wanderleedev@gmail.com";
     e.preventDefault();
     const f = form.elements as any;
     const checks: [HTMLElement, unknown, string][] = [
-      [f.name,  f.name.value.trim(),                              "Falta tu nombre en la frase."],
-      [f.what,  f.what.value.trim(),                              "Cuéntame para qué empresa o idea es."],
-      [f.email, f.email.value.trim() && f.email.checkValidity(), "Escribe un correo válido, por ejemplo nombre@dominio.com."],
+      [f.name,  f.name.value.trim(),                              info.error],
+      [f.what,  f.what.value.trim(),                              info.errorWhat],
+      [f.email, f.email.value.trim() && f.email.checkValidity(), info.errorEmail],
     ];
     const bad = checks.find(([, val]) => !val);
     if (bad) { err.textContent = bad[2]; (bad[0] as HTMLElement).focus(); return; }
     err.textContent = "";
-    const text = `Hola, soy ${f.name.value.trim()} y necesito ${f.kind.value} para ${f.what.value.trim()}.\nRespóndeme en ${f.email.value.trim()}.`;
-    window.location.href = `mailto:${TO}?subject=${encodeURIComponent("Proyecto – " + f.name.value.trim())}&body=${encodeURIComponent(text)}`;
+    const text = `${info.sentence.start} ${f.name.value.trim()} ${info.sentence.andNeed} ${f.kind.value} ${info.sentence.for} ${f.what.value.trim()}.\n${info.sentence.replyTo} ${f.email.value.trim()}.`;
+    window.location.href = `mailto:${TO}?subject=${encodeURIComponent(`${info.submitSubject} – ` + f.name.value.trim())}&body=${encodeURIComponent(text)}`;
   });
 
   // ── Animaciones ────────────────────────────────────────────────────────────

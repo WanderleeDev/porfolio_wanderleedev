@@ -138,4 +138,46 @@ export const es = {
     ],
     attr_data: "projects",
   },
+
+  hero: {
+    title: "Fullstack,",
+    titleAccent: "diseño",
+    titleEnd: "moderno.",
+    subtitle: "Stack principal",
+  },
+
+  featuredWork: {
+    title: "Featured Work",
+    subtitle: "Select recent and notable projects",
+  },
+
+  contactSection: {
+    title: "Hablemos",
+    subtitle: "¿Listo para empezar tu próximo proyecto? Envíame un mensaje y lo hacemos realidad.",
+    marquee: "Escríbeme",
+    submit: "Abrir en mi correo",
+    preferredText: "¿Prefieres escribir tú?",
+    submitSubject: "Proyecto",
+    sentence: {
+      start: "Hola, soy",
+      andNeed: "y necesito",
+      for: "para",
+      replyTo: "Respóndeme en",
+    },
+    aria: {
+      name: "Tu nombre",
+      what: "Tu empresa o idea",
+      email: "Tu correo",
+      kind: "Qué necesitas",
+    },
+    labels: [
+      { label: "tu nombre", key: "name" },
+      { label: "tu empresa o idea", key: "what" },
+      { label: "tu@correo.com", key: "email" },
+    ],
+    kinds: ["una web nueva", "rediseñar mi sitio", "una app a medida", "animaciones para mi producto", "otra cosa"],
+    error: "Falta tu nombre en la frase.",
+    errorWhat: "Cuéntame para qué empresa o idea es.",
+    errorEmail: "Escribe un correo válido, por ejemplo nombre@dominio.com.",
+  },
 };

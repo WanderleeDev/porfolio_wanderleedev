@@ -1,23 +1,27 @@
 ---
-interface Item {
-  title: string;
-  src: string;
-  alt?: string;
-}
+/**
+ * Featured Work — GSAP horizontal carousel de proyectos.
+ * Scroll horizontal con inertia y clones para loop infinito.
+ */
+import { getTranslations } from "../i18n/utils";
+
 interface Props {
   items: Item[];
 }
+
 const { items } = Astro.props;
+const lang = Astro.currentLocale as "es" | "en";
+const t = getTranslations(lang);
 ---
 
 <section class="relative w-full h-dvh flex flex-col items-center bg-white text-neutral-900 overflow-hidden">
 
   <header class="pt-8 md:pt-10 text-center shrink-0 z-10">
     <h2 class="m-0 font-fira-sans-extra-condensed font-black text-[64px] uppercase tracking-tight leading-none text-neutral-900">
-      Featured Work
+      {t("featuredWork").title}
     </h2>
     <p class="mt-1.5 font-dm-mono text-[clamp(0.7rem,1.4vw,0.9rem)] text-neutral-400 tracking-wide">
-      Select recent and notable projects
+      {t("featuredWork").subtitle}
     </p>
   </header>
 
@@ -53,30 +57,27 @@ const { items } = Astro.props;
   gsap.registerPlugin(Draggable, InertiaPlugin);
 
   function init() {
-    const stage = document.getElementById("fw-stage")!;
-    const track = document.getElementById("fw-track")!;
-    const badge = document.getElementById("fw-badge-text")!;
+    const stage  = document.getElementById("fw-stage");
+    const track  = document.getElementById("fw-track");
+    const badge  = document.getElementById("fw-badge-text");
     if (!stage || !track) return;
 
-    const origCards = Array.from(track.querySelectorAll<HTMLElement>(".fw__card"));
+    const origCards = Array.from(track.querySelectorAll(".fw__card"));
     const N = origCards.length;
     if (N === 0) return;
 
     const vw = stage.offsetWidth;
     const vh = stage.offsetHeight;
-
     const isMobile = vw < 640;
-    const isTablet = vw >= 640 && vw < 1024;
+    const isTablet  = vw >= 640 && vw < 1024;
 
-    const CARD_W = isMobile
-      ? Math.min(Math.round(vw * 0.72), 340)
-      : isTablet
-        ? Math.min(Math.round(vw * 0.58), 420)
-        : Math.min(Math.round(vw * 0.48), 544);
+    const CARD_W = isMobile ? Math.min(Math.round(vw * 0.72), 340)
+      : isTablet  ? Math.min(Math.round(vw * 0.58), 420)
+      :             Math.min(Math.round(vw * 0.48), 544);
 
-    const CARD_H     = Math.min(Math.round(CARD_W * 1.22), Math.round(vh * 0.80));
-    const GAP        = isMobile ? Math.round(vw * 0.10) : isTablet ? Math.round(vw * 0.12) : Math.round(vw * 0.14);
-    const STEP       = CARD_W + GAP;
+    const CARD_H  = Math.min(Math.round(CARD_W * 1.22), Math.round(vh * 0.80));
+    const GAP     = isMobile ? Math.round(vw * 0.10) : isTablet ? Math.round(vw * 0.12) : Math.round(vw * 0.14);
+    const STEP    = CARD_W + GAP;
     const SIDE_ROT   = 14;
     const SIDE_SCALE = 0.82;
     const SIDE_Y     = Math.round(CARD_H * 0.06);
@@ -84,12 +85,12 @@ const { items } = Astro.props;
     // Triplicar para loop infinito
     for (let c = 0; c < 2; c++) {
       origCards.forEach(card => {
-        const clone = card.cloneNode(true) as HTMLElement;
+        const clone = card.cloneNode(true);
         clone.setAttribute("aria-hidden", "true");
         track.appendChild(clone);
       });
     }
-    const allCards = Array.from(track.querySelectorAll<HTMLElement>(".fw__card"));
+    const allCards = Array.from(track.querySelectorAll(".fw__card"));
 
     track.style.cssText = `position:absolute;top:0;left:0;height:${CARD_H}px;`;
     allCards.forEach((card, i) => {
@@ -110,7 +111,7 @@ const { items } = Astro.props;
     const baseX   = -(N * STEP) + centerX;
     gsap.set(track, { x: baseX });
 
-    function update(tx: number) {
+    function update(tx) {
       const cx = vw / 2;
       let closestDist = Infinity;
       let closestIdx  = 0;
@@ -152,7 +153,7 @@ const { items } = Astro.props;
     update(baseX);
 
     const loopRange = N * STEP;
-    function wrap(x: number) {
+    function wrap(x) {
       const min = baseX - loopRange / 2;
       const max = baseX + loopRange / 2;
       let nx = x;
@@ -161,7 +162,7 @@ const { items } = Astro.props;
       return nx;
     }
 
-    function snapNearest(fromX: number) {
+    function snapNearest(fromX) {
       const cx = vw / 2;
       let bestX = fromX, bestD = Infinity;
       allCards.forEach((card, i) => {
@@ -172,7 +173,7 @@ const { items } = Astro.props;
       const snapped = wrap(bestX);
       gsap.to(track, {
         x: snapped, duration: 0.3, ease: "power2.out",
-        onUpdate() { update(gsap.getProperty(track, "x") as number); },
+        onUpdate() { update(gsap.getProperty(track, "x")); },
       });
     }
 
@@ -184,32 +185,32 @@ const { items } = Astro.props;
       cursor      : "grab",
       activeCursor: "grabbing",
       onDrag() {
-        update(gsap.getProperty(track, "x") as number);
+        update(gsap.getProperty(track, "x"));
       },
       onThrowUpdate() {
         throwing = true;
-        const raw     = gsap.getProperty(track, "x") as number;
+        const raw     = gsap.getProperty(track, "x");
         const wrapped = wrap(raw);
         if (Math.abs(wrapped - raw) > 0.5) gsap.set(track, { x: wrapped });
-        update(gsap.getProperty(track, "x") as number);
+        update(gsap.getProperty(track, "x"));
       },
       onThrowComplete() {
         throwing = false;
-        snapNearest(wrap(gsap.getProperty(track, "x") as number));
+        snapNearest(wrap(gsap.getProperty(track, "x")));
       },
       onDragEnd() {
         requestAnimationFrame(() => {
-          if (!throwing) snapNearest(wrap(gsap.getProperty(track, "x") as number));
+          if (!throwing) snapNearest(wrap(gsap.getProperty(track, "x")));
         });
       },
     });
 
-    let resizeTimer: ReturnType<typeof setTimeout>;
+    let resizeTimer;
     window.addEventListener("resize", () => {
       clearTimeout(resizeTimer);
       resizeTimer = setTimeout(() => {
         drag.kill();
-        Array.from(track.querySelectorAll<HTMLElement>(".fw__card")).slice(N).forEach(c => c.remove());
+        Array.from(track.querySelectorAll(".fw__card")).slice(N).forEach(c => c.remove());
         gsap.set(track, { clearProps: "all" });
         init();
       }, 200);
@@ -224,7 +225,6 @@ const { items } = Astro.props;
 </script>
 
 <style>
-  /* Solo lo que Tailwind no puede hacer: pseudo-elemento con gradiente dinámico */
   .fw__card-title {
     position: absolute;
     bottom: 0;

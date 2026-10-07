@@ -6,6 +6,7 @@
  * Content: WanderleeDev portfolio (own projects from Cloudinary).
  */
 import Icon from "astro-iconify";
+import { getTranslations } from "../i18n/utils";
 
 const stackLogos = [
   {
@@ -33,6 +34,9 @@ const stackLogos = [
     rotate: "rotate-6",
   },
 ];
+
+const lang = Astro.currentLocale as "es" | "en";
+const t = getTranslations(lang);
 ---
 
 <section
@@ -77,12 +81,12 @@ const stackLogos = [
     class="font-fira-sans-extra-condensed font-black uppercase text-neutral-300 leading-[0.95] text-[clamp(2rem,7.5vw,5.5rem)]"
   >
     Fullstack,<br />
-    diseño & animación
+    {t("hero").titleAccent} & {t("hero").titleEnd}
   </h2>
 
   <div class="mt-6">
     <p class="font-dm-mono text-xs font-bold tracking-[0.2em] text-neutral-800 uppercase">
-      Stack principal
+      {t("hero").subtitle}
     </p>
     <p class="font-dm-mono text-[11px] tracking-[0.15em] text-neutral-400 uppercase mt-1">
       PostgreSQL · NestJS · Angular · Node.js

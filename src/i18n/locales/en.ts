@@ -137,4 +137,46 @@ export const en = {
     ],
     attr_data: "projects",
   },
+
+  hero: {
+    title: "Fullstack,",
+    titleAccent: "design",
+    titleEnd: "modern.",
+    subtitle: "Main stack",
+  },
+
+  featuredWork: {
+    title: "Featured Work",
+    subtitle: "Select recent and notable projects",
+  },
+
+  contactSection: {
+    title: "Let's Talk",
+    subtitle: "Ready to start your next project? Send me a message and let's make it happen.",
+    marquee: "Email me",
+    submit: "Open in my email",
+    preferredText: "Prefer to write yourself?",
+    submitSubject: "Project",
+    sentence: {
+      start: "Hi, I'm",
+      andNeed: "and I need",
+      for: "for",
+      replyTo: "Reply to",
+    },
+    aria: {
+      name: "Your name",
+      what: "Your company or idea",
+      email: "Your email",
+      kind: "What do you need",
+    },
+    labels: [
+      { label: "your name", key: "name" },
+      { label: "your enterprise or idea", key: "what" },
+      { label: "your@email.com", key: "email" },
+    ],
+    kinds: ["a new website", "redesign my site", "a custom app", "animations for my product", "something else"],
+    error: "Missing your name in the sentence.",
+    errorWhat: "Tell me what company or idea it's for.",
+    errorEmail: "Please enter a valid email, like name@domain.com.",
+  },
 };

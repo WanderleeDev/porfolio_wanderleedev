@@ -205,7 +205,16 @@ const descriptions = journeyT.skillDescriptions;
     }
 
     .tech-item {
-      border-top: 1.5px solid var(--rd-border, #e5e7eb);
+      border-top: 1.5px solid var(--line, #e5e7eb);
+    }
+
+    /* Neón: chip translúcido para tapar el logo en reposo sin matar el glow */
+    .neon .tech-item {
+      background: color-mix(in srgb, #161824 72%, transparent);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border-radius: 12px;
+      padding-inline: 14px;
     }
 
     /* Fallback sin animación: apila los paneles */

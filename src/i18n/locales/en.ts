@@ -1,7 +1,4 @@
 export const en = {
-  nav: {
-    mobileMenuLabel: "Mobile menu",
-  },
   metadata: {
     title: "Portfolio WanderleeDev",
     description:
@@ -9,63 +6,6 @@ export const en = {
     keywords: "portfolio, WanderleeDev, web developer, projects, skills",
     thumbnail:
       "https://res.cloudinary.com/dy8gpozi6/image/upload/v1765775796/porfolio_en_onrfod.webp",
-  },
-  social: [
-    {
-      name: "LinkedIn",
-      url: "https://www.linkedin.com/in/wanderlee-max/",
-      icon: "mdi:linkedin",
-    },
-    {
-      name: "Github",
-      url: "https://github.com/WanderleeDev",
-      icon: "mdi:github",
-    },
-    {
-      name: "Portfolio",
-      url: "",
-      icon: "mdi:briefcase",
-    },
-  ],
-  footer: {
-    developedBy: "WanderleeDev © 2025",
-    socialLinksAria: "Social media links",
-    description: "Available for collaborations and new projects.",
-    viewCode: {
-      text: "View Code",
-      url: "https://github.com/WanderleeDev/porfolio_2025",
-    },
-  },
-
-  badge: {
-    label: "Go to GitHub WanderleeDev",
-  },
-  presentation: {
-    start: "Profile",
-    accent: "Fullstack,",
-    middle: "and",
-    end_prefix: "modern",
-    end_highlight: "design.",
-    attr_data: "presentation",
-  },
-  form: {
-    name: {
-      label: "Name",
-      placeholder: "Your name",
-    },
-    email: {
-      label: "Email",
-      placeholder: "your@email.com",
-    },
-    subject: {
-      label: "Subject",
-      placeholder: "Project inquiry",
-    },
-    message: {
-      label: "Message",
-      placeholder: "Tell me about your project...",
-    },
-    submit: "Send Message",
   },
 
   skills: {
@@ -184,89 +124,4 @@ export const en = {
     ],
     attr_data: "projects",
   },
-
-  playground: {
-    sectionTitle: "Playground",
-    sectionDescription: "Experiments and demos where I test new technologies.",
-    stats: [
-      {
-        value: "Continuous",
-        label: "Learning",
-        gradient: "bg-linear-to-r from-cyan-400 to-blue-400",
-      },
-      {
-        value: "Frontend",
-        label: "Specialty",
-        gradient: "bg-linear-to-r from-purple-400 to-pink-400",
-      },
-    ],
-    list: [
-      {
-        title: "Angular Ecosystem",
-        icon: "Angular",
-        description: "Robust architecture with advanced state management using NgRx and reactive programming with RxJS.",
-        capsules: ["TypeScript", "Signals", "RxJS", "NgRx Store", "NgRx Signals", "Angular Material", "Angular CDK", "Angular CLI", "Reactive Forms"],
-        link: "https://entry-page-angular.vercel.app/",
-      },
-      {
-        title: "React Ecosystem",
-        icon: "React",
-        description: "Highly interactive applications built on top of Next.js, optimized for performance and SEO.",
-        capsules: ["Zustand", "TypeScript", "Next.js", "React Hook Form", "Zod", "React Query", "Axios", "Shadcn"],
-        link: "https://react-showcase-three.vercel.app/",
-      },
-    ],
-    attr_data: "playground",
-  },
-
-  contactSection: {
-    title: "Let's Talk",
-    description:
-      "Ready to start your next project? Send me a message and let's make it happen.",
-    info: [
-      {
-        icon: "mdi:email-outline",
-        label: "Email",
-        value: "xamperu3@gmail.com",
-      },
-      {
-        icon: "mdi:map-marker-outline",
-        label: "Location",
-        value: "Lima, Peru",
-      },
-      {
-        icon: "mdi:clock-outline",
-        label: "Response Time",
-        value: "Within 24 hours",
-      },
-    ],
-    attr_data: "contact",
-  },
-
-  navLinks: [
-    {
-      name: "projects",
-      icon: "ri:folder-2-line",
-      label: "Projects",
-      attr_data: "projects",
-    },
-    {
-      name: "skills",
-      icon: "ri:code-s-slash-line",
-      label: "Tech",
-      attr_data: "skills",
-    },
-    {
-      name: "playground",
-      icon: "ri:archive-2-line",
-      label: "Playground",
-      attr_data: "playground",
-    },
-    {
-      name: "contact",
-      icon: "ri:chat-1-line",
-      label: "Let's Talk",
-      attr_data: "contact",
-    },
-  ],
 };

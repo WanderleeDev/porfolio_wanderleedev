@@ -1,7 +1,4 @@
 export const es = {
-  nav: {
-    mobileMenuLabel: "Menú móvil",
-  },
   metadata: {
     title: "Portafolio WanderleeDev",
     description:
@@ -10,63 +7,6 @@ export const es = {
       "portafolio, WanderleeDev, desarrollador web, proyectos, habilidades",
     thumbnail:
       "https://res.cloudinary.com/dy8gpozi6/image/upload/v1765775796/porfolio_es_u4q2rs.webp",
-  },
-  social: [
-    {
-      name: "LinkedIn",
-      url: "https://www.linkedin.com/in/wanderlee-max/",
-      icon: "mdi:linkedin",
-    },
-    {
-      name: "Github",
-      url: "https://github.com/WanderleeDev",
-      icon: "mdi:github",
-    },
-    {
-      name: "Portafolio",
-      url: "",
-      icon: "mdi:briefcase",
-    },
-  ],
-  footer: {
-    developedBy: "WanderleeDev © 2025",
-    socialLinksAria: "Enlaces a redes sociales",
-    description: "Disponible para colaboraciones y nuevos proyectos.",
-    viewCode: {
-      text: "Ver Código",
-      url: "https://github.com/WanderleeDev/porfolio_2025",
-    },
-  },
-
-  badge: {
-    label: "Ir al GitHub de WanderleeDev",
-  },
-  presentation: {
-    start: "Perfil",
-    accent: "Fullstack,",
-    middle: "y",
-    end_prefix: "diseño",
-    end_highlight: "moderno.",
-    attr_data: "presentation",
-  },
-  form: {
-    name: {
-      label: "Nombre",
-      placeholder: "Tu nombre",
-    },
-    email: {
-      label: "Correo electrónico",
-      placeholder: "tu@email.com",
-    },
-    subject: {
-      label: "Asunto",
-      placeholder: "Consulta sobre proyecto",
-    },
-    message: {
-      label: "Mensaje",
-      placeholder: "Cuéntame sobre tu proyecto...",
-    },
-    submit: "Enviar Mensaje",
   },
 
   skills: {
@@ -185,89 +125,4 @@ export const es = {
     ],
     attr_data: "projects",
   },
-
-  playground: {
-    sectionTitle: "Laboratorio",
-    sectionDescription: "Experimentos y demos donde pruebo nuevas tecnologías.",
-    stats: [
-      {
-        value: "Continuo",
-        label: "Aprendizaje",
-        gradient: "bg-linear-to-r from-cyan-400 to-blue-400",
-      },
-      {
-        value: "Frontend",
-        label: "Especialidad",
-        gradient: "bg-linear-to-r from-purple-400 to-pink-400",
-      },
-    ],
-    list: [
-      {
-        title: "Ecosistema Angular",
-        icon: "Angular",
-        description: "Arquitectura robusta con gestión de estado avanzada usando NgRx y programación reactiva con RxJS.",
-        capsules: ["TypeScript", "Signals", "RxJS", "NgRx Store", "NgRx Signals", "Angular Material", "Angular CDK", "Angular CLI", "Reactive Forms"],
-        link: "https://entry-page-angular.vercel.app/",
-      },
-      {
-        title: "Ecosistema React",
-        icon: "React",
-        description: "Aplicaciones altamente interactivas construidas sobre Next.js, optimizadas para rendimiento y SEO.",
-        capsules: ["Zustand", "TypeScript", "Next.js", "React Hook Form", "Zod", "React Query", "Axios", "Shadcn"],
-        link: "https://react-showcase-three.vercel.app/",
-      },
-    ],
-    attr_data: "playground",
-  },
-
-  contactSection: {
-    title: "Hablemos",
-    description:
-      "¿Listo para empezar tu próximo proyecto? Envíame un mensaje y lo hacemos realidad.",
-    info: [
-      {
-        icon: "mdi:email-outline",
-        label: "Correo electrónico",
-        value: "xamperu3@gmail.com",
-      },
-      {
-        icon: "mdi:map-marker-outline",
-        label: "Ubicación",
-        value: "Lima, Perú",
-      },
-      {
-        icon: "mdi:clock-outline",
-        label: "Tiempo de Respuesta",
-        value: "Dentro de 24 horas",
-      },
-    ],
-    attr_data: "contact",
-  },
-
-  navLinks: [
-    {
-      name: "projects",
-      icon: "ri:folder-2-line",
-      label: "Proyectos",
-      attr_data: "projects",
-    },
-    {
-      name: "skills",
-      icon: "ri:code-s-slash-line",
-      label: "Tecnologías",
-      attr_data: "skills",
-    },
-    {
-      name: "playground",
-      icon: "ri:archive-2-line",
-      label: "Laboratorio",
-      attr_data: "playground",
-    },
-    {
-      name: "contact",
-      icon: "ri:chat-1-line",
-      label: "Hablemos",
-      attr_data: "contact",
-    },
-  ],
 };

@@ -10,15 +10,9 @@ const lang = Astro.currentLocale as "es" | "en";
 const t = getTranslations(lang);
 const skillsT = t("skills");
 const groups = skillsT.list;
+const journeyT = t("journey");
 
-// Descripciones por grupo (complementan el nombre de la tech)
-const descriptions: Record<string, string> = {
-  "Mi Stack": "Las herramientas que uso en la mayoría de mis proyectos.",
-  Frontend: "Interfaces, animación e interacción.",
-  Backend: "APIs, datos y lógica de negocio.",
-  "Familiarizado con": "Tecnologías que manejo y sigo explorando.",
-  Herramientas: "Diseño, versiones y despliegue.",
-};
+const descriptions = journeyT.skillDescriptions;
 ---
 
 <section
@@ -34,7 +28,7 @@ const descriptions: Record<string, string> = {
       <h2
         class="font-fira-sans-extra-condensed font-black text-[clamp(2.6rem,9vw,6.5rem)] leading-[0.92] tracking-tight m-0 mb-3"
       >
-        Mi stack,<br />de punta<br />a punta
+        {journeyT.introTitle}
       </h2>
       <p class="font-dm-mono text-neutral-500 text-[1.05rem] max-w-[44ch] m-0">
         {skillsT.sectionDescription}
@@ -85,10 +79,10 @@ const descriptions: Record<string, string> = {
       <h2
         class="font-fira-sans-extra-condensed font-black text-[clamp(2.6rem,9vw,6.5rem)] leading-[0.92] tracking-tight m-0 mb-3"
       >
-        Ahora, lo que<br />hice con ellas
+        {journeyT.outroTitle}
       </h2>
       <p class="font-dm-mono text-neutral-500 text-[1.05rem] max-w-[44ch] m-0">
-        Sigue bajando para ver los proyectos.
+        {journeyT.outroDesc}
       </p>
     </div>
   </div>

@@ -18,6 +18,7 @@ import { getTranslations } from "../../i18n/utils";
 const lang = Astro.currentLocale as "es" | "en";
 const t = getTranslations(lang);
 const projects = t("projects").list;
+console.log("DEBUG locale:", Astro.currentLocale);
 ---
 
 <html lang={lang}>

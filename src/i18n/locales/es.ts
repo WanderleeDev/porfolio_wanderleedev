@@ -78,6 +78,19 @@ export const es = {
     attr_data: "skills",
   },
 
+  journey: {
+    introTitle: "Mi stack, de punta a punta",
+    outroTitle: "Ahora, lo que hice con ellas",
+    outroDesc: "Sigue bajando para ver los proyectos.",
+    skillDescriptions: {
+      "Mi Stack": "Las herramientas que uso en la mayoría de mis proyectos.",
+      Frontend: "Interfaces, animación e interacción.",
+      Backend: "APIs, datos y lógica de negocio.",
+      "Familiarizado con": "Tecnologías que manejo y sigo explorando.",
+      Herramientas: "Diseño, versiones y despliegue.",
+    },
+  },
+
   projects: {
     sectionTitle: "Proyectos",
     sectionDescription:

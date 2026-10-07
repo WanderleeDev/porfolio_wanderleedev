@@ -30,7 +30,6 @@ Single source of truth for light/dark, no hex spread, only Tailwind semantic cla
 - [ ] T3 dark version: .dark token values verified + contact/footer use dark tokens
 - [ ] T4 picker: getSaved validation, localStorage -> system fallback, change listener updates UI, head anti-FOUC in both pages
 - [ ] T5 verification: astro build + grep no hex outside allowed + manual theme switch
-- [x] T6 contrast light: muted #9ca3af->#6b7280, soft #6b7280->#4b5563 (AA 4.5:1+); dark muted #6b7280->#9ca3af
 
 ## Authorized scope
 Files listed in Scope only. No new deps. No Visual changes beyond theme correctness.
@@ -47,6 +46,7 @@ Files listed in Scope only. No new deps. No Visual changes beyond theme correctn
 - T2 done: HeroFan/FeaturedWork/TechJourney -> bg-surface/text-ink/soft/muted/border-line/bg-badge; Contact/Footer -> bg-dark-*/text-dark-*.
 - T3 done: .dark overrides verified; contact keeps --c-* dark independent.
 - T4 done: picker validates localStorage, system fallback, UI sync on system change; anti-FOUC inline in both pages.
+- T6 contrast fix reverted per user review (tokens back to soft #6b7280 / muted #9ca3af light).
 - Engram mirror: pending (mem_save blocked: multiple active runtime sessions).
 
 ## Verification evidence

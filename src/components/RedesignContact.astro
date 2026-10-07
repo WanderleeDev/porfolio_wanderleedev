@@ -44,17 +44,25 @@ const labels = info.labels;
           {info.sentence.andNeed}
         </span>
         <span class="ln">
-          <span class="sel-wrap">
-            <select class="f" name="kind" aria-label={info.aria.kind}>
-              <option>{kinds[0]}</option>
-              <option>{kinds[1]}</option>
-              <option>{kinds[2]}</option>
-              <option>{kinds[3]}</option>
-              <option>{kinds[4]}</option>
-            </select>
-            <svg class="sel-caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <path d="M6 9l6 6 6-6" />
-            </svg>
+          <span class="kind-wrap">
+            <button type="button" class="f kind-trigger" id="kind-trigger" aria-haspopup="listbox" aria-expanded="false">
+              <span id="kind-label">{kinds[0]}</span>
+            </button>
+            <span class="kind-panel" id="kind-panel" role="listbox" hidden>
+              {kinds.map((k, i) => (
+                <button
+                  type="button"
+                  class={`kind-option${i === 0 ? " kind-option--active" : ""}`}
+                  data-kind={k}
+                  role="option"
+                  aria-selected={i === 0 ? true : false}
+                >
+                  {k}
+                  <span class="kind-option__check" aria-hidden="true">✓</span>
+                </button>
+              ))}
+            </span>
+            <input type="hidden" name="kind" id="kind-input" value={kinds[0]} />
           </span>
           {info.sentence.for}
         </span>
@@ -127,6 +135,40 @@ const labels = info.labels;
     window.location.href = `mailto:${TO}?subject=${encodeURIComponent(`${info.submitSubject} – ` + f.name.value.trim())}&body=${encodeURIComponent(text)}`;
   });
 
+  // ── Kind picker (estilo ThemePicker/LangPicker) ──────────────────────────
+  const kindTrigger = document.getElementById("kind-trigger");
+  const kindPanel   = document.getElementById("kind-panel");
+  const kindInput   = document.getElementById("kind-input") as HTMLInputElement | null;
+  const kindLabel   = document.getElementById("kind-label");
+
+  kindTrigger?.addEventListener("click", (e) => {
+    e.stopPropagation();
+    const willOpen = kindPanel?.hidden ?? false;
+    kindPanel!.hidden = !willOpen;
+    kindTrigger.setAttribute("aria-expanded", String(willOpen));
+  });
+
+  kindPanel?.querySelectorAll<HTMLElement>("[data-kind]").forEach((opt) => {
+    opt.addEventListener("click", () => {
+      const value = opt.dataset.kind ?? "";
+      if (kindInput) kindInput.value = value;
+      if (kindLabel) kindLabel.textContent = value;
+      kindPanel.querySelectorAll<HTMLElement>("[data-kind]").forEach((o) => {
+        const active = o === opt;
+        o.classList.toggle("kind-option--active", active);
+        o.setAttribute("aria-selected", String(active));
+      });
+      kindPanel.hidden = true;
+      kindTrigger?.setAttribute("aria-expanded", "false");
+    });
+  });
+
+  document.addEventListener("click", () => {
+    if (kindPanel && !kindPanel.hidden) {
+      kindPanel.hidden = true;
+      kindTrigger?.setAttribute("aria-expanded", "false");
+    }
+  });
   // ── Animaciones ────────────────────────────────────────────────────────────
   const mm = gsap.matchMedia();
 
@@ -243,32 +285,74 @@ const labels = info.labels;
 
     .f::placeholder { color: var(--ct-acc, #4f46e5); opacity: 0.55; }
 
-    select.f {
-      appearance: none;
-      cursor: pointer;
-      padding-right: 1.2em;
-    }
-
-    .sel-wrap {
+    /* Kind picker: mismo lenguaje que ThemePicker/LangPicker */
+    .kind-wrap {
       position: relative;
       display: inline-block;
     }
 
-    .sel-caret {
-      position: absolute;
-      right: 0.1em;
-      top: 50%;
-      translate: 0 -50%;
-      width: 0.9em;
-      height: 0.9em;
-      color: var(--ct-acc, #4f46e5);
-      pointer-events: none;
+    .kind-trigger {
+      cursor: pointer;
     }
 
-    select.f option {
+    .kind-panel {
+      position: absolute;
+      top: calc(100% + 8px);
+      left: 0;
+      min-width: 220px;
+      z-index: 50;
+      background: color-mix(in srgb, var(--surface) 92%, transparent);
+      backdrop-filter: blur(20px) saturate(1.6);
+      -webkit-backdrop-filter: blur(20px) saturate(1.6);
+      border: 1.5px solid color-mix(in srgb, var(--ink) 12%, transparent);
+      border-radius: 14px;
+      padding: 6px;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      box-shadow: 0 8px 32px color-mix(in srgb, black 18%, transparent);
+      text-transform: none;
+    }
+
+    .kind-panel[hidden] {
+      display: none;
+    }
+
+    .kind-option {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 9px 12px;
+      border-radius: 9px;
+      border: none;
+      background: transparent;
       color: var(--ink);
-      background: var(--surface);
+      font-family: "Inter", ui-sans-serif, system-ui, sans-serif;
       font-size: 1rem;
+      cursor: pointer;
+      text-align: left;
+      width: 100%;
+      transition: background 0.15s;
+    }
+
+    .kind-option:hover {
+      background: color-mix(in srgb, var(--ink) 8%, transparent);
+    }
+
+    .kind-option__check {
+      margin-left: auto;
+      font-size: 0.75rem;
+      opacity: 0;
+      transition: opacity 0.15s;
+    }
+
+    .kind-option--active .kind-option__check {
+      opacity: 1;
+    }
+
+    .kind-option--active {
+      background: color-mix(in srgb, var(--ink) 10%, transparent);
+      font-weight: 700;
     }
 
     .f:focus-visible {

@@ -6,6 +6,7 @@
  * without the old layout chrome.
  */
 import "../../styles/global.css";
+import RedesignHead from "../../components/RedesignHead.astro";
 import HeroFan from "../../components/HeroFan.astro";
 import FeaturedWork from "../../components/FeaturedWork.astro";
 import TechJourney from "../../components/TechJourney.astro";
@@ -23,40 +24,10 @@ console.log("DEBUG locale:", Astro.currentLocale);
 
 <html lang={lang}>
   <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width" />
-    <meta name="description" content="WanderleeDev — Fullstack, diseño y animación" />
-    <link
-      rel="icon"
-      href="/favicon_default.svg"
-      type="image/svg+xml"
+    <RedesignHead
+      title="WanderleeDev — Redesign"
+      description="WanderleeDev — Fullstack, diseño y animación"
     />
-    <link
-      rel="icon"
-      href="/favicon_dark.svg"
-      type="image/svg+xml"
-      media="(prefers-color-scheme: dark)"
-    />
-    <title>WanderleeDev — Redesign</title>
-    <script is:inline>
-      try {
-        var ALL = ["light", "dark", "neon", "brutalist", "pixel", "aero"];
-        var s = localStorage.getItem("wdev-theme") || "system";
-        if (ALL.indexOf(s) < 0) s = "system";
-        var r = document.documentElement;
-        for (var i = 0; i < ALL.length; i++) r.classList.remove(ALL[i]);
-        if (s === "system") {
-          r.removeAttribute("data-theme");
-          if (matchMedia("(prefers-color-scheme: dark)").matches) r.classList.add("dark");
-        } else {
-          r.classList.add(s);
-          r.setAttribute("data-theme", s);
-        }
-      } catch (e) {}
-    </script>
-    <style>
-      html, body { margin: 0; }
-    </style>
   </head>
   <body>
     <ThemePicker />

@@ -1,0 +1,53 @@
+---
+/**
+ * Shared page head for the redesign pages.
+ * Imports the View Transitions ClientRouter so the whole site
+ * navigates client-side with default animations.
+ *
+ * The inline theme script runs before paint to prevent theme flicker;
+ * it is kept inline because it must execute before the DOM renders.
+ */
+import { ClientRouter } from "astro:transitions";
+
+type Props = {
+  title: string;
+  description: string;
+};
+
+const { title, description } = Astro.props;
+---
+
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width" />
+<meta name="description" content={description} />
+<link rel="icon" href="/favicon_default.svg" type="image/svg+xml" />
+<link
+  rel="icon"
+  href="/favicon_dark.svg"
+  type="image/svg+xml"
+  media="(prefers-color-scheme: dark)"
+/>
+<title>{title}</title>
+<script is:inline>
+  try {
+    var ALL = ["light", "dark", "neon", "brutalist", "pixel", "aero"];
+    var s = localStorage.getItem("wdev-theme") || "system";
+    if (ALL.indexOf(s) < 0) s = "system";
+    var r = document.documentElement;
+    for (var i = 0; i < ALL.length; i++) r.classList.remove(ALL[i]);
+    if (s === "system") {
+      r.removeAttribute("data-theme");
+      if (matchMedia("(prefers-color-scheme: dark)").matches) r.classList.add("dark");
+    } else {
+      r.classList.add(s);
+      r.setAttribute("data-theme", s);
+    }
+  } catch (e) {}
+</script>
+<ClientRouter />
+<style>
+  html,
+  body {
+    margin: 0;
+  }
+</style>

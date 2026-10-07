@@ -207,7 +207,10 @@ const descriptions = journeyT.skillDescriptions;
     .tech-item {
       border-top: 1.5px solid var(--line, #e5e7eb);
     }
+  }
 
+  /* Overrides de theme: en utilities para ganarle a bg-inherit */
+  @layer utilities {
     /* Neón: chip translúcido para tapar el logo en reposo sin matar el glow */
     .neon .tech-item {
       background: color-mix(in srgb, #161824 72%, transparent);

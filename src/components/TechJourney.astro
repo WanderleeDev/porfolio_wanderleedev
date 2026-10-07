@@ -45,7 +45,7 @@ const descriptions = journeyT.skillDescriptions;
           >
             {group.title}
           </h2>
-          <p class="font-sans text-soft text-[1.05rem] max-w-[44ch] m-0 mb-8">
+          <p class="font-sans text-soft text-[1.05rem] max-w-[44ch] m-0 mb-8 capitalize">
             {descriptions[group.title] ?? ""}
           </p>
           <ul class="tech-list">
@@ -77,12 +77,12 @@ const descriptions = journeyT.skillDescriptions;
       class="panel w-screen h-full flex flex-col justify-center px-[clamp(1.5rem,8vw,7.5rem)]"
     >
       <h2
-        class="font-fira-sans-extra-condensed font-black text-section leading-[0.92] tracking-tight m-0 mb-3"
-        style={`color: ${groups[groups.length - 1]?.accent}`}
+        class="font-fira-sans-extra-condensed font-black text-[clamp(2.6rem,9vw,6.5rem)] leading-[0.92] tracking-tight m-0 mb-3"
+      
       >
         {journeyT.outroTitle}
       </h2>
-      <p class="font-sans text-soft text-[1.05rem] max-w-[44ch] m-0">
+      <p class="font-sans text-soft text-[1.05rem] max-w-[44ch] m-0 capitalize">
         {journeyT.outroDesc}
       </p>
     </div>

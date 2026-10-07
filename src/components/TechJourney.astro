@@ -59,10 +59,10 @@ const descriptions = journeyT.skillDescriptions;
                   class="tech-item bg-surface relative group"
                   style={`--accent: ${color}; --tw-border-opacity: 1;`}
                 >
-                  <b class="block py-3 bg-surface font-fira-sans-extra-condensed font-black text-[clamp(1.2rem,2.5vw,1.7rem)] tracking-[-0.02em]" style={`color: ${color};`}>{name}</b>
+                  <b class="block py-3 bg-tag font-fira-sans-extra-condensed font-black text-[clamp(1.2rem,2.5vw,1.7rem)] tracking-[-0.02em]" style={`color: ${color};`}>{name}</b>
                   <Icon
                     name={icon}
-                    class="h-full w-fit bg-surface -z-10 absolute block left-0 top-2/4 -translate-y-2/4 group-hover:top-0 group-hover:translate-y-[-105%] transition-all"
+                    class="h-full w-fit -z-10 absolute block left-0 top-2/4 -translate-y-2/4 group-hover:top-0 group-hover:translate-y-[-105%] transition-all"
                   />
                 </li>
               );
@@ -209,7 +209,7 @@ const descriptions = journeyT.skillDescriptions;
     }
   }
 
-  /* Overrides de theme: en utilities para ganarle a bg-surface */
+  /* Overrides de theme en utilities */
   @layer utilities {
     /* Neón: chip translúcido para tapar el logo en reposo sin matar el glow */
     .neon .tech-item {
@@ -218,13 +218,6 @@ const descriptions = journeyT.skillDescriptions;
       -webkit-backdrop-filter: blur(8px);
       border-radius: 12px;
       padding-inline: 14px;
-    }
-
-    /* El logo va en -z-10 (pinta sobre el fondo del li): el bg va en el <b> */
-    .neon .tech-item b {
-      background-color: #000;
-      background-image: radial-gradient(at 20% 30%, #38bdf859 0%, #0000 60%), radial-gradient(at 80% 70%, #8b5cf647 0%, #0000 70%);
-      border-radius: 8px;
     }
 
     /* Fallback sin animación: apila los paneles */

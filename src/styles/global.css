@@ -210,6 +210,14 @@
 
   .font-inherit { font-family: inherit; }
 
+  /* Tag de tech: en light/dark es surface, en neón el glow custom */
+  .bg-tag { background-color: var(--surface); }
+  .neon .bg-tag {
+    background-color: #000;
+    background-image: radial-gradient(at 20% 30%, #38bdf859 0%, #0000 60%), radial-gradient(at 80% 70%, #8b5cf647 0%, #0000 70%);
+    border-radius: 8px;
+  }
+
   .font-banner {
     font-size: clamp(3rem, 15vw + 1rem, 6rem);
     line-height: 1;

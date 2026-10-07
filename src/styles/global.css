@@ -213,8 +213,8 @@
   /* Tag de tech: en light/dark es surface, en neón el glow custom */
   .bg-tag { background-color: var(--surface); }
   .neon .bg-tag {
-    background-color: #000;
-    background-image: radial-gradient(at 20% 30%, #38bdf859 0%, #0000 60%), radial-gradient(at 80% 70%, #8b5cf647 0%, #0000 70%);
+    background-color: #1b1e24;
+    background-image: none;
     border-radius: 8px;
   }
 

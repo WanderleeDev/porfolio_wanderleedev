@@ -24,13 +24,18 @@ const lang = Astro.currentLocale as "es" | "en";
 const t = getTranslations(lang);
 ---
 
-<section class="relative w-full h-dvh flex flex-col items-center bg-surface text-ink overflow-hidden pt-6 md:pt-20">
-
+<section
+  class="relative w-full h-dvh flex flex-col items-center bg-surface text-ink overflow-hidden pt-6 md:pt-20"
+>
   <header class="pt-8 md:pt-10 pb-5 md:pb-8 text-center shrink-0 z-10">
-    <h2 class="m-0 font-fira-sans-extra-condensed font-black text-[64px] uppercase tracking-tight leading-none text-ink">
+    <h2
+      class="m-0 font-fira-sans-extra-condensed font-black text-[64px] uppercase tracking-tight leading-none text-ink"
+    >
       {t("featuredWork").title}
     </h2>
-    <p class="mt-1.5 font-sans text-[clamp(0.7rem,1.4vw,0.9rem)] text-muted tracking-wide capitalize">
+    <p
+      class="mt-1.5 font-sans text-[clamp(0.7rem,1.4vw,0.9rem)] text-muted tracking-wide capitalize"
+    >
       {t("featuredWork").subtitle}
     </p>
   </header>
@@ -40,37 +45,59 @@ const t = getTranslations(lang);
     class="relative flex-1 w-full overflow-hidden flex items-center justify-center cursor-grab active:cursor-grabbing"
   >
     <div id="fw-track">
-      {items.map((item, i) => (
-        <button
-          type="button"
-          class="fw__card"
-          data-title={item.title}
-          data-index={i}
-          data-desc={item.description ?? ""}
-          data-demo={item.demoUrl ?? ""}
-          data-label={item.label ?? ""}
-          data-techs={(item.techs ?? []).join(",")}
-          command="show-modal"
-          commandfor="fw-dialog"
-        >
-          <img src={item.src} alt={item.alt ?? item.title} draggable="false" class="w-full h-full object-cover block pointer-events-none select-none" />
-          <span class="sr-only">{item.title}</span>
-        </button>
-      ))}
+      {
+        items.map((item, i) => (
+          <button
+            type="button"
+            class="fw__card"
+            data-title={item.title}
+            data-index={i}
+            data-desc={item.description ?? ""}
+            data-demo={item.demoUrl ?? ""}
+            data-label={item.label ?? ""}
+            data-techs={(item.techs ?? []).join(",")}
+            command="show-modal"
+            commandfor="fw-dialog"
+          >
+            <img
+              src={item.src}
+              alt={item.alt ?? item.title}
+              draggable="false"
+              class="w-full h-full object-cover block pointer-events-none select-none"
+              loading="lazy"
+              decoding="async"
+            />
+            <span class="sr-only">{item.title}</span>
+          </button>
+        ))
+      }
     </div>
 
-    <div class="absolute bottom-10 md:bottom-14 left-1/2 -translate-x-1/2 z-10 flex items-center gap-2 md:gap-3 pointer-events-none">
+    <div
+      class="absolute bottom-10 md:bottom-14 left-1/2 -translate-x-1/2 z-10 flex items-center gap-2 md:gap-3 pointer-events-none"
+    >
       <button
         id="fw-prev"
         type="button"
         aria-label={lang === "en" ? "Previous project" : "Proyecto anterior"}
         class="pointer-events-auto w-10 h-10 md:w-11 md:h-11 rounded-full bg-badge text-badge-ink flex items-center justify-center hover:scale-105 active:scale-95 transition-transform"
       >
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5" aria-hidden="true">
-          <path d="M15 18l-6-6 6-6" />
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2.5"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          class="w-5 h-5"
+          aria-hidden="true"
+        >
+          <path d="M15 18l-6-6 6-6"></path>
         </svg>
       </button>
-      <div class="bg-badge rounded-full px-6 md:px-8 py-3 w-60 md:w-72 overflow-hidden">
+      <div
+        class="bg-badge rounded-full px-6 md:px-8 py-3 w-60 md:w-72 overflow-hidden"
+      >
         <span
           id="fw-badge-text"
           class="font-sans text-[clamp(0.8rem,1.6vw,1rem)] font-extrabold uppercase tracking-widest text-badge-ink block text-center truncate"
@@ -84,15 +111,24 @@ const t = getTranslations(lang);
         aria-label={lang === "en" ? "Next project" : "Proyecto siguiente"}
         class="pointer-events-auto w-10 h-10 md:w-11 md:h-11 rounded-full bg-badge text-badge-ink flex items-center justify-center hover:scale-105 active:scale-95 transition-transform"
       >
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5" aria-hidden="true">
-          <path d="M9 18l6-6-6-6" />
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2.5"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          class="w-5 h-5"
+          aria-hidden="true"
+        >
+          <path d="M9 18l6-6-6-6"></path>
         </svg>
       </button>
     </div>
   </div>
 
   <!-- ── Project dialog (demo) ── -->
-  <dialog id="fw-dialog" aria-labelledby="fw-dlg-title">
+  <dialog id="fw-dialog" aria-labelledby="fw-dlg-title" class="select-none">
     <div class="relative p-5 md:p-8">
       <button
         type="button"
@@ -101,21 +137,37 @@ const t = getTranslations(lang);
         aria-label={lang === "en" ? "Close" : "Cerrar"}
         class="absolute top-4 right-4 md:top-5 md:right-5 z-10 w-11 h-11 rounded-full bg-badge text-badge-ink flex items-center justify-center hover:scale-105 active:scale-95 transition-transform"
       >
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" class="w-5 h-5" aria-hidden="true">
-          <path d="M6 6l12 12M18 6L6 18" />
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          class="w-5 h-5"
+          aria-hidden="true"
+        >
+          <path d="M6 6l12 12M18 6L6 18"></path>
         </svg>
       </button>
-      <div class="grid gap-6 md:gap-8 md:grid-cols-[1.15fr_1fr] md:items-center">
+      <div
+        class="grid gap-6 md:gap-8 md:grid-cols-[1.15fr_1fr] md:items-center"
+      >
         <img
           id="fw-dlg-img"
           src={items[0]?.src}
           alt={items[0]?.alt ?? items[0]?.title}
           class="w-full h-64 md:h-[58vh] object-cover rounded-2xl block"
+          loading="lazy"
+          decoding="async"
         />
         <div class="md:pr-2">
-          <p class="flex items-baseline justify-between gap-4 font-sans text-xs font-bold uppercase tracking-[0.2em] text-soft">
+          <p
+            class="flex items-baseline justify-between gap-4 font-sans text-xs font-bold uppercase tracking-[0.2em] text-soft"
+          >
             <span>{lang === "en" ? "Personal Work" : "Trabajo personal"}</span>
-            <span id="fw-dlg-count" class="text-muted tabular-nums">01 / 04</span>
+            <span id="fw-dlg-count" class="text-muted tabular-nums"
+              >01 / 04</span
+            >
           </p>
           <h3
             id="fw-dlg-title"
@@ -125,17 +177,18 @@ const t = getTranslations(lang);
           </h3>
           <p
             id="fw-dlg-desc"
-            class="mt-4 font-sans text-soft text-[clamp(0.9rem,1.8vw,1.02rem)] leading-relaxed"
+            class="mt-4 font-sans text-soft text-[clamp(0.9rem,1.8vw,1.02rem)] leading-relaxed capitalize"
           >
             {items[0]?.description}
           </p>
-          <div
-            id="fw-dlg-techs"
-            class="mt-5 flex flex-wrap gap-2"
-          >
-            {(items[0]?.techs ?? []).map((t) => (
-              <span class="font-sans text-[0.7rem] font-bold uppercase tracking-widest bg-badge text-badge-ink rounded-full px-3 py-1">{t}</span>
-            ))}
+          <div id="fw-dlg-techs" class="mt-5 flex flex-wrap gap-2">
+            {
+              (items[0]?.techs ?? []).map((t) => (
+                <span class="font-sans text-[0.7rem] font-bold uppercase tracking-widest bg-badge text-badge-ink rounded-full px-3 py-1">
+                  {t}
+                </span>
+              ))
+            }
           </div>
           <a
             id="fw-dlg-demo"
@@ -145,15 +198,23 @@ const t = getTranslations(lang);
             class="mt-7 inline-flex items-center gap-2 font-sans font-bold text-[0.95rem] text-ink hover:gap-3 transition-all"
           >
             <span id="fw-dlg-demo-label">{items[0]?.label}</span>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4" aria-hidden="true">
-              <path d="M5 12h14M13 6l6 6-6 6" />
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              class="w-4 h-4"
+              aria-hidden="true"
+            >
+              <path d="M5 12h14M13 6l6 6-6 6"></path>
             </svg>
           </a>
         </div>
       </div>
     </div>
   </dialog>
-
 </section>
 
 <script>
@@ -163,9 +224,9 @@ const t = getTranslations(lang);
   gsap.registerPlugin(Draggable, InertiaPlugin);
 
   function init() {
-    const stage  = document.getElementById("fw-stage");
-    const track  = document.getElementById("fw-track");
-    const badge  = document.getElementById("fw-badge-text");
+    const stage = document.getElementById("fw-stage");
+    const track = document.getElementById("fw-track");
+    const badge = document.getElementById("fw-badge-text");
     if (!stage || !track) return;
 
     const origCards = Array.from(track.querySelectorAll(".fw__card"));
@@ -176,22 +237,28 @@ const t = getTranslations(lang);
     const vw = stage.offsetWidth;
     const vh = stage.offsetHeight;
     const isMobile = vw < 640;
-    const isTablet  = vw >= 640 && vw < 1024;
+    const isTablet = vw >= 640 && vw < 1024;
 
-    const CARD_W = isMobile ? Math.min(Math.round(vw * 0.72), 340)
-      : isTablet  ? Math.min(Math.round(vw * 0.58), 420)
-      :             Math.min(Math.round(vw * 0.48), 544);
+    const CARD_W = isMobile
+      ? Math.min(Math.round(vw * 0.72), 340)
+      : isTablet
+        ? Math.min(Math.round(vw * 0.58), 420)
+        : Math.min(Math.round(vw * 0.48), 544);
 
-    const CARD_H  = Math.min(Math.round(CARD_W * 1.05), Math.round(vh * 0.70));
-    const GAP     = isMobile ? Math.round(vw * 0.10) : isTablet ? Math.round(vw * 0.12) : Math.round(vw * 0.14);
-    const STEP    = CARD_W + GAP;
-    const SIDE_ROT   = 14;
+    const CARD_H = Math.min(Math.round(CARD_W * 1.05), Math.round(vh * 0.7));
+    const GAP = isMobile
+      ? Math.round(vw * 0.1)
+      : isTablet
+        ? Math.round(vw * 0.12)
+        : Math.round(vw * 0.14);
+    const STEP = CARD_W + GAP;
+    const SIDE_ROT = 14;
     const SIDE_SCALE = 0.82;
-    const SIDE_Y     = Math.round(CARD_H * 0.06);
+    const SIDE_Y = Math.round(CARD_H * 0.06);
 
     // Triplicar para loop infinito
     for (let c = 0; c < 2; c++) {
-      origCards.forEach(card => {
+      origCards.forEach((card) => {
         const clone = card.cloneNode(true);
         clone.setAttribute("aria-hidden", "true");
         track.appendChild(clone);
@@ -215,40 +282,42 @@ const t = getTranslations(lang);
     });
 
     const centerX = vw / 2 - CARD_W / 2;
-    const baseX   = -(N * STEP) + centerX;
+    const baseX = -(N * STEP) + centerX;
     gsap.set(track, { x: baseX });
 
     function update(tx) {
       const cx = vw / 2;
       let closestDist = Infinity;
-      let closestIdx  = 0;
+      let closestIdx = 0;
 
       allCards.forEach((card, i) => {
-        const cardCx  = i * STEP + tx + CARD_W / 2;
-        const dist    = cardCx - cx;
-        const norm    = dist / (STEP * 1.2);
-        const abs     = Math.min(Math.abs(norm), 1.5);
+        const cardCx = i * STEP + tx + CARD_W / 2;
+        const dist = cardCx - cx;
+        const norm = dist / (STEP * 1.2);
+        const abs = Math.min(Math.abs(norm), 1.5);
         const clamped = Math.max(-1, Math.min(1, norm));
 
         gsap.set(card, {
-          rotation       : clamped * SIDE_ROT,
-          scale          : 1 - abs * (1 - SIDE_SCALE),
-          y              : abs * SIDE_Y,
-          opacity        : Math.max(0, 1 - abs * 0.5),
+          rotation: clamped * SIDE_ROT,
+          scale: 1 - abs * (1 - SIDE_SCALE),
+          y: abs * SIDE_Y,
+          opacity: Math.max(0, 1 - abs * 0.5),
           transformOrigin: "50% 100%",
-          zIndex         : Math.round(100 - abs * 80),
+          zIndex: Math.round(100 - abs * 80),
         });
 
         if (Math.abs(dist) < closestDist) {
           closestDist = Math.abs(dist);
-          closestIdx  = i % N;
+          closestIdx = i % N;
         }
       });
 
       const title = origCards[closestIdx]?.dataset.title ?? "";
       if (badge.textContent !== title) {
         gsap.to(badge, {
-          opacity: 0, y: -6, duration: 0.12,
+          opacity: 0,
+          y: -6,
+          duration: 0.12,
           onComplete() {
             badge.textContent = title;
             gsap.to(badge, { opacity: 1, y: 0, duration: 0.15 });
@@ -271,16 +340,24 @@ const t = getTranslations(lang);
 
     function snapNearest(fromX) {
       const cx = vw / 2;
-      let bestX = fromX, bestD = Infinity;
+      let bestX = fromX,
+        bestD = Infinity;
       allCards.forEach((card, i) => {
         const cardCx = i * STEP + fromX + CARD_W / 2;
         const d = Math.abs(cardCx - cx);
-        if (d < bestD) { bestD = d; bestX = fromX - (cardCx - cx); }
+        if (d < bestD) {
+          bestD = d;
+          bestX = fromX - (cardCx - cx);
+        }
       });
       const snapped = wrap(bestX);
       gsap.to(track, {
-        x: snapped, duration: 0.3, ease: "power2.out",
-        onUpdate() { update(gsap.getProperty(track, "x")); },
+        x: snapped,
+        duration: 0.3,
+        ease: "power2.out",
+        onUpdate() {
+          update(gsap.getProperty(track, "x"));
+        },
       });
     }
 
@@ -290,15 +367,24 @@ const t = getTranslations(lang);
     function stepTo(dir) {
       const cx = vw / 2;
       const fromX = wrap(gsap.getProperty(track, "x"));
-      let bestI = 0, bestD = Infinity;
+      let bestI = 0,
+        bestD = Infinity;
       allCards.forEach((card, i) => {
         const d = Math.abs(i * STEP + fromX + CARD_W / 2 - cx);
-        if (d < bestD) { bestD = d; bestI = i; }
+        if (d < bestD) {
+          bestD = d;
+          bestI = i;
+        }
       });
       const target = wrap(cx - ((bestI + dir) * STEP + CARD_W / 2));
       gsap.to(track, {
-        x: target, duration: 0.45, ease: "power3.out", overwrite: true,
-        onUpdate() { update(gsap.getProperty(track, "x")); },
+        x: target,
+        duration: 0.45,
+        ease: "power3.out",
+        overwrite: true,
+        onUpdate() {
+          update(gsap.getProperty(track, "x"));
+        },
       });
     }
 
@@ -308,16 +394,16 @@ const t = getTranslations(lang);
     if (nextBtn) nextBtn.onclick = () => stepTo(1);
 
     const [drag] = Draggable.create(track, {
-      type        : "x",
-      inertia     : true,
-      cursor      : "grab",
+      type: "x",
+      inertia: true,
+      cursor: "grab",
       activeCursor: "grabbing",
       onDrag() {
         update(gsap.getProperty(track, "x"));
       },
       onThrowUpdate() {
         throwing = true;
-        const raw     = gsap.getProperty(track, "x");
+        const raw = gsap.getProperty(track, "x");
         const wrapped = wrap(raw);
         if (Math.abs(wrapped - raw) > 0.5) gsap.set(track, { x: wrapped });
         update(gsap.getProperty(track, "x"));
@@ -334,15 +420,21 @@ const t = getTranslations(lang);
     });
 
     let resizeTimer;
-    window.addEventListener("resize", () => {
-      clearTimeout(resizeTimer);
-      resizeTimer = setTimeout(() => {
-        drag.kill();
-        Array.from(track.querySelectorAll(".fw__card")).slice(N).forEach(c => c.remove());
-        gsap.set(track, { clearProps: "all" });
-        init();
-      }, 200);
-    }, { passive: true });
+    window.addEventListener(
+      "resize",
+      () => {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(() => {
+          drag.kill();
+          Array.from(track.querySelectorAll(".fw__card"))
+            .slice(N)
+            .forEach((c) => c.remove());
+          gsap.set(track, { clearProps: "all" });
+          init();
+        }, 200);
+      },
+      { passive: true },
+    );
   }
 
   if (document.readyState === "loading") {
@@ -352,24 +444,36 @@ const t = getTranslations(lang);
   }
 
   // ── Dialog wiring (una sola vez: sobrevive al re-init del resize) ──
-  const fwStage  = document.getElementById("fw-stage");
-  const fwTrack  = document.getElementById("fw-track");
-  const dialog   = document.getElementById("fw-dialog") as HTMLDialogElement | null;
-  const dlgImg   = document.getElementById("fw-dlg-img") as HTMLImageElement | null;
+  const fwStage = document.getElementById("fw-stage");
+  const fwTrack = document.getElementById("fw-track");
+  const dialog = document.getElementById(
+    "fw-dialog",
+  ) as HTMLDialogElement | null;
+  const dlgImg = document.getElementById(
+    "fw-dlg-img",
+  ) as HTMLImageElement | null;
   const dlgTitle = document.getElementById("fw-dlg-title");
-  const dlgDesc  = document.getElementById("fw-dlg-desc");
+  const dlgDesc = document.getElementById("fw-dlg-desc");
   const dlgCount = document.getElementById("fw-dlg-count");
   const dlgTechs = document.getElementById("fw-dlg-techs");
-  const dlgDemo  = document.getElementById("fw-dlg-demo") as HTMLAnchorElement | null;
+  const dlgDemo = document.getElementById(
+    "fw-dlg-demo",
+  ) as HTMLAnchorElement | null;
   const dlgDemoLabel = document.getElementById("fw-dlg-demo-label");
   const INVOKER_OK =
-    typeof HTMLButtonElement !== "undefined" && "command" in HTMLButtonElement.prototype;
+    typeof HTMLButtonElement !== "undefined" &&
+    "command" in HTMLButtonElement.prototype;
 
-  let downX = 0, downY = 0;
-  fwStage?.addEventListener("pointerdown", (e: PointerEvent) => {
-    downX = e.clientX;
-    downY = e.clientY;
-  }, { passive: true });
+  let downX = 0,
+    downY = 0;
+  fwStage?.addEventListener(
+    "pointerdown",
+    (e: PointerEvent) => {
+      downX = e.clientX;
+      downY = e.clientY;
+    },
+    { passive: true },
+  );
 
   fwTrack?.addEventListener("click", (e) => {
     const card = (e.target as HTMLElement).closest(".fw__card");
@@ -398,7 +502,9 @@ const t = getTranslations(lang);
     }
     if (dlgTechs) {
       dlgTechs.textContent = "";
-      const techs = (card.getAttribute("data-techs") ?? "").split(",").filter(Boolean);
+      const techs = (card.getAttribute("data-techs") ?? "")
+        .split(",")
+        .filter(Boolean);
       for (const t of techs) {
         const chip = document.createElement("span");
         chip.className =
@@ -442,6 +548,41 @@ const t = getTranslations(lang);
     background: rgba(0, 0, 0, 0.55);
     backdrop-filter: blur(6px);
     -webkit-backdrop-filter: blur(6px);
+    opacity: 0;
+    transition:
+      opacity 0.3s ease,
+      display 0.3s ease allow-discrete,
+      overlay 0.3s ease allow-discrete;
+  }
+
+  #fw-dialog[open]::backdrop {
+    opacity: 1;
+  }
+
+  #fw-dialog {
+    transition:
+      opacity 0.3s ease,
+      transform 0.3s ease,
+      display 0.3s ease allow-discrete,
+      overlay 0.3s ease allow-discrete;
+    opacity: 0;
+    transform: translateY(14px) scale(0.98);
+  }
+
+  #fw-dialog[open] {
+    opacity: 1;
+    transform: none;
+  }
+
+  @starting-style {
+    #fw-dialog[open] {
+      opacity: 0;
+      transform: translateY(14px) scale(0.98);
+    }
+
+    #fw-dialog[open]::backdrop {
+      opacity: 0;
+    }
   }
 
   .fw__card {

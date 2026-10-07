@@ -340,28 +340,11 @@ const t = getTranslations(lang);
       e.preventDefault();
       dialog.showModal();
     }
-    // El invoker abre en el mismo tick: bloquear scroll si quedó abierto
-    requestAnimationFrame(() => {
-      if (dialog.open) lockScroll();
-    });
   });
 
   dialog?.addEventListener("click", (e) => {
     if (e.target === dialog) dialog.close();
   });
-
-  // ── Scroll lock mientras el dialog está abierto ──
-  function lockScroll() {
-    document.documentElement.style.overflow = "hidden";
-    (window as unknown as { lenis?: { stop?: () => void } }).lenis?.stop?.();
-  }
-
-  function unlockScroll() {
-    document.documentElement.style.overflow = "";
-    (window as unknown as { lenis?: { start?: () => void } }).lenis?.start?.();
-  }
-
-  dialog?.addEventListener("close", unlockScroll);
 </script>
 
 <style>

@@ -295,6 +295,11 @@
     color: var(--ink);
   }
 
+  /* Scroll lock puro CSS: con cualquier modal abierto, el documento no scrollea */
+  html:has(dialog[open]) {
+    overflow: hidden;
+  }
+
   a, button, [role="button"], input[type="submit"], input[type="button"], select, .cursor-pointer {
     cursor: url("/pointer.svg"), auto !important;
   }

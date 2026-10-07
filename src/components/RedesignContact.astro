@@ -78,17 +78,17 @@ const labels = info.labels;
 
       <button
         type="submit"
-        class="font-dm-mono font-bold text-[1.05rem] px-7 py-4 rounded-full border-0 bg-dark-ink text-dark-bg cursor-pointer transition-opacity hover:opacity-80"
+        class="font-dm-mono font-bold text-[1.05rem] px-7 py-4 rounded-full border-0 bg-ink text-surface cursor-pointer transition-opacity hover:opacity-80"
       >
         {info.submit}
       </button>
     </form>
 
-    <p class="font-dm-mono text-dark-muted mt-10 text-sm">
+    <p class="font-dm-mono text-soft mt-10 text-sm">
       {info.preferredText}
       <a
         href={`mailto:${email}`}
-        class="text-dark-ink font-semibold hover:underline"
+        class="text-ink font-semibold hover:underline"
       >
         {email}
       </a>
@@ -171,9 +171,9 @@ const labels = info.labels;
 
 <style>
   @layer components {
-    /* Bloque oscuro independiente del tema */
+    /* Bloque temático: sigue el fondo de página */
     .contact {
-      color: var(--c-ink, #eceef3);
+      color: var(--ct-ink, #111111);
       overflow: hidden;
       padding: clamp(40px, 7vw, 80px) 0 clamp(56px, 9vw, 110px);
     }
@@ -199,11 +199,11 @@ const labels = info.labels;
       line-height: 1;
       padding-right: 0.5em;
       color: transparent;
-      -webkit-text-stroke: 1.5px var(--c-ink, #eceef3);
+      -webkit-text-stroke: 1.5px var(--ct-ink, #111111);
     }
 
     .mtrack span:nth-child(even) {
-      color: var(--c-ink, #eceef3);
+      color: var(--ct-ink, #111111);
       -webkit-text-stroke: 0;
     }
 
@@ -224,10 +224,10 @@ const labels = info.labels;
       display: inline-block;
       vertical-align: baseline;
       font: inherit;
-      color: var(--c-acc, #8fa0ff);
+      color: var(--ct-acc, #4f46e5);
       background: transparent;
       border: 0;
-      border-bottom: 2px solid var(--c-acc, #8fa0ff);
+      border-bottom: 2px solid var(--ct-acc, #4f46e5);
       border-radius: 0;
       padding: 0 0.1em;
       min-width: 5ch;
@@ -235,7 +235,7 @@ const labels = info.labels;
       max-width: 100%;
     }
 
-    .f::placeholder { color: var(--c-acc, #8fa0ff); opacity: 0.55; }
+    .f::placeholder { color: var(--ct-acc, #4f46e5); opacity: 0.55; }
 
     select.f {
       appearance: none;
@@ -250,14 +250,14 @@ const labels = info.labels;
     }
 
     .f:focus-visible {
-      outline: 3px solid var(--c-ink, #eceef3);
+      outline: 3px solid var(--ct-ink, #111111);
       outline-offset: 4px;
     }
 
     /* Error */
     .err {
       min-height: 1.5em;
-      color: var(--c-err, #ff8f93);
+      color: var(--ct-err, #dc2626);
       font-family: "DM Mono", monospace;
       font-size: 1rem;
       margin: 0 0 20px;

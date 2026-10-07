@@ -81,6 +81,11 @@
   --c-acc:    var(--dark-acc);
   --c-err:    var(--dark-err);
 
+  /* Contacto temático: sigue el fondo de página (transparente) */
+  --ct-ink: var(--color-ink);
+  --ct-acc: #4f46e5;
+  --ct-err: #dc2626;
+
   /* Tema de página (light): espejo semántico para var() directo */
   --surface:   var(--color-surface);
   --ink:       var(--color-ink);
@@ -114,6 +119,11 @@
   --line:      var(--color-line);
   --badge:     var(--color-badge);
   --badge-ink: var(--color-badge-ink);
+
+  /* Contacto temático en dark: vuelve al celeste claro */
+  --ct-ink: var(--color-dark-ink);
+  --ct-acc: var(--color-dark-acc);
+  --ct-err: var(--color-dark-err);
 }
 
 /* ── Base layer (fonts, cursor, scroll) ── */

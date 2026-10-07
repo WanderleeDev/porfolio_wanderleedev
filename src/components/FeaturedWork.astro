@@ -16,7 +16,7 @@ const t = getTranslations(lang);
 
 <section class="relative w-full h-dvh flex flex-col items-center bg-surface text-ink overflow-hidden">
 
-  <header class="pt-8 md:pt-10 text-center shrink-0 z-10">
+  <header class="pt-8 md:pt-10 pb-5 md:pb-8 text-center shrink-0 z-10">
     <h2 class="m-0 font-fira-sans-extra-condensed font-black text-[64px] uppercase tracking-tight leading-none text-ink">
       {t("featuredWork").title}
     </h2>
@@ -39,7 +39,7 @@ const t = getTranslations(lang);
     </div>
   </div>
 
-  <div class="shrink-0 mb-6 md:mb-8 bg-badge rounded-full px-5 py-2 z-10">
+  <div class="shrink-0 -mt-4 md:-mt-6 mb-4 md:mb-6 bg-badge rounded-full px-5 py-2 z-10">
     <span
       id="fw-badge-text"
       class="font-dm-mono text-[clamp(0.65rem,1.2vw,0.8rem)] font-bold uppercase tracking-widest text-badge-ink block"
@@ -75,7 +75,7 @@ const t = getTranslations(lang);
       : isTablet  ? Math.min(Math.round(vw * 0.58), 420)
       :             Math.min(Math.round(vw * 0.48), 544);
 
-    const CARD_H  = Math.min(Math.round(CARD_W * 1.22), Math.round(vh * 0.80));
+    const CARD_H  = Math.min(Math.round(CARD_W * 1.05), Math.round(vh * 0.70));
     const GAP     = isMobile ? Math.round(vw * 0.10) : isTablet ? Math.round(vw * 0.12) : Math.round(vw * 0.14);
     const STEP    = CARD_W + GAP;
     const SIDE_ROT   = 14;

@@ -33,7 +33,7 @@ const t = getTranslations(lang);
       {items.map((item, i) => (
         <div class="fw__card" data-title={item.title} data-index={i}>
           <img src={item.src} alt={item.alt ?? item.title} draggable="false" class="w-full h-9/12 object-cover aspect-video block pointer-events-none select-none" />
-          <span class="fw__card-title">{item.title}</span>
+          <span class="sr-only">{item.title}</span>
         </div>
       ))}
     </div>
@@ -223,23 +223,3 @@ const t = getTranslations(lang);
     init();
   }
 </script>
-
-<style>
-  @layer components {
-    .fw__card-title {
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      padding: 2rem 1.25rem 1rem;
-      font-family: "Fira Sans Extra Condensed", sans-serif;
-      font-weight: 700;
-      font-size: clamp(1.1rem, 2.5vw, 1.5rem);
-      text-transform: uppercase;
-      letter-spacing: 0.04em;
-      color: var(--dark-ink, #eceef3);
-      pointer-events: none;
-      user-select: none;
-    }
-  }
-</style>

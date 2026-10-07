@@ -5,6 +5,16 @@
  */
 import { getTranslations } from "../i18n/utils";
 
+interface Item {
+  title: string;
+  src: string;
+  alt?: string;
+  description?: string;
+  demoUrl?: string;
+  techs?: string[];
+  label?: string;
+}
+
 interface Props {
   items: Item[];
 }
@@ -36,6 +46,10 @@ const t = getTranslations(lang);
           class="fw__card"
           data-title={item.title}
           data-index={i}
+          data-desc={item.description ?? ""}
+          data-demo={item.demoUrl ?? ""}
+          data-label={item.label ?? ""}
+          data-techs={(item.techs ?? []).join(",")}
           command="show-modal"
           commandfor="fw-dialog"
         >
@@ -106,6 +120,31 @@ const t = getTranslations(lang);
       >
         {items[0]?.title}
       </h3>
+      <p
+        id="fw-dlg-desc"
+        class="mt-4 font-sans text-soft text-center text-[clamp(0.9rem,1.8vw,1.05rem)] leading-relaxed max-w-[52ch] mx-auto"
+      >
+        {items[0]?.description}
+      </p>
+      <div
+        id="fw-dlg-techs"
+        class="mt-5 flex flex-wrap justify-center gap-2"
+      >
+        {(items[0]?.techs ?? []).map((t) => (
+          <span class="font-sans text-[0.7rem] font-bold uppercase tracking-widest bg-badge text-badge-ink rounded-full px-3 py-1">{t}</span>
+        ))}
+      </div>
+      <div class="mt-6 text-center">
+        <a
+          id="fw-dlg-demo"
+          href={items[0]?.demoUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="inline-block font-sans font-bold text-[0.95rem] px-6 py-3 rounded-full bg-ink text-contrast hover:opacity-85 transition-opacity"
+        >
+          {items[0]?.label}
+        </a>
+      </div>
     </div>
   </dialog>
 
@@ -311,6 +350,9 @@ const t = getTranslations(lang);
   const dialog   = document.getElementById("fw-dialog") as HTMLDialogElement | null;
   const dlgImg   = document.getElementById("fw-dlg-img") as HTMLImageElement | null;
   const dlgTitle = document.getElementById("fw-dlg-title");
+  const dlgDesc  = document.getElementById("fw-dlg-desc");
+  const dlgTechs = document.getElementById("fw-dlg-techs");
+  const dlgDemo  = document.getElementById("fw-dlg-demo") as HTMLAnchorElement | null;
   const INVOKER_OK =
     typeof HTMLButtonElement !== "undefined" && "command" in HTMLButtonElement.prototype;
 
@@ -336,6 +378,25 @@ const t = getTranslations(lang);
       dlgImg.alt = img.alt;
     }
     if (dlgTitle) dlgTitle.textContent = card.getAttribute("data-title") ?? "";
+    if (dlgDesc) dlgDesc.textContent = card.getAttribute("data-desc") ?? "";
+    if (dlgTechs) {
+      dlgTechs.textContent = "";
+      const techs = (card.getAttribute("data-techs") ?? "").split(",").filter(Boolean);
+      for (const t of techs) {
+        const chip = document.createElement("span");
+        chip.className =
+          "font-sans text-[0.7rem] font-bold uppercase tracking-widest bg-badge text-badge-ink rounded-full px-3 py-1";
+        chip.textContent = t.trim();
+        dlgTechs.appendChild(chip);
+      }
+    }
+    if (dlgDemo) {
+      const href = card.getAttribute("data-demo") ?? "";
+      const label = card.getAttribute("data-label") ?? "";
+      dlgDemo.href = href;
+      if (label) dlgDemo.textContent = label;
+      dlgDemo.style.display = href ? "" : "none";
+    }
     if (!INVOKER_OK) {
       e.preventDefault();
       dialog.showModal();

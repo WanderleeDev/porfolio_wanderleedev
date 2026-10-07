@@ -55,6 +55,7 @@ Files listed in Scope only. No new deps. No Visual changes beyond theme correctn
 - T12 done: pixel theme (pico-8 palette, squared pill/buttons, Press Start 2P on pill/options).
 - T13 done: frutiger aero theme (glossy sky gradient, glass badge, glossy submit).
 - T14 done: scripts boot on astro:page-load (idempotent) for ClientRouter navs; contact i18n via JSON island.
+- T15 done: journey horizontal scroll with pure CSS (sticky + named view-timeline).
 - Engram mirror: pending (mem_save blocked: multiple active runtime sessions).
 
 ## Verification evidence

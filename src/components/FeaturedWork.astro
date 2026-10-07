@@ -78,7 +78,7 @@ const t = getTranslations(lang);
   </div>
 
   <!-- ── Project dialog (demo) ── -->
-  <dialog id="fw-dialog" aria-labelledby="fw-dlg-title">
+  <dialog id="fw-dialog" aria-labelledby="fw-dlg-title bg-surface" class="size-full m-auto">
     <div class="relative px-6 py-10 md:px-12 md:py-12">
       <button
         type="button"
@@ -340,11 +340,28 @@ const t = getTranslations(lang);
       e.preventDefault();
       dialog.showModal();
     }
+    // El invoker abre en el mismo tick: bloquear scroll si quedó abierto
+    requestAnimationFrame(() => {
+      if (dialog.open) lockScroll();
+    });
   });
 
   dialog?.addEventListener("click", (e) => {
     if (e.target === dialog) dialog.close();
   });
+
+  // ── Scroll lock mientras el dialog está abierto ──
+  function lockScroll() {
+    document.documentElement.style.overflow = "hidden";
+    (window as unknown as { lenis?: { stop?: () => void } }).lenis?.stop?.();
+  }
+
+  function unlockScroll() {
+    document.documentElement.style.overflow = "";
+    (window as unknown as { lenis?: { start?: () => void } }).lenis?.start?.();
+  }
+
+  dialog?.addEventListener("close", unlockScroll);
 </script>
 
 <style>
@@ -354,8 +371,6 @@ const t = getTranslations(lang);
     border-radius: 24px;
     background: var(--surface);
     color: var(--ink);
-    width: min(920px, 92vw);
-    max-height: 90vh;
     overflow-y: auto;
   }
 

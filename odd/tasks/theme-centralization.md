@@ -51,6 +51,7 @@ Files listed in Scope only. No new deps. No Visual changes beyond theme correctn
 - T8 done: Inter for non-titles (font-sans token + faces 400/500/700/800, classes renamed).
 - T9 done: carousel prev/next arrows flanking the pill (relative step + wrap).
 - T10 done: neon theme (black + sky/violet glows, transparent surface, picker option + anti-FOUC).
+- T11 done: brutalist theme (paper, black hairlines, yellow badge w/ hard shadow).
 - Engram mirror: pending (mem_save blocked: multiple active runtime sessions).
 
 ## Verification evidence

@@ -160,6 +160,37 @@
   background-attachment: fixed;
 }
 
+/* ── Tema brutalista: papel, negro puro, bordes duros ── */
+.brutalist {
+  color-scheme: light;
+
+  --color-surface:    #fdfdf6;
+  --color-ink:        #0a0a0a;
+  --color-soft:       #333333;
+  --color-muted:      #555555;
+  --color-line:       #0a0a0a;
+  --color-badge:      #ffea00;
+  --color-badge-ink:  #0a0a0a;
+  --color-contrast:   #ffffff;
+
+  --surface:   var(--color-surface);
+  --ink:       var(--color-ink);
+  --soft:      var(--color-soft);
+  --muted:     var(--color-muted);
+  --line:      var(--color-line);
+  --badge:     var(--color-badge);
+  --badge-ink: var(--color-badge-ink);
+
+  --ct-ink: var(--color-ink);
+  --ct-acc: #c2410c;
+  --ct-err: #b91c1c;
+}
+
+.brutalist .bg-badge {
+  border: 2px solid #0a0a0a;
+  box-shadow: 4px 4px 0 #0a0a0a;
+}
+
 /* ── Base layer (fonts, cursor, scroll) ── */
 @layer base {
   html { scroll-behavior: auto; }

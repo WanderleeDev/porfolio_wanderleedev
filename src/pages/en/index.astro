@@ -40,14 +40,18 @@ console.log("DEBUG locale:", Astro.currentLocale);
     <title>WanderleeDev — Redesign</title>
     <script is:inline>
       try {
+        var ALL = ["light", "dark", "neon", "brutalist"];
         var s = localStorage.getItem("wdev-theme") || "system";
-        if (s !== "light" && s !== "dark" && s !== "neon") s = "system";
+        if (ALL.indexOf(s) < 0) s = "system";
         var r = document.documentElement;
-        var d = s === "dark" || (s === "system" && matchMedia("(prefers-color-scheme: dark)").matches);
-        r.classList.toggle("dark", d);
-        r.classList.toggle("neon", s === "neon");
-        if (s === "system") r.removeAttribute("data-theme");
-        else r.setAttribute("data-theme", s);
+        for (var i = 0; i < ALL.length; i++) r.classList.remove(ALL[i]);
+        if (s === "system") {
+          r.removeAttribute("data-theme");
+          if (matchMedia("(prefers-color-scheme: dark)").matches) r.classList.add("dark");
+        } else {
+          r.classList.add(s);
+          r.setAttribute("data-theme", s);
+        }
       } catch (e) {}
     </script>
     <style>

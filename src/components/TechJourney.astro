@@ -217,6 +217,12 @@ const descriptions = journeyT.skillDescriptions;
       padding-inline: 14px;
     }
 
+    /* El logo va en -z-10 (pinta sobre el fondo del li): el bg va en el <b> */
+    .neon .tech-item b {
+      background: #101424;
+      border-radius: 8px;
+    }
+
     /* Fallback sin animación: apila los paneles */
     @media (prefers-reduced-motion: reduce) {
       .journey--on {

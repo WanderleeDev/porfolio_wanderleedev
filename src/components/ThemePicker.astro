@@ -123,16 +123,25 @@ const altPath  = currentLang === "es"
         Brutalista
         <span class="theme-option__check" aria-hidden="true">✓</span>
       </button>
+      <button class="theme-option" data-theme="pixel" role="option">
+        <span class="theme-option__icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="currentColor">
+            <rect x="4" y="4" width="7" height="7"/><rect x="13" y="4" width="7" height="7"/><rect x="4" y="13" width="7" height="7"/><rect x="13" y="13" width="7" height="7"/>
+          </svg>
+        </span>
+        Pixel
+        <span class="theme-option__check" aria-hidden="true">✓</span>
+      </button>
     </div>
   </div>
 
 </div>
 
 <script>
-  type Theme = "system" | "light" | "dark" | "neon" | "brutalist";
+  type Theme = "system" | "light" | "dark" | "neon" | "brutalist" | "pixel";
 
   const STORAGE_KEY = "wdev-theme";
-  const THEMES: Exclude<Theme, "system">[] = ["light", "dark", "neon", "brutalist"];
+  const THEMES: Exclude<Theme, "system">[] = ["light", "dark", "neon", "brutalist", "pixel"];
 
   const icons: Record<Theme, string> = {
     system: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>`,
@@ -140,6 +149,7 @@ const altPath  = currentLang === "es"
     dark:   `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>`,
     neon:   `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.8 4.7 4.7 1.8-4.7 1.8L12 16l-1.8-4.7L5.5 9.5l4.7-1.8z"/><path d="M19 15l.9 2.1 2.1.9-2.1.9L19 21l-.9-2.1-2.1-.9 2.1-.9z"/></svg>`,
     brutalist: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16"/></svg>`,
+    pixel: `<svg viewBox="0 0 24 24" fill="currentColor"><rect x="4" y="4" width="7" height="7"/><rect x="13" y="4" width="7" height="7"/><rect x="4" y="13" width="7" height="7"/><rect x="13" y="13" width="7" height="7"/></svg>`,
   };
 
   function applyTheme(theme: Theme) {

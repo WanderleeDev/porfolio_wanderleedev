@@ -191,6 +191,46 @@
   box-shadow: 4px 4px 0 #0a0a0a;
 }
 
+/* ── Tema pixel: paleta pico-8, esquinas cuadradas, sombra dura ── */
+.pixel {
+  color-scheme: dark;
+
+  --color-surface:    #1a1c2c;
+  --color-ink:        #f4f4f4;
+  --color-soft:       #c9c9d4;
+  --color-muted:      #8b8b9e;
+  --color-line:       #5d275d;
+  --color-badge:      #29adff;
+  --color-badge-ink:  #1a1c2c;
+  --color-contrast:   #1a1c2c;
+
+  --surface:   var(--color-surface);
+  --ink:       var(--color-ink);
+  --soft:      var(--color-soft);
+  --muted:     var(--color-muted);
+  --line:      var(--color-line);
+  --badge:     var(--color-badge);
+  --badge-ink: var(--color-badge-ink);
+
+  --ct-ink: var(--color-ink);
+  --ct-acc: #00e436;
+  --ct-err: #ff6b8f;
+}
+
+.pixel .bg-badge {
+  border: 2px solid #000;
+  box-shadow: 4px 4px 0 #000;
+}
+
+.pixel .rounded-full {
+  border-radius: 2px;
+}
+
+.pixel #fw-badge-text,
+.pixel .kind-option {
+  font-family: "Press Start 2P", monospace;
+}
+
 /* ── Base layer (fonts, cursor, scroll) ── */
 @layer base {
   html { scroll-behavior: auto; }
@@ -278,6 +318,18 @@
       0 calc(100% - var(--bv, 12px))
     );
   }
+}
+
+@font-face {
+  font-family: "Press Start 2P";
+  font-style: normal;
+  font-display: swap;
+  font-weight: 400;
+  src: url("@fontsource/press-start-2p/files/press-start-2p-latin-400-normal.woff2") format("woff2"),
+       url("@fontsource/press-start-2p/files/press-start-2p-latin-400-normal.woff") format("woff");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA,
+    U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193,
+    U+2212, U+2215, U+FEFF, U+FFFD;
 }
 
 /* ── Font faces ── */

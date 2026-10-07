@@ -52,6 +52,7 @@ Files listed in Scope only. No new deps. No Visual changes beyond theme correctn
 - T9 done: carousel prev/next arrows flanking the pill (relative step + wrap).
 - T10 done: neon theme (black + sky/violet glows, transparent surface, picker option + anti-FOUC).
 - T11 done: brutalist theme (paper, black hairlines, yellow badge w/ hard shadow).
+- T12 done: pixel theme (pico-8 palette, squared pill/buttons, Press Start 2P on pill/options).
 - Engram mirror: pending (mem_save blocked: multiple active runtime sessions).
 
 ## Verification evidence

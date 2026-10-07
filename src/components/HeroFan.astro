@@ -40,18 +40,18 @@ const t = getTranslations(lang);
 ---
 
 <section
-  class="h-dvh min-h-[640px] bg-white flex flex-col items-center justify-center px-4 text-center overflow-hidden"
+  class="h-dvh min-h-[640px] bg-surface flex flex-col items-center justify-center px-4 text-center overflow-hidden"
   aria-label="Presentación"
 >
-  <p class="font-dm-mono text-xs font-bold tracking-[0.2em] text-neutral-800 uppercase">
+  <p class="font-dm-mono text-xs font-bold tracking-[0.2em] text-ink uppercase">
     Argentina — Remoto
   </p>
-  <p class="font-dm-mono text-[11px] tracking-[0.2em] text-neutral-400 uppercase mt-1">
+  <p class="font-dm-mono text-[11px] tracking-[0.2em] text-muted uppercase mt-1">
     wanderleedev@gmail.com
   </p>
 
   <h1
-    class="font-fira-sans-extra-condensed font-black uppercase text-neutral-800 leading-[0.9] mt-4 text-[clamp(3rem,10vw,8rem)] tracking-tight"
+    class="font-fira-sans-extra-condensed font-black uppercase text-ink leading-[0.9] mt-4 text-[clamp(3rem,10vw,8rem)] tracking-tight"
   >
     Wanderlee Dev
   </h1>
@@ -63,7 +63,7 @@ const t = getTranslations(lang);
     {
       stackLogos.map(({ icon, alt, color, rotate }) => (
         <div
-          class={`w-28 h-28 sm:w-32 sm:h-32 md:w-40 md:h-40 rounded-2xl shadow-[0_14px_35px_-10px_rgba(0,0,0,0.12)] flex items-center justify-center bg-white border border-neutral-200/60 ${rotate} -ml-5 first:ml-0 hover:rotate-0 hover:scale-105 hover:z-10 hover:shadow-[0_20px_45px_-10px_rgba(0,0,0,0.18)] transition-transform duration-500 ease-out`}
+          class={`w-28 h-28 sm:w-32 sm:h-32 md:w-40 md:h-40 rounded-2xl shadow-[0_14px_35px_-10px_rgba(0,0,0,0.12)] flex items-center justify-center bg-surface border border-line ${rotate} -ml-5 first:ml-0 hover:rotate-0 hover:scale-105 hover:z-10 hover:shadow-[0_20px_45px_-10px_rgba(0,0,0,0.18)] transition-transform duration-500 ease-out`}
           role="img"
           aria-label={alt}
         >
@@ -78,17 +78,17 @@ const t = getTranslations(lang);
   </div>
 
   <h2
-    class="font-fira-sans-extra-condensed font-black uppercase text-neutral-300 leading-[0.95] text-[clamp(2rem,7.5vw,5.5rem)]"
+    class="font-fira-sans-extra-condensed font-black uppercase text-muted leading-[0.95] text-[clamp(2rem,7.5vw,5.5rem)]"
   >
     Fullstack,<br />
     {t("hero").titleAccent} & {t("hero").titleEnd}
   </h2>
 
   <div class="mt-6">
-    <p class="font-dm-mono text-xs font-bold tracking-[0.2em] text-neutral-800 uppercase">
+    <p class="font-dm-mono text-xs font-bold tracking-[0.2em] text-ink uppercase">
       {t("hero").subtitle}
     </p>
-    <p class="font-dm-mono text-[11px] tracking-[0.15em] text-neutral-400 uppercase mt-1">
+    <p class="font-dm-mono text-[11px] tracking-[0.15em] text-muted uppercase mt-1">
       PostgreSQL · NestJS · Angular · Node.js
     </p>
   </div>

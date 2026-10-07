@@ -18,7 +18,7 @@ const descriptions = journeyT.skillDescriptions;
 <section
   id="tech-journey"
   aria-label="Tecnologías"
-  class="journey relative bg-white text-neutral-900 overflow-hidden"
+  class="journey relative bg-surface text-ink overflow-hidden"
 >
   <div class="track flex h-full w-max">
     <!-- Panel intro -->
@@ -30,7 +30,7 @@ const descriptions = journeyT.skillDescriptions;
       >
         {journeyT.introTitle}
       </h2>
-      <p class="font-dm-mono text-neutral-500 text-[1.05rem] max-w-[44ch] m-0">
+      <p class="font-dm-mono text-soft text-[1.05rem] max-w-[44ch] m-0">
         {skillsT.sectionDescription}
       </p>
     </div>
@@ -45,7 +45,7 @@ const descriptions = journeyT.skillDescriptions;
           >
             {group.title}
           </h2>
-          <p class="font-dm-mono text-neutral-500 text-[1.05rem] max-w-[44ch] m-0 mb-8">
+          <p class="font-dm-mono text-soft text-[1.05rem] max-w-[44ch] m-0 mb-8">
             {descriptions[group.title] ?? ""}
           </p>
           <ul class="tech-list">
@@ -56,7 +56,7 @@ const descriptions = journeyT.skillDescriptions;
                 raw.charAt(0).toUpperCase() + raw.slice(1).replace(/-/g, " ");
               return (
                 <li
-                  class="tech-item bg-white relative group"
+                  class="tech-item bg-surface relative group"
                   style={`--accent: ${color}; --tw-border-opacity: 1;`}
                 >
                   <b class="block py-3 bg-inherit font-fira-sans-extra-condensed font-black text-[clamp(1.2rem,2.5vw,1.7rem)] tracking-[-0.02em]" style={`color: ${color};`}>{name}</b>
@@ -81,7 +81,7 @@ const descriptions = journeyT.skillDescriptions;
       >
         {journeyT.outroTitle}
       </h2>
-      <p class="font-dm-mono text-neutral-500 text-[1.05rem] max-w-[44ch] m-0">
+      <p class="font-dm-mono text-soft text-[1.05rem] max-w-[44ch] m-0">
         {journeyT.outroDesc}
       </p>
     </div>
@@ -90,11 +90,11 @@ const descriptions = journeyT.skillDescriptions;
   <!-- Barra de progreso -->
   <div
     aria-hidden="true"
-    class="route absolute bottom-7 left-[clamp(1.5rem,8vw,7.5rem)] right-[clamp(1.5rem,8vw,7.5rem)] h-[3px] bg-neutral-200 rounded-full"
+    class="route absolute bottom-7 left-[clamp(1.5rem,8vw,7.5rem)] right-[clamp(1.5rem,8vw,7.5rem)] h-[3px] bg-line rounded-full"
   >
     <div
       id="route-progress"
-      class="h-full bg-neutral-900 rounded-full origin-left scale-x-0"
+      class="h-full bg-ink rounded-full origin-left scale-x-0"
     >
     </div>
   </div>

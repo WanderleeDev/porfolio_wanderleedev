@@ -14,13 +14,13 @@ const lang = Astro.currentLocale as "es" | "en";
 const t = getTranslations(lang);
 ---
 
-<section class="relative w-full h-dvh flex flex-col items-center bg-white text-neutral-900 overflow-hidden">
+<section class="relative w-full h-dvh flex flex-col items-center bg-surface text-ink overflow-hidden">
 
   <header class="pt-8 md:pt-10 text-center shrink-0 z-10">
-    <h2 class="m-0 font-fira-sans-extra-condensed font-black text-[64px] uppercase tracking-tight leading-none text-neutral-900">
+    <h2 class="m-0 font-fira-sans-extra-condensed font-black text-[64px] uppercase tracking-tight leading-none text-ink">
       {t("featuredWork").title}
     </h2>
-    <p class="mt-1.5 font-dm-mono text-[clamp(0.7rem,1.4vw,0.9rem)] text-neutral-400 tracking-wide">
+    <p class="mt-1.5 font-dm-mono text-[clamp(0.7rem,1.4vw,0.9rem)] text-muted tracking-wide">
       {t("featuredWork").subtitle}
     </p>
   </header>
@@ -39,10 +39,10 @@ const t = getTranslations(lang);
     </div>
   </div>
 
-  <div class="shrink-0 mb-6 md:mb-8 bg-neutral-200 rounded-full px-5 py-2 z-10">
+  <div class="shrink-0 mb-6 md:mb-8 bg-badge rounded-full px-5 py-2 z-10">
     <span
       id="fw-badge-text"
-      class="font-dm-mono text-[clamp(0.65rem,1.2vw,0.8rem)] font-bold uppercase tracking-widest text-neutral-600 block"
+      class="font-dm-mono text-[clamp(0.65rem,1.2vw,0.8rem)] font-bold uppercase tracking-widest text-badge-ink block"
     >
       {items[0]?.title}
     </span>

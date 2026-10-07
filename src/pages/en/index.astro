@@ -38,6 +38,18 @@ console.log("DEBUG locale:", Astro.currentLocale);
       media="(prefers-color-scheme: dark)"
     />
     <title>WanderleeDev — Redesign</title>
+    <script is:inline>
+      try {
+        var s = localStorage.getItem("wdev-theme") || "system";
+        if (s !== "light" && s !== "dark") s = "system";
+        var d = s === "dark" || (s === "system" && matchMedia("(prefers-color-scheme: dark)").matches);
+        var r = document.documentElement;
+        r.classList.toggle("dark", d);
+        if (s === "dark") r.setAttribute("data-theme", "dark");
+        else if (s === "light") r.setAttribute("data-theme", "light");
+        else r.removeAttribute("data-theme");
+      } catch (e) {}
+    </script>
     <style>
       html, body { margin: 0; }
     </style>

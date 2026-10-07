@@ -147,7 +147,12 @@ const altPath  = currentLang === "es"
   }
 
   function getSaved(): Theme {
-    return (localStorage.getItem(STORAGE_KEY) as Theme) ?? "system";
+    const raw = localStorage.getItem(STORAGE_KEY);
+    return raw === "light" || raw === "dark" || raw === "system" ? raw : "system";
+  }
+
+  function resolveSystem(): Exclude<Theme, "system"> {
+    return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
   }
 
   function setTheme(theme: Theme) {
@@ -201,7 +206,11 @@ const altPath  = currentLang === "es"
 
   // Escuchar cambios del sistema
   window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => {
-    if (getSaved() === "system") applyTheme("system");
+    const saved = getSaved();
+    if (saved === "system") {
+      applyTheme("system");
+      updateUI("system");
+    }
   });
 </script>
 

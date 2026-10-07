@@ -55,3 +55,7 @@ Files listed in Scope only. No new deps. No Visual changes beyond theme correctn
 
 ## Next step
 - Manual: switch system/light/dark in picker, reload (no FOUC), system change with mode=system.
+
+## Work-unit evidence
+- Commit: 69164b0 `feat(theme): centralize light/dark tokens in Tailwind theme with system picker`
+- Assess: risk medium (executable_change FeaturedWork.astro), review_due false, reason under_budget (216 lines). Slice pending until budget.

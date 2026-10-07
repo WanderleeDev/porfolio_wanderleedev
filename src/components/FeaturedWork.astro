@@ -92,58 +92,64 @@ const t = getTranslations(lang);
   </div>
 
   <!-- ── Project dialog (demo) ── -->
-  <dialog id="fw-dialog" aria-labelledby="fw-dlg-title bg-surface" class="size-full m-auto">
-    <div class="relative px-6 py-10 md:px-12 md:py-12">
+  <dialog id="fw-dialog" aria-labelledby="fw-dlg-title">
+    <div class="relative p-5 md:p-8">
       <button
         type="button"
         command="close"
         commandfor="fw-dialog"
         aria-label={lang === "en" ? "Close" : "Cerrar"}
-        class="absolute top-4 right-4 md:top-5 md:right-5 w-11 h-11 rounded-full bg-badge text-badge-ink flex items-center justify-center hover:scale-105 active:scale-95 transition-transform"
+        class="absolute top-4 right-4 md:top-5 md:right-5 z-10 w-11 h-11 rounded-full bg-badge text-badge-ink flex items-center justify-center hover:scale-105 active:scale-95 transition-transform"
       >
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" class="w-5 h-5" aria-hidden="true">
           <path d="M6 6l12 12M18 6L6 18" />
         </svg>
       </button>
-      <p class="text-center font-sans text-sm text-soft tracking-wide mb-6 md:mb-8">
-        {lang === "en" ? "Personal Work" : "Trabajo personal"}
-      </p>
-      <img
-        id="fw-dlg-img"
-        src={items[0]?.src}
-        alt={items[0]?.alt ?? items[0]?.title}
-        class="w-full max-h-[52vh] object-cover rounded-2xl block"
-      />
-      <h3
-        id="fw-dlg-title"
-        class="mt-6 font-fira-sans-extra-condensed font-black uppercase tracking-tight leading-none text-center text-[clamp(1.8rem,5vw,3.2rem)]"
-      >
-        {items[0]?.title}
-      </h3>
-      <p
-        id="fw-dlg-desc"
-        class="mt-4 font-sans text-soft text-center text-[clamp(0.9rem,1.8vw,1.05rem)] leading-relaxed max-w-[52ch] mx-auto"
-      >
-        {items[0]?.description}
-      </p>
-      <div
-        id="fw-dlg-techs"
-        class="mt-5 flex flex-wrap justify-center gap-2"
-      >
-        {(items[0]?.techs ?? []).map((t) => (
-          <span class="font-sans text-[0.7rem] font-bold uppercase tracking-widest bg-badge text-badge-ink rounded-full px-3 py-1">{t}</span>
-        ))}
-      </div>
-      <div class="mt-6 text-center">
-        <a
-          id="fw-dlg-demo"
-          href={items[0]?.demoUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          class="inline-block font-sans font-bold text-[0.95rem] px-6 py-3 rounded-full bg-ink text-contrast hover:opacity-85 transition-opacity"
-        >
-          {items[0]?.label}
-        </a>
+      <div class="grid gap-6 md:gap-8 md:grid-cols-[1.15fr_1fr] md:items-center">
+        <img
+          id="fw-dlg-img"
+          src={items[0]?.src}
+          alt={items[0]?.alt ?? items[0]?.title}
+          class="w-full h-64 md:h-[58vh] object-cover rounded-2xl block"
+        />
+        <div class="md:pr-2">
+          <p class="flex items-baseline justify-between gap-4 font-sans text-xs font-bold uppercase tracking-[0.2em] text-soft">
+            <span>{lang === "en" ? "Personal Work" : "Trabajo personal"}</span>
+            <span id="fw-dlg-count" class="text-muted tabular-nums">01 / 04</span>
+          </p>
+          <h3
+            id="fw-dlg-title"
+            class="mt-3 font-fira-sans-extra-condensed font-black uppercase tracking-tight leading-[0.95] text-[clamp(2rem,5vw,3.4rem)]"
+          >
+            {items[0]?.title}
+          </h3>
+          <p
+            id="fw-dlg-desc"
+            class="mt-4 font-sans text-soft text-[clamp(0.9rem,1.8vw,1.02rem)] leading-relaxed"
+          >
+            {items[0]?.description}
+          </p>
+          <div
+            id="fw-dlg-techs"
+            class="mt-5 flex flex-wrap gap-2"
+          >
+            {(items[0]?.techs ?? []).map((t) => (
+              <span class="font-sans text-[0.7rem] font-bold uppercase tracking-widest bg-badge text-badge-ink rounded-full px-3 py-1">{t}</span>
+            ))}
+          </div>
+          <a
+            id="fw-dlg-demo"
+            href={items[0]?.demoUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="mt-7 inline-flex items-center gap-2 font-sans font-bold text-[0.95rem] text-ink hover:gap-3 transition-all"
+          >
+            <span id="fw-dlg-demo-label">{items[0]?.label}</span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4" aria-hidden="true">
+              <path d="M5 12h14M13 6l6 6-6 6" />
+            </svg>
+          </a>
+        </div>
       </div>
     </div>
   </dialog>
@@ -165,6 +171,7 @@ const t = getTranslations(lang);
     const origCards = Array.from(track.querySelectorAll(".fw__card"));
     const N = origCards.length;
     if (N === 0) return;
+    track.dataset.total = String(N);
 
     const vw = stage.offsetWidth;
     const vh = stage.offsetHeight;
@@ -351,8 +358,10 @@ const t = getTranslations(lang);
   const dlgImg   = document.getElementById("fw-dlg-img") as HTMLImageElement | null;
   const dlgTitle = document.getElementById("fw-dlg-title");
   const dlgDesc  = document.getElementById("fw-dlg-desc");
+  const dlgCount = document.getElementById("fw-dlg-count");
   const dlgTechs = document.getElementById("fw-dlg-techs");
   const dlgDemo  = document.getElementById("fw-dlg-demo") as HTMLAnchorElement | null;
+  const dlgDemoLabel = document.getElementById("fw-dlg-demo-label");
   const INVOKER_OK =
     typeof HTMLButtonElement !== "undefined" && "command" in HTMLButtonElement.prototype;
 
@@ -379,6 +388,14 @@ const t = getTranslations(lang);
     }
     if (dlgTitle) dlgTitle.textContent = card.getAttribute("data-title") ?? "";
     if (dlgDesc) dlgDesc.textContent = card.getAttribute("data-desc") ?? "";
+    if (dlgCount && fwTrack) {
+      const total = Number(fwTrack.dataset.total ?? 0);
+      const idx = Number(card.getAttribute("data-index") ?? 0);
+      if (total > 0) {
+        const cur = String((idx % total) + 1).padStart(2, "0");
+        dlgCount.textContent = `${cur} / ${String(total).padStart(2, "0")}`;
+      }
+    }
     if (dlgTechs) {
       dlgTechs.textContent = "";
       const techs = (card.getAttribute("data-techs") ?? "").split(",").filter(Boolean);
@@ -394,7 +411,7 @@ const t = getTranslations(lang);
       const href = card.getAttribute("data-demo") ?? "";
       const label = card.getAttribute("data-label") ?? "";
       dlgDemo.href = href;
-      if (label) dlgDemo.textContent = label;
+      if (label && dlgDemoLabel) dlgDemoLabel.textContent = label;
       dlgDemo.style.display = href ? "" : "none";
     }
     if (!INVOKER_OK) {
@@ -415,6 +432,8 @@ const t = getTranslations(lang);
     border-radius: 24px;
     background: var(--surface);
     color: var(--ink);
+    width: min(1020px, 94vw);
+    max-height: 90vh;
     overflow-y: auto;
   }
 

@@ -78,17 +78,17 @@ const labels = info.labels;
 
       <button
         type="submit"
-        class="font-dm-mono font-bold text-[1.05rem] px-7 py-4 rounded-full border-0 bg-[var(--dark-ink)] text-[var(--dark-bg)] cursor-pointer transition-opacity hover:opacity-80"
+        class="font-dm-mono font-bold text-[1.05rem] px-7 py-4 rounded-full border-0 bg-[#eceef3] text-[#161824] cursor-pointer transition-opacity hover:opacity-80"
       >
         {info.submit}
       </button>
     </form>
 
-    <p class="font-dm-mono text-[var(--dark-muted)] mt-10 text-sm">
+    <p class="font-dm-mono text-[#a3a9bf] mt-10 text-sm">
       {info.preferredText}
       <a
         href={`mailto:${email}`}
-        class="text-[var(--dark-ink)] font-semibold hover:underline"
+        class="text-[#eceef3] font-semibold hover:underline"
       >
         {email}
       </a>
@@ -170,101 +170,97 @@ const labels = info.labels;
 </script>
 
 <style>
-  /* Bloque oscuro independiente del tema */
-  .contact {
-    --c-bg  : var(--dark-bg);
-    --c-ink : var(--dark-ink);
-    --c-mute: var(--dark-muted);
-    --c-acc : var(--dark-acc);
-    --c-err : var(--dark-err);
+  @layer components {
+    /* Bloque oscuro independiente del tema */
+    .contact {
+      color: var(--c-ink, #eceef3);
+      overflow: hidden;
+      padding: clamp(40px, 7vw, 80px) 0 clamp(56px, 9vw, 110px);
+    }
 
-    color      : var(--c-ink);
-    overflow   : hidden;
-    padding    : clamp(40px, 7vw, 80px) 0 clamp(56px, 9vw, 110px);
-  }
+    /* Marquee */
+    .marquee {
+      white-space: nowrap;
+      overflow: hidden;
+      margin-bottom: clamp(40px, 7vw, 90px);
+      user-select: none;
+    }
 
-  /* Marquee */
-  .marquee {
-    white-space  : nowrap;
-    overflow     : hidden;
-    margin-bottom: clamp(40px, 7vw, 90px);
-    user-select  : none;
-  }
+    .mtrack {
+      display: inline-flex;
+      will-change: transform;
+    }
 
-  .mtrack {
-    display     : inline-flex;
-    will-change : transform;
-  }
+    .mtrack span {
+      font-family: "Fira Sans Extra Condensed", sans-serif;
+      font-size: clamp(3.5rem, 14vw, 11rem);
+      font-weight: 900;
+      letter-spacing: -0.04em;
+      line-height: 1;
+      padding-right: 0.5em;
+      color: transparent;
+      -webkit-text-stroke: 1.5px var(--c-ink, #eceef3);
+    }
 
-  .mtrack span {
-    font-family   : "Fira Sans Extra Condensed", sans-serif;
-    font-size     : clamp(3.5rem, 14vw, 11rem);
-    font-weight   : 900;
-    letter-spacing: -0.04em;
-    line-height   : 1;
-    padding-right : 0.5em;
-    color         : transparent;
-    -webkit-text-stroke: 1.5px var(--c-ink);
-  }
+    .mtrack span:nth-child(even) {
+      color: var(--c-ink, #eceef3);
+      -webkit-text-stroke: 0;
+    }
 
-  .mtrack span:nth-child(even) {
-    color: var(--c-ink);
-    -webkit-text-stroke: 0;
-  }
+    /* Frase conversacional */
+    .sentence {
+      font-family: "Fira Sans Extra Condensed", sans-serif;
+      font-size: clamp(1.6rem, 4.6vw, 3.2rem);
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      line-height: 1.55;
+      margin: 0 0 36px;
+    }
 
-  /* Frase conversacional */
-  .sentence {
-    font-family   : "Fira Sans Extra Condensed", sans-serif;
-    font-size     : clamp(1.6rem, 4.6vw, 3.2rem);
-    font-weight   : 600;
-    letter-spacing: -0.02em;
-    line-height   : 1.55;
-    margin        : 0 0 36px;
-  }
+    .ln { display: inline; }
 
-  .ln { display: inline; }
+    /* Inputs inline */
+    .f {
+      display: inline-block;
+      vertical-align: baseline;
+      font: inherit;
+      color: var(--c-acc, #8fa0ff);
+      background: transparent;
+      border: 0;
+      border-bottom: 2px solid var(--c-acc, #8fa0ff);
+      border-radius: 0;
+      padding: 0 0.1em;
+      min-width: 5ch;
+      field-sizing: content;
+      max-width: 100%;
+    }
 
-  /* Inputs inline */
-  .f {
-    display       : inline-block;
-    vertical-align: baseline;
-    font          : inherit;
-    color         : var(--c-acc);
-    background    : transparent;
-    border        : 0;
-    border-bottom : 2px solid var(--c-acc);
-    border-radius : 0;
-    padding       : 0 0.1em;
-    min-width     : 5ch;
-    field-sizing  : content;
-    max-width     : 100%;
-  }
+    .f::placeholder { color: var(--c-acc, #8fa0ff); opacity: 0.55; }
 
-  .f::placeholder { color: var(--c-acc); opacity: 0.55; }
+    select.f {
+      appearance: none;
+      cursor: pointer;
+      padding-right: 0.1em;
+    }
 
-  select.f {
-    appearance   : none;
-    cursor       : pointer;
-    padding-right: 0.1em;
-  }
+    select.f option {
+      color: var(--c-bg, #161824);
+      background: #fff;
+      font-size: 1rem;
+    }
 
-  select.f option {
-    color     : var(--dark-bg);
-    background: #fff;
-    font-size : 1rem;
-  }
+    .f:focus-visible {
+      outline: 3px solid var(--c-ink, #eceef3);
+      outline-offset: 4px;
+    }
 
-  .f:focus-visible {
-    outline       : 3px solid var(--c-ink);
-    outline-offset: 4px;
-  }
-
-  /* Error */
-  .err {
-    min-height: 1.5em;
-    color     : var(--c-err);
-    font-family: "DM Mono", monospace;
-    font-size : 1rem;
-    margin    : 0 0 20px;
+    /* Error */
+    .err {
+      min-height: 1.5em;
+      color: var(--c-err, #ff8f93);
+      font-family: "DM Mono", monospace;
+      font-size: 1rem;
+      margin: 0 0 20px;
+    }
   }
 </style>

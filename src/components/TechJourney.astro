@@ -57,9 +57,9 @@ const descriptions = journeyT.skillDescriptions;
               return (
                 <li
                   class="tech-item bg-white relative group"
-                  style={`--accent: ${color}`}
+                  style={`--accent: ${color}; --tw-border-opacity: 1;`}
                 >
-                  <b class="bg-inherit size-full py-3 block">{name}</b>
+                  <b class="block py-3 bg-inherit font-fira-sans-extra-condensed font-black text-[clamp(1.2rem,2.5vw,1.7rem)] tracking-[-0.02em]" style={`color: ${color};`}>{name}</b>
                   <Icon
                     name={icon}
                     class="h-full w-fit bg-inherit -z-10 absolute block left-0 top-2/4 -translate-y-2/4 group-hover:top-0 group-hover:translate-y-[-105%] transition-all"
@@ -177,59 +177,52 @@ const descriptions = journeyT.skillDescriptions;
 </script>
 
 <style>
-  /* Modo activo — requiere JS para activarse */
-  .journey--on {
-    height: 100vh;
-    overflow: hidden;
-  }
-
-  .journey--on .track {
-    height: 100%;
-    align-items: stretch;
-  }
-
-  .journey--on .panel {
-    height: 100%;
-    flex-shrink: 0;
-  }
-
-  .tech-list {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    display: grid;
-    gap: 0 40px;
-    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-    max-width: 900px;
-  }
-
-  .tech-item {
-    border-top: 1.5px solid var(--rd-border);
-  }
-
-  .tech-item b {
-    display: block;
-    font-family: "Fira Sans Extra Condensed", sans-serif;
-    font-size: clamp(1.2rem, 2.5vw, 1.7rem);
-    letter-spacing: -0.02em;
-    font-weight: 800;
-    color: var(--accent, #111827);
-  }
-
-  /* Fallback sin animación: apila los paneles */
-  @media (prefers-reduced-motion: reduce) {
+@layer components {
+    /* Modo activo — requiere JS para activarse */
     .journey--on {
-      height: auto;
-      overflow: visible;
+      height: 100vh;
+      overflow: hidden;
     }
+
     .journey--on .track {
-      flex-direction: column;
-      width: 100%;
-      height: auto;
+      height: 100%;
+      align-items: stretch;
     }
+
     .journey--on .panel {
-      width: 100% !important;
-      height: auto !important;
+      height: 100%;
+      flex-shrink: 0;
+    }
+
+    .tech-list {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: grid;
+      gap: 0 40px;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      max-width: 900px;
+    }
+
+    .tech-item {
+      border-top: 1.5px solid var(--rd-border, #e5e7eb);
+    }
+
+    /* Fallback sin animación: apila los paneles */
+    @media (prefers-reduced-motion: reduce) {
+      .journey--on {
+        height: auto;
+        overflow: visible;
+      }
+      .journey--on .track {
+        flex-direction: column;
+        width: 100%;
+        height: auto;
+      }
+      .journey--on .panel {
+        width: 100% !important;
+        height: auto !important;
+      }
     }
   }
 </style>

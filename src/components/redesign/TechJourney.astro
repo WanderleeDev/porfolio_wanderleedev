@@ -1,0 +1,241 @@
+---
+/**
+ * TechJourney — recorrido horizontal de tecnologías.
+ * Usa los datos reales del i18n (skills.list).
+ */
+import { getTranslations } from "../../i18n/utils";
+import Icon from "astro-iconify";
+
+const lang = Astro.currentLocale as "es" | "en";
+const t = getTranslations(lang);
+const skillsT = t("skills");
+const groups = skillsT.list;
+
+// Descripciones por grupo (complementan el nombre de la tech)
+const descriptions: Record<string, string> = {
+  "Mi Stack": "Las herramientas que uso en la mayoría de mis proyectos.",
+  Frontend: "Interfaces, animación e interacción.",
+  Backend: "APIs, datos y lógica de negocio.",
+  "Familiarizado con": "Tecnologías que manejo y sigo explorando.",
+  Herramientas: "Diseño, versiones y despliegue.",
+};
+---
+
+<section
+  id="tech-journey"
+  aria-label="Tecnologías"
+  class="journey relative bg-white text-neutral-900 overflow-hidden"
+>
+  <div class="track flex h-full w-max">
+    <!-- Panel intro -->
+    <div
+      class="panel w-screen h-full flex flex-col justify-center px-[clamp(1.5rem,8vw,7.5rem)]"
+    >
+      <h2
+        class="font-fira-sans-extra-condensed font-black text-[clamp(2.6rem,9vw,6.5rem)] leading-[0.92] tracking-tight m-0 mb-3"
+      >
+        Mi stack,<br />de punta<br />a punta
+      </h2>
+      <p class="font-dm-mono text-neutral-500 text-[1.05rem] max-w-[44ch] m-0">
+        {skillsT.sectionDescription}
+      </p>
+    </div>
+
+    <!-- Paneles por grupo de skills -->
+    {
+      groups.map((group) => (
+        <div class="panel w-screen h-full flex flex-col justify-center px-[clamp(1.5rem,8vw,7.5rem)]">
+          <h2
+            class="font-fira-sans-extra-condensed font-black text-[clamp(2.6rem,9vw,6.5rem)] leading-[0.92] tracking-tight m-0 mb-2"
+            style={`color: ${group.accent}`}
+          >
+            {group.title}
+          </h2>
+          <p class="font-dm-mono text-neutral-500 text-[1.05rem] max-w-[44ch] m-0 mb-8">
+            {descriptions[group.title] ?? ""}
+          </p>
+          <ul class="tech-list">
+            {group.techs.map(({color, icon}) => {
+              // Extraer el nombre legible del icon (ej: "devicon:angular" → "Angular")
+              const raw = icon.split(":")[1] ?? icon;
+              const name =
+                raw.charAt(0).toUpperCase() + raw.slice(1).replace(/-/g, " ");
+              return (
+                <li
+                  class="tech-item bg-white relative group"
+                  style={`--accent: ${color}`}
+                >
+                  <b class="bg-inherit size-full py-3 block">{name}</b>
+                  <Icon
+                    name={icon}
+                    class="h-full w-fit bg-inherit -z-10 absolute block left-0 top-2/4 -translate-y-2/4 group-hover:top-0 group-hover:translate-y-[-105%] transition-all"
+                  />
+                </li>
+              );
+            })}
+          </ul>
+        </div>
+      ))
+    }
+
+    <!-- Panel cierre -->
+    <div
+      class="panel w-screen h-full flex flex-col justify-center px-[clamp(1.5rem,8vw,7.5rem)]"
+    >
+      <h2
+        class="font-fira-sans-extra-condensed font-black text-[clamp(2.6rem,9vw,6.5rem)] leading-[0.92] tracking-tight m-0 mb-3"
+      >
+        Ahora, lo que<br />hice con ellas
+      </h2>
+      <p class="font-dm-mono text-neutral-500 text-[1.05rem] max-w-[44ch] m-0">
+        Sigue bajando para ver los proyectos.
+      </p>
+    </div>
+  </div>
+
+  <!-- Barra de progreso -->
+  <div
+    aria-hidden="true"
+    class="route absolute bottom-7 left-[clamp(1.5rem,8vw,7.5rem)] right-[clamp(1.5rem,8vw,7.5rem)] h-[3px] bg-neutral-200 rounded-full"
+  >
+    <div
+      id="route-progress"
+      class="h-full bg-neutral-900 rounded-full origin-left scale-x-0"
+    >
+    </div>
+  </div>
+</section>
+
+<script>
+  import gsap from "gsap";
+  import { ScrollTrigger } from "gsap/ScrollTrigger";
+  gsap.registerPlugin(ScrollTrigger);
+
+  function setup() {
+    const section = document.getElementById("tech-journey")!;
+    const track = section.querySelector<HTMLElement>(".track")!;
+    const progress = document.getElementById("route-progress")!;
+    if (!section || !track) return;
+
+    // Activar modo horizontal
+    section.classList.add("journey--on");
+
+    // Forzar reflow para que scrollWidth sea correcto
+    void track.offsetWidth;
+
+    const dist = () => track.scrollWidth - window.innerWidth;
+
+    // Track horizontal
+    const run = gsap.to(track, {
+      x: () => -dist(),
+      ease: "none",
+      scrollTrigger: {
+        trigger: section,
+        start: "top top",
+        end: () => "+=" + dist(),
+        pin: true,
+        scrub: 0.8,
+        invalidateOnRefresh: true,
+      },
+    });
+
+    // Barra de progreso
+    gsap.to(progress, {
+      scaleX: 1,
+      ease: "none",
+      scrollTrigger: {
+        trigger: section,
+        start: "top top",
+        end: () => "+=" + dist(),
+        scrub: true,
+        invalidateOnRefresh: true,
+      },
+    });
+
+    // Revelar cada panel al llegar
+    section.querySelectorAll<HTMLElement>(".panel").forEach((panel) => {
+      const items = panel.querySelectorAll<HTMLElement>("h2, p, .tech-item");
+      if (!items.length) return;
+      gsap.from(items, {
+        y: 36,
+        opacity: 0,
+        duration: 0.6,
+        ease: "power3.out",
+        stagger: 0.08,
+        scrollTrigger: {
+          trigger: panel,
+          containerAnimation: run,
+          start: "left 78%",
+          toggleActions: "play none none reverse",
+        },
+      });
+    });
+
+    ScrollTrigger.refresh();
+  }
+
+  // Esperar a que todo esté pintado antes de medir scrollWidth
+  if (document.readyState === "complete") {
+    setup();
+  } else {
+    window.addEventListener("load", setup, { once: true });
+  }
+</script>
+
+<style>
+  /* Modo activo — requiere JS para activarse */
+  .journey--on {
+    height: 100vh;
+    overflow: hidden;
+  }
+
+  .journey--on .track {
+    height: 100%;
+    align-items: stretch;
+  }
+
+  .journey--on .panel {
+    height: 100%;
+    flex-shrink: 0;
+  }
+
+  .tech-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 0 40px;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    max-width: 900px;
+  }
+
+  .tech-item {
+    border-top: 1.5px solid var(--rd-border);
+  }
+
+  .tech-item b {
+    display: block;
+    font-family: "Fira Sans Extra Condensed", sans-serif;
+    font-size: clamp(1.2rem, 2.5vw, 1.7rem);
+    letter-spacing: -0.02em;
+    font-weight: 800;
+    color: var(--accent, #111827);
+  }
+
+  /* Fallback sin animación: apila los paneles */
+  @media (prefers-reduced-motion: reduce) {
+    .journey--on {
+      height: auto;
+      overflow: visible;
+    }
+    .journey--on .track {
+      flex-direction: column;
+      width: 100%;
+      height: auto;
+    }
+    .journey--on .panel {
+      width: 100% !important;
+      height: auto !important;
+    }
+  }
+</style>

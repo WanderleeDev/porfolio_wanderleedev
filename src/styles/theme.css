@@ -1,11 +1,74 @@
 @import "tailwindcss";
 
+/* ============================================================
+   DESIGN SYSTEM — WanderleeDev Portfolio
+   Todos los tokens viven aquí. Los componentes consumen
+   variables CSS o clases Tailwind generadas desde @theme.
+   ============================================================ */
+
 @theme {
-  --font-dm-mono: "DM Mono", monospace;
+  /* ── Tipografía ── */
+  --font-dm-mono:                   "DM Mono", monospace;
   --font-fira-sans-extra-condensed: "Fira Sans Extra Condensed", sans-serif;
+
+  /* ── Breakpoints ── */
   --breakpoint-xs: 400px;
+
+  /* ── Spacing extra ── */
   --spacing-120: 31.25rem;
-  --text-nav: clamp(0.9rem, calc(0.2vw + 0.5rem), 1.2rem);
+
+  /* ── Tipografía de navegación ── */
+  --text-nav:                 clamp(0.9rem, calc(0.2vw + 0.5rem), 1.2rem);
   --text-nav--letter-spacing: 0.125rem;
-  --text-nav--font-weight: 500;
+  --text-nav--font-weight:    500;
+
+  /* ── Paleta base del redesign (secciones claras) ── */
+  --color-rd-bg:        #ffffff;   /* fondo secciones blancas */
+  --color-rd-ink:       #111111;   /* texto principal */
+  --color-rd-ink-soft:  #6b7280;   /* texto secundario (neutral-500) */
+  --color-rd-ink-muted: #9ca3af;   /* texto terciario (neutral-400) */
+  --color-rd-border:    #e5e7eb;   /* bordes (neutral-200) */
+  --color-rd-badge-bg:  #e5e5e5;   /* fondo badges/pills */
+  --color-rd-badge-ink: #374151;   /* texto badges (neutral-700) */
+
+  /* ── Paleta oscura (contacto, footer) ── */
+  --color-dark-bg:    #161824;   /* fondo bloque oscuro */
+  --color-dark-ink:   #eceef3;   /* texto principal oscuro */
+  --color-dark-muted: #a3a9bf;   /* texto secundario oscuro */
+  --color-dark-line:  #3a3f55;   /* bordes oscuro */
+  --color-dark-acc:   #8fa0ff;   /* acento azul (inputs, links) */
+  --color-dark-err:   #ff8f93;   /* error */
+
+  /* ── Escala de tipografía del redesign ── */
+  --text-hero:    clamp(3rem, 10vw, 8rem);
+  --text-section: clamp(2.6rem, 9vw, 6.5rem);
+  --text-sub:     clamp(0.7rem, 1.4vw, 0.9rem);
+}
+
+/* ============================================================
+   TOKENS CSS GLOBALES
+   Disponibles en cualquier componente como var(--rd-*)
+   ============================================================ */
+:root {
+  /* Secciones claras */
+  --rd-bg:        var(--color-rd-bg);
+  --rd-ink:       var(--color-rd-ink);
+  --rd-ink-soft:  var(--color-rd-ink-soft);
+  --rd-ink-muted: var(--color-rd-ink-muted);
+  --rd-border:    var(--color-rd-border);
+  --rd-badge-bg:  var(--color-rd-badge-bg);
+  --rd-badge-ink: var(--color-rd-badge-ink);
+
+  /* Bloque oscuro (siempre oscuro independientemente del tema) */
+  --dark-bg:    var(--color-dark-bg);
+  --dark-ink:   var(--color-dark-ink);
+  --dark-muted: var(--color-dark-muted);
+  --dark-line:  var(--color-dark-line);
+  --dark-acc:   var(--color-dark-acc);
+  --dark-err:   var(--color-dark-err);
+
+  /* Tipografía fluida */
+  --text-hero:    var(--text-hero);
+  --text-section: var(--text-section);
+  --text-sub:     var(--text-sub);
 }

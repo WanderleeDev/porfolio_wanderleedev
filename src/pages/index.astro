@@ -8,8 +8,11 @@
 import "../styles/global.css";
 import HeroFan from "../components/redesign/HeroFan.astro";
 import FeaturedWork from "../components/redesign/FeaturedWork.astro";
+import TechJourney from "../components/redesign/TechJourney.astro";
 import MoreWork from "../components/redesign/MoreWork.astro";
+import RedesignContact from "../components/redesign/RedesignContact.astro";
 import RedesignFooter from "../components/redesign/RedesignFooter.astro";
+import ThemePicker from "../components/redesign/ThemePicker.astro";
 import { getTranslations } from "../i18n/utils";
 
 const lang = Astro.currentLocale as "es" | "en";
@@ -34,8 +37,12 @@ const projects = t("projects").list;
       media="(prefers-color-scheme: dark)"
     />
     <title>WanderleeDev — Redesign</title>
+    <style>
+      html, body { margin: 0; }
+    </style>
   </head>
   <body>
+    <ThemePicker />
     <HeroFan />
     <FeaturedWork
       items={projects.map((p) => ({
@@ -44,7 +51,9 @@ const projects = t("projects").list;
         alt: p.title,
       }))}
     />
+    <TechJourney />
     <MoreWork />
+    <RedesignContact />
     <RedesignFooter />
   </body>
 </html>

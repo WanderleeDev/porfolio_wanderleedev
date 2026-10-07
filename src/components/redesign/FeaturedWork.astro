@@ -1,0 +1,244 @@
+---
+interface Item {
+  title: string;
+  src: string;
+  alt?: string;
+}
+interface Props {
+  items: Item[];
+}
+const { items } = Astro.props;
+---
+
+<section class="relative w-full h-dvh flex flex-col items-center bg-white text-neutral-900 overflow-hidden">
+
+  <header class="pt-8 md:pt-10 text-center shrink-0 z-10">
+    <h2 class="m-0 font-fira-sans-extra-condensed font-black text-[64px] uppercase tracking-tight leading-none text-neutral-900">
+      Featured Work
+    </h2>
+    <p class="mt-1.5 font-dm-mono text-[clamp(0.7rem,1.4vw,0.9rem)] text-neutral-400 tracking-wide">
+      Select recent and notable projects
+    </p>
+  </header>
+
+  <div
+    id="fw-stage"
+    class="relative flex-1 w-full overflow-hidden flex items-center justify-center cursor-grab active:cursor-grabbing"
+  >
+    <div id="fw-track">
+      {items.map((item, i) => (
+        <div class="fw__card" data-title={item.title} data-index={i}>
+          <img src={item.src} alt={item.alt ?? item.title} draggable="false" class="w-full h-9/12 object-cover aspect-video block pointer-events-none select-none" />
+          <span class="fw__card-title">{item.title}</span>
+        </div>
+      ))}
+    </div>
+  </div>
+
+  <div class="shrink-0 mb-6 md:mb-8 bg-neutral-200 rounded-full px-5 py-2 z-10">
+    <span
+      id="fw-badge-text"
+      class="font-dm-mono text-[clamp(0.65rem,1.2vw,0.8rem)] font-bold uppercase tracking-widest text-neutral-600 block"
+    >
+      {items[0]?.title}
+    </span>
+  </div>
+
+</section>
+
+<script>
+  import gsap from "gsap";
+  import { Draggable } from "gsap/Draggable";
+  import { InertiaPlugin } from "gsap/InertiaPlugin";
+  gsap.registerPlugin(Draggable, InertiaPlugin);
+
+  function init() {
+    const stage = document.getElementById("fw-stage")!;
+    const track = document.getElementById("fw-track")!;
+    const badge = document.getElementById("fw-badge-text")!;
+    if (!stage || !track) return;
+
+    const origCards = Array.from(track.querySelectorAll<HTMLElement>(".fw__card"));
+    const N = origCards.length;
+    if (N === 0) return;
+
+    const vw = stage.offsetWidth;
+    const vh = stage.offsetHeight;
+
+    const isMobile = vw < 640;
+    const isTablet = vw >= 640 && vw < 1024;
+
+    const CARD_W = isMobile
+      ? Math.min(Math.round(vw * 0.72), 340)
+      : isTablet
+        ? Math.min(Math.round(vw * 0.58), 420)
+        : Math.min(Math.round(vw * 0.48), 544);
+
+    const CARD_H     = Math.min(Math.round(CARD_W * 1.22), Math.round(vh * 0.80));
+    const GAP        = isMobile ? Math.round(vw * 0.10) : isTablet ? Math.round(vw * 0.12) : Math.round(vw * 0.14);
+    const STEP       = CARD_W + GAP;
+    const SIDE_ROT   = 14;
+    const SIDE_SCALE = 0.82;
+    const SIDE_Y     = Math.round(CARD_H * 0.06);
+
+    // Triplicar para loop infinito
+    for (let c = 0; c < 2; c++) {
+      origCards.forEach(card => {
+        const clone = card.cloneNode(true) as HTMLElement;
+        clone.setAttribute("aria-hidden", "true");
+        track.appendChild(clone);
+      });
+    }
+    const allCards = Array.from(track.querySelectorAll<HTMLElement>(".fw__card"));
+
+    track.style.cssText = `position:absolute;top:0;left:0;height:${CARD_H}px;`;
+    allCards.forEach((card, i) => {
+      card.style.cssText = `
+        position:absolute;
+        width:${CARD_W}px;
+        height:${CARD_H}px;
+        left:${i * STEP}px;
+        top:0;
+        border-radius:16px;
+        overflow:hidden;
+        will-change:transform;
+        transform-origin:50% 100%;
+      `;
+    });
+
+    const centerX = vw / 2 - CARD_W / 2;
+    const baseX   = -(N * STEP) + centerX;
+    gsap.set(track, { x: baseX });
+
+    function update(tx: number) {
+      const cx = vw / 2;
+      let closestDist = Infinity;
+      let closestIdx  = 0;
+
+      allCards.forEach((card, i) => {
+        const cardCx  = i * STEP + tx + CARD_W / 2;
+        const dist    = cardCx - cx;
+        const norm    = dist / (STEP * 1.2);
+        const abs     = Math.min(Math.abs(norm), 1.5);
+        const clamped = Math.max(-1, Math.min(1, norm));
+
+        gsap.set(card, {
+          rotation       : clamped * SIDE_ROT,
+          scale          : 1 - abs * (1 - SIDE_SCALE),
+          y              : abs * SIDE_Y,
+          opacity        : Math.max(0, 1 - abs * 0.5),
+          transformOrigin: "50% 100%",
+          zIndex         : Math.round(100 - abs * 80),
+        });
+
+        if (Math.abs(dist) < closestDist) {
+          closestDist = Math.abs(dist);
+          closestIdx  = i % N;
+        }
+      });
+
+      const title = origCards[closestIdx]?.dataset.title ?? "";
+      if (badge.textContent !== title) {
+        gsap.to(badge, {
+          opacity: 0, y: -6, duration: 0.12,
+          onComplete() {
+            badge.textContent = title;
+            gsap.to(badge, { opacity: 1, y: 0, duration: 0.15 });
+          },
+        });
+      }
+    }
+
+    update(baseX);
+
+    const loopRange = N * STEP;
+    function wrap(x: number) {
+      const min = baseX - loopRange / 2;
+      const max = baseX + loopRange / 2;
+      let nx = x;
+      while (nx < min) nx += loopRange;
+      while (nx > max) nx -= loopRange;
+      return nx;
+    }
+
+    function snapNearest(fromX: number) {
+      const cx = vw / 2;
+      let bestX = fromX, bestD = Infinity;
+      allCards.forEach((card, i) => {
+        const cardCx = i * STEP + fromX + CARD_W / 2;
+        const d = Math.abs(cardCx - cx);
+        if (d < bestD) { bestD = d; bestX = fromX - (cardCx - cx); }
+      });
+      const snapped = wrap(bestX);
+      gsap.to(track, {
+        x: snapped, duration: 0.3, ease: "power2.out",
+        onUpdate() { update(gsap.getProperty(track, "x") as number); },
+      });
+    }
+
+    let throwing = false;
+
+    const [drag] = Draggable.create(track, {
+      type        : "x",
+      inertia     : true,
+      cursor      : "grab",
+      activeCursor: "grabbing",
+      onDrag() {
+        update(gsap.getProperty(track, "x") as number);
+      },
+      onThrowUpdate() {
+        throwing = true;
+        const raw     = gsap.getProperty(track, "x") as number;
+        const wrapped = wrap(raw);
+        if (Math.abs(wrapped - raw) > 0.5) gsap.set(track, { x: wrapped });
+        update(gsap.getProperty(track, "x") as number);
+      },
+      onThrowComplete() {
+        throwing = false;
+        snapNearest(wrap(gsap.getProperty(track, "x") as number));
+      },
+      onDragEnd() {
+        requestAnimationFrame(() => {
+          if (!throwing) snapNearest(wrap(gsap.getProperty(track, "x") as number));
+        });
+      },
+    });
+
+    let resizeTimer: ReturnType<typeof setTimeout>;
+    window.addEventListener("resize", () => {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(() => {
+        drag.kill();
+        Array.from(track.querySelectorAll<HTMLElement>(".fw__card")).slice(N).forEach(c => c.remove());
+        gsap.set(track, { clearProps: "all" });
+        init();
+      }, 200);
+    }, { passive: true });
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", init, { once: true });
+  } else {
+    init();
+  }
+</script>
+
+<style>
+  /* Solo lo que Tailwind no puede hacer: pseudo-elemento con gradiente dinámico */
+  .fw__card-title {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 2rem 1.25rem 1rem;
+    background: linear-gradient(to top, rgba(0,0,0,0.65), transparent);
+    font-family: "Fira Sans Extra Condensed", sans-serif;
+    font-weight: 700;
+    font-size: clamp(1.1rem, 2.5vw, 1.5rem);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--dark-ink);
+    pointer-events: none;
+    user-select: none;
+  }
+</style>

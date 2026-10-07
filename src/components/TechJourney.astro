@@ -169,11 +169,22 @@ const descriptions = journeyT.skillDescriptions;
     ScrollTrigger.refresh();
   }
 
+  // Boot idempotente: funciona en carga inicial y en navegación cliente
+  let journeyCtx: gsap.Context | null = null;
+
+  function bootJourney() {
+    journeyCtx?.revert();
+    journeyCtx = gsap.context(() => {
+      setup();
+    });
+  }
+
   // Esperar a que todo esté pintado antes de medir scrollWidth
+  document.addEventListener("astro:page-load", bootJourney);
   if (document.readyState === "complete") {
-    setup();
+    bootJourney();
   } else {
-    window.addEventListener("load", setup, { once: true });
+    window.addEventListener("load", bootJourney, { once: true });
   }
 </script>
 

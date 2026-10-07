@@ -223,13 +223,37 @@ const t = getTranslations(lang);
   import { InertiaPlugin } from "gsap/InertiaPlugin";
   gsap.registerPlugin(Draggable, InertiaPlugin);
 
-  function init() {
+  const INVOKER_OK =
+    typeof HTMLButtonElement !== "undefined" &&
+    "command" in HTMLButtonElement.prototype;
+
+  let fwDrag: Draggable | null = null;
+  let fwResizeTimer: ReturnType<typeof setTimeout>;
+  let downX = 0,
+    downY = 0;
+
+  function teardownFw() {
+    fwDrag?.kill();
+    fwDrag = null;
+    const track = document.getElementById("fw-track");
+    const total = Number(track?.dataset.total ?? 0);
+    if (track && total > 0) {
+      Array.from(track.querySelectorAll(".fw__card"))
+        .slice(total)
+        .forEach((c) => c.remove());
+      gsap.set(track, { clearProps: "all" });
+    }
+  }
+
+  function initFw() {
     const stage = document.getElementById("fw-stage");
     const track = document.getElementById("fw-track");
     const badge = document.getElementById("fw-badge-text");
     if (!stage || !track) return;
 
-    const origCards = Array.from(track.querySelectorAll(".fw__card"));
+    const origCards = Array.from(
+      track.querySelectorAll('.fw__card:not([aria-hidden="true"])'),
+    );
     const N = origCards.length;
     if (N === 0) return;
     track.dataset.total = String(N);
@@ -393,7 +417,7 @@ const t = getTranslations(lang);
     if (prevBtn) prevBtn.onclick = () => stepTo(-1);
     if (nextBtn) nextBtn.onclick = () => stepTo(1);
 
-    const [drag] = Draggable.create(track, {
+    const [freshDrag] = Draggable.create(track, {
       type: "x",
       inertia: true,
       cursor: "grab",
@@ -418,117 +442,113 @@ const t = getTranslations(lang);
         });
       },
     });
-
-    let resizeTimer;
-    window.addEventListener(
-      "resize",
-      () => {
-        clearTimeout(resizeTimer);
-        resizeTimer = setTimeout(() => {
-          drag.kill();
-          Array.from(track.querySelectorAll(".fw__card"))
-            .slice(N)
-            .forEach((c) => c.remove());
-          gsap.set(track, { clearProps: "all" });
-          init();
-        }, 200);
-      },
-      { passive: true },
-    );
+    fwDrag = freshDrag;
   }
 
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", init, { once: true });
-  } else {
-    init();
+  function wireFw() {
+    const stage = document.getElementById("fw-stage");
+    const track = document.getElementById("fw-track");
+    const dialog = document.getElementById(
+      "fw-dialog",
+    ) as HTMLDialogElement | null;
+    const dlgImg = document.getElementById(
+      "fw-dlg-img",
+    ) as HTMLImageElement | null;
+    const dlgTitle = document.getElementById("fw-dlg-title");
+    const dlgDesc = document.getElementById("fw-dlg-desc");
+    const dlgCount = document.getElementById("fw-dlg-count");
+    const dlgTechs = document.getElementById("fw-dlg-techs");
+    const dlgDemo = document.getElementById(
+      "fw-dlg-demo",
+    ) as HTMLAnchorElement | null;
+    const dlgDemoLabel = document.getElementById("fw-dlg-demo-label");
+
+    if (stage) {
+      stage.onpointerdown = (e: PointerEvent) => {
+        downX = e.clientX;
+        downY = e.clientY;
+      };
+    }
+
+    if (track && dialog) {
+      track.onclick = (e) => {
+        const card = (e.target as HTMLElement).closest(".fw__card");
+        if (!card) return;
+        // Si fue drag, no abrir
+        const moved = Math.hypot(e.clientX - downX, e.clientY - downY);
+        if (moved > 8) {
+          e.preventDefault();
+          e.stopPropagation();
+          return;
+        }
+        const img = card.querySelector("img");
+        if (dlgImg && img) {
+          dlgImg.src = img.currentSrc || img.src;
+          dlgImg.alt = img.alt;
+        }
+        if (dlgTitle)
+          dlgTitle.textContent = card.getAttribute("data-title") ?? "";
+        if (dlgDesc)
+          dlgDesc.textContent = card.getAttribute("data-desc") ?? "";
+        const total = Number(track.dataset.total ?? 0);
+        const idx = Number(card.getAttribute("data-index") ?? 0);
+        if (dlgCount && total > 0) {
+          const cur = String((idx % total) + 1).padStart(2, "0");
+          dlgCount.textContent = `${cur} / ${String(total).padStart(2, "0")}`;
+        }
+        if (dlgTechs) {
+          dlgTechs.textContent = "";
+          const techs = (card.getAttribute("data-techs") ?? "")
+            .split(",")
+            .filter(Boolean);
+          for (const t of techs) {
+            const chip = document.createElement("span");
+            chip.className =
+              "font-sans text-[0.7rem] font-bold uppercase tracking-widest bg-badge text-badge-ink rounded-full px-3 py-1";
+            chip.textContent = t.trim();
+            dlgTechs.appendChild(chip);
+          }
+        }
+        if (dlgDemo) {
+          const href = card.getAttribute("data-demo") ?? "";
+          const label = card.getAttribute("data-label") ?? "";
+          dlgDemo.href = href;
+          if (label && dlgDemoLabel) dlgDemoLabel.textContent = label;
+          dlgDemo.style.display = href ? "" : "none";
+        }
+        if (!INVOKER_OK) {
+          e.preventDefault();
+          dialog.showModal();
+        }
+      };
+
+      dialog.onclick = (e) => {
+        if (e.target === dialog) dialog.close();
+      };
+    }
   }
 
-  // ── Dialog wiring (una sola vez: sobrevive al re-init del resize) ──
-  const fwStage = document.getElementById("fw-stage");
-  const fwTrack = document.getElementById("fw-track");
-  const dialog = document.getElementById(
-    "fw-dialog",
-  ) as HTMLDialogElement | null;
-  const dlgImg = document.getElementById(
-    "fw-dlg-img",
-  ) as HTMLImageElement | null;
-  const dlgTitle = document.getElementById("fw-dlg-title");
-  const dlgDesc = document.getElementById("fw-dlg-desc");
-  const dlgCount = document.getElementById("fw-dlg-count");
-  const dlgTechs = document.getElementById("fw-dlg-techs");
-  const dlgDemo = document.getElementById(
-    "fw-dlg-demo",
-  ) as HTMLAnchorElement | null;
-  const dlgDemoLabel = document.getElementById("fw-dlg-demo-label");
-  const INVOKER_OK =
-    typeof HTMLButtonElement !== "undefined" &&
-    "command" in HTMLButtonElement.prototype;
+  function bootFw() {
+    teardownFw();
+    initFw();
+    wireFw();
+  }
 
-  let downX = 0,
-    downY = 0;
-  fwStage?.addEventListener(
-    "pointerdown",
-    (e: PointerEvent) => {
-      downX = e.clientX;
-      downY = e.clientY;
+  window.addEventListener(
+    "resize",
+    () => {
+      clearTimeout(fwResizeTimer);
+      fwResizeTimer = setTimeout(bootFw, 200);
     },
     { passive: true },
   );
 
-  fwTrack?.addEventListener("click", (e) => {
-    const card = (e.target as HTMLElement).closest(".fw__card");
-    if (!card || !dialog) return;
-    // Si fue drag, no abrir
-    const moved = Math.hypot(e.clientX - downX, e.clientY - downY);
-    if (moved > 8) {
-      e.preventDefault();
-      e.stopPropagation();
-      return;
-    }
-    const img = card.querySelector("img");
-    if (dlgImg && img) {
-      dlgImg.src = img.currentSrc || img.src;
-      dlgImg.alt = img.alt;
-    }
-    if (dlgTitle) dlgTitle.textContent = card.getAttribute("data-title") ?? "";
-    if (dlgDesc) dlgDesc.textContent = card.getAttribute("data-desc") ?? "";
-    if (dlgCount && fwTrack) {
-      const total = Number(fwTrack.dataset.total ?? 0);
-      const idx = Number(card.getAttribute("data-index") ?? 0);
-      if (total > 0) {
-        const cur = String((idx % total) + 1).padStart(2, "0");
-        dlgCount.textContent = `${cur} / ${String(total).padStart(2, "0")}`;
-      }
-    }
-    if (dlgTechs) {
-      dlgTechs.textContent = "";
-      const techs = (card.getAttribute("data-techs") ?? "")
-        .split(",")
-        .filter(Boolean);
-      for (const t of techs) {
-        const chip = document.createElement("span");
-        chip.className =
-          "font-sans text-[0.7rem] font-bold uppercase tracking-widest bg-badge text-badge-ink rounded-full px-3 py-1";
-        chip.textContent = t.trim();
-        dlgTechs.appendChild(chip);
-      }
-    }
-    if (dlgDemo) {
-      const href = card.getAttribute("data-demo") ?? "";
-      const label = card.getAttribute("data-label") ?? "";
-      dlgDemo.href = href;
-      if (label && dlgDemoLabel) dlgDemoLabel.textContent = label;
-      dlgDemo.style.display = href ? "" : "none";
-    }
-    if (!INVOKER_OK) {
-      e.preventDefault();
-      dialog.showModal();
-    }
-  });
-
-  dialog?.addEventListener("click", (e) => {
-    if (e.target === dialog) dialog.close();
-  });
+  document.addEventListener("astro:page-load", bootFw);
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", bootFw, { once: true });
+  } else {
+    bootFw();
+  }
 </script>
 
 <style>

@@ -109,67 +109,98 @@ const labels = info.labels;
   </div>
 </section>
 
-<script>
+<script define:vars={{ contactI18n: {
+  error: info.error,
+  errorWhat: info.errorWhat,
+  errorEmail: info.errorEmail,
+  start: info.sentence.start,
+  andNeed: info.sentence.andNeed,
+  for: info.sentence.for,
+  replyTo: info.sentence.replyTo,
+  submitSubject: info.submitSubject,
+} }}>
   import gsap from "gsap";
   import { ScrollTrigger } from "gsap/ScrollTrigger";
   gsap.registerPlugin(ScrollTrigger);
 
   const TO = "wanderleedev@gmail.com";
+  let contactCtx: gsap.Context | null = null;
 
-  // ── Formulario ─────────────────────────────────────────────────────────────
-  const form = document.getElementById("redesign-form") as HTMLFormElement;
-  const err  = document.getElementById("redesign-err")!;
+  // ── Formulario + kind picker (wiring idempotente por DOM) ──────────────
+  function wireContact() {
+    const section = document.getElementById("redesign-contact");
+    if (!section || section.dataset.wired) return;
+    section.dataset.wired = "true";
 
-  form?.addEventListener("submit", (e) => {
-    e.preventDefault();
-    const f = form.elements as any;
-    const checks: [HTMLElement, unknown, string][] = [
-      [f.name,  f.name.value.trim(),                              info.error],
-      [f.what,  f.what.value.trim(),                              info.errorWhat],
-      [f.email, f.email.value.trim() && f.email.checkValidity(), info.errorEmail],
-    ];
-    const bad = checks.find(([, val]) => !val);
-    if (bad) { err.textContent = bad[2]; (bad[0] as HTMLElement).focus(); return; }
-    err.textContent = "";
-    const text = `${info.sentence.start} ${f.name.value.trim()} ${info.sentence.andNeed} ${f.kind.value} ${info.sentence.for} ${f.what.value.trim()}.\n${info.sentence.replyTo} ${f.email.value.trim()}.`;
-    window.location.href = `mailto:${TO}?subject=${encodeURIComponent(`${info.submitSubject} – ` + f.name.value.trim())}&body=${encodeURIComponent(text)}`;
-  });
+    const form = document.getElementById("redesign-form") as HTMLFormElement | null;
+    const err  = document.getElementById("redesign-err");
 
-  // ── Kind picker (estilo ThemePicker/LangPicker) ──────────────────────────
-  const kindTrigger = document.getElementById("kind-trigger");
-  const kindPanel   = document.getElementById("kind-panel");
-  const kindInput   = document.getElementById("kind-input") as HTMLInputElement | null;
-  const kindLabel   = document.getElementById("kind-label");
-
-  kindTrigger?.addEventListener("click", (e) => {
-    e.stopPropagation();
-    const willOpen = kindPanel?.hidden ?? false;
-    kindPanel!.hidden = !willOpen;
-    kindTrigger.setAttribute("aria-expanded", String(willOpen));
-  });
-
-  kindPanel?.querySelectorAll<HTMLElement>("[data-kind]").forEach((opt) => {
-    opt.addEventListener("click", () => {
-      const value = opt.dataset.kind ?? "";
-      if (kindInput) kindInput.value = value;
-      if (kindLabel) kindLabel.textContent = value;
-      kindPanel.querySelectorAll<HTMLElement>("[data-kind]").forEach((o) => {
-        const active = o === opt;
-        o.classList.toggle("kind-option--active", active);
-        o.setAttribute("aria-selected", String(active));
-      });
-      kindPanel.hidden = true;
-      kindTrigger?.setAttribute("aria-expanded", "false");
+    form?.addEventListener("submit", (e) => {
+      e.preventDefault();
+      if (!form) return;
+      const f = form.elements as any;
+      const checks: [HTMLElement, unknown, string][] = [
+        [f.name,  f.name.value.trim(),                              contactI18n.error],
+        [f.what,  f.what.value.trim(),                              contactI18n.errorWhat],
+        [f.email, f.email.value.trim() && f.email.checkValidity(), contactI18n.errorEmail],
+      ];
+      const bad = checks.find(([, val]) => !val);
+      if (!err) return;
+      if (bad) { err.textContent = bad[2] as string; (bad[0] as HTMLElement).focus(); return; }
+      err.textContent = "";
+      const text = `${contactI18n.start} ${f.name.value.trim()} ${contactI18n.andNeed} ${f.kind.value} ${contactI18n.for} ${f.what.value.trim()}.\n${contactI18n.replyTo} ${f.email.value.trim()}.`;
+      window.location.href = `mailto:${TO}?subject=${encodeURIComponent(`${contactI18n.submitSubject} – ` + f.name.value.trim())}&body=${encodeURIComponent(text)}`;
     });
-  });
 
-  document.addEventListener("click", () => {
-    if (kindPanel && !kindPanel.hidden) {
-      kindPanel.hidden = true;
-      kindTrigger?.setAttribute("aria-expanded", "false");
-    }
-  });
-  // ── Animaciones ────────────────────────────────────────────────────────────
+    // ── Kind picker (estilo ThemePicker/LangPicker) ──────────────────────
+    const kindTrigger = document.getElementById("kind-trigger");
+    const kindPanel   = document.getElementById("kind-panel");
+    const kindInput   = document.getElementById("kind-input") as HTMLInputElement | null;
+    const kindLabel   = document.getElementById("kind-label");
+
+    kindTrigger?.addEventListener("click", (e) => {
+      e.stopPropagation();
+      const willOpen = kindPanel?.hidden ?? false;
+      if (kindPanel) kindPanel.hidden = !willOpen;
+      kindTrigger.setAttribute("aria-expanded", String(willOpen));
+    });
+
+    kindPanel?.querySelectorAll<HTMLElement>("[data-kind]").forEach((opt) => {
+      opt.addEventListener("click", () => {
+        const value = opt.dataset.kind ?? "";
+        if (kindInput) kindInput.value = value;
+        if (kindLabel) kindLabel.textContent = value;
+        kindPanel.querySelectorAll<HTMLElement>("[data-kind]").forEach((o) => {
+          const active = o === opt;
+          o.classList.toggle("kind-option--active", active);
+          o.setAttribute("aria-selected", String(active));
+        });
+        kindPanel.hidden = true;
+        kindTrigger?.setAttribute("aria-expanded", "false");
+      });
+    });
+
+    document.addEventListener("click", () => {
+      if (kindPanel && !kindPanel.hidden) {
+        kindPanel.hidden = true;
+        kindTrigger?.setAttribute("aria-expanded", "false");
+      }
+    });
+  }
+
+  function bootContact() {
+    contactCtx?.revert();
+    contactCtx = gsap.context(() => {
+      animContact();
+    });
+    wireContact();
+  }
+
+  document.addEventListener("astro:page-load", bootContact);
+  bootContact();
+
+  // ── Animaciones ────────────────────────────────────────────────────────
+  function animContact() {
   const mm = gsap.matchMedia();
 
   mm.add("(prefers-reduced-motion: no-preference)", () => {
@@ -214,6 +245,7 @@ const labels = info.labels;
     const mtrack = document.getElementById("mtrack")!;
     if (mtrack) mtrack.style.transform = "none";
   });
+  }
 </script>
 
 <style>

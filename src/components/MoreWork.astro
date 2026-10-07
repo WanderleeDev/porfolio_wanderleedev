@@ -40,7 +40,12 @@ import Icon from "astro-iconify";
 <script>
   // devicon:react ships a hardcoded fill="#61dafb" on its inner <g>, which beats CSS.
   // Strip the fill attribute so the brand blue below applies cleanly.
-  document.querySelectorAll(".vs-logo-react [fill]").forEach((el) => el.removeAttribute("fill"));
+  function bootMoreWork() {
+    document.querySelectorAll(".vs-logo-react [fill]").forEach((el) => el.removeAttribute("fill"));
+  }
+
+  document.addEventListener("astro:page-load", bootMoreWork);
+  bootMoreWork();
 </script>
 
 <style>

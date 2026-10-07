@@ -16,7 +16,7 @@ const altPath  = currentLang === "es"
   : pathname.replace(/^\/en/, "") || "/";
 ---
 
-<div class="fixed top-5 right-5 z-[999] flex items-center gap-2" id="theme-picker">
+<div class="fixed top-5 right-5 z-[999] flex items-center gap-2" id="theme-picker" transition:animate={false}>
 
   <!-- ── Lang picker ── -->
   <div class="relative">
@@ -201,10 +201,14 @@ const altPath  = currentLang === "es"
     updateUI(theme);
   }
 
-  // ── Init ──────────────────────────────────────────────────────────────────
-  const saved = getSaved();
-  applyTheme(saved);
-  updateUI(saved);
+  // ── Boot: aplica theme siempre; listeners una vez por DOM ─────────────
+  function bootPicker() {
+    applyTheme(getSaved());
+    updateUI(getSaved());
+
+    const root = document.getElementById("theme-picker");
+    if (!root || root.dataset.wired) return;
+    root.dataset.wired = "true";
 
   // ── Toggle panels ─────────────────────────────────────────────────────────
   function setupToggle(triggerId: string, panelId: string) {
@@ -243,8 +247,12 @@ const altPath  = currentLang === "es"
       document.getElementById("theme-trigger")!.setAttribute("aria-expanded", "false");
     });
   });
+  }
 
-  // Escuchar cambios del sistema
+  document.addEventListener("astro:page-load", bootPicker);
+  bootPicker();
+
+  // Escuchar cambios del sistema (una vez por carga completa)
   window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => {
     const saved = getSaved();
     if (saved === "system") {

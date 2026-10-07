@@ -109,7 +109,7 @@ const labels = info.labels;
   </div>
 </section>
 
-<script define:vars={{ contactI18n: {
+<script type="application/json" id="contact-i18n" set:html={JSON.stringify({
   error: info.error,
   errorWhat: info.errorWhat,
   errorEmail: info.errorEmail,
@@ -118,10 +118,26 @@ const labels = info.labels;
   for: info.sentence.for,
   replyTo: info.sentence.replyTo,
   submitSubject: info.submitSubject,
-} }}>
+})} />
+<script>
   import gsap from "gsap";
   import { ScrollTrigger } from "gsap/ScrollTrigger";
   gsap.registerPlugin(ScrollTrigger);
+
+  interface ContactI18n {
+    error: string;
+    errorWhat: string;
+    errorEmail: string;
+    start: string;
+    andNeed: string;
+    for: string;
+    replyTo: string;
+    submitSubject: string;
+  }
+
+  const contactI18n = JSON.parse(
+    document.getElementById("contact-i18n")?.textContent ?? "{}",
+  ) as ContactI18n;
 
   const TO = "wanderleedev@gmail.com";
   let contactCtx: gsap.Context | null = null;

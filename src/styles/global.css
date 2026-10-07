@@ -284,7 +284,7 @@
 
 /* ── Base layer (fonts, cursor, scroll) ── */
 @layer base {
-  html { scroll-behavior: auto; user-select: none; }
+  html { scroll-behavior: auto; }
 
   html, body {
     cursor: url("/cursor.svg"), auto;

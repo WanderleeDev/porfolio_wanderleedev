@@ -35,11 +35,12 @@
   --color-dark-acc:   #8fa0ff;
   --color-dark-err:   #ff8f93;
 
-  /* ── Tokens semánticos (light por defecto = .light) ── */
+  /* ── Tokens semánticos (light por defecto = .light) ──
+     soft/muted garantizan AA sobre blanco (4.5:1+) ── */
   --color-surface:    #ffffff;
   --color-ink:        #111111;
-  --color-soft:       #6b7280;
-  --color-muted:      #9ca3af;
+  --color-soft:       #4b5563;
+  --color-muted:      #6b7280;
   --color-line:       #e5e7eb;
   --color-badge:      #e5e5e5;
   --color-badge-ink:  #374151;
@@ -102,7 +103,7 @@
   --color-surface:    #161824;
   --color-ink:        #eceef3;
   --color-soft:       #a3a9bf;
-  --color-muted:      #6b7280;
+  --color-muted:      #9ca3af;
   --color-line:       #3a3f55;
   --color-badge:      #3a3f55;
   --color-badge-ink:  #eceef3;

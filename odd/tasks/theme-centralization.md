@@ -30,6 +30,7 @@ Single source of truth for light/dark, no hex spread, only Tailwind semantic cla
 - [ ] T3 dark version: .dark token values verified + contact/footer use dark tokens
 - [ ] T4 picker: getSaved validation, localStorage -> system fallback, change listener updates UI, head anti-FOUC in both pages
 - [ ] T5 verification: astro build + grep no hex outside allowed + manual theme switch
+- [x] T6 contrast light: muted #9ca3af->#6b7280, soft #6b7280->#4b5563 (AA 4.5:1+); dark muted #6b7280->#9ca3af
 
 ## Authorized scope
 Files listed in Scope only. No new deps. No Visual changes beyond theme correctness.

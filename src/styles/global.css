@@ -231,6 +231,57 @@
   font-family: "Press Start 2P", monospace;
 }
 
+/* ── Tema frutiger aero: cielo glossy, vidrio, aqua ── */
+.aero {
+  color-scheme: light;
+
+  --color-surface:    transparent;
+  --color-ink:        #083344;
+  --color-soft:       #0c4a6e;
+  --color-muted:      #075985;
+  --color-line:       #e0f2fe;
+  --color-badge:      rgba(255, 255, 255, 0.55);
+  --color-badge-ink:  #083344;
+  --color-contrast:   #ffffff;
+
+  --surface:   var(--color-surface);
+  --ink:       var(--color-ink);
+  --soft:      var(--color-soft);
+  --muted:     var(--color-muted);
+  --line:      var(--color-line);
+  --badge:     var(--color-badge);
+  --badge-ink: var(--color-badge-ink);
+
+  --ct-ink: var(--color-ink);
+  --ct-acc: #0284c7;
+  --ct-err: #b91c1c;
+}
+
+.aero body {
+  background-color: #38bdf8;
+  background-image: linear-gradient(180deg, #d8f3ff 0%, #7dd3fc 30%, #38bdf8 55%, #0369a1 100%);
+  background-attachment: fixed;
+}
+
+.aero .bg-badge {
+  backdrop-filter: blur(12px) saturate(1.4);
+  -webkit-backdrop-filter: blur(12px) saturate(1.4);
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  box-shadow: 0 4px 20px rgba(2, 132, 199, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.7);
+}
+
+.aero .bg-tag {
+  background: #dff2fd;
+  border-radius: 8px;
+}
+
+.aero #redesign-form button[type="submit"] {
+  background: linear-gradient(180deg, #4cc3ff 0%, #0284c7 100%);
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.65);
+  box-shadow: 0 2px 12px rgba(2, 132, 199, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.65);
+}
+
 /* ── Base layer (fonts, cursor, scroll) ── */
 @layer base {
   html { scroll-behavior: auto; }

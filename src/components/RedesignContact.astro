@@ -78,13 +78,13 @@ const labels = info.labels;
 
       <button
         type="submit"
-        class="font-dm-mono font-bold text-[1.05rem] px-7 py-4 rounded-full border-0 bg-ink text-surface cursor-pointer transition-opacity hover:opacity-80"
+        class="font-sans font-bold text-[1.05rem] px-7 py-4 rounded-full border-0 bg-ink text-surface cursor-pointer transition-opacity hover:opacity-80"
       >
         {info.submit}
       </button>
     </form>
 
-    <p class="font-dm-mono text-soft mt-10 text-sm">
+    <p class="font-sans text-soft mt-10 text-sm">
       {info.preferredText}
       <a
         href={`mailto:${email}`}
@@ -258,7 +258,7 @@ const labels = info.labels;
     .err {
       min-height: 1.5em;
       color: var(--ct-err, #dc2626);
-      font-family: "DM Mono", monospace;
+      font-family: "Inter", ui-sans-serif, system-ui, sans-serif;
       font-size: 1rem;
       margin: 0 0 20px;
     }

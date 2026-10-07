@@ -11,8 +11,8 @@
    bg-badge text-badge-ink — never raw hex.
    ============================================================ */
 @theme {
-  /* ── Tipografía ── */
-  --font-dm-mono:                   "DM Mono", monospace;
+  /* ── Tipografía: títulos condensados, resto Inter ── */
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
   --font-fira-sans-extra-condensed: "Fira Sans Extra Condensed", sans-serif;
 
   /* ── Breakpoints ── */
@@ -148,7 +148,7 @@
     font-family: "Fira Sans Extra Condensed", sans-serif;
   }
   :where(:not(h1, h2, h3, h4, h5, h6)) {
-    font-family: "DM Mono", monospace;
+    font-family: "Inter", ui-sans-serif, system-ui, sans-serif;
   }
 
   ::-webkit-scrollbar {
@@ -209,12 +209,48 @@
 
 /* ── Font faces ── */
 @font-face {
-  font-family: "DM Mono";
+  font-family: "Inter";
   font-style: normal;
   font-display: swap;
   font-weight: 400;
-  src: url("@fontsource/dm-mono/files/dm-mono-latin-400-normal.woff2") format("woff2"),
-       url("@fontsource/dm-mono/files/dm-mono-latin-400-normal.woff") format("woff");
+  src: url("@fontsource/inter/files/inter-latin-400-normal.woff2") format("woff2"),
+       url("@fontsource/inter/files/inter-latin-400-normal.woff") format("woff");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA,
+    U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193,
+    U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: "Inter";
+  font-style: normal;
+  font-display: swap;
+  font-weight: 500;
+  src: url("@fontsource/inter/files/inter-latin-500-normal.woff2") format("woff2"),
+       url("@fontsource/inter/files/inter-latin-500-normal.woff") format("woff");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA,
+    U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193,
+    U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: "Inter";
+  font-style: normal;
+  font-display: swap;
+  font-weight: 700;
+  src: url("@fontsource/inter/files/inter-latin-700-normal.woff2") format("woff2"),
+       url("@fontsource/inter/files/inter-latin-700-normal.woff") format("woff");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA,
+    U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193,
+    U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: "Inter";
+  font-style: normal;
+  font-display: swap;
+  font-weight: 800;
+  src: url("@fontsource/inter/files/inter-latin-800-normal.woff2") format("woff2"),
+       url("@fontsource/inter/files/inter-latin-800-normal.woff") format("woff");
   unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA,
     U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193,
     U+2212, U+2215, U+FEFF, U+FFFD;

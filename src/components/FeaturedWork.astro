@@ -14,7 +14,7 @@ const lang = Astro.currentLocale as "es" | "en";
 const t = getTranslations(lang);
 ---
 
-<section class="relative w-full h-dvh flex flex-col items-center bg-surface text-ink overflow-hidden pt-6 md:pt-8">
+<section class="relative w-full h-dvh flex flex-col items-center bg-surface text-ink overflow-hidden pt-6 md:pt-20">
 
   <header class="pt-8 md:pt-10 pb-5 md:pb-8 text-center shrink-0 z-10">
     <h2 class="m-0 font-fira-sans-extra-condensed font-black text-[64px] uppercase tracking-tight leading-none text-ink">
@@ -38,10 +38,10 @@ const t = getTranslations(lang);
       ))}
     </div>
 
-    <div class="absolute bottom-3 md:bottom-5 left-1/2 -translate-x-1/2 bg-badge rounded-full px-5 py-2 z-10 pointer-events-none whitespace-nowrap">
+    <div class="absolute bottom-10 md:bottom-14 left-1/2 -translate-x-1/2 bg-badge rounded-full px-6 md:px-8 py-3 z-10 pointer-events-none whitespace-nowrap">
       <span
         id="fw-badge-text"
-        class="font-dm-mono text-[clamp(0.65rem,1.2vw,0.8rem)] font-bold uppercase tracking-widest text-badge-ink block"
+        class="font-dm-mono text-[clamp(0.8rem,1.6vw,1rem)] font-extrabold uppercase tracking-widest text-badge-ink block"
       >
         {items[0]?.title}
       </span>

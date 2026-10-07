@@ -31,10 +31,17 @@ const t = getTranslations(lang);
   >
     <div id="fw-track">
       {items.map((item, i) => (
-        <div class="fw__card" data-title={item.title} data-index={i}>
+        <button
+          type="button"
+          class="fw__card"
+          data-title={item.title}
+          data-index={i}
+          command="show-modal"
+          commandfor="fw-dialog"
+        >
           <img src={item.src} alt={item.alt ?? item.title} draggable="false" class="w-full h-full object-cover block pointer-events-none select-none" />
           <span class="sr-only">{item.title}</span>
-        </div>
+        </button>
       ))}
     </div>
 
@@ -69,6 +76,38 @@ const t = getTranslations(lang);
       </button>
     </div>
   </div>
+
+  <!-- ── Project dialog (demo) ── -->
+  <dialog id="fw-dialog" aria-labelledby="fw-dlg-title">
+    <div class="relative px-6 py-10 md:px-12 md:py-12">
+      <button
+        type="button"
+        command="close"
+        commandfor="fw-dialog"
+        aria-label={lang === "en" ? "Close" : "Cerrar"}
+        class="absolute top-4 right-4 md:top-5 md:right-5 w-11 h-11 rounded-full bg-badge text-badge-ink flex items-center justify-center hover:scale-105 active:scale-95 transition-transform"
+      >
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" class="w-5 h-5" aria-hidden="true">
+          <path d="M6 6l12 12M18 6L6 18" />
+        </svg>
+      </button>
+      <p class="text-center font-sans text-sm text-soft tracking-wide mb-6 md:mb-8">
+        {lang === "en" ? "Personal Work" : "Trabajo personal"}
+      </p>
+      <img
+        id="fw-dlg-img"
+        src={items[0]?.src}
+        alt={items[0]?.alt ?? items[0]?.title}
+        class="w-full max-h-[52vh] object-cover rounded-2xl block"
+      />
+      <h3
+        id="fw-dlg-title"
+        class="mt-6 font-fira-sans-extra-condensed font-black uppercase tracking-tight leading-none text-center text-[clamp(1.8rem,5vw,3.2rem)]"
+      >
+        {items[0]?.title}
+      </h3>
+    </div>
+  </dialog>
 
 </section>
 
@@ -265,4 +304,68 @@ const t = getTranslations(lang);
   } else {
     init();
   }
+
+  // ── Dialog wiring (una sola vez: sobrevive al re-init del resize) ──
+  const fwStage  = document.getElementById("fw-stage");
+  const fwTrack  = document.getElementById("fw-track");
+  const dialog   = document.getElementById("fw-dialog") as HTMLDialogElement | null;
+  const dlgImg   = document.getElementById("fw-dlg-img") as HTMLImageElement | null;
+  const dlgTitle = document.getElementById("fw-dlg-title");
+  const INVOKER_OK =
+    typeof HTMLButtonElement !== "undefined" && "command" in HTMLButtonElement.prototype;
+
+  let downX = 0, downY = 0;
+  fwStage?.addEventListener("pointerdown", (e: PointerEvent) => {
+    downX = e.clientX;
+    downY = e.clientY;
+  }, { passive: true });
+
+  fwTrack?.addEventListener("click", (e) => {
+    const card = (e.target as HTMLElement).closest(".fw__card");
+    if (!card || !dialog) return;
+    // Si fue drag, no abrir
+    const moved = Math.hypot(e.clientX - downX, e.clientY - downY);
+    if (moved > 8) {
+      e.preventDefault();
+      e.stopPropagation();
+      return;
+    }
+    const img = card.querySelector("img");
+    if (dlgImg && img) {
+      dlgImg.src = img.currentSrc || img.src;
+      dlgImg.alt = img.alt;
+    }
+    if (dlgTitle) dlgTitle.textContent = card.getAttribute("data-title") ?? "";
+    if (!INVOKER_OK) {
+      e.preventDefault();
+      dialog.showModal();
+    }
+  });
+
+  dialog?.addEventListener("click", (e) => {
+    if (e.target === dialog) dialog.close();
+  });
 </script>
+
+<style>
+  #fw-dialog {
+    padding: 0;
+    border: 1px solid var(--line);
+    border-radius: 24px;
+    background: var(--surface);
+    color: var(--ink);
+    width: min(920px, 92vw);
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+
+  #fw-dialog::backdrop {
+    background: rgba(0, 0, 0, 0.55);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+  }
+
+  .fw__card {
+    text-align: left;
+  }
+</style>

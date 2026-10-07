@@ -38,6 +38,7 @@
   /* ── Tokens semánticos (light por defecto = .light) ── */
   --color-surface:    #ffffff;
   --color-ink:        #111111;
+  --color-contrast:   #ffffff;
   --color-soft:       #6b7280;
   --color-muted:      #9ca3af;
   --color-line:       #e5e7eb;
@@ -106,6 +107,7 @@
 
   --color-surface:    #161824;
   --color-ink:        #eceef3;
+  --color-contrast:   #161824;
   --color-soft:       #a3a9bf;
   --color-muted:      #6b7280;
   --color-line:       #3a3f55;
@@ -132,6 +134,7 @@
 
   --color-surface:    transparent;
   --color-ink:        #f2f4fa;
+  --color-contrast:   #101424;
   --color-soft:       #b9c0d8;
   --color-muted:      #8b93ad;
   --color-line:       #2a2f45;

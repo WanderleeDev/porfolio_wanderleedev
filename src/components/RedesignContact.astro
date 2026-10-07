@@ -32,7 +32,7 @@ const labels = info.labels;
     <h2 id="contact-heading" class="sr-only">{info.title}</h2>
 
     <form id="redesign-form" novalidate class="mb-0">
-      <p class="sentence">
+      <p class="sentence capitalize">
         <span class="ln">{info.sentence.start}
           <input
             class="f"
@@ -44,13 +44,18 @@ const labels = info.labels;
           {info.sentence.andNeed}
         </span>
         <span class="ln">
-          <select class="f" name="kind" aria-label={info.aria.kind}>
-            <option>{kinds[0]}</option>
-            <option>{kinds[1]}</option>
-            <option>{kinds[2]}</option>
-            <option>{kinds[3]}</option>
-            <option>{kinds[4]}</option>
-          </select>
+          <span class="sel-wrap">
+            <select class="f" name="kind" aria-label={info.aria.kind}>
+              <option>{kinds[0]}</option>
+              <option>{kinds[1]}</option>
+              <option>{kinds[2]}</option>
+              <option>{kinds[3]}</option>
+              <option>{kinds[4]}</option>
+            </select>
+            <svg class="sel-caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M6 9l6 6 6-6" />
+            </svg>
+          </span>
           {info.sentence.for}
         </span>
         <span class="ln">
@@ -84,11 +89,11 @@ const labels = info.labels;
       </button>
     </form>
 
-    <p class="font-sans text-soft mt-10 text-sm">
+    <p class="font-sans text-soft mt-10 text-sm capitalize">
       {info.preferredText}
       <a
         href={`mailto:${email}`}
-        class="text-ink font-semibold hover:underline"
+        class="text-ink font-semibold hover:underline normal-case"
       >
         {email}
       </a>
@@ -219,11 +224,12 @@ const labels = info.labels;
 
     .ln { display: inline; }
 
-    /* Inputs inline */
+    /* Inputs inline (texto de usuario sin transformar) */
     .f {
       display: inline-block;
       vertical-align: baseline;
       font: inherit;
+      text-transform: none;
       color: var(--ct-acc, #4f46e5);
       background: transparent;
       border: 0;
@@ -240,12 +246,28 @@ const labels = info.labels;
     select.f {
       appearance: none;
       cursor: pointer;
-      padding-right: 0.1em;
+      padding-right: 1.2em;
+    }
+
+    .sel-wrap {
+      position: relative;
+      display: inline-block;
+    }
+
+    .sel-caret {
+      position: absolute;
+      right: 0.1em;
+      top: 50%;
+      translate: 0 -50%;
+      width: 0.9em;
+      height: 0.9em;
+      color: var(--ct-acc, #4f46e5);
+      pointer-events: none;
     }
 
     select.f option {
-      color: var(--c-bg, #161824);
-      background: #fff;
+      color: var(--ink);
+      background: var(--surface);
       font-size: 1rem;
     }
 

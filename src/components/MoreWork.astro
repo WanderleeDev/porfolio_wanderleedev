@@ -234,10 +234,30 @@ const reactTags: VsTag[] = [
       grid-template-columns: 1fr;
       grid-template-rows: 1fr 1fr;
       aspect-ratio: auto;
-      min-height: 60svh;
+      min-height: 80svh;
     }
     .vs-half {
       min-height: 0;
     }
+    /* Fondos apilados: Angular arriba, React abajo, borde compartido */
+    .vs-bg-left {
+      clip-path: polygon(0 0, 100% 0, 100% 44%, 0 56%);
+    }
+    .vs-bg-right {
+      clip-path: polygon(0 56%, 100% 44%, 100% 100%, 0 100%);
+    }
+    /* Sin rayo en mobile: el corte limpio ya divide */
+    .vs-crack {
+      display: none;
+    }
+    /* Tags reubicados por fila (orden: 1-4 Angular arriba, 5-8 React abajo) */
+    .vs-tags .vs-tag:nth-child(1) { left: 16%; top: 10%; }
+    .vs-tags .vs-tag:nth-child(2) { left: 80%; top: 34%; }
+    .vs-tags .vs-tag:nth-child(3) { left: 12%; top: 32%; }
+    .vs-tags .vs-tag:nth-child(4) { left: 76%; top: 10%; }
+    .vs-tags .vs-tag:nth-child(5) { left: 82%; top: 60%; }
+    .vs-tags .vs-tag:nth-child(6) { left: 24%; top: 84%; }
+    .vs-tags .vs-tag:nth-child(7) { left: 78%; top: 86%; }
+    .vs-tags .vs-tag:nth-child(8) { left: 18%; top: 60%; }
   }
 </style>

@@ -147,33 +147,34 @@ const descriptions = journeyT.skillDescriptions;
       },
     });
 
-    // Revelar cada panel al llegar
-    section.querySelectorAll<HTMLElement>(".panel").forEach((panel) => {
-      const items = panel.querySelectorAll<HTMLElement>("h2, p, .tech-item");
-      if (!items.length) return;
-      gsap.from(items, {
-        y: 36,
-        opacity: 0,
-        duration: 0.6,
-        ease: "power3.out",
-        stagger: 0.08,
-        scrollTrigger: {
-          trigger: panel,
-          containerAnimation: run,
-          start: "left 78%",
-          toggleActions: "play none none reverse",
-        },
-      });
-    });
+    // Revelar cada panel al entrar en viewport (no depende del pin)
+    const panels = Array.from(
+      section.querySelectorAll<HTMLElement>(".panel"),
+    );
+    journeyIO?.disconnect();
+    journeyIO = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("is-in");
+            journeyIO?.unobserve(entry.target);
+          }
+        }
+      },
+      { threshold: 0.25 },
+    );
+    panels.forEach((panel) => journeyIO?.observe(panel));
 
     ScrollTrigger.refresh();
   }
 
   // Boot idempotente: funciona en carga inicial y en navegación cliente
   let journeyCtx: gsap.Context | null = null;
+  let journeyIO: IntersectionObserver | null = null;
 
   function bootJourney() {
     journeyCtx?.revert();
+    journeyIO?.disconnect();
     journeyCtx = gsap.context(() => {
       setup();
     });
@@ -219,6 +220,32 @@ const descriptions = journeyT.skillDescriptions;
     .tech-item {
       border-top: 1.5px solid var(--line, #e5e7eb);
     }
+
+    /* Reveal por panel (lo activa IntersectionObserver con .is-in) */
+    .panel h2,
+    .panel p,
+    .panel .tech-item {
+      opacity: 0;
+      translate: 0 24px;
+      transition:
+        opacity 0.6s ease,
+        translate 0.6s ease;
+    }
+
+    .panel.is-in h2,
+    .panel.is-in p,
+    .panel.is-in .tech-item {
+      opacity: 1;
+      translate: 0 0;
+    }
+
+    .panel.is-in p {
+      transition-delay: 0.08s;
+    }
+
+    .panel.is-in .tech-item {
+      transition-delay: 0.16s;
+    }
   }
 
   /* Overrides de theme en utilities */
@@ -232,7 +259,7 @@ const descriptions = journeyT.skillDescriptions;
       padding-inline: 14px;
     }
 
-    /* Fallback sin animación: apila los paneles */
+    /* Sin movimiento: apila los paneles, todo visible, sin animaciones */
     @media (prefers-reduced-motion: reduce) {
       .journey--on {
         height: auto;
@@ -246,6 +273,13 @@ const descriptions = journeyT.skillDescriptions;
       .journey--on .panel {
         width: 100% !important;
         height: auto !important;
+      }
+      .panel h2,
+      .panel p,
+      .panel .tech-item {
+        opacity: 1;
+        translate: none;
+        transition: none;
       }
     }
   }

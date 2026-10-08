@@ -191,6 +191,10 @@
   box-shadow: 4px 4px 0 #0a0a0a;
 }
 
+.brutalist #route-progress {
+  background-color: var(--color-badge);
+}
+
 /* ── Tema pixel: paleta pico-8, esquinas cuadradas, sombra dura ── */
 .pixel {
   color-scheme: dark;

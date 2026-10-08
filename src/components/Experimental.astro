@@ -1,0 +1,85 @@
+---
+import { getTranslations } from "../i18n/utils";
+import Icon from "astro-iconify";
+
+const lang = Astro.currentLocale as "es" | "en";
+const t = getTranslations(lang);
+const skillsT = t("skills");
+const groups = skillsT.list;
+const journeyT = t("journey");
+
+const descriptions = journeyT.skillDescriptions;
+const one =groups[0]
+---
+<div id="entry" class="fixed inset-0 z-1000 grid grid-rows-2 size-full">
+        <div class="entry-row-top bg-red-400 size-full"></div>
+        <figure class="entry-dot size-36 bg-black rounded-full absolute top-2/4 left-2/4 -translate-x-2/4 -translate-y-2/4
+        "></figure>
+        <div class="entry-row-bottom bg-blue-400 size-full"></div>
+</div>
+
+<section class="h-dvh ">
+    <h2
+      class="m-0 font-fira-sans-extra-condensed font-black text-[64px] uppercase tracking-tight leading-none text-ink"
+    >
+      Experimental
+    </h2>
+
+    <div class="grid grid-cols-2 h-full items-center relative">
+        <h3 class="text-6xl">
+            {one.title}
+        </h3>
+        <div class="absolute inset-0 p-8">
+
+        {
+            one.techs.map(({icon, color}) =>  {
+                const t = () => Math.ceil(Math.random() * 100)
+                return 
+                <Icon 
+                    name={icon} 
+                    // class={`size-16 absolute top-[${t()}%] left-2/4 -trasnlate-x-2/4 -trasnlate-y-2/4`} 
+                />
+            })
+        }
+        </div>
+    </div>
+</section>
+
+<style is:global>
+    /* Intro overlay: las filas colapsan a los costados y el overlay se retira */
+    #entry {
+        pointer-events: none;
+        animation: entry-hide 0s 2s forwards;
+    }
+
+    #entry .entry-row-top {
+        transform-origin: left center;
+        animation: entry-row 0.7s ease-in 0.9s both;
+    }
+
+    #entry .entry-row-bottom {
+        transform-origin: right center;
+        animation: entry-row 0.7s ease-in 1s both;
+    }
+
+    #entry .entry-dot {
+        animation: entry-dot 0.5s ease-in 0.7s both;
+    }
+
+    @keyframes entry-row {
+        from { transform: scaleX(1); }
+        to { transform: scaleX(0); }
+    }
+
+    @keyframes entry-dot {
+        to { scale: 0; opacity: 0; }
+    }
+
+    @keyframes entry-hide {
+        to { display: none; visibility: hidden; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        #entry { display: none; }
+    }
+</style>

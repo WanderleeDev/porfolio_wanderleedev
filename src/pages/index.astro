@@ -15,6 +15,7 @@ import RedesignContact from "../components/RedesignContact.astro";
 import RedesignFooter from "../components/RedesignFooter.astro";
 import ThemePicker from "../components/ThemePicker.astro";
 import { getTranslations } from "../i18n/utils";
+import Experimental from "../components/Experimental.astro";
 
 const lang = Astro.currentLocale as "es" | "en";
 const t = getTranslations(lang);
@@ -32,16 +33,17 @@ const projects = t("projects").list;
     <ThemePicker />
     <HeroFan />
     <FeaturedWork
-      items={projects.map((p) => ({
-        title: p.title,
-        src: p.image,
-        alt: p.title,
-        description: p.description,
-        demoUrl: p.demo_url,
-        techs: p.technologies,
-        label: p.label,
-      }))}
+    items={projects.map((p) => ({
+      title: p.title,
+      src: p.image,
+      alt: p.title,
+      description: p.description,
+      demoUrl: p.demo_url,
+      techs: p.technologies,
+      label: p.label,
+    }))}
     />
+    <Experimental />
     <TechJourney />
     <MoreWork />
     <RedesignContact />

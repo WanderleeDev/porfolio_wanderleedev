@@ -33,6 +33,8 @@ const reactTags: VsTag[] = [
 ];
 ---
 
+<div class="vs-scroll">
+<div class="vs-sticky">
 <div class="vs-banner" role="img" aria-label="Angular vs React">
   <!-- Background split: red left, blue right -->
   <div class="vs-bg vs-bg-left" aria-hidden="true"></div>
@@ -73,6 +75,8 @@ const reactTags: VsTag[] = [
     <p class="vs-label">React</p>
   </div>
 </div>
+</div>
+</div>
 
 <script>
   // devicon:react ships a hardcoded fill="#61dafb" on its inner <g>, which beats CSS.
@@ -86,16 +90,32 @@ const reactTags: VsTag[] = [
 </script>
 
 <style>
+  /* Wrapper doble alto: el contenido queda fijo mientras la coreografía avanza */
+  .vs-scroll {
+    position: relative;
+    height: 200dvh;
+    view-timeline-name: --vs-enter;
+    view-timeline-axis: block;
+  }
+
+  .vs-sticky {
+    position: sticky;
+    top: 0;
+    height: 100dvh;
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+  }
+
   .vs-banner {
     position: relative;
     width: 100%;
     aspect-ratio: 2 / 1;
+    max-height: 100dvh;
     overflow: hidden;
     display: grid;
     grid-template-columns: 1fr 1fr;
     perspective: 1200px;
-    view-timeline-name: --vs-enter;
-    view-timeline-axis: block;
     /* Fade casi nulo arriba y abajo — 2%/98% para un despeje prácticamente invisible */
     mask-image: linear-gradient(to bottom, transparent 0, #000 2%, #000 98%, transparent 100%);
     -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 2%, #000 98%, transparent 100%);
@@ -202,12 +222,12 @@ const reactTags: VsTag[] = [
   }
 
   /* ── Entrada coreografiada con scroll-driven animations ──
-     view() del propio banner, rango entry: se re-ejecuta al scrollear.
+     Timeline del wrapper doble (cover): se desarrolla durante el dwell fijo.
      Sin soporte o sin movimiento: todo visible, sin animación. */
   .vs-logo {
     animation: vs-logo-in linear both;
     animation-timeline: --vs-enter;
-    animation-range: entry 0% entry 35%;
+    animation-range: cover 28% cover 38%;
   }
 
   @keyframes vs-logo-in {
@@ -222,7 +242,7 @@ const reactTags: VsTag[] = [
     stroke-dashoffset: 1;
     animation: crack-draw linear both;
     animation-timeline: --vs-enter;
-    animation-range: entry 25% entry 55%;
+    animation-range: cover 36% cover 48%;
   }
 
   @keyframes crack-draw {
@@ -235,14 +255,14 @@ const reactTags: VsTag[] = [
     transform-origin: left center;
     animation: bg-paint linear both;
     animation-timeline: --vs-enter;
-    animation-range: entry 45% entry 75%;
+    animation-range: cover 46% cover 60%;
   }
 
   .vs-bg-right {
     transform-origin: right center;
     animation: bg-paint linear both;
     animation-timeline: --vs-enter;
-    animation-range: entry 45% entry 75%;
+    animation-range: cover 46% cover 60%;
   }
 
   @keyframes bg-paint {
@@ -258,14 +278,14 @@ const reactTags: VsTag[] = [
     animation-timeline: --vs-enter, auto;
   }
 
-  .vs-tags .vs-tag:nth-child(1) { animation-range: entry 55% entry 70%, normal; }
-  .vs-tags .vs-tag:nth-child(2) { animation-range: entry 59% entry 74%, normal; }
-  .vs-tags .vs-tag:nth-child(3) { animation-range: entry 63% entry 78%, normal; }
-  .vs-tags .vs-tag:nth-child(4) { animation-range: entry 67% entry 82%, normal; }
-  .vs-tags .vs-tag:nth-child(5) { animation-range: entry 71% entry 86%, normal; }
-  .vs-tags .vs-tag:nth-child(6) { animation-range: entry 75% entry 90%, normal; }
-  .vs-tags .vs-tag:nth-child(7) { animation-range: entry 79% entry 94%, normal; }
-  .vs-tags .vs-tag:nth-child(8) { animation-range: entry 83% entry 98%, normal; }
+  .vs-tags .vs-tag:nth-child(1) { animation-range: cover 58% cover 68%, normal; }
+  .vs-tags .vs-tag:nth-child(2) { animation-range: cover 60.5% cover 70.5%, normal; }
+  .vs-tags .vs-tag:nth-child(3) { animation-range: cover 63% cover 73%, normal; }
+  .vs-tags .vs-tag:nth-child(4) { animation-range: cover 65.5% cover 75.5%, normal; }
+  .vs-tags .vs-tag:nth-child(5) { animation-range: cover 68% cover 78%, normal; }
+  .vs-tags .vs-tag:nth-child(6) { animation-range: cover 70.5% cover 80.5%, normal; }
+  .vs-tags .vs-tag:nth-child(7) { animation-range: cover 73% cover 83%, normal; }
+  .vs-tags .vs-tag:nth-child(8) { animation-range: cover 75.5% cover 85.5%, normal; }
 
   @keyframes tag-in {
     from {

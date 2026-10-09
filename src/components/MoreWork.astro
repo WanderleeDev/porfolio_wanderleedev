@@ -79,27 +79,6 @@ const reactTags: VsTag[] = [
   // Strip the fill attribute so the brand blue below applies cleanly.
   function bootMoreWork() {
     document.querySelectorAll(".vs-logo-react [fill]").forEach((el) => el.removeAttribute("fill"));
-
-    // Entrada coreografiada: marca JS y observa el banner una vez
-    document.documentElement.classList.add("js");
-    const banner = document.querySelector(".vs-banner");
-    if (!banner || banner.classList.contains("is-in")) return;
-    if (!("IntersectionObserver" in window)) {
-      banner.classList.add("is-in");
-      return;
-    }
-    const io = new IntersectionObserver(
-      (entries) => {
-        for (const entry of entries) {
-          if (entry.isIntersecting) {
-            entry.target.classList.add("is-in");
-            io.disconnect();
-          }
-        }
-      },
-      { threshold: 0.3 },
-    );
-    io.observe(banner);
   }
 
   document.addEventListener("astro:page-load", bootMoreWork);
@@ -115,6 +94,8 @@ const reactTags: VsTag[] = [
     display: grid;
     grid-template-columns: 1fr 1fr;
     perspective: 1200px;
+    view-timeline-name: --vs-enter;
+    view-timeline-axis: block;
     /* Fade casi nulo arriba y abajo — 2%/98% para un despeje prácticamente invisible */
     mask-image: linear-gradient(to bottom, transparent 0, #000 2%, #000 98%, transparent 100%);
     -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 2%, #000 98%, transparent 100%);
@@ -220,13 +201,13 @@ const reactTags: VsTag[] = [
     }
   }
 
-  /* ── Entrada coreografiada (solo con JS: .js + .is-in) ── */
-  .js .vs-logo {
-    opacity: 0;
-  }
-
-  .js .vs-banner.is-in .vs-logo {
-    animation: vs-logo-in 0.7s ease-out 0.1s both;
+  /* ── Entrada coreografiada con scroll-driven animations ──
+     view() del propio banner, rango entry: se re-ejecuta al scrollear.
+     Sin soporte o sin movimiento: todo visible, sin animación. */
+  .vs-logo {
+    animation: vs-logo-in linear both;
+    animation-timeline: --vs-enter;
+    animation-range: entry 0% entry 35%;
   }
 
   @keyframes vs-logo-in {
@@ -236,13 +217,12 @@ const reactTags: VsTag[] = [
     }
   }
 
-  .js .vs-crack .crack-edge {
+  .vs-crack .crack-edge {
     stroke-dasharray: 1;
     stroke-dashoffset: 1;
-  }
-
-  .js .vs-banner.is-in .vs-crack .crack-edge {
-    animation: crack-draw 0.7s ease-in-out 0.55s both;
+    animation: crack-draw linear both;
+    animation-timeline: --vs-enter;
+    animation-range: entry 25% entry 55%;
   }
 
   @keyframes crack-draw {
@@ -251,63 +231,57 @@ const reactTags: VsTag[] = [
     }
   }
 
-  .js .vs-bg-left {
-    transform: scaleX(0);
+  .vs-bg-left {
     transform-origin: left center;
+    animation: bg-paint linear both;
+    animation-timeline: --vs-enter;
+    animation-range: entry 45% entry 75%;
   }
 
-  .js .vs-bg-right {
-    transform: scaleX(0);
+  .vs-bg-right {
     transform-origin: right center;
-  }
-
-  .js .vs-banner.is-in .vs-bg-left,
-  .js .vs-banner.is-in .vs-bg-right {
-    animation: bg-paint 0.7s ease-out 0.9s both;
+    animation: bg-paint linear both;
+    animation-timeline: --vs-enter;
+    animation-range: entry 45% entry 75%;
   }
 
   @keyframes bg-paint {
-    to {
-      transform: scaleX(1);
+    from {
+      transform: scaleX(0);
     }
   }
 
-  .js .vs-tag {
-    opacity: 0;
-    scale: 0.8;
-    transition:
-      opacity 0.5s ease-out,
-      scale 0.5s ease-out;
+  .vs-tag {
+    animation:
+      tag-in linear both,
+      vs-drift 8s ease-in-out infinite alternate;
+    animation-timeline: --vs-enter, auto;
   }
 
-  .js .vs-banner.is-in .vs-tag {
-    opacity: 1;
-    scale: 1;
-  }
+  .vs-tags .vs-tag:nth-child(1) { animation-range: entry 55% entry 70%, normal; }
+  .vs-tags .vs-tag:nth-child(2) { animation-range: entry 59% entry 74%, normal; }
+  .vs-tags .vs-tag:nth-child(3) { animation-range: entry 63% entry 78%, normal; }
+  .vs-tags .vs-tag:nth-child(4) { animation-range: entry 67% entry 82%, normal; }
+  .vs-tags .vs-tag:nth-child(5) { animation-range: entry 71% entry 86%, normal; }
+  .vs-tags .vs-tag:nth-child(6) { animation-range: entry 75% entry 90%, normal; }
+  .vs-tags .vs-tag:nth-child(7) { animation-range: entry 79% entry 94%, normal; }
+  .vs-tags .vs-tag:nth-child(8) { animation-range: entry 83% entry 98%, normal; }
 
-  .js .vs-banner.is-in .vs-tag:nth-child(1) { transition-delay: 1.25s; }
-  .js .vs-banner.is-in .vs-tag:nth-child(2) { transition-delay: 1.34s; }
-  .js .vs-banner.is-in .vs-tag:nth-child(3) { transition-delay: 1.43s; }
-  .js .vs-banner.is-in .vs-tag:nth-child(4) { transition-delay: 1.52s; }
-  .js .vs-banner.is-in .vs-tag:nth-child(5) { transition-delay: 1.61s; }
-  .js .vs-banner.is-in .vs-tag:nth-child(6) { transition-delay: 1.7s; }
-  .js .vs-banner.is-in .vs-tag:nth-child(7) { transition-delay: 1.79s; }
-  .js .vs-banner.is-in .vs-tag:nth-child(8) { transition-delay: 1.88s; }
+  @keyframes tag-in {
+    from {
+      opacity: 0;
+      scale: 0.8;
+    }
+  }
 
   @media (prefers-reduced-motion: reduce) {
-    .js .vs-logo,
-    .js .vs-tag {
-      opacity: 1;
-      scale: 1;
+    .vs-logo,
+    .vs-tag,
+    .vs-bg-left,
+    .vs-bg-right {
       animation: none;
     }
-    .js .vs-crack .crack-edge {
-      stroke-dashoffset: 0;
-      animation: none;
-    }
-    .js .vs-bg-left,
-    .js .vs-bg-right {
-      transform: none;
+    .vs-crack .crack-edge {
       animation: none;
     }
   }

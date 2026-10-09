@@ -44,7 +44,7 @@ const reactTags: VsTag[] = [
   <svg class="vs-crack" viewBox="0 0 1200 600" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
     <path
       class="crack-edge"
-      d="M650 0 L575 300 L643 300 L565 600"
+      d="M660 -20 L575 300 L643 300 L555 620"
       pathLength="1"
       fill="none"
       stroke="#fff"
@@ -224,16 +224,31 @@ const reactTags: VsTag[] = [
   /* ── Entrada coreografiada con scroll-driven animations ──
      Timeline del wrapper doble (cover): se desarrolla durante el dwell fijo.
      Sin soporte o sin movimiento: todo visible, sin animación. */
-  .vs-logo {
-    animation: vs-logo-in linear both;
+  .vs-half:not(.vs-half-right) .vs-logo {
+    animation: vs-logo-top linear both;
     animation-timeline: --vs-enter;
     animation-range: cover 28% cover 38%;
   }
 
-  @keyframes vs-logo-in {
+  .vs-half-right .vs-logo {
+    animation: vs-logo-bottom linear both;
+    animation-timeline: --vs-enter;
+    animation-range: cover 28% cover 38%;
+  }
+
+  @keyframes vs-logo-top {
     from {
       opacity: 0;
-      scale: 0.85;
+      translate: 0 -48px;
+      scale: 0.9;
+    }
+  }
+
+  @keyframes vs-logo-bottom {
+    from {
+      opacity: 0;
+      translate: 0 48px;
+      scale: 0.9;
     }
   }
 
@@ -254,15 +269,15 @@ const reactTags: VsTag[] = [
   .vs-bg-left {
     transform-origin: left center;
     animation: bg-paint linear both;
-    animation-timeline: --vs-enter;
-    animation-range: cover 46% cover 60%;
+    animation-timeline: view();
+    animation-range: entry 0% entry 100%;
   }
 
   .vs-bg-right {
     transform-origin: right center;
     animation: bg-paint linear both;
-    animation-timeline: --vs-enter;
-    animation-range: cover 46% cover 60%;
+    animation-timeline: view();
+    animation-range: entry 0% entry 100%;
   }
 
   @keyframes bg-paint {

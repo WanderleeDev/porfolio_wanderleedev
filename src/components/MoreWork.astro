@@ -43,6 +43,7 @@ const reactTags: VsTag[] = [
     <path
       class="crack-edge"
       d="M650 0 L575 300 L643 300 L565 600"
+      pathLength="1"
       fill="none"
       stroke="#fff"
       stroke-width="8"
@@ -78,6 +79,27 @@ const reactTags: VsTag[] = [
   // Strip the fill attribute so the brand blue below applies cleanly.
   function bootMoreWork() {
     document.querySelectorAll(".vs-logo-react [fill]").forEach((el) => el.removeAttribute("fill"));
+
+    // Entrada coreografiada: marca JS y observa el banner una vez
+    document.documentElement.classList.add("js");
+    const banner = document.querySelector(".vs-banner");
+    if (!banner || banner.classList.contains("is-in")) return;
+    if (!("IntersectionObserver" in window)) {
+      banner.classList.add("is-in");
+      return;
+    }
+    const io = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("is-in");
+            io.disconnect();
+          }
+        }
+      },
+      { threshold: 0.3 },
+    );
+    io.observe(banner);
   }
 
   document.addEventListener("astro:page-load", bootMoreWork);
@@ -194,6 +216,98 @@ const reactTags: VsTag[] = [
 
   @media (prefers-reduced-motion: reduce) {
     .vs-tag {
+      animation: none;
+    }
+  }
+
+  /* ── Entrada coreografiada (solo con JS: .js + .is-in) ── */
+  .js .vs-logo {
+    opacity: 0;
+  }
+
+  .js .vs-banner.is-in .vs-logo {
+    animation: vs-logo-in 0.7s ease-out 0.1s both;
+  }
+
+  @keyframes vs-logo-in {
+    from {
+      opacity: 0;
+      scale: 0.85;
+    }
+  }
+
+  .js .vs-crack .crack-edge {
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+  }
+
+  .js .vs-banner.is-in .vs-crack .crack-edge {
+    animation: crack-draw 0.7s ease-in-out 0.55s both;
+  }
+
+  @keyframes crack-draw {
+    to {
+      stroke-dashoffset: 0;
+    }
+  }
+
+  .js .vs-bg-left {
+    transform: scaleX(0);
+    transform-origin: left center;
+  }
+
+  .js .vs-bg-right {
+    transform: scaleX(0);
+    transform-origin: right center;
+  }
+
+  .js .vs-banner.is-in .vs-bg-left,
+  .js .vs-banner.is-in .vs-bg-right {
+    animation: bg-paint 0.7s ease-out 0.9s both;
+  }
+
+  @keyframes bg-paint {
+    to {
+      transform: scaleX(1);
+    }
+  }
+
+  .js .vs-tag {
+    opacity: 0;
+    scale: 0.8;
+    transition:
+      opacity 0.5s ease-out,
+      scale 0.5s ease-out;
+  }
+
+  .js .vs-banner.is-in .vs-tag {
+    opacity: 1;
+    scale: 1;
+  }
+
+  .js .vs-banner.is-in .vs-tag:nth-child(1) { transition-delay: 1.25s; }
+  .js .vs-banner.is-in .vs-tag:nth-child(2) { transition-delay: 1.34s; }
+  .js .vs-banner.is-in .vs-tag:nth-child(3) { transition-delay: 1.43s; }
+  .js .vs-banner.is-in .vs-tag:nth-child(4) { transition-delay: 1.52s; }
+  .js .vs-banner.is-in .vs-tag:nth-child(5) { transition-delay: 1.61s; }
+  .js .vs-banner.is-in .vs-tag:nth-child(6) { transition-delay: 1.7s; }
+  .js .vs-banner.is-in .vs-tag:nth-child(7) { transition-delay: 1.79s; }
+  .js .vs-banner.is-in .vs-tag:nth-child(8) { transition-delay: 1.88s; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .js .vs-logo,
+    .js .vs-tag {
+      opacity: 1;
+      scale: 1;
+      animation: none;
+    }
+    .js .vs-crack .crack-edge {
+      stroke-dashoffset: 0;
+      animation: none;
+    }
+    .js .vs-bg-left,
+    .js .vs-bg-right {
+      transform: none;
       animation: none;
     }
   }

@@ -1,8 +1,5 @@
 ---
-/**
- * Featured Work — GSAP horizontal carousel de proyectos.
- * Scroll horizontal con inertia y clones para loop infinito.
- */
+import Icon from "astro-iconify";
 import { getTranslations } from "../i18n/utils";
 
 interface Item {
@@ -15,28 +12,33 @@ interface Item {
   label?: string;
 }
 
-interface Props {
-  items: Item[];
-}
+const { items } = Astro.props as { items: Item[] };
+const lang = Astro.currentLocale === "en" ? "en" : "es";
+const { title, subtitle, prev, next, close, personal, demo } = getTranslations(lang)("featuredWork");
+const pad = (n: number) => String(n).padStart(2, "0");
+const L = { prev, next, close, personal, demo };
 
-const { items } = Astro.props;
-const lang = Astro.currentLocale as "es" | "en";
-const t = getTranslations(lang);
+const btn =
+  "flex items-center justify-center rounded-full bg-badge text-badge-ink hover:scale-105 active:scale-95 transition-transform";
+const chip =
+  "font-sans text-[0.7rem] font-bold uppercase tracking-widest bg-badge text-badge-ink rounded-full px-3 py-1";
+const icon = "w-5 h-5";
 ---
 
 <section
+  data-fw
   class="relative w-full h-dvh flex flex-col items-center bg-surface text-ink overflow-hidden pt-6 md:pt-20"
 >
   <header class="pt-8 md:pt-10 pb-5 md:pb-8 text-center shrink-0 z-10">
     <h2
-      class="m-0 font-fira-sans-extra-condensed font-black text-[64px] uppercase tracking-tight leading-none text-ink"
+      class="m-0 font-fira-sans-extra-condensed font-black text-[64px] uppercase tracking-tight leading-none"
     >
-      {t("featuredWork").title}
+      {title}
     </h2>
     <p
       class="mt-1.5 font-sans text-[clamp(0.7rem,1.4vw,0.9rem)] text-muted tracking-wide capitalize"
     >
-      {t("featuredWork").subtitle}
+      {subtitle}
     </p>
   </header>
 
@@ -44,28 +46,23 @@ const t = getTranslations(lang);
     id="fw-stage"
     class="relative flex-1 w-full overflow-hidden flex items-center justify-center cursor-grab active:cursor-grabbing"
   >
-    <div id="fw-track">
+    <div id="fw-track" class="absolute top-0 left-0">
       {
         items.map((item, i) => (
           <button
             type="button"
-            class="fw__card"
+            class="fw__card absolute top-0 left-0 rounded-2xl overflow-hidden text-left origin-[50%_100%] will-change-transform"
             data-title={item.title}
-            data-index={i}
-            data-desc={item.description ?? ""}
-            data-demo={item.demoUrl ?? ""}
-            data-label={item.label ?? ""}
-            data-techs={(item.techs ?? []).join(",")}
             command="show-modal"
-            commandfor="fw-dialog"
+            commandfor={`fw-dlg-${i}`}
           >
             <img
               src={item.src}
               alt={item.alt ?? item.title}
               draggable="false"
-              class="w-full h-full object-cover block pointer-events-none select-none"
               loading="lazy"
               decoding="async"
+              class="w-full h-full object-cover block pointer-events-none select-none"
             />
             <span class="sr-only">{item.title}</span>
           </button>
@@ -79,274 +76,208 @@ const t = getTranslations(lang);
       <button
         id="fw-prev"
         type="button"
-        aria-label={lang === "en" ? "Previous project" : "Proyecto anterior"}
-        class="pointer-events-auto w-10 h-10 md:w-11 md:h-11 rounded-full bg-badge text-badge-ink flex items-center justify-center hover:scale-105 active:scale-95 transition-transform"
+        aria-label={L.prev}
+        class={`${btn} pointer-events-auto w-10 h-10 md:w-11 md:h-11`}
       >
-        <svg
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2.5"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          class="w-5 h-5"
-          aria-hidden="true"
-        >
-          <path d="M15 18l-6-6 6-6"></path>
-        </svg>
+        <Icon name="lucide:chevron-left" class={icon} aria-hidden="true" />
       </button>
-      <div
-        class="bg-badge rounded-full px-6 md:px-8 py-3 w-60 md:w-72 overflow-hidden"
-      >
+
+      <div class="bg-badge rounded-full px-6 md:px-8 py-3 w-60 md:w-72 overflow-hidden">
         <span
-          id="fw-badge-text"
+          id="fw-badge"
           class="font-sans text-[clamp(0.8rem,1.6vw,1rem)] font-extrabold uppercase tracking-widest text-badge-ink block text-center truncate"
         >
           {items[0]?.title}
         </span>
       </div>
+
       <button
         id="fw-next"
         type="button"
-        aria-label={lang === "en" ? "Next project" : "Proyecto siguiente"}
-        class="pointer-events-auto w-10 h-10 md:w-11 md:h-11 rounded-full bg-badge text-badge-ink flex items-center justify-center hover:scale-105 active:scale-95 transition-transform"
+        aria-label={L.next}
+        class={`${btn} pointer-events-auto w-10 h-10 md:w-11 md:h-11`}
       >
-        <svg
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2.5"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          class="w-5 h-5"
-          aria-hidden="true"
-        >
-          <path d="M9 18l6-6-6-6"></path>
-        </svg>
+        <Icon name="lucide:chevron-right" class={icon} aria-hidden="true" />
       </button>
     </div>
   </div>
 
-  <!-- ── Project dialog (demo) ── -->
-  <dialog
-    id="fw-dialog"
-    aria-labelledby="fw-dlg-title"
-    class="starting:backdrop:opacity-0 backdrop:transition-all backdrop:duration-150 backdrop:ease-in  starting:scale-0 transition-all delay-150  duration-1000 m-auto max-h-[90vh] w-[min(1020px,94vw)] overflow-y-auto rounded-3xl border border-line bg-surface p-0 text-ink backdrop:bg-[rgba(0,0,0,0.55)] backdrop:backdrop-blur-[6px]  select-none ease-out-elastic"
-  >
-    <div class="relative p-5 md:p-8 ">
-      <button
-        type="button"
-        command="close"
-        commandfor="fw-dialog"
-        aria-label={lang === "en" ? "Close" : "Cerrar"}
-        class="absolute top-4 right-4 md:top-5 md:right-5 z-10 w-11 h-11 rounded-full bg-badge text-badge-ink flex items-center justify-center hover:scale-105 active:scale-95 transition-transform"
+  {
+    items.map((item, i) => (
+      <dialog
+        id={`fw-dlg-${i}`}
+        aria-labelledby={`fw-dlg-${i}-title`}
+        closedby="any"
+        class="m-auto max-h-[90vh] w-[min(1020px,94vw)] overflow-y-auto rounded-3xl border border-line bg-surface p-0 text-ink select-none transition-all duration-1000 delay-150 ease-out-elastic starting:scale-0 backdrop:bg-[rgba(0,0,0,0.55)] backdrop:backdrop-blur-[6px] backdrop:transition-all backdrop:duration-150 starting:backdrop:opacity-0"
       >
-        <svg
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2"
-          stroke-linecap="round"
-          class="w-5 h-5"
-          aria-hidden="true"
-        >
-          <path d="M6 6l12 12M18 6L6 18"></path>
-        </svg>
-      </button>
-      <div
-        class="grid gap-6 md:gap-8 md:grid-cols-[1.15fr_1fr] md:items-center"
-      >
-        <img
-          id="fw-dlg-img"
-          src={items[0]?.src}
-          alt={items[0]?.alt ?? items[0]?.title}
-          class="w-full h-64 md:h-[58vh] object-cover rounded-2xl block"
-          loading="lazy"
-          decoding="async"
-        />
-        <div class="md:pr-2">
-          <p
-            class="flex items-baseline justify-between gap-4 font-sans text-xs font-bold uppercase tracking-[0.2em] text-soft"
+        <div class="relative p-5 md:p-8">
+          <button
+            type="button"
+            command="close"
+            commandfor={`fw-dlg-${i}`}
+            aria-label={L.close}
+            class={`${btn} absolute top-4 right-4 md:top-5 md:right-5 z-10 w-11 h-11`}
           >
-            <span>{lang === "en" ? "Personal Work" : "Trabajo personal"}</span>
-            <span id="fw-dlg-count" class="text-muted tabular-nums"
-              >01 / 04</span
-            >
-          </p>
-          <h3
-            id="fw-dlg-title"
-            class="mt-3 font-fira-sans-extra-condensed font-black uppercase tracking-tight leading-[0.95] text-[clamp(2rem,5vw,3.4rem)]"
-          >
-            {items[0]?.title}
-          </h3>
-          <p
-            id="fw-dlg-desc"
-            class="mt-4 font-sans text-soft text-[clamp(0.9rem,1.8vw,1.02rem)] leading-relaxed capitalize"
-          >
-            {items[0]?.description}
-          </p>
-          <div id="fw-dlg-techs" class="mt-5 flex flex-wrap gap-2">
-            {
-              (items[0]?.techs ?? []).map((t) => (
-                <span class="font-sans text-[0.7rem] font-bold uppercase tracking-widest bg-badge text-badge-ink rounded-full px-3 py-1">
-                  {t}
+            <Icon name="lucide:x" class={icon} aria-hidden="true" />
+          </button>
+
+          <div class="grid gap-6 md:gap-8 md:grid-cols-[1.15fr_1fr] md:items-center">
+            <img
+              src={item.src}
+              alt={item.alt ?? item.title}
+              loading="lazy"
+              decoding="async"
+              class="w-full h-64 md:h-[58vh] object-cover rounded-2xl block"
+            />
+
+            <div class="md:pr-2">
+              <p class="flex items-baseline justify-between gap-4 font-sans text-xs font-bold uppercase tracking-[0.2em] text-soft">
+                <span>{L.personal}</span>
+                <span class="text-muted tabular-nums">
+                  {pad(i + 1)} / {pad(items.length)}
                 </span>
-              ))
-            }
+              </p>
+
+              <h3
+                id={`fw-dlg-${i}-title`}
+                class="mt-3 font-fira-sans-extra-condensed font-black uppercase tracking-tight leading-[0.95] text-[clamp(2rem,5vw,3.4rem)]"
+              >
+                {item.title}
+              </h3>
+
+              {item.description && (
+                <p class="mt-4 font-sans text-soft text-[clamp(0.9rem,1.8vw,1.02rem)] leading-relaxed capitalize">
+                  {item.description}
+                </p>
+              )}
+
+              {item.techs?.length ? (
+                <div class="mt-5 flex flex-wrap gap-2">
+                  {item.techs.map((tech) => (
+                    <span class={chip}>{tech}</span>
+                  ))}
+                </div>
+              ) : null}
+
+              {item.demoUrl && (
+                <a
+                  href={item.demoUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="mt-7 inline-flex items-center gap-2 font-sans font-bold text-[0.95rem] text-ink hover:gap-3 transition-all"
+                >
+                  <span>{item.label ?? L.demo}</span>
+                  <Icon name="lucide:arrow-right" class="w-4 h-4" aria-hidden="true" />
+                </a>
+              )}
+            </div>
           </div>
-          <a
-            id="fw-dlg-demo"
-            href={items[0]?.demoUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            class="mt-7 inline-flex items-center gap-2 font-sans font-bold text-[0.95rem] text-ink hover:gap-3 transition-all"
-          >
-            <span id="fw-dlg-demo-label">{items[0]?.label}</span>
-            <svg
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2.5"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              class="w-4 h-4"
-              aria-hidden="true"
-            >
-              <path d="M5 12h14M13 6l6 6-6 6"></path>
-            </svg>
-          </a>
         </div>
-      </div>
-    </div>
-  </dialog>
+      </dialog>
+    ))
+  }
 </section>
 
 <script>
   import gsap from "gsap";
   import { Draggable } from "gsap/Draggable";
   import { InertiaPlugin } from "gsap/InertiaPlugin";
+  import { $ } from "../utils/selectors";
+
   gsap.registerPlugin(Draggable, InertiaPlugin);
 
-  const INVOKER_OK =
-    typeof HTMLButtonElement !== "undefined" &&
-    "command" in HTMLButtonElement.prototype;
+  const SIDE_ROT = 14;
+  const SIDE_SCALE = 0.82;
+  const SIDE_DROP = 0.06;
+  const SPREAD = 1.2;
+  const COPIES = 3;
+  const CLICK_TOLERANCE = 8;
 
-  let fwDrag: Draggable | null = null;
-  let fwResizeTimer: ReturnType<typeof setTimeout>;
-  let downX = 0,
-    downY = 0;
+  let cleanup: (() => void) | null = null;
 
-  function teardownFw() {
-    fwDrag?.kill();
-    fwDrag = null;
-    const track = document.getElementById("fw-track");
-    const total = Number(track?.dataset.total ?? 0);
-    if (track && total > 0) {
-      Array.from(track.querySelectorAll(".fw__card"))
-        .slice(total)
-        .forEach((c) => c.remove());
-      gsap.set(track, { clearProps: "all" });
-    }
-  }
+  function init() {
+    cleanup?.();
 
-  function initFw() {
-    const stage = document.getElementById("fw-stage");
-    const track = document.getElementById("fw-track");
-    const badge = document.getElementById("fw-badge-text");
-    if (!stage || !track) return;
+    const root = $<HTMLElement>("[data-fw]");
+    if (!root) return;
 
-    const origCards = Array.from(
-      track.querySelectorAll('.fw__card:not([aria-hidden="true"])'),
-    );
-    const N = origCards.length;
-    if (N === 0) return;
-    track.dataset.total = String(N);
+    // Búsquedas acotadas al componente
+    const q = gsap.utils.selector(root);
+    const stage = q("#fw-stage")[0] as HTMLElement;
+    const track = q("#fw-track")[0] as HTMLElement;
+    const badge = q("#fw-badge")[0] as HTMLElement;
+    const prev = q("#fw-prev")[0] as HTMLElement;
+    const next = q("#fw-next")[0] as HTMLElement;
 
-    const vw = stage.offsetWidth;
-    const vh = stage.offsetHeight;
-    const isMobile = vw < 640;
-    const isTablet = vw >= 640 && vw < 1024;
+    const originals = gsap.utils.toArray<HTMLElement>(".fw__card", track);
+    const N = originals.length;
+    if (!N) return;
 
-    const CARD_W = isMobile
-      ? Math.min(Math.round(vw * 0.72), 340)
-      : isTablet
-        ? Math.min(Math.round(vw * 0.58), 420)
-        : Math.min(Math.round(vw * 0.48), 544);
-
-    const CARD_H = Math.min(Math.round(CARD_W * 1.05), Math.round(vh * 0.7));
-    const GAP = isMobile
-      ? Math.round(vw * 0.1)
-      : isTablet
-        ? Math.round(vw * 0.12)
-        : Math.round(vw * 0.14);
-    const STEP = CARD_W + GAP;
-    const SIDE_ROT = 14;
-    const SIDE_SCALE = 0.82;
-    const SIDE_Y = Math.round(CARD_H * 0.06);
-
-    // Triplicar para loop infinito
-    for (let c = 0; c < 2; c++) {
-      origCards.forEach((card) => {
-        const clone = card.cloneNode(true);
+    // Clones para loop infinito. Conservan commandfor, así que abren el mismo dialog.
+    for (let c = 1; c < COPIES; c++) {
+      originals.forEach((card) => {
+        const clone = card.cloneNode(true) as HTMLElement;
         clone.setAttribute("aria-hidden", "true");
+        clone.tabIndex = -1;
         track.appendChild(clone);
       });
     }
-    const allCards = Array.from(track.querySelectorAll(".fw__card"));
+    const cards = gsap.utils.toArray<HTMLElement>(".fw__card", track);
 
-    track.style.cssText = `position:absolute;top:0;left:0;height:${CARD_H}px;`;
-    allCards.forEach((card, i) => {
-      card.style.cssText = `
-        position:absolute;
-        width:${CARD_W}px;
-        height:${CARD_H}px;
-        left:${i * STEP}px;
-        top:0;
-        border-radius:16px;
-        overflow:hidden;
-        will-change:transform;
-        transform-origin:50% 100%;
-      `;
+    // Geometría responsive
+    const vw = stage.clientWidth;
+    const vh = stage.clientHeight;
+    const isMobile = vw < 640;
+    const isTablet = vw < 1024;
+    const cardW = Math.min(
+      Math.round(vw * (isMobile ? 0.72 : isTablet ? 0.58 : 0.48)),
+      isMobile ? 340 : isTablet ? 420 : 544,
+    );
+    const cardH = Math.min(Math.round(cardW * 1.05), Math.round(vh * 0.7));
+    const step = cardW + Math.round(vw * (isMobile ? 0.1 : isTablet ? 0.12 : 0.14));
+    const loop = N * step;
+    const baseX = vw / 2 - cardW / 2 - loop;
+    const wrap = gsap.utils.wrap(baseX - loop / 2, baseX + loop / 2);
+
+    track.style.height = `${cardH}px`;
+    cards.forEach((card, i) => {
+      card.style.width = `${cardW}px`;
+      card.style.height = `${cardH}px`;
+      card.style.left = `${i * step}px`;
     });
 
-    const centerX = vw / 2 - CARD_W / 2;
-    const baseX = -(N * STEP) + centerX;
-    gsap.set(track, { x: baseX });
+    const x = () => gsap.getProperty(track, "x") as number;
+    const offset = (i: number, cx: number) => i * step + cx + cardW / 2 - vw / 2;
 
-    function update(tx) {
-      const cx = vw / 2;
-      let closestDist = Infinity;
-      let closestIdx = 0;
+    function render() {
+      const cx = x();
+      let closest = 0;
+      let minDist = Infinity;
 
-      allCards.forEach((card, i) => {
-        const cardCx = i * STEP + tx + CARD_W / 2;
-        const dist = cardCx - cx;
-        const norm = dist / (STEP * 1.2);
-        const abs = Math.min(Math.abs(norm), 1.5);
-        const clamped = Math.max(-1, Math.min(1, norm));
-
+      cards.forEach((card, i) => {
+        const d = offset(i, cx);
+        const norm = d / (step * SPREAD);
+        const abs = gsap.utils.clamp(0, 1.5, Math.abs(norm));
+        if (Math.abs(d) < minDist) {
+          minDist = Math.abs(d);
+          closest = i;
+        }
         gsap.set(card, {
-          rotation: clamped * SIDE_ROT,
+          rotation: gsap.utils.clamp(-1, 1, norm) * SIDE_ROT,
           scale: 1 - abs * (1 - SIDE_SCALE),
-          y: abs * SIDE_Y,
-          opacity: Math.max(0, 1 - abs * 0.5),
-          transformOrigin: "50% 100%",
+          y: abs * cardH * SIDE_DROP,
+          opacity: 1 - abs * 0.5,
           zIndex: Math.round(100 - abs * 80),
         });
-
-        if (Math.abs(dist) < closestDist) {
-          closestDist = Math.abs(dist);
-          closestIdx = i % N;
-        }
       });
 
-      const title = origCards[closestIdx]?.dataset.title ?? "";
+      const title = originals[closest % N].dataset.title ?? "";
       if (badge.textContent !== title) {
         gsap.to(badge, {
           opacity: 0,
           y: -6,
           duration: 0.12,
-          onComplete() {
+          onComplete: () => {
             badge.textContent = title;
             gsap.to(badge, { opacity: 1, y: 0, duration: 0.15 });
           },
@@ -354,208 +285,90 @@ const t = getTranslations(lang);
       }
     }
 
-    update(baseX);
+    function goTo(from: number, dir = 0, duration = 0.3, ease = "power2.out") {
+      const cx = wrap(from);
+      const best = cards.reduce(
+        (bestI, _, i) =>
+          Math.abs(offset(i, cx)) < Math.abs(offset(bestI, cx)) ? i : bestI,
+        0,
+      );
+      const target = dir
+        ? vw / 2 - ((best + dir) * step + cardW / 2)
+        : cx - offset(best, cx);
 
-    const loopRange = N * STEP;
-    function wrap(x) {
-      const min = baseX - loopRange / 2;
-      const max = baseX + loopRange / 2;
-      let nx = x;
-      while (nx < min) nx += loopRange;
-      while (nx > max) nx -= loopRange;
-      return nx;
-    }
-
-    function snapNearest(fromX) {
-      const cx = vw / 2;
-      let bestX = fromX,
-        bestD = Infinity;
-      allCards.forEach((card, i) => {
-        const cardCx = i * STEP + fromX + CARD_W / 2;
-        const d = Math.abs(cardCx - cx);
-        if (d < bestD) {
-          bestD = d;
-          bestX = fromX - (cardCx - cx);
-        }
-      });
-      const snapped = wrap(bestX);
       gsap.to(track, {
-        x: snapped,
-        duration: 0.3,
-        ease: "power2.out",
-        onUpdate() {
-          update(gsap.getProperty(track, "x"));
-        },
-      });
-    }
-
-    let throwing = false;
-
-    // ── Flechas prev/next: step relativo a la card centrada ──
-    function stepTo(dir) {
-      const cx = vw / 2;
-      const fromX = wrap(gsap.getProperty(track, "x"));
-      let bestI = 0,
-        bestD = Infinity;
-      allCards.forEach((card, i) => {
-        const d = Math.abs(i * STEP + fromX + CARD_W / 2 - cx);
-        if (d < bestD) {
-          bestD = d;
-          bestI = i;
-        }
-      });
-      const target = wrap(cx - ((bestI + dir) * STEP + CARD_W / 2));
-      gsap.to(track, {
-        x: target,
-        duration: 0.45,
-        ease: "power3.out",
+        x: wrap(target),
+        duration,
+        ease,
         overwrite: true,
-        onUpdate() {
-          update(gsap.getProperty(track, "x"));
-        },
+        onUpdate: render,
       });
     }
 
-    const prevBtn = document.getElementById("fw-prev");
-    const nextBtn = document.getElementById("fw-next");
-    if (prevBtn) prevBtn.onclick = () => stepTo(-1);
-    if (nextBtn) nextBtn.onclick = () => stepTo(1);
+    gsap.set(track, { x: baseX });
+    render();
 
-    const [freshDrag] = Draggable.create(track, {
+    let dragged = false;
+
+    const [drag] = Draggable.create(track, {
       type: "x",
       inertia: true,
       cursor: "grab",
       activeCursor: "grabbing",
+      onPress() {
+        dragged = false;
+      },
       onDrag() {
-        update(gsap.getProperty(track, "x"));
+        if (Math.abs(this.x - this.startX) > CLICK_TOLERANCE) dragged = true;
+        render();
       },
       onThrowUpdate() {
-        throwing = true;
-        const raw = gsap.getProperty(track, "x");
-        const wrapped = wrap(raw);
-        if (Math.abs(wrapped - raw) > 0.5) gsap.set(track, { x: wrapped });
-        update(gsap.getProperty(track, "x"));
+        const wrapped = wrap(x());
+        if (Math.abs(wrapped - x()) > 0.5) gsap.set(track, { x: wrapped });
+        render();
       },
-      onThrowComplete() {
-        throwing = false;
-        snapNearest(wrap(gsap.getProperty(track, "x")));
-      },
-      onDragEnd() {
+      onThrowComplete: () => goTo(x()),
+      onDragEnd: () =>
         requestAnimationFrame(() => {
-          if (!throwing) snapNearest(wrap(gsap.getProperty(track, "x")));
-        });
-      },
+          if (!gsap.isTweening(track)) goTo(x());
+        }),
     });
-    fwDrag = freshDrag;
+
+    const onTrackClick = (e: MouseEvent) => {
+      if (dragged) e.preventDefault();
+      dragged = false;
+    };
+    track.addEventListener("click", onTrackClick);
+
+    const onPrev = () => goTo(x(), -1, 0.45, "power3.out");
+    const onNext = () => goTo(x(), 1, 0.45, "power3.out");
+    prev.addEventListener("click", onPrev);
+    next.addEventListener("click", onNext);
+
+    const initialW = vw;
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    const onResize = () => {
+      clearTimeout(timer);
+      timer = setTimeout(() => {
+        if (stage.clientWidth !== initialW) init();
+      }, 200);
+    };
+    window.addEventListener("resize", onResize, { passive: true });
+
+    cleanup = () => {
+      clearTimeout(timer);
+      drag.kill();
+      gsap.killTweensOf([track, badge, ...cards]);
+      prev.removeEventListener("click", onPrev);
+      next.removeEventListener("click", onNext);
+      track.removeEventListener("click", onTrackClick);
+      window.removeEventListener("resize", onResize);
+      cards.slice(N).forEach((c) => c.remove());
+      cleanup = null;
+    };
   }
 
-  function wireFw() {
-    const stage = document.getElementById("fw-stage");
-    const track = document.getElementById("fw-track");
-    const dialog = document.getElementById(
-      "fw-dialog",
-    ) as HTMLDialogElement | null;
-    const dlgImg = document.getElementById(
-      "fw-dlg-img",
-    ) as HTMLImageElement | null;
-    const dlgTitle = document.getElementById("fw-dlg-title");
-    const dlgDesc = document.getElementById("fw-dlg-desc");
-    const dlgCount = document.getElementById("fw-dlg-count");
-    const dlgTechs = document.getElementById("fw-dlg-techs");
-    const dlgDemo = document.getElementById(
-      "fw-dlg-demo",
-    ) as HTMLAnchorElement | null;
-    const dlgDemoLabel = document.getElementById("fw-dlg-demo-label");
-
-    if (stage) {
-      stage.onpointerdown = (e: PointerEvent) => {
-        downX = e.clientX;
-        downY = e.clientY;
-      };
-    }
-
-    if (track && dialog) {
-      track.onclick = (e) => {
-        const card = (e.target as HTMLElement).closest(".fw__card");
-        if (!card) return;
-        // Si fue drag, no abrir
-        const moved = Math.hypot(e.clientX - downX, e.clientY - downY);
-        if (moved > 8) {
-          e.preventDefault();
-          e.stopPropagation();
-          return;
-        }
-        const img = card.querySelector("img");
-        if (dlgImg && img) {
-          dlgImg.src = img.currentSrc || img.src;
-          dlgImg.alt = img.alt;
-        }
-        if (dlgTitle)
-          dlgTitle.textContent = card.getAttribute("data-title") ?? "";
-        if (dlgDesc) dlgDesc.textContent = card.getAttribute("data-desc") ?? "";
-        const total = Number(track.dataset.total ?? 0);
-        const idx = Number(card.getAttribute("data-index") ?? 0);
-        if (dlgCount && total > 0) {
-          const cur = String((idx % total) + 1).padStart(2, "0");
-          dlgCount.textContent = `${cur} / ${String(total).padStart(2, "0")}`;
-        }
-        if (dlgTechs) {
-          dlgTechs.textContent = "";
-          const techs = (card.getAttribute("data-techs") ?? "")
-            .split(",")
-            .filter(Boolean);
-          for (const t of techs) {
-            const chip = document.createElement("span");
-            chip.className =
-              "font-sans text-[0.7rem] font-bold uppercase tracking-widest bg-badge text-badge-ink rounded-full px-3 py-1";
-            chip.textContent = t.trim();
-            dlgTechs.appendChild(chip);
-          }
-        }
-        if (dlgDemo) {
-          const href = card.getAttribute("data-demo") ?? "";
-          const label = card.getAttribute("data-label") ?? "";
-          dlgDemo.href = href;
-          if (label && dlgDemoLabel) dlgDemoLabel.textContent = label;
-          dlgDemo.style.display = href ? "" : "none";
-        }
-        if (!INVOKER_OK) {
-          e.preventDefault();
-          dialog.showModal();
-        }
-      };
-
-      dialog.onclick = (e) => {
-        if (e.target === dialog) dialog.close();
-      };
-    }
-  }
-
-  function bootFw() {
-    teardownFw();
-    initFw();
-    wireFw();
-  }
-
-  window.addEventListener(
-    "resize",
-    () => {
-      clearTimeout(fwResizeTimer);
-      fwResizeTimer = setTimeout(bootFw, 200);
-    },
-    { passive: true },
-  );
-
-  document.addEventListener("astro:page-load", bootFw);
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", bootFw, { once: true });
-  } else {
-    bootFw();
-  }
+  document.addEventListener("astro:before-swap", () => cleanup?.());
+  document.addEventListener("astro:page-load", init);
+  init();
 </script>
-
-<style>
-  .fw__card {
-    text-align: left;
-  }
-</style>

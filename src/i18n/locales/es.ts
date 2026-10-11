@@ -147,8 +147,13 @@ export const es = {
   },
 
   featuredWork: {
-    title: "Featured Work",
-    subtitle: "Select recent and notable projects",
+    title: "Trabajos Destacados",
+    subtitle: "Proyectos recientes y notables",
+    prev: "Proyecto anterior",
+    next: "Proyecto siguiente",
+    close: "Cerrar",
+    personal: "Trabajo personal",
+    demo: "Ver demo",
   },
 
   contactSection: {

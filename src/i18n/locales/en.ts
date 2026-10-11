@@ -148,6 +148,11 @@ export const en = {
   featuredWork: {
     title: "Featured Work",
     subtitle: "Select recent and notable projects",
+    prev: "Previous project",
+    next: "Next project",
+    close: "Close",
+    personal: "Personal Work",
+    demo: "View demo",
   },
 
   contactSection: {

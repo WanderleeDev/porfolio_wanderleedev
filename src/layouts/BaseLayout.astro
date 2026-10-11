@@ -7,15 +7,15 @@
  *     thumbnail/locale come from src/i18n/locales).
  *   - View Transitions client router.
  *   - Inline theme-preset script (runs before paint to avoid flicker).
- *   - Slots: children fill <body>. The IntroOverlay (curtain) is
- *     rendered by the page that needs it, not by the layout — but the
- *     CSS the layout owns makes the overlay participate in the
- *     hero word-reveal choreography without JS on the hero side.
+ *   - Mounts <IntroCurtain /> (own component) first in <body> so the
+ *     curtain masks the page on /es and /en. The layout keeps only the
+ *     pre-paint flash guard and the hero word-reveal gate.
  *
  * Used by src/pages/index.astro (es) and src/pages/en/index.astro (en).
  */
 import { ClientRouter } from "astro:transitions";
 import { getTranslations, languages } from "../i18n/utils";
+import IntroCurtain from "../components/IntroCurtain.astro";
 
 interface Props {
   title: string;
@@ -100,13 +100,6 @@ const altTitle = altLang === "en" ? "WanderleeDev — Portfolio" : "Portafolio W
       } catch (e) {}
     </script>
     <script is:inline set:html={`
-      // Flash guard: tag <html> .intro-seen + .intro-done before first
-      // paint so the overlay never shows on return visits in PROD.
-      // In dev (__DEV__ = true) the curtain always re-runs, so we skip
-      // the guard and let IntroOverlay.astro drive the choreography.
-      //
-      // __DEV__ is injected by Astro at build time from
-      // import.meta.env.DEV (false in \`astro build\`, true in \`astro dev\`).
       const __DEV__ = ${isDev};
       try {
         if (!__DEV__ && localStorage.getItem("wdev-intro-seen") === "1") {
@@ -117,116 +110,12 @@ const altTitle = altLang === "en" ? "WanderleeDev — Portfolio" : "Portafolio W
     ></script>
     <ClientRouter />
 
-    <style is:global>
-      html,
-      body {
-        margin: 0;
-      }
-
-      /* ── Intro overlay (curtain) — global, so it can coordinate with
-            any component that exposes .hero-reveal word spans ──
-            Rendered by <IntroOverlay /> in the page body.
-
-            Choreography (gated by JS classes on <html>):
-              .intro-run   → the cat dot plays 12 frames (steps),
-                             then scales away (dot exits)
-              .intro-out   → the curtain rows collapse (after the dot)
-              .intro-done  → terminal state, overlay is gone
-            "seen" (localStorage) → the overlay never shows, but the
-            hero word-reveal STILL runs (it is independent). */
-      .intro-overlay {
-        pointer-events: none;
-      }
-
-      .intro-overlay .entry-row {
-        transition: transform 0.7s ease-in;
-      }
-
-      .intro-overlay .entry-row-top    { transform-origin: left center; }
-      .intro-overlay .entry-row-bottom { transform-origin: right center; }
-
-      /* The dot is the cat: 144px circle, vertical spritesheet
-         (144 x 1728 = 12 frames of 144px). The cat plays when
-         <html>.intro-run is present; it advances via 12 discrete
-         keyframe stops (step-like, 12 steps total). */
-      .intro-overlay .entry-dot {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        transform-origin: center;
-        width: 144px;
-        height: 144px;
-        border-radius: 50%;
-        overflow: hidden;
-        background: #1b1e24;
-        transition: scale 0.5s ease-in, opacity 0.5s ease-in;
-      }
-
-      .intro-overlay .entry-dot .cat-sprite {
-        position: absolute;
-        inset: 0;
-        background: url("/gato-sprite.png") 0 0 / 144px 1728px no-repeat;
-        background-position: 0 0;
-      }
-
-      /* The cat plays when .intro-run is set on <html>.
-         steps(12): 12 discrete frame advances from 0 to 1584px
-         (11 x 144px) over 0.6s. */
-      html.intro-run .intro-overlay .entry-dot .cat-sprite {
-        animation: cat-play 0.6s steps(12) forwards;
-      }
-
-      @keyframes cat-play {
-        from { background-position: 0 0; }
-        to   { background-position: 0 1584px; }
-      }
-
-      /* After the cat finishes, the dot scales away (before the bars).
-         Gated on .intro-dot-out so the JS can sequence it. */
-      html.intro-dot-out .entry-dot { scale: 0; opacity: 0; }
-
-      /* The bars collapse AFTER the dot has scaled away. */
-      html.intro-out .entry-row-top    { transform: scaleX(0); }
-      html.intro-out .entry-row-bottom  { transform: scaleX(0); transition-delay: 0.1s; }
-
-      /* The overlay is fully removed once the collapse settles. */
-      html.intro-done .intro-overlay {
-        display: none;
-      }
-
-      /* Second visit: the overlay never renders (no flash, no shift).
-         The hero word-reveal is independent of this flag. */
-      html.intro-seen .intro-overlay {
-        display: none;
-      }
-
-      @media (prefers-reduced-motion: reduce) {
-        .intro-overlay .entry-row,
-        .intro-overlay .entry-dot {
-          transition: none;
-        }
-        .intro-overlay .entry-dot .cat-sprite {
-          animation: none;
-        }
-      }
-
-      /* ── Hero word reveal ──
-         The words start collapsed and rise when <html>.hero-ready is
-         set by the IntroOverlay script (after the curtain sequence on
-         first visit; immediately on return visits / reduced motion).
-         This runs on EVERY visit, independent of the curtain. */
-      .hero-reveal .hero-word {
-        scale: 1 0;
-      }
-
-      html.hero-ready .hero-reveal .hero-word {
-        scale: 1;
-      }
-    </style>
   </head>
 
-  <body>
-    <slot />
+  <body class="overflow-x-clip">
+    <IntroCurtain />
+    <div>
+      <slot />
+    </div>
   </body>
 </html>

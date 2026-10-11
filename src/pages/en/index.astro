@@ -2,7 +2,7 @@
 /**
  * Redesign index (en) — shared BaseLayout provides <html>/<head> with
  * i18n Open Graph tags, the View Transitions client router, the
- * theme-preset script, and the CSS that drives the IntroOverlay
+ * theme-preset script, and the CSS that drives the IntroCurtain
  * curtain + hero word-reveal. The global stylesheet is imported here
  * so fonts/Tailwind/theme vars load on every locale page.
  */
@@ -15,7 +15,6 @@ import MoreWork from "../../components/MoreWork.astro";
 import RedesignContact from "../../components/RedesignContact.astro";
 import RedesignFooter from "../../components/RedesignFooter.astro";
 import ThemePicker from "../../components/ThemePicker.astro";
-import IntroOverlay from "../../components/IntroOverlay.astro";
 import { getTranslations } from "../../i18n/utils";
 
 const lang = Astro.currentLocale as "es" | "en";
@@ -25,7 +24,6 @@ const projects = t("projects").list;
 ---
 
 <BaseLayout title={meta.title} description={meta.description}>
-  <IntroOverlay />
   <ThemePicker />
   <HeroFan />
   <FeaturedWork

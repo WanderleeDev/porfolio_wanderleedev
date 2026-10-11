@@ -19,41 +19,53 @@
   --breakpoint-xs: 400px;
 
   /* ── Paleta base del redesign (secciones claras) ── */
-  --color-rd-bg:        #ffffff;
-  --color-rd-ink:       #111111;
-  --color-rd-ink-soft:  #6b7280;
+  --color-rd-bg: #ffffff;
+  --color-rd-ink: #111111;
+  --color-rd-ink-soft: #6b7280;
   --color-rd-ink-muted: #9ca3af;
-  --color-rd-border:    #e5e7eb;
-  --color-rd-badge-bg:  #e5e5e5;
+  --color-rd-border: #e5e7eb;
+  --color-rd-badge-bg: #e5e5e5;
   --color-rd-badge-ink: #374151;
 
   /* ── Paleta oscura (contacto, footer) ── */
-  --color-dark-bg:    #161824;
-  --color-dark-ink:   #eceef3;
+  --color-dark-bg: #161824;
+  --color-dark-ink: #eceef3;
   --color-dark-muted: #a3a9bf;
-  --color-dark-line:  #3a3f55;
-  --color-dark-acc:   #8fa0ff;
-  --color-dark-err:   #ff8f93;
+  --color-dark-line: #3a3f55;
+  --color-dark-acc: #8fa0ff;
+  --color-dark-err: #ff8f93;
 
   /* ── Tokens semánticos (light por defecto = .light) ── */
-  --color-surface:    #ffffff;
-  --color-ink:        #111111;
-  --color-contrast:   #ffffff;
-  --color-soft:       #6b7280;
-  --color-muted:      #9ca3af;
-  --color-line:       #e5e7eb;
-  --color-badge:      #e5e5e5;
-  --color-badge-ink:  #374151;
+  --color-surface: #ffffff;
+  --color-ink: #111111;
+  --color-contrast: #ffffff;
+  --color-soft: #6b7280;
+  --color-muted: #9ca3af;
+  --color-line: #e5e7eb;
+  --color-badge: #e5e5e5;
+  --color-badge-ink: #374151;
 
   /* ── Tamaños fluidos de tipografía ── */
-  --text-hero:    clamp(3rem, 10vw, 8rem);
+  --text-hero: clamp(3rem, 10vw, 8rem);
   --text-section: clamp(2.6rem, 9vw, 6.5rem);
-  --text-sub:     clamp(0.7rem, 1.4vw, 0.9rem);
+  --text-sub: clamp(0.7rem, 1.4vw, 0.9rem);
 
   /* ── Espaciado extra ── */
   --spacing-120: 31.25rem;
-  
+
   --ease-out-elastic: linear(0, .5737 7.6%, .8382 11.87%, .9463 14.19%, 1.0292 16.54%, 1.0886 18.97%, 1.1258 21.53%, 1.137 22.97%, 1.1424 24.48%, 1.1423 26.1%, 1.1366 27.86%, 1.1165 31.01%, 1.0507 38.62%, 1.0219 42.57%, .9995 46.99%, .9872 51.63%, .9842 58.77%, 1.0011 81.26%, 1);
+
+  --animate-move-x: move-x 1.2s steps(12, jump-none) 2 forwards 1s;
+
+  @keyframes move-x {
+    from {
+      background-position-x: 0%;
+    }
+
+    to {
+      background-position-x: 100%;
+    }
+  }
 }
 
 /* ── Variables globales (compat con componentes existentes) ── */
@@ -62,27 +74,27 @@
 .light {
   color-scheme: light;
 
-  --rd-bg:        var(--color-rd-bg);
-  --rd-ink:       var(--color-rd-ink);
-  --rd-ink-soft:  var(--color-rd-ink-soft);
+  --rd-bg: var(--color-rd-bg);
+  --rd-ink: var(--color-rd-ink);
+  --rd-ink-soft: var(--color-rd-ink-soft);
   --rd-ink-muted: var(--color-rd-ink-muted);
-  --rd-border:    var(--color-rd-border);
-  --rd-badge-bg:  var(--color-rd-badge-bg);
+  --rd-border: var(--color-rd-border);
+  --rd-badge-bg: var(--color-rd-badge-bg);
   --rd-badge-ink: var(--color-rd-badge-ink);
 
-  --dark-bg:    var(--color-dark-bg);
-  --dark-ink:   var(--color-dark-ink);
+  --dark-bg: var(--color-dark-bg);
+  --dark-ink: var(--color-dark-ink);
   --dark-muted: var(--color-dark-muted);
-  --dark-line:  var(--color-dark-line);
-  --dark-acc:   var(--color-dark-acc);
-  --dark-err:   var(--color-dark-err);
+  --dark-line: var(--color-dark-line);
+  --dark-acc: var(--color-dark-acc);
+  --dark-err: var(--color-dark-err);
 
   /* Contacto: siempre oscuro, independiente del tema de página */
-  --c-bg:     var(--dark-bg);
-  --c-ink:    var(--dark-ink);
-  --c-mute:   var(--dark-muted);
-  --c-acc:    var(--dark-acc);
-  --c-err:    var(--dark-err);
+  --c-bg: var(--dark-bg);
+  --c-ink: var(--dark-ink);
+  --c-mute: var(--dark-muted);
+  --c-acc: var(--dark-acc);
+  --c-err: var(--dark-err);
 
   /* Contacto temático: sigue el fondo de página (transparente) */
   --ct-ink: var(--color-ink);
@@ -90,38 +102,38 @@
   --ct-err: #dc2626;
 
   /* Tema de página (light): espejo semántico para var() directo */
-  --surface:   var(--color-surface);
-  --ink:       var(--color-ink);
-  --soft:      var(--color-soft);
-  --muted:     var(--color-muted);
-  --line:      var(--color-line);
-  --badge:     var(--color-badge);
+  --surface: var(--color-surface);
+  --ink: var(--color-ink);
+  --soft: var(--color-soft);
+  --muted: var(--color-muted);
+  --line: var(--color-line);
+  --badge: var(--color-badge);
   --badge-ink: var(--color-badge-ink);
 
-  --text-hero:    var(--text-hero);
+  --text-hero: var(--text-hero);
   --text-section: var(--text-section);
-  --text-sub:     var(--text-sub);
+  --text-sub: var(--text-sub);
 }
 
 /* ── Tema oscuro de página: mismos nombres, valores dark ── */
 .dark {
   color-scheme: dark;
 
-  --color-surface:    #161824;
-  --color-ink:        #eceef3;
-  --color-contrast:   #161824;
-  --color-soft:       #a3a9bf;
-  --color-muted:      #6b7280;
-  --color-line:       #3a3f55;
-  --color-badge:      #3a3f55;
-  --color-badge-ink:  #eceef3;
+  --color-surface: #161824;
+  --color-ink: #eceef3;
+  --color-contrast: #161824;
+  --color-soft: #a3a9bf;
+  --color-muted: #6b7280;
+  --color-line: #3a3f55;
+  --color-badge: #3a3f55;
+  --color-badge-ink: #eceef3;
 
-  --surface:   var(--color-surface);
-  --ink:       var(--color-ink);
-  --soft:      var(--color-soft);
-  --muted:     var(--color-muted);
-  --line:      var(--color-line);
-  --badge:     var(--color-badge);
+  --surface: var(--color-surface);
+  --ink: var(--color-ink);
+  --soft: var(--color-soft);
+  --muted: var(--color-muted);
+  --line: var(--color-line);
+  --badge: var(--color-badge);
   --badge-ink: var(--color-badge-ink);
 
   /* Contacto temático en dark: vuelve al celeste claro */
@@ -134,21 +146,21 @@
 .neon {
   color-scheme: dark;
 
-  --color-surface:    transparent;
-  --color-ink:        #f2f4fa;
-  --color-contrast:   #101424;
-  --color-soft:       #b9c0d8;
-  --color-muted:      #8b93ad;
-  --color-line:       #2a2f45;
-  --color-badge:      #1c2133;
-  --color-badge-ink:  #eef1f8;
+  --color-surface: transparent;
+  --color-ink: #f2f4fa;
+  --color-contrast: #101424;
+  --color-soft: #b9c0d8;
+  --color-muted: #8b93ad;
+  --color-line: #2a2f45;
+  --color-badge: #1c2133;
+  --color-badge-ink: #eef1f8;
 
-  --surface:   var(--color-surface);
-  --ink:       var(--color-ink);
-  --soft:      var(--color-soft);
-  --muted:     var(--color-muted);
-  --line:      var(--color-line);
-  --badge:     var(--color-badge);
+  --surface: var(--color-surface);
+  --ink: var(--color-ink);
+  --soft: var(--color-soft);
+  --muted: var(--color-muted);
+  --line: var(--color-line);
+  --badge: var(--color-badge);
   --badge-ink: var(--color-badge-ink);
 
   --ct-ink: var(--color-dark-ink);
@@ -166,21 +178,21 @@
 .brutalist {
   color-scheme: light;
 
-  --color-surface:    #fdfdf6;
-  --color-ink:        #0a0a0a;
-  --color-soft:       #333333;
-  --color-muted:      #555555;
-  --color-line:       #0a0a0a;
-  --color-badge:      #ffea00;
-  --color-badge-ink:  #0a0a0a;
-  --color-contrast:   #ffffff;
+  --color-surface: #fdfdf6;
+  --color-ink: #0a0a0a;
+  --color-soft: #333333;
+  --color-muted: #555555;
+  --color-line: #0a0a0a;
+  --color-badge: #ffea00;
+  --color-badge-ink: #0a0a0a;
+  --color-contrast: #ffffff;
 
-  --surface:   var(--color-surface);
-  --ink:       var(--color-ink);
-  --soft:      var(--color-soft);
-  --muted:     var(--color-muted);
-  --line:      var(--color-line);
-  --badge:     var(--color-badge);
+  --surface: var(--color-surface);
+  --ink: var(--color-ink);
+  --soft: var(--color-soft);
+  --muted: var(--color-muted);
+  --line: var(--color-line);
+  --badge: var(--color-badge);
   --badge-ink: var(--color-badge-ink);
 
   --ct-ink: var(--color-ink);
@@ -201,21 +213,21 @@
 .pixel {
   color-scheme: dark;
 
-  --color-surface:    #1a1c2c;
-  --color-ink:        #f4f4f4;
-  --color-soft:       #c9c9d4;
-  --color-muted:      #8b8b9e;
-  --color-line:       #5d275d;
-  --color-badge:      #29adff;
-  --color-badge-ink:  #1a1c2c;
-  --color-contrast:   #1a1c2c;
+  --color-surface: #1a1c2c;
+  --color-ink: #f4f4f4;
+  --color-soft: #c9c9d4;
+  --color-muted: #8b8b9e;
+  --color-line: #5d275d;
+  --color-badge: #29adff;
+  --color-badge-ink: #1a1c2c;
+  --color-contrast: #1a1c2c;
 
-  --surface:   var(--color-surface);
-  --ink:       var(--color-ink);
-  --soft:      var(--color-soft);
-  --muted:     var(--color-muted);
-  --line:      var(--color-line);
-  --badge:     var(--color-badge);
+  --surface: var(--color-surface);
+  --ink: var(--color-ink);
+  --soft: var(--color-soft);
+  --muted: var(--color-muted);
+  --line: var(--color-line);
+  --badge: var(--color-badge);
   --badge-ink: var(--color-badge-ink);
 
   --ct-ink: var(--color-ink);
@@ -241,21 +253,21 @@
 .aero {
   color-scheme: light;
 
-  --color-surface:    transparent;
-  --color-ink:        #083344;
-  --color-soft:       #0c4a6e;
-  --color-muted:      #075985;
-  --color-line:       #e0f2fe;
-  --color-badge:      rgba(255, 255, 255, 0.55);
-  --color-badge-ink:  #083344;
-  --color-contrast:   #ffffff;
+  --color-surface: transparent;
+  --color-ink: #083344;
+  --color-soft: #0c4a6e;
+  --color-muted: #075985;
+  --color-line: #e0f2fe;
+  --color-badge: rgba(255, 255, 255, 0.55);
+  --color-badge-ink: #083344;
+  --color-contrast: #ffffff;
 
-  --surface:   var(--color-surface);
-  --ink:       var(--color-ink);
-  --soft:      var(--color-soft);
-  --muted:     var(--color-muted);
-  --line:      var(--color-line);
-  --badge:     var(--color-badge);
+  --surface: var(--color-surface);
+  --ink: var(--color-ink);
+  --soft: var(--color-soft);
+  --muted: var(--color-muted);
+  --line: var(--color-line);
+  --badge: var(--color-badge);
   --badge-ink: var(--color-badge-ink);
 
   --ct-ink: var(--color-ink);
@@ -290,9 +302,13 @@
 
 /* ── Base layer (fonts, cursor, scroll) ── */
 @layer base {
-  html { scroll-behavior: auto; }
+  html {
+    scroll-behavior: auto;
+    scrollbar-gutter: stable;
+  }
 
-  html, body {
+  html,
+  body {
     cursor: url("/cursor.svg"), auto;
   }
 
@@ -303,17 +319,28 @@
 
   /* Scroll lock puro CSS: con cualquier modal abierto, el documento no scrollea */
   html:has(dialog[open]) {
-    overflow: hidden;
+    overflow: hidden !important;
   }
 
-  a, button, [role="button"], input[type="submit"], input[type="button"], select, .cursor-pointer {
+  a,
+  button,
+  [role="button"],
+  input[type="submit"],
+  input[type="button"],
+  select,
+  .cursor-pointer {
     cursor: url("/pointer.svg"), auto !important;
   }
-  a *, button * { cursor: inherit !important; }
+
+  a *,
+  button * {
+    cursor: inherit !important;
+  }
 
   :where(h1, h2, h3, h4, h5, h6) {
     font-family: "Fira Sans Extra Condensed", sans-serif;
   }
+
   :where(:not(h1, h2, h3, h4, h5, h6)) {
     font-family: "Inter", ui-sans-serif, system-ui, sans-serif;
   }
@@ -321,16 +348,27 @@
   ::-webkit-scrollbar {
     width: 8px;
   }
+
   ::-webkit-scrollbar-track {
     background: #000000;
   }
+
   ::-webkit-scrollbar-thumb {
     background: #2b097a;
     border-radius: 4px;
   }
 
-  h1 { font-weight: 700; font-size: 2.75rem; }
-  p { font-size: 0.8rem; text-transform: uppercase; font-weight: 500; color: inherit; }
+  h1 {
+    font-weight: 700;
+    font-size: 2.75rem;
+  }
+
+  p {
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    font-weight: 500;
+    color: inherit;
+  }
 }
 
 /* ── Utilities layer ── */
@@ -341,13 +379,20 @@
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .float-element { animation: none !important; }
+    .float-element {
+      animation: none !important;
+    }
   }
 
-  .font-inherit { font-family: inherit; }
+  .font-inherit {
+    font-family: inherit;
+  }
 
   /* Tag de tech: en light/dark es surface, en neón el glow custom */
-  .bg-tag { background-color: var(--surface); }
+  .bg-tag {
+    background-color: var(--surface);
+  }
+
   .neon .bg-tag {
     background-color: #1b1e24;
     background-image: none;
@@ -358,27 +403,27 @@
     font-size: clamp(3rem, 15vw + 1rem, 6rem);
     line-height: 1;
     max-width: 10ch;
-    @media (width >= 768px) {
+
+    @media (width >=768px) {
       font-size: 11vw;
       max-width: 17ch;
       line-height: 1.2;
     }
-    @media (width >= 1024px) {
+
+    @media (width >=1024px) {
       line-height: 0.95;
     }
   }
 
   .clip-bevel {
-    clip-path: polygon(
-      0 var(--bv, 12px),
-      var(--bv, 12px) 0,
-      calc(100% - var(--bv, 12px)) 0,
-      100% var(--bv, 12px),
-      100% calc(100% - var(--bv, 12px)),
-      calc(100% - var(--bv, 12px)) 100%,
-      var(--bv, 12px) 100%,
-      0 calc(100% - var(--bv, 12px))
-    );
+    clip-path: polygon(0 var(--bv, 12px),
+        var(--bv, 12px) 0,
+        calc(100% - var(--bv, 12px)) 0,
+        100% var(--bv, 12px),
+        100% calc(100% - var(--bv, 12px)),
+        calc(100% - var(--bv, 12px)) 100%,
+        var(--bv, 12px) 100%,
+        0 calc(100% - var(--bv, 12px)));
   }
 }
 
@@ -388,7 +433,7 @@
   font-display: swap;
   font-weight: 400;
   src: url("@fontsource/press-start-2p/files/press-start-2p-latin-400-normal.woff2") format("woff2"),
-       url("@fontsource/press-start-2p/files/press-start-2p-latin-400-normal.woff") format("woff");
+    url("@fontsource/press-start-2p/files/press-start-2p-latin-400-normal.woff") format("woff");
   unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA,
     U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193,
     U+2212, U+2215, U+FEFF, U+FFFD;
@@ -401,7 +446,7 @@
   font-display: swap;
   font-weight: 400;
   src: url("@fontsource/inter/files/inter-latin-400-normal.woff2") format("woff2"),
-       url("@fontsource/inter/files/inter-latin-400-normal.woff") format("woff");
+    url("@fontsource/inter/files/inter-latin-400-normal.woff") format("woff");
   unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA,
     U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193,
     U+2212, U+2215, U+FEFF, U+FFFD;
@@ -413,7 +458,7 @@
   font-display: swap;
   font-weight: 500;
   src: url("@fontsource/inter/files/inter-latin-500-normal.woff2") format("woff2"),
-       url("@fontsource/inter/files/inter-latin-500-normal.woff") format("woff");
+    url("@fontsource/inter/files/inter-latin-500-normal.woff") format("woff");
   unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA,
     U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193,
     U+2212, U+2215, U+FEFF, U+FFFD;
@@ -425,7 +470,7 @@
   font-display: swap;
   font-weight: 700;
   src: url("@fontsource/inter/files/inter-latin-700-normal.woff2") format("woff2"),
-       url("@fontsource/inter/files/inter-latin-700-normal.woff") format("woff");
+    url("@fontsource/inter/files/inter-latin-700-normal.woff") format("woff");
   unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA,
     U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193,
     U+2212, U+2215, U+FEFF, U+FFFD;
@@ -437,7 +482,7 @@
   font-display: swap;
   font-weight: 800;
   src: url("@fontsource/inter/files/inter-latin-800-normal.woff2") format("woff2"),
-       url("@fontsource/inter/files/inter-latin-800-normal.woff") format("woff");
+    url("@fontsource/inter/files/inter-latin-800-normal.woff") format("woff");
   unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA,
     U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193,
     U+2212, U+2215, U+FEFF, U+FFFD;
@@ -449,7 +494,7 @@
   font-display: swap;
   font-weight: 700;
   src: url("@fontsource/fira-sans-extra-condensed/files/fira-sans-extra-condensed-latin-700-normal.woff2") format("woff2"),
-       url("@fontsource/fira-sans-extra-condensed/files/fira-sans-extra-condensed-latin-700-normal.woff") format("woff");
+    url("@fontsource/fira-sans-extra-condensed/files/fira-sans-extra-condensed-latin-700-normal.woff") format("woff");
   unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA,
     U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193,
     U+2212, U+2215, U+FEFF, U+FFFD;

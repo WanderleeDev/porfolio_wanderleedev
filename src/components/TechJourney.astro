@@ -1,286 +1,444 @@
 ---
 /**
- * TechJourney — recorrido horizontal de tecnologías.
- * Usa los datos reales del i18n (skills.list).
+ * TechJourney
+ * - Escritorio (≥768px): recorrido horizontal con pin y barra de progreso.
+ * - Móvil (<768px): segmented control con un grupo visible a la vez, con fade.
+ * Cada tecnología aparece una sola vez.
  */
 import { getTranslations } from "../i18n/utils";
 import Icon from "astro-iconify";
 
-const lang = Astro.currentLocale as "es" | "en";
+type Tech = { color: string; icon: string; name?: string };
+type Group = { title: string; accent: string; techs: Tech[] };
+
+const lang = Astro.currentLocale === "en" ? "en" : "es";
 const t = getTranslations(lang);
 const skillsT = t("skills");
-const groups = skillsT.list;
 const journeyT = t("journey");
+const groups = skillsT.list as Group[];
+const descriptions = journeyT.skillDescriptions as Record<string, string>;
 
-const descriptions = journeyT.skillDescriptions;
+const L = {
+  es: { groups: "Grupos de tecnologías" },
+  en: { groups: "Technology groups" },
+}[lang];
+
+// Grupos que aparecen como paneles y como pestañas, en este orden
+const TAB_GROUPS = ["Frontend", "Backend", "Tools", "Familiar With"];
+
+// Etiquetas cortas para que quepan en el segmented control
+const TAB_LABELS: Record<string, string> = { "Familiar With": "Familiar" };
+
+// Nombres legibles para los iconos de devicon / simple-icons
+const DISPLAY_NAMES: Record<string, string> = {
+  nodejs: "Node.js",
+  nestjs: "NestJS",
+  nextjs: "Next.js",
+  postgresql: "PostgreSQL",
+  fastapi: "FastAPI",
+  vuejs: "Vue.js",
+  tailwindcss: "Tailwind CSS",
+  typescript: "TypeScript",
+  javascript: "JavaScript",
+  html5: "HTML5",
+  css3: "CSS3",
+  ngrx: "NgRx",
+  greensock: "GSAP",
+  github: "GitHub",
+};
+
+const nameOf = (icon: string) => {
+  const raw = icon.split(":")[1] ?? icon;
+  return DISPLAY_NAMES[raw] ?? raw.charAt(0).toUpperCase() + raw.slice(1);
+};
+
+const slug = (s: string) => s.toLowerCase().replace(/\s+/g, "-");
+
+// Quita duplicados por icono: se queda con la primera aparición
+const seen = new Set<string>();
+const unique = (techs: Tech[]) =>
+  techs.filter(({ icon }) => {
+    if (seen.has(icon)) return false;
+    seen.add(icon);
+    return true;
+  });
+
+const panels = TAB_GROUPS.map((title) => {
+  const g = groups.find((grp) => grp.title === title);
+  return g ? { ...g, key: slug(title), techs: unique(g.techs) } : null;
+}).filter((g): g is Group & { key: string } => Boolean(g));
 ---
 
 <section
   id="tech-journey"
-  aria-label="Tecnologías"
+  aria-label={skillsT.title ?? "Tecnologías"}
   class="journey relative bg-surface text-ink overflow-hidden"
 >
-  <div class="track flex h-full w-max">
-    <!-- Panel intro -->
-    <div
-      class="panel w-screen h-full flex flex-col justify-center px-[clamp(1.5rem,8vw,7.5rem)]"
-    >
-      <h2
-        class="font-fira-sans-extra-condensed font-black text-[clamp(2.6rem,9vw,6.5rem)] leading-[0.92] tracking-tight m-0 mb-3"
-      >
-        {journeyT.introTitle}
-      </h2>
-      <p class="font-sans text-soft text-[1.05rem] max-w-[44ch] m-0">
-        {skillsT.sectionDescription}
-      </p>
+  <div class="track">
+    <div class="panel">
+      <h2 class="panel__item panel__title">{journeyT.introTitle}</h2>
+      <p class="panel__item panel__desc">{skillsT.sectionDescription}</p>
     </div>
 
-    <!-- Paneles por grupo de skills -->
-    {
-      groups.map((group) => (
-        <div class="panel w-screen h-full flex flex-col justify-center px-[clamp(1.5rem,8vw,7.5rem)]">
-          <h2
-            class="font-fira-sans-extra-condensed font-black text-[clamp(2.6rem,9vw,6.5rem)] leading-[0.92] tracking-tight m-0 mb-2"
-            style={`color: ${group.accent}`}
+    <div class="tabs" role="group" aria-label={L.groups}>
+      {
+        panels.map((group, i) => (
+          <button
+            type="button"
+            class="tab"
+            data-tab={group.key}
+            aria-controls={`panel-${group.key}`}
+            aria-pressed={i === 0 ? "true" : "false"}
           >
+            {TAB_LABELS[group.title] ?? group.title}
+          </button>
+        ))
+      }
+    </div>
+
+    {
+      panels.map((group) => (
+        <div
+          id={`panel-${group.key}`}
+          class="panel"
+          data-panel={group.key}
+          style={`--accent: ${group.accent}`}
+        >
+          <h2 class="panel__item panel__title" style="color: var(--accent)">
             {group.title}
           </h2>
-          <p class="font-sans text-soft text-[1.05rem] max-w-[44ch] m-0 mb-8 capitalize">
-            {descriptions[group.title] ?? ""}
-          </p>
-          <ul class="tech-list">
-            {group.techs.map(({color, icon}) => {
-              // Extraer el nombre legible del icon (ej: "devicon:angular" → "Angular")
-              const raw = icon.split(":")[1] ?? icon;
-              const name =
-                raw.charAt(0).toUpperCase() + raw.slice(1).replace(/-/g, " ");
-              return (
-                <li
-                  class="tech-item bg-surface relative group"
-                  style={`--accent: ${color}; --tw-border-opacity: 1;`}
-                >
-                  <b class="block py-3 bg-tag font-fira-sans-extra-condensed font-black text-[clamp(1.2rem,2.5vw,1.7rem)] tracking-[-0.02em]" style={`color: ${color};`}>{name}</b>
-                  <Icon
-                    name={icon}
-                    class="h-full w-fit bg-tag -z-10 absolute block left-0 top-2/4 -translate-y-2/4 group-hover:top-0 group-hover:translate-y-[-101%] transition-all"
-                  />
-                </li>
-              );
-            })}
+          <p class="panel__item panel__desc">{descriptions[group.title] ?? ""}</p>
+
+          <ul class="tech-grid">
+            {group.techs.map(({ color, icon, name }) => (
+              <li class="tech panel__item" style={`--c: ${color}`}>
+                <span class="tech__media">
+                  <Icon name={icon} />
+                </span>
+                <span class="tech__name">{name ?? nameOf(icon)}</span>
+              </li>
+            ))}
           </ul>
         </div>
       ))
     }
 
-    <!-- Panel cierre -->
-    <div
-      class="panel w-screen h-full flex flex-col justify-center px-[clamp(1.5rem,8vw,7.5rem)]"
-    >
-      <h2
-        class="font-fira-sans-extra-condensed font-black text-[clamp(2.6rem,9vw,6.5rem)] leading-[0.92] tracking-tight m-0 mb-3"
-      
-      >
-        {journeyT.outroTitle}
-      </h2>
-      <p class="font-sans text-soft text-[1.05rem] max-w-[44ch] m-0 capitalize">
-        {journeyT.outroDesc}
-      </p>
+    <div class="panel panel--outro">
+      <h2 class="panel__item panel__title">{journeyT.outroTitle}</h2>
+      <p class="panel__item panel__desc">{journeyT.outroDesc}</p>
     </div>
   </div>
 
-  <!-- Barra de progreso -->
   <div
     aria-hidden="true"
     class="route absolute bottom-7 left-[clamp(1.5rem,8vw,7.5rem)] right-[clamp(1.5rem,8vw,7.5rem)] h-[3px] bg-line rounded-full"
   >
-    <div
-      id="route-progress"
-      class="h-full bg-ink rounded-full origin-left scale-x-0"
-    >
-    </div>
+    <div id="route-progress" class="route__bar h-full bg-ink rounded-full"></div>
   </div>
 </section>
+
+<style>
+  /* ── Base: paneles apilados (sin JS o con reduced motion) ── */
+  .track {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .panel {
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    box-sizing: border-box;
+    width: 100%;
+    min-height: 100svh;
+    padding: 6rem clamp(1.5rem, 8vw, 7.5rem);
+  }
+
+  .panel[hidden] {
+    display: none;
+  }
+
+  .panel__title {
+    margin: 0 0 0.75rem;
+    font-family: "Fira Sans Extra Condensed", system-ui, sans-serif;
+    font-weight: 900;
+    font-size: clamp(2.6rem, 9vw, 6.5rem);
+    line-height: 0.92;
+    letter-spacing: -0.02em;
+  }
+
+  .panel__desc {
+    max-width: 44ch;
+    margin: 0 0 2rem;
+    font-size: 1.05rem;
+    color: var(--soft, #444);
+  }
+
+  /* ── Tecnologías ── */
+  .tech-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(7.5rem, 1fr));
+    gap: 1.25rem;
+    max-width: 52rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .tech {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 1rem 0.5rem;
+    border: 1px solid var(--line, #e5e5e5);
+    border-radius: 16px;
+    text-align: center;
+    transition:
+      transform 0.3s ease,
+      border-color 0.3s ease;
+  }
+
+  /* Gris por defecto, color en hover */
+  .tech__media {
+    display: block;
+    width: 3.25rem;
+    height: 3.25rem;
+    filter: grayscale(1) opacity(0.6);
+    transition: filter 0.3s ease;
+  }
+
+  .tech__media :global(svg) {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+
+  .tech__name {
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    color: var(--soft, #444);
+  }
+
+  .tech:hover {
+    transform: translateY(-4px);
+    border-color: var(--c);
+  }
+
+  .tech:hover .tech__media {
+    filter: drop-shadow(0 8px 18px color-mix(in srgb, var(--c) 45%, transparent));
+  }
+
+  /* ── Segmented control (solo móvil) ── */
+  .tabs {
+    display: none;
+  }
+
+  .tab {
+    flex: 1;
+    min-width: 0;
+    padding: 0.5rem 0.25rem;
+    border: 0;
+    border-radius: 999px;
+    background: transparent;
+    color: var(--soft, #444);
+    font-size: 0.8rem;
+    font-weight: 700;
+    white-space: nowrap;
+    cursor: pointer;
+  }
+
+  .tab[aria-pressed="true"] {
+    background: var(--ink, #111);
+    color: var(--surface, #fff);
+  }
+
+  /* ── Modo horizontal (escritorio, lo activa el JS) ── */
+  .journey--on {
+    height: 100vh;
+    overflow: hidden;
+  }
+
+  .journey--on .track {
+    flex-direction: row;
+    width: max-content;
+    height: 100%;
+  }
+
+  .journey--on .panel {
+    width: 100vw;
+    height: 100%;
+    min-height: 0;
+    padding-block: 0;
+  }
+
+  /* ── Móvil ── */
+  @media (max-width: 767px) {
+    .tabs {
+      display: flex;
+      gap: 0.25rem;
+      margin: 0 1.25rem 1.5rem;
+      padding: 0.25rem;
+      border-radius: 999px;
+      background: var(--line, #e5e5e5);
+    }
+
+    .panel {
+      min-height: 0;
+      padding: 2rem 1.25rem;
+    }
+
+    .panel--outro {
+      display: none;
+    }
+
+    .tech-grid {
+      grid-template-columns: repeat(auto-fill, minmax(6rem, 1fr));
+      gap: 0.75rem;
+    }
+
+    .tech__media {
+      width: 2.75rem;
+      height: 2.75rem;
+    }
+  }
+</style>
 
 <script>
   import gsap from "gsap";
   import { ScrollTrigger } from "gsap/ScrollTrigger";
+
   gsap.registerPlugin(ScrollTrigger);
 
-  function setup() {
-    const section = document.getElementById("tech-journey")!;
-    const track = section.querySelector<HTMLElement>(".track")!;
-    const progress = document.getElementById("route-progress")!;
-    if (!section || !track) return;
+  let mm: gsap.MatchMedia | null = null;
+  let ac: AbortController | null = null;
 
-    // Activar modo horizontal
+  /* ── Móvil: muestra un solo grupo ── */
+  function showPanel(section: HTMLElement, key: string, animate: boolean) {
+    const panels = Array.from(section.querySelectorAll<HTMLElement>("[data-panel]"));
+    panels.forEach((p) => (p.hidden = p.dataset.panel !== key));
+
+    section.querySelectorAll<HTMLButtonElement>(".tab").forEach((tab) => {
+      tab.setAttribute("aria-pressed", String(tab.dataset.tab === key));
+    });
+
+    const active = panels.find((p) => p.dataset.panel === key);
+    if (animate && active) {
+      gsap.fromTo(
+        active,
+        { opacity: 0, y: 12 },
+        {
+          opacity: 1,
+          y: 0,
+          duration: 0.35,
+          ease: "power2.out",
+          clearProps: "opacity,transform",
+        },
+      );
+    }
+  }
+
+  function setupMobile(section: HTMLElement) {
+    section.classList.remove("journey--on");
+    const first = section.querySelector<HTMLButtonElement>(".tab")?.dataset.tab;
+    if (first) showPanel(section, first, false);
+  }
+
+  /* ── Escritorio: recorrido horizontal con pin ── */
+  function setupDesktop(section: HTMLElement) {
+    const track = section.querySelector<HTMLElement>(".track");
+    const progress = section.querySelector<HTMLElement>("#route-progress");
+    if (!track || !progress) return;
+
+    // Venimos de móvil: vuelve a mostrar todos los paneles
+    section.querySelectorAll<HTMLElement>("[data-panel]").forEach((p) => (p.hidden = false));
     section.classList.add("journey--on");
-
-    // Forzar reflow para que scrollWidth sea correcto
-    void track.offsetWidth;
 
     const dist = () => track.scrollWidth - window.innerWidth;
 
-    // Track horizontal
     const run = gsap.to(track, {
       x: () => -dist(),
       ease: "none",
       scrollTrigger: {
         trigger: section,
         start: "top top",
-        end: () => "+=" + dist(),
+        end: () => `+=${dist()}`,
         pin: true,
         scrub: 0.8,
         invalidateOnRefresh: true,
       },
     });
 
-    // Barra de progreso
-    gsap.to(progress, {
-      scaleX: 1,
-      ease: "none",
-      scrollTrigger: {
-        trigger: section,
-        start: "top top",
-        end: () => "+=" + dist(),
-        scrub: true,
-        invalidateOnRefresh: true,
+    gsap.fromTo(
+      progress,
+      { scaleX: 0, transformOrigin: "left center" },
+      {
+        scaleX: 1,
+        ease: "none",
+        scrollTrigger: {
+          trigger: section,
+          start: "top top",
+          end: () => `+=${dist()}`,
+          scrub: true,
+          invalidateOnRefresh: true,
+        },
       },
-    });
-
-    // Revelar cada panel al entrar en viewport (no depende del pin)
-    const panels = Array.from(
-      section.querySelectorAll<HTMLElement>(".panel"),
     );
-    journeyIO?.disconnect();
-    journeyIO = new IntersectionObserver(
-      (entries) => {
-        for (const entry of entries) {
-          if (entry.isIntersecting) {
-            entry.target.classList.add("is-in");
-            journeyIO?.unobserve(entry.target);
-          }
-        }
-      },
-      { threshold: 0.25 },
-    );
-    panels.forEach((panel) => journeyIO?.observe(panel));
 
-    ScrollTrigger.refresh();
-  }
-
-  // Boot idempotente: funciona en carga inicial y en navegación cliente
-  let journeyCtx: gsap.Context | null = null;
-  let journeyIO: IntersectionObserver | null = null;
-
-  function bootJourney() {
-    journeyCtx?.revert();
-    journeyIO?.disconnect();
-    journeyCtx = gsap.context(() => {
-      setup();
+    // Reveal por panel: containerAnimation hace que el trigger siga el scroll horizontal
+    gsap.utils.toArray<HTMLElement>(".panel").forEach((panel) => {
+      gsap.from(panel.querySelectorAll(".panel__item"), {
+        opacity: 0,
+        y: 24,
+        duration: 0.6,
+        ease: "power2.out",
+        stagger: 0.06,
+        scrollTrigger: {
+          trigger: panel,
+          containerAnimation: run,
+          start: "left 80%",
+          toggleActions: "play none none none",
+        },
+      });
     });
   }
 
-  // Esperar a que todo esté pintado antes de medir scrollWidth
-  document.addEventListener("astro:page-load", bootJourney);
-  if (document.readyState === "complete") {
-    bootJourney();
-  } else {
-    window.addEventListener("load", bootJourney, { once: true });
+  function boot() {
+    const section = document.querySelector<HTMLElement>("#tech-journey");
+    if (!section) return;
+
+    mm?.revert();
+    ac?.abort();
+    ac = new AbortController();
+
+    // Listener único de las pestañas (delegado), así no se duplica al cambiar de media query
+    section.querySelector<HTMLElement>(".tabs")?.addEventListener(
+      "click",
+      (e) => {
+        const tab = (e.target as Element).closest<HTMLButtonElement>(".tab");
+        if (tab?.dataset.tab) showPanel(section, tab.dataset.tab, true);
+      },
+      { signal: ac.signal },
+    );
+
+    mm = gsap.matchMedia();
+    mm.add("(min-width: 768px) and (prefers-reduced-motion: no-preference)", () =>
+      setupDesktop(section),
+    );
+    mm.add("(max-width: 767px)", () => setupMobile(section));
+
+    document.fonts?.ready.then(() => ScrollTrigger.refresh());
   }
+
+  document.addEventListener("astro:before-swap", () => {
+    mm?.revert();
+    ac?.abort();
+    mm = null;
+    ac = null;
+  });
+  document.addEventListener("astro:page-load", boot);
+  boot();
 </script>
-
-<style>
-@layer components {
-    /* Modo activo — requiere JS para activarse */
-    .journey--on {
-      height: 100vh;
-      overflow: hidden;
-    }
-
-    .journey--on .track {
-      height: 100%;
-      align-items: stretch;
-    }
-
-    .journey--on .panel {
-      height: 100%;
-      flex-shrink: 0;
-    }
-
-    .tech-list {
-      list-style: none;
-      margin: 0;
-      padding: 0;
-      display: grid;
-      gap: 12px 40px;
-      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-      max-width: 900px;
-    }
-
-    .tech-item {
-      border-top: 1.5px solid var(--line, #e5e7eb);
-    }
-
-    /* Reveal por panel (lo activa IntersectionObserver con .is-in) */
-    .panel h2,
-    .panel p,
-    .panel .tech-item {
-      opacity: 0;
-      translate: 0 24px;
-      transition:
-        opacity 0.6s ease,
-        translate 0.6s ease;
-    }
-
-    .panel.is-in h2,
-    .panel.is-in p,
-    .panel.is-in .tech-item {
-      opacity: 1;
-      translate: 0 0;
-    }
-
-    .panel.is-in p {
-      transition-delay: 0.08s;
-    }
-
-    .panel.is-in .tech-item {
-      transition-delay: 0.16s;
-    }
-  }
-
-  /* Overrides de theme en utilities */
-  @layer utilities {
-    /* Neón: chip translúcido para tapar el logo en reposo sin matar el glow */
-    .neon .tech-item {
-      background: color-mix(in srgb, #161824 72%, transparent);
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
-      border-radius: 12px;
-      padding-inline: 14px;
-    }
-
-    /* Sin movimiento: apila los paneles, todo visible, sin animaciones */
-    @media (prefers-reduced-motion: reduce) {
-      .journey--on {
-        height: auto;
-        overflow: visible;
-      }
-      .journey--on .track {
-        flex-direction: column;
-        width: 100%;
-        height: auto;
-      }
-      .journey--on .panel {
-        width: 100% !important;
-        height: auto !important;
-      }
-      .panel h2,
-      .panel p,
-      .panel .tech-item {
-        opacity: 1;
-        translate: none;
-        transition: none;
-      }
-    }
-  }
-</style>

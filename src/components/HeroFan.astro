@@ -217,9 +217,27 @@ const stackLogos = [
 </style>
 
 <script>
-  // Trigger the CSS word reveal after first paint
+  // Fire the word reveal when the bottom entry row finishes collapsing,
+  // so the reveal choreography lines up with the curtain opening.
   function loadHeroReveal() {
-    document.querySelectorAll(".hero-reveal").forEach((el) => el.classList.add("loaded"));
+    const rows = document.querySelectorAll(".hero-reveal");
+    if (rows.length === 0) return;
+
+    const show = () => rows.forEach((el) => el.classList.add("loaded"));
+
+    const bottomRow = document.querySelector(".entry-row-bottom");
+    if (bottomRow) {
+      bottomRow.addEventListener("animationend", (e) => {
+        if (e.animationName === "entry-row") show();
+      }, { once: true });
+      // Fallback: the curtain animation may already be done or absent
+      // (reduced-motion removes #entry). Show after a short grace period
+      // only if it never fired.
+      setTimeout(() => show(), 2500);
+    } else {
+      // No curtain on the page (e.g. reduced-motion): reveal immediately.
+      show();
+    }
   }
   document.addEventListener("astro:page-load", loadHeroReveal);
   loadHeroReveal();

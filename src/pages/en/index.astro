@@ -1,12 +1,13 @@
 ---
 /**
- * Redesign index — Spencer Gabor language, WanderleeDev content.
- * Standalone white page: no BaseLayout, no old header/footer, no GSAP.
- * Pulls the global CSS so fonts, Tailwind utilities and theme vars work
- * without the old layout chrome.
+ * Redesign index (en) — shared BaseLayout provides <html>/<head> with
+ * i18n Open Graph tags, the View Transitions client router, the
+ * theme-preset script, and the CSS that drives the IntroOverlay
+ * curtain + hero word-reveal. The global stylesheet is imported here
+ * so fonts/Tailwind/theme vars load on every locale page.
  */
+import BaseLayout from "../../layouts/BaseLayout.astro";
 import "../../styles/global.css";
-import RedesignHead from "../../components/RedesignHead.astro";
 import HeroFan from "../../components/HeroFan.astro";
 import FeaturedWork from "../../components/FeaturedWork.astro";
 import TechJourney from "../../components/TechJourney.astro";
@@ -14,38 +15,32 @@ import MoreWork from "../../components/MoreWork.astro";
 import RedesignContact from "../../components/RedesignContact.astro";
 import RedesignFooter from "../../components/RedesignFooter.astro";
 import ThemePicker from "../../components/ThemePicker.astro";
+import IntroOverlay from "../../components/IntroOverlay.astro";
 import { getTranslations } from "../../i18n/utils";
 
 const lang = Astro.currentLocale as "es" | "en";
 const t = getTranslations(lang);
+const meta = t("metadata");
 const projects = t("projects").list;
-console.log("DEBUG locale:", Astro.currentLocale);
 ---
 
-<html lang={lang}>
-  <head>
-    <RedesignHead
-      title="WanderleeDev — Redesign"
-      description="WanderleeDev — Fullstack, diseño y animación"
-    />
-  </head>
-  <body>
-    <ThemePicker />
-    <HeroFan />
-    <FeaturedWork
-      items={projects.map((p) => ({
-        title: p.title,
-        src: p.image,
-        alt: p.title,
-        description: p.description,
-        demoUrl: p.demo_url,
-        techs: p.technologies,
-        label: p.label,
-      }))}
-    />
-    <TechJourney />
-    <MoreWork />
-    <RedesignContact />
-    <RedesignFooter />
-  </body>
-</html>
+<BaseLayout title={meta.title} description={meta.description}>
+  <IntroOverlay />
+  <ThemePicker />
+  <HeroFan />
+  <FeaturedWork
+    items={projects.map((p) => ({
+      title: p.title,
+      src: p.image,
+      alt: p.title,
+      description: p.description,
+      demoUrl: p.demo_url,
+      techs: p.technologies,
+      label: p.label,
+    }))}
+  />
+  <TechJourney />
+  <MoreWork />
+  <RedesignContact />
+  <RedesignFooter />
+</BaseLayout>

@@ -1,0 +1,86 @@
+---
+/**
+ * IntroOverlay — "cortinilla" de entrada.
+ *
+ * Overlay fixed (dos filas que colapsan a los costados + una dot
+ * central) que enmascara FOIT / carga inicial. La lógica de
+ * "solo primera vez" y el fin por `document.fonts.ready` vive aquí;
+ * el CSS del overlay y del word-reveal que coordina vive en
+ * BaseLayout.astro, para compartirlo entre /es y /en.
+ *
+ * Montado en el <body> por las páginas que usan BaseLayout.
+ */
+---
+
+<div
+  id="entry"
+  class="intro-overlay fixed inset-0 z-1000 grid grid-rows-2 size-full"
+  aria-hidden="true"
+>
+  <div class="entry-row entry-row-top bg-red-400 size-full"></div>
+  <figure
+    class="entry-dot size-36 bg-black rounded-full absolute top-2/4 left-2/4 -translate-x-2/4 -translate-y-2/4"
+  ></figure>
+  <div class="entry-row entry-row-bottom bg-blue-400 size-full"></div>
+</div>
+
+<script>
+  // Intro controller. Runs once per page load.
+  //
+  // 1. Read localStorage. If seen, tag <html> .intro-seen and stop.
+  // 2. Otherwise wait for document.fonts.ready with a 1.2s floor,
+  //    then tag <html> .intro-hide to run the CSS collapse.
+  // 3. After the collapse settles, persist "seen" so the overlay
+  //    never shows again.
+  (function () {
+    const KEY = "wdev-intro-seen";
+    const root = document.documentElement;
+
+    const hasSeen = (() => {
+      try {
+        return localStorage.getItem(KEY) === "1";
+      } catch {
+        return false;
+      }
+    })();
+
+    if (hasSeen) {
+      root.classList.add("intro-seen");
+      return;
+    }
+
+    const markSeen = () => {
+      try {
+        localStorage.setItem(KEY, "1");
+      } catch {
+        /* storage unavailable */
+      }
+    };
+
+    const start = () => {
+      root.classList.add("intro-hide");
+      // Give the CSS transition room to finish before we persist.
+      setTimeout(() => {
+        markSeen();
+        root.classList.remove("intro-hide");
+        root.classList.add("intro-seen");
+      }, 1400);
+    };
+
+    const t0 = performance.now();
+    const FLOOR = 1200;
+
+    if (document.fonts && document.fonts.ready) {
+      Promise.race([
+        document.fonts.ready,
+        new Promise((r) => setTimeout(r, 4000)), // hard cap
+      ]).then(() => {
+        const elapsed = performance.now() - t0;
+        const wait = Math.max(0, FLOOR - elapsed);
+        setTimeout(start, wait);
+      });
+    } else {
+      setTimeout(start, FLOOR);
+    }
+  })();
+</script>

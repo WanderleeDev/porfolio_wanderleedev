@@ -1,0 +1,163 @@
+---
+/**
+ * BaseLayout — shared <html>/<head>/<body> shell for the redesign pages.
+ *
+ * Responsibilities:
+ *   - Open Graph + Twitter Card tags, i18n-aware (title/description/
+ *     thumbnail/locale come from src/i18n/locales).
+ *   - View Transitions client router.
+ *   - Inline theme-preset script (runs before paint to avoid flicker).
+ *   - Slots: children fill <body>. The IntroOverlay (curtain) is
+ *     rendered by the page that needs it, not by the layout — but the
+ *     CSS the layout owns makes the overlay participate in the
+ *     hero word-reveal choreography without JS on the hero side.
+ *
+ * Used by src/pages/index.astro (es) and src/pages/en/index.astro (en).
+ */
+import { ClientRouter } from "astro:transitions";
+import { getTranslations, languages } from "../i18n/utils";
+
+interface Props {
+  title: string;
+  description: string;
+}
+
+const { title, description } = Astro.props;
+const lang = Astro.currentLocale as "es" | "en";
+const t = getTranslations(lang);
+const meta = t("metadata");
+const site = "https://wanderlee.dev";
+
+// BCP-47 tag that mirrors Astro's i18n locale (for OG locale).
+const ogLocale = lang === "en" ? "en_US" : "es_AR";
+// Alternate language: the other locale's page URL (no prefix on /es).
+const altLang = lang === "es" ? "en" : "es";
+const altHref = altLang === "en" ? `${site}/en` : `${site}/`;
+const altTitle = altLang === "en" ? "WanderleeDev — Portfolio" : "Portafolio WanderleeDev";
+---
+
+<!doctype html>
+<html lang={lang}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="description" content={description} />
+    <meta name="keywords" content={meta.keywords} />
+    <link rel="icon" href="/favicon_default.svg" type="image/svg+xml" />
+    <link
+      rel="icon"
+      href="/favicon_dark.svg"
+      type="image/svg+xml"
+      media="(prefers-color-scheme: dark)"
+    />
+    <title>{title}</title>
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="WanderleeDev" />
+    <meta property="og:locale" content={ogLocale} />
+    <meta property="og:locale:alternate" content={altLang === "en" ? "es_AR" : "en_US"} />
+    <meta property="og:url" content={lang === "en" ? `${site}/en` : site} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={meta.thumbnail} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={title} />
+
+    <!-- Alternative language (i18n link) -->
+    <link rel="alternate" hreflang={altLang} href={altHref} />
+    <link rel="alternate" hreflang={`${altLang}-${altLang.toUpperCase()}`} href={altHref} />
+    <link rel="alternate" hreflang="x-default" href={site} />
+
+    <!-- Twitter / X -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={meta.thumbnail} />
+
+    <!-- Canonical -->
+    <link rel="canonical" href={lang === "en" ? `${site}/en` : site} />
+
+    <script is:inline>
+      try {
+        var ALL = ["light", "dark", "neon", "brutalist", "pixel", "aero"];
+        var s = localStorage.getItem("wdev-theme") || "system";
+        if (ALL.indexOf(s) < 0) s = "system";
+        var r = document.documentElement;
+        for (var i = 0; i < ALL.length; i++) r.classList.remove(ALL[i]);
+        if (s === "system") {
+          r.removeAttribute("data-theme");
+          if (matchMedia("(prefers-color-scheme: dark)").matches) r.classList.add("dark");
+        } else {
+          r.classList.add(s);
+          r.setAttribute("data-theme", s);
+        }
+      } catch (e) {}
+    </script>
+    <ClientRouter />
+
+    <style>
+      html,
+      body {
+        margin: 0;
+      }
+
+      /* ── Intro overlay (curtain) — global, so it can coordinate with
+            any component that exposes .hero-reveal word spans ──
+            Rendered by <IntroOverlay /> in the page body. */
+      .intro-overlay {
+        pointer-events: none;
+      }
+
+      .intro-overlay .entry-row {
+        transition: transform 0.7s ease-in;
+      }
+
+      .intro-overlay .entry-row-top    { transform-origin: left center; }
+      .intro-overlay .entry-row-bottom { transform-origin: right center; }
+
+      .intro-overlay .entry-dot {
+        transition: scale 0.5s ease-in, opacity 0.5s ease-in;
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .intro-overlay .entry-row,
+        .intro-overlay .entry-dot {
+          transition: none;
+        }
+      }
+
+      /* JS-gated collapse: when <html> gets .intro-hide, the rows
+         slide to the sides and the dot scales away. */
+      html.intro-hide .entry-row-top    { transform: scaleX(0); }
+      html.intro-hide .entry-row-bottom { transform: scaleX(0); transition-delay: 0.1s; }
+      html.intro-hide .entry-dot        { scale: 0; opacity: 0; }
+
+      html.intro-hide .intro-overlay {
+        animation: intro-hide-away 0s 1s forwards;
+      }
+
+      @keyframes intro-hide-away {
+        to { display: none; visibility: hidden; }
+      }
+
+      /* Second visit: the overlay is stripped from the DOM's visible
+         flow entirely (no flash, no layout shift). */
+      html.intro-seen .intro-overlay {
+        display: none;
+      }
+
+      /* The hero word reveal is driven by the same .intro-hide flag:
+         words stay collapsed until the intro collapses, then rise.
+         Pure CSS, no JS on the hero side. */
+      html:not(.intro-hide):not(.intro-seen) .hero-reveal .hero-word {
+        scale: 1 0;
+      }
+    </style>
+  </head>
+
+  <body>
+    <slot />
+  </body>
+</html>

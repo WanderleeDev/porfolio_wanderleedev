@@ -196,21 +196,21 @@ const stackLogos = [
 <style>
   .hero-reveal .hero-word {
     display: inline-block;
-    scale: 0;
-    translate: 0 0.6em;
-    transition: .8s scale var(--ease-out-elastic), .8s translate var(--ease-out-elastic);
+    scale: 1 0;
+    transform-origin: bottom;
+    will-change: scale;
+    transition: .8s scale var(--ease-out-elastic);
     transition-delay: calc(var(--delay) * .1s);
   }
 
   .hero-reveal.loaded .hero-word {
     scale: 1;
-    translate: 0 0;
+    will-change: auto;
   }
 
   @media (prefers-reduced-motion: reduce) {
     .hero-reveal .hero-word {
       scale: 1;
-      translate: 0 0;
       transition: none;
     }
   }

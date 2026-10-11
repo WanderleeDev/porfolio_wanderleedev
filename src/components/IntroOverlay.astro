@@ -19,8 +19,11 @@
 >
   <div class="entry-row entry-row-top bg-red-400 size-full"></div>
   <figure
-    class="entry-dot size-36 bg-black rounded-full absolute top-2/4 left-2/4 -translate-x-2/4 -translate-y-2/4"
-  ></figure>
+    class="entry-dot"
+    aria-hidden="true"
+  >
+    <span class="cat-sprite" aria-hidden="true"></span>
+  </figure>
   <div class="entry-row entry-row-bottom bg-blue-400 size-full"></div>
 </div>
 
@@ -45,7 +48,7 @@
     })();
 
     if (hasSeen) {
-      root.classList.add("intro-seen");
+      root.classList.add("intro-seen", "intro-done");
       return;
     }
 
@@ -58,13 +61,23 @@
     };
 
     const start = () => {
-      root.classList.add("intro-hide");
-      // Give the CSS transition room to finish before we persist.
+      // Stage 1: fonts are ready → start the cat animation.
+      root.classList.add("intro-run");
+
+      // Stage 2: cat finished (0.6s) → collapse the curtain.
+      const CAT_MS = 600;
+      const HIDE_SETTLE_MS = 1400; // rows 0.7s + 1.4s hide-away = margin
       setTimeout(() => {
-        markSeen();
-        root.classList.remove("intro-hide");
-        root.classList.add("intro-seen");
-      }, 1400);
+        root.classList.add("intro-hide");
+
+        // Stage 3: curtain fully collapsed → finalise the intro.
+        // The hero word reveal is gated by .intro-done in the layout CSS.
+        setTimeout(() => {
+          markSeen();
+          root.classList.remove("intro-run", "intro-hide");
+          root.classList.add("intro-done");
+        }, HIDE_SETTLE_MS);
+      }, CAT_MS);
     };
 
     const t0 = performance.now();

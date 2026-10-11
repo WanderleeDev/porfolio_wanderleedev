@@ -202,21 +202,9 @@ const stackLogos = [
     transition-delay: calc(var(--delay) * .1s);
   }
 
-  /* The layout owns the choreography gate:
-     - .intro-seen  → words render at full scale, no animation
-     - .intro-hide  → the curtain collapse already finished, so the
-       words rise on their own transition
-     This rule only fires when neither class is present (first
-     visit, intro still running). */
-  html:not(.intro-seen):not(.intro-hide) .hero-reveal .hero-word {
-    /* keep the initial collapsed state until the intro clears */
-  }
-
-  html.intro-hide .hero-reveal .hero-word,
-  html.intro-seen .hero-reveal .hero-word {
-    scale: 1;
-  }
-
+  /* The layout (BaseLayout.astro) owns the choreography gate:
+       html.intro-done / .intro-seen → words rise to scale: 1.
+     This file only declares the base + reduced-motion states. */
   @media (prefers-reduced-motion: reduce) {
     .hero-reveal .hero-word {
       scale: 1;

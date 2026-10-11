@@ -95,9 +95,18 @@ const altTitle = altLang === "en" ? "WanderleeDev — Portfolio" : "Portafolio W
         }
       } catch (e) {}
     </script>
+    <script is:inline>
+      // Flash guard: tag <html> .intro-seen before first paint so the
+      // overlay never shows on return visits. Runs in <head>, before body.
+      try {
+        if (localStorage.getItem("wdev-intro-seen") === "1") {
+          document.documentElement.classList.add("intro-seen", "intro-done");
+        }
+      } catch (e) {}
+    </script>
     <ClientRouter />
 
-    <style>
+    <style is:global>
       html,
       body {
         margin: 0;

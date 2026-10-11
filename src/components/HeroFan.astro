@@ -196,18 +196,19 @@ const stackLogos = [
 <style>
   .hero-reveal .hero-word {
     display: inline-block;
-    scale: 1 0;
     transform-origin: bottom;
     transition: .8s scale var(--ease-out-elastic);
     transition-delay: calc(var(--delay) * .1s);
   }
 
-  /* The layout (BaseLayout.astro) owns the choreography gate:
-       html.intro-done / .intro-seen → words rise to scale: 1.
-     This file only declares the base + reduced-motion states. */
+  /* The layout (BaseLayout.astro, is:global) owns the choreography gate:
+     html:not(.intro-done):not(.intro-seen) .hero-reveal .hero-word
+       → scale: 1 0 (collapsed while the intro curtain runs)
+     html.intro-done / .intro-seen .hero-reveal .hero-word
+       → scale: 1 (words rise after the intro fully finishes)
+     This file only declares display/origin/transition + reduced-motion. */
   @media (prefers-reduced-motion: reduce) {
     .hero-reveal .hero-word {
-      scale: 1;
       transition: none;
     }
   }

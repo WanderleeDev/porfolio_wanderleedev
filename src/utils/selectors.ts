@@ -8,7 +8,8 @@ export function $$<T extends HTMLElement>(
   return document.querySelectorAll(selector);
 }
 
-
-export function validateElements<T extends HTMLElement | null>(elements: T[]) {
-  return elements.every(Boolean);
+export function validateElements<T extends HTMLElement>(
+  elements: (T | null)[]
+): boolean{
+  return elements.some(el => el === null);
 }

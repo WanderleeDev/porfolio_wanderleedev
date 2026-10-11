@@ -1,12 +1,4 @@
 ---
-/**
- * Intro curtain. #pet es el contenedor circular (escala GSAP) con el aro
- * de texto girando alrededor de #cat, el sprite del gato centrado.
- * viewBox 300x300, centro en (150,150).
- *   - Texto superior: arco por arriba, baseline r=104.
- *   - Texto inferior: arco por abajo, baseline r=126 (letras hacia el centro).
- *   - Aro interior r=66: el gato ocupa ese radio (inset 28%).
- */
 const top = "SOFWARE DEVELOPER";
 const bottom = "WANDERLEEDEV";
 ---
@@ -34,18 +26,40 @@ const bottom = "WANDERLEEDEV";
         <path id="badge-bottom" d="M 24 150 A 126 126 0 0 0 276 150"></path>
       </defs>
 
-      <circle cx="150" cy="150" r="142" class="fill-none stroke-white stroke-[1.5]"></circle>
-      <circle cx="150" cy="150" r="98" class="fill-none stroke-white/70 stroke-1"></circle>
-      <circle cx="150" cy="150" r="82" class="fill-none stroke-white/30 stroke-1"></circle>
-      <circle cx="150" cy="150" r="66" class="fill-none stroke-white/15 stroke-1"></circle>
+      <circle
+        cx="150"
+        cy="150"
+        r="142"
+        class="fill-none stroke-white stroke-[1.5]"></circle>
+      <circle
+        cx="150"
+        cy="150"
+        r="98"
+        class="fill-none stroke-white/70 stroke-1"></circle>
+      <circle
+        cx="150"
+        cy="150"
+        r="82"
+        class="fill-none stroke-white/30 stroke-1"></circle>
+      <circle
+        cx="150"
+        cy="150"
+        r="66"
+        class="fill-none stroke-white/15 stroke-1"></circle>
 
       <circle cx="36" cy="150" r="3.5" class="fill-blue-500"></circle>
       <circle cx="264" cy="150" r="3.5" class="fill-blue-500"></circle>
 
-      <text class="fill-white text-[26px] font-bold tracking-widest" text-anchor="middle">
+      <text
+        class="fill-white text-[26px] font-bold tracking-widest"
+        text-anchor="middle"
+      >
         <textPath href="#badge-top" startOffset="50%">{top}</textPath>
       </text>
-      <text class="fill-white text-[26px] font-bold tracking-widest" text-anchor="middle">
+      <text
+        class="fill-white text-[26px] font-bold tracking-widest"
+        text-anchor="middle"
+      >
         <textPath href="#badge-bottom" startOffset="50%">{bottom}</textPath>
       </text>
     </svg>
@@ -55,14 +69,15 @@ const bottom = "WANDERLEEDEV";
       style="image-rendering: pixelated;"
       class="absolute inset-[20%] rounded-full bg-[url('/cat.webp')] bg-no-repeat bg-cover bg-badge-ink"
       aria-hidden="true"
-    ></div>
+    >
+    </div>
   </div>
 </div>
 
 <script>
   import gsap from "gsap";
   import { IS_DEV, storage, reducedMotion } from "../utils/extra";
-  import { $, validateElements } from "../utils/selectors";
+  import { $ } from "../utils/selectors";
 
   (function initIntro() {
     const rootEl = document.documentElement;
@@ -72,7 +87,9 @@ const bottom = "WANDERLEEDEV";
     const petEl = $<HTMLElement>("#pet");
     const catEl = $<HTMLElement>("#cat");
 
-    if (!validateElements([curtainEl, barEl1, barEl2, petEl, catEl])) return;
+    if (!curtainEl || !barEl1 || !barEl2 || !petEl || !catEl) {
+      return;
+    }
 
     if ((storage.get() && !IS_DEV) || reducedMotion) {
       curtainEl!.style.display = "none";
@@ -81,12 +98,11 @@ const bottom = "WANDERLEEDEV";
 
     const tl = gsap.timeline({
       paused: true,
-      defaults: { force3D: true },
       onStart: () => gsap.set(rootEl, { overflow: "hidden" }),
       onComplete: () => {
         storage.set();
         gsap.set(rootEl, { overflow: "unset" });
-        curtainEl!.style.display = "none";
+        curtainEl.style.display = "none";
       },
     });
 

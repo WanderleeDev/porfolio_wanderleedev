@@ -14,7 +14,7 @@
  * Used by src/pages/index.astro (es) and src/pages/en/index.astro (en).
  */
 import { ClientRouter } from "astro:transitions";
-import { getTranslations, languages } from "../i18n/utils";
+import { getTranslations } from "../i18n/utils";
 import IntroCurtain from "../components/IntroCurtain.astro";
 
 interface Props {
@@ -27,14 +27,8 @@ const lang = Astro.currentLocale as "es" | "en";
 const t = getTranslations(lang);
 const meta = t("metadata");
 const site = "https://wanderlee.dev";
-// Injected into the inline flash-guard script. False in `astro build`
-// (production), true during `astro dev` — so the curtain re-runs on
-// every dev reload.
 const isDev = import.meta.env.DEV;
-
-// BCP-47 tag that mirrors Astro's i18n locale (for OG locale).
 const ogLocale = lang === "en" ? "en_US" : "es_AR";
-// Alternate language: the other locale's page URL (no prefix on /es).
 const altLang = lang === "es" ? "en" : "es";
 const altHref = altLang === "en" ? `${site}/en` : `${site}/`;
 const altTitle = altLang === "en" ? "WanderleeDev — Portfolio" : "Portafolio WanderleeDev";
@@ -103,13 +97,11 @@ const altTitle = altLang === "en" ? "WanderleeDev — Portfolio" : "Portafolio W
       const __DEV__ = ${isDev};
       try {
         if (!__DEV__ && localStorage.getItem("wdev-intro-seen") === "1") {
-          document.documentElement.classList.add("intro-seen", "intro-done");
+        document.querySelector('#curtain').classList.add('hidden', 'pointer-events-none')
         }
       } catch (e) {}
     `}
     ></script>
-    <ClientRouter />
-
   </head>
 
   <body class="overflow-x-clip">

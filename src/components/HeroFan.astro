@@ -201,12 +201,14 @@ const stackLogos = [
     transition-delay: calc(var(--delay) * .1s);
   }
 
-  /* The layout (BaseLayout.astro, is:global) owns the choreography gate:
-     html:not(.intro-done):not(.intro-seen) .hero-reveal .hero-word
-       → scale: 1 0 (collapsed while the intro curtain runs)
-     html.intro-done / .intro-seen .hero-reveal .hero-word
-       → scale: 1 (words rise after the intro fully finishes)
-     This file only declares display/origin/transition + reduced-motion. */
+  /* The layout (BaseLayout.astro, is:global) owns the word-reveal
+     gate:
+       .hero-reveal .hero-word            → scale: 1 0 (collapsed)
+       html.hero-ready .hero-reveal .hero-word → scale: 1 (rises)
+     .hero-ready is set by the IntroOverlay script on every visit,
+     after the curtain sequence on first visit, immediately on
+     return visits / reduced motion. This file only declares the
+     transition + reduced-motion. */
   @media (prefers-reduced-motion: reduce) {
     .hero-reveal .hero-word {
       transition: none;

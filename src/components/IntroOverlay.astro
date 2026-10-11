@@ -3,10 +3,14 @@
  * IntroOverlay — "cortinilla" de entrada.
  *
  * Overlay fixed (dos filas que colapsan a los costados + una dot
- * central) que enmascara FOIT / carga inicial. La lógica de
- * "solo primera vez" y el fin por `document.fonts.ready` vive aquí;
- * el CSS del overlay y del word-reveal que coordina vive en
- * BaseLayout.astro, para compartirlo entre /es y /en.
+ * central que muestra el gato pixel-art) que enmascara FOIT / carga
+ * inicial. La lógica de "solo primera vez" y el fin por
+ * `document.fonts.ready` vive aquí; el CSS del overlay y del
+ * word-reveal que coordina vive en BaseLayout.astro, para
+ * compartirlo entre /es y /en.
+ *
+ * Dev bypass: cuando `import.meta.env.DEV` es true, la cortinilla
+ * siempre se ejecuta, ignorando localStorage.
  *
  * Montado en el <body> por las páginas que usan BaseLayout.
  */
@@ -28,14 +32,15 @@
 </div>
 
 <script>
-  // Intro controller. Runs once per page load.
-  //
-  // 1. Read localStorage. If seen, tag <html> .intro-seen and stop.
-  // 2. Otherwise wait for document.fonts.ready with a 1.2s floor,
-  //    then tag <html> .intro-hide to run the CSS collapse.
-  // 3. After the collapse settles, persist "seen" so the overlay
-  //    never shows again.
-  (function () {
+  import gsap from "gsap";
+
+  (function initIntro() {
+    // Intro controller. Runs once per page load.
+    //
+    // Dev bypass: in dev mode the curtain always runs, regardless of
+    // the localStorage "seen" flag, so the choreography can be
+    // re-tested on every reload.
+    const IS_DEV = import.meta.env.DEV;
     const KEY = "wdev-intro-seen";
     const root = document.documentElement;
 
@@ -47,11 +52,6 @@
       }
     })();
 
-    if (hasSeen) {
-      root.classList.add("intro-seen", "intro-done");
-      return;
-    }
-
     const markSeen = () => {
       try {
         localStorage.setItem(KEY, "1");
@@ -60,40 +60,65 @@
       }
     };
 
-    const start = () => {
-      // Stage 1: fonts are ready → start the cat animation.
-      root.classList.add("intro-run");
+    const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-      // Stage 2: cat finished (0.6s) → collapse the curtain.
-      const CAT_MS = 600;
-      const HIDE_SETTLE_MS = 1400; // rows 0.7s + 1.4s hide-away = margin
-      setTimeout(() => {
-        root.classList.add("intro-hide");
+    // In dev (IS_DEV), the curtain always runs so the choreography can
+    // be re-tested on every reload. In prod, a return visit skips it.
+    const skipCurtain = hasSeen && !IS_DEV;
 
-        // Stage 3: curtain fully collapsed → finalise the intro.
-        // The hero word reveal is gated by .intro-done in the layout CSS.
-        setTimeout(() => {
-          markSeen();
-          root.classList.remove("intro-run", "intro-hide");
+    // Fire the hero word reveal (independent of the curtain).
+    const revealHero = () => root.classList.add("hero-ready");
+
+    if (reducedMotion) {
+      // Reduced motion: no curtain sequence at all.
+      root.classList.add("intro-seen", "intro-done");
+      revealHero();
+      return;
+    }
+
+    if (skipCurtain) {
+      // Return visit in prod: overlay is hidden by CSS; just reveal words.
+      root.classList.add("intro-seen", "intro-done");
+      revealHero();
+      return;
+    }
+
+    // ── First-visit (or dev) choreography ──
+    // GSAP timeline: cat plays → dot scales away → bars collapse → done.
+    const CAT_S = 0.6; // 0.6s, 12 frames
+    const DOT_S = 0.5; // dot scale-out
+    const BARS_S = 0.8; // bars collapse
+    const T0 = performance.now();
+    const FLOOR = 1.2; // fonts.ready floor, seconds
+
+    const tl = gsap.timeline({ paused: true });
+    tl.call(() => root.classList.add("intro-run"), [], 0)
+      .call(() => root.classList.add("intro-dot-out"), [], CAT_S)
+      .call(() => root.classList.add("intro-out"), [], CAT_S + DOT_S)
+      .call(
+        () => {
+          root.classList.remove("intro-run", "intro-dot-out", "intro-out");
           root.classList.add("intro-done");
-        }, HIDE_SETTLE_MS);
-      }, CAT_MS);
-    };
+          markSeen();
+          revealHero();
+        },
+        [],
+        CAT_S + DOT_S + BARS_S
+      );
 
-    const t0 = performance.now();
-    const FLOOR = 1200;
+    const runTimeline = () => tl.play();
 
     if (document.fonts && document.fonts.ready) {
       Promise.race([
         document.fonts.ready,
         new Promise((r) => setTimeout(r, 4000)), // hard cap
       ]).then(() => {
-        const elapsed = performance.now() - t0;
-        const wait = Math.max(0, FLOOR - elapsed);
-        setTimeout(start, wait);
+        const elapsed = (performance.now() - T0) / 1000;
+        const wait = Math.max(0, FLOOR - elapsed) * 1000;
+        setTimeout(runTimeline, wait);
       });
     } else {
-      setTimeout(start, FLOOR);
+      setTimeout(runTimeline, FLOOR * 1000);
     }
   })();
 </script>

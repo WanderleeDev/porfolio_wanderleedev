@@ -8,6 +8,13 @@
 import Icon from "astro-iconify";
 import { getTranslations } from "../i18n/utils";
 
+const lang = Astro.currentLocale as "es" | "en";
+const t = getTranslations(lang);
+
+const heroWordsName = "Wanderlee Dev".split(" ");
+const heroWordsRoleLine1 = "Fullstack,".split(" ");
+const heroWordsRoleLine2 = [t("hero").titleAccent, "&", t("hero").titleEnd];
+
 const stackLogos = [
   {
     icon: "devicon:postgresql",
@@ -34,9 +41,6 @@ const stackLogos = [
     rotate: "rotate-6",
   },
 ];
-
-const lang = Astro.currentLocale as "es" | "en";
-const t = getTranslations(lang);
 ---
 
 <section
@@ -49,10 +53,11 @@ const t = getTranslations(lang);
   </p>
 
   <h1
-    id="hero-name"
-    class="font-fira-sans-extra-condensed font-black uppercase text-ink leading-[0.9] mt-4 text-[clamp(3rem,10vw,8rem)] tracking-tight"
+    class="font-fira-sans-extra-condensed font-black uppercase text-ink leading-[0.9] mt-4 text-[clamp(3rem,10vw,8rem)] tracking-tight hero-reveal"
   >
-    Wanderlee Dev
+    {heroWordsName.map((w, i) => (
+      <span class="hero-word" style={`--delay:${i}`} aria-hidden="true">{w}&nbsp;</span>
+    ))}
   </h1>
 
   <div
@@ -78,11 +83,15 @@ const t = getTranslations(lang);
   </div>
 
   <h2
-    id="hero-role"
-    class="font-fira-sans-extra-condensed font-black uppercase text-muted leading-[0.95] text-[clamp(2rem,7.5vw,5.5rem)]"
+    class="font-fira-sans-extra-condensed font-black uppercase text-muted leading-[0.95] text-[clamp(2rem,7.5vw,5.5rem)] hero-reveal"
   >
-    Fullstack,<br />
-    {t("hero").titleAccent} & {t("hero").titleEnd}
+    {heroWordsRoleLine1.map((w, i) => (
+      <span class="hero-word" style={`--delay:${i}`} aria-hidden="true">{w}&nbsp;</span>
+    ))}
+    <br />
+    {heroWordsRoleLine2.map((w, i) => (
+      <span class="hero-word" style={`--delay:${i + 2}`} aria-hidden="true">{w}&nbsp;</span>
+    ))}
   </h2>
 
   <div class="mt-6">
@@ -185,45 +194,33 @@ const t = getTranslations(lang);
 </style>
 
 <style>
-  .hero-word {
+  .hero-reveal .hero-word {
     display: inline-block;
+    scale: 0;
+    translate: 0 0.6em;
+    transition: .8s scale var(--ease-out-elastic), .8s translate var(--ease-out-elastic);
+    transition-delay: calc(var(--delay) * .1s);
+  }
+
+  .hero-reveal.loaded .hero-word {
+    scale: 1;
+    translate: 0 0;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .hero-reveal .hero-word {
+      scale: 1;
+      translate: 0 0;
+      transition: none;
+    }
   }
 </style>
 
 <script>
-  import gsap from "gsap";
-  import { SplitText } from "gsap/SplitText";
-  gsap.registerPlugin(SplitText);
-
-  const BOUNCE_SOFT =
-    "linear(0, .5737 7.6%, .8382 11.87%, .9463 14.19%, 1.0292 16.54%, 1.0886 18.97%, 1.1258 21.53%, 1.137 22.97%, 1.1424 24.48%, 1.1423 26.1%, 1.1366 27.86%, 1.1165 31.01%, 1.0507 38.62%, 1.0219 42.57%, .9995 46.99%, .9872 51.63%, .9842 58.77%, 1.0011 81.26%, 1)";
-
-  function heroWordReveal() {
-    gsap.matchMedia().add(
-      "(prefers-reduced-motion: no-preference)",
-      () => {
-        ["hero-name", "hero-role"].forEach((id) => {
-          const el = document.getElementById(id);
-          if (!el || el.dataset.wired) return;
-          el.dataset.wired = "true";
-
-          const split = SplitText.create(el, {
-            type: "words",
-            wordsClass: "hero-word",
-          });
-
-          gsap.from(split.words, {
-            opacity: 0,
-            y: 60,
-            duration: 0.9,
-            stagger: 0.08,
-            ease: BOUNCE_SOFT,
-          });
-        });
-      },
-    );
+  // Trigger the CSS word reveal after first paint
+  function loadHeroReveal() {
+    document.querySelectorAll(".hero-reveal").forEach((el) => el.classList.add("loaded"));
   }
-
-  document.addEventListener("astro:page-load", heroWordReveal);
-  heroWordReveal();
+  document.addEventListener("astro:page-load", loadHeroReveal);
+  loadHeroReveal();
 </script>

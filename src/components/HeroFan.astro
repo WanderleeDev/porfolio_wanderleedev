@@ -40,7 +40,8 @@ const t = getTranslations(lang);
 ---
 
 <section
-  class="h-dvh min-h-[640px] bg-surface flex flex-col items-center justify-center px-4 text-center overflow-hidden"
+  id="hero"
+  class="h-[110dvh] min-h-[640px] bg-surface flex flex-col items-center justify-center px-4 text-center overflow-hidden"
   aria-label="Presentación"
 >
   <p class="font-sans text-[11px] tracking-[0.2em] text-muted uppercase mt-1">
@@ -60,9 +61,10 @@ const t = getTranslations(lang);
     {
       stackLogos.map(({ icon, alt, color, rotate }) => (
         <div
-          class={`w-28 h-28 sm:w-32 sm:h-32 md:w-40 md:h-40 rounded-2xl shadow-[0_14px_35px_-10px_rgba(0,0,0,0.12)] flex items-center justify-center bg-surface border border-line ${rotate} -ml-5 first:ml-0 hover:rotate-0 hover:scale-105 hover:z-10 hover:shadow-[0_20px_45px_-10px_rgba(0,0,0,0.18)] transition-transform duration-500 ease-out`}
+          class={`tech-card w-28 h-28 sm:w-32 sm:h-32 md:w-40 md:h-40 rounded-2xl shadow-[0_14px_35px_-10px_rgba(0,0,0,0.12)] flex items-center justify-center bg-surface border border-line ${rotate} -ml-5 first:ml-0 hover:rotate-0 hover:scale-105 hover:z-10 hover:shadow-[0_20px_45px_-10px_rgba(0,0,0,0.18)] transition-transform duration-500 ease-out`}
           role="img"
           aria-label={alt}
+          data-color={color}
         >
           <Icon
             name={icon}
@@ -85,8 +87,97 @@ const t = getTranslations(lang);
     <p class="font-sans text-xs font-bold tracking-[0.2em] text-ink uppercase">
       {t("hero").subtitle}
     </p>
-    <p class="font-sans text-[11px] tracking-[0.15em] text-muted uppercase mt-1">
+    <p id="stack" class="font-sans text-[11px] tracking-[0.15em] text-muted uppercase mt-1">
       PostgreSQL · NestJS · Angular · Node.js
     </p>
   </div>
 </section>
+
+<style>
+@property --hero-color-1 {
+  syntax: "<color>";
+  inherits: false;
+  initial-value: transparent;
+}
+
+@property --hero-color-2 {
+  syntax: "<color>";
+  inherits: false;
+  initial-value: transparent;
+}
+
+@property --hero-color-3 {
+  syntax: "<color>";
+  inherits: false;
+  initial-value: transparent;
+}
+
+@property --hero-color-4 {
+  syntax: "<color>";
+  inherits: false;
+  initial-value: transparent;
+}
+
+#hero {
+  --hero-color-1: transparent;
+  --hero-color-2: transparent;
+  --hero-color-3: transparent;
+  --hero-color-4: transparent;
+ mask-image: linear-gradient(
+  #000 0,
+  #000 90%,
+  #0000 100%
+);
+
+  background: linear-gradient(
+    135deg,
+    var(--hero-color-1) 0%,
+    var(--hero-color-2) 25%,
+    var(--hero-color-3) 75%,
+    var(--hero-color-4) 100%
+  );
+
+  transition:
+    --hero-color-1 500ms ease,
+    --hero-color-2 500ms ease,
+    --hero-color-3 500ms ease,
+    --hero-color-4 500ms ease,
+    font-weight 500ms ease;
+
+  &:has(.tech-card:hover) #stack {
+    color: #fff;
+  }
+
+  &:has(.tech-card:nth-child(1):hover) {
+    --hero-color-1: #1b2a41;
+    --hero-color-2: #336791;
+    --hero-color-3: #00a6fb;
+    --hero-color-4: #a9def9;
+    & #stack {
+        font-weight: 900;
+    }
+  }
+
+  &:has(.tech-card:nth-child(2):hover) {
+    --hero-color-1: #5c001f;
+    --hero-color-2: #e0234e;
+    --hero-color-3: #a000ff;
+    --hero-color-4: #ff7eb6;
+  }
+
+  &:has(.tech-card:nth-child(3):hover) {
+    --hero-color-1: #ff0057;
+    --hero-color-2: #dd0031;
+    --hero-color-3: #a000ff;
+    --hero-color-4: #6a00ff;
+  }
+
+  &:has(.tech-card:nth-child(4):hover) {
+    --hero-color-1: #164e24;
+    --hero-color-2: #339933;
+    --hero-color-3: #84cc16;
+    --hero-color-4: #d9f99d;
+  }
+
+}
+</style>

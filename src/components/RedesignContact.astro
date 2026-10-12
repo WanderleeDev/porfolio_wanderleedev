@@ -1,115 +1,28 @@
 ---
 /**
- * RedesignContact — sección de contacto con marquee + formulario conversacional.
- * Fondo oscuro propio, independiente del tema de la página.
- * Datos del i18n, GSAP para el marquee y la animación de entrada.
+ * RedesignContact — lenguaje Spencer Gabor de la página:
+ * canvas claro (bg-surface), título condensado gigante, subtítulo muted,
+ * tarjeta de formulario clara con borde. Sin banda marquee ni bloque oscuro
+ * (el footer ya es el bloque oscuro de cierre).
+ * Textos del i18n (contactSection). Envío vía mailto, sin backend.
  */
+import Icon from "astro-iconify";
 import { getTranslations } from "../i18n/utils";
 
-const lang  = Astro.currentLocale as "es" | "en";
-const t     = getTranslations(lang);
-const info  = t("contactSection");
-const email = "wanderleedev@gmail.com";
-const kinds = info.kinds;
-const labels = info.labels;
----
+const lang = Astro.currentLocale === "en" ? "en" : "es";
+const info = getTranslations(lang)("contactSection");
+const kinds: string[] = info.kinds;
 
-<section
-  id="redesign-contact"
-  class="contact"
-  aria-labelledby="contact-heading"
->
-  <!-- Marquee -->
-  <div class="marquee" aria-hidden="true">
-    <div class="mtrack" id="mtrack">
-      {Array.from({ length: 8 }).map(() => (
-        <span>{t("contactSection").marquee}</span>
-      ))}
-    </div>
-  </div>
+const UI = {
+  es: { kind: "Tipo de proyecto", name: "Nombre", what: "Empresa o idea", email: "Correo" },
+  en: { kind: "Project type", name: "Name", what: "Company or idea", email: "Email" },
+}[lang];
 
-  <div class="max-w-[1000px] mx-auto px-6">
-    <h2 id="contact-heading" class="sr-only">{info.title}</h2>
+const placeholder = (key: string, fallback: string) =>
+  info.labels.find((l: { key: string }) => l.key === key)?.label ?? fallback;
 
-    <form id="redesign-form" novalidate class="mb-0">
-      <p class="sentence capitalize">
-        <span class="ln">{info.sentence.start}
-          <input
-            class="f"
-            name="name"
-            placeholder={labels.find(l=>l.key==="name")?.label ?? "tu nombre"}
-            autocomplete="name"
-            aria-label={info.aria.name}
-          />
-          {info.sentence.andNeed}
-        </span>
-        <span class="ln">
-          <span class="kind-wrap">
-            <button type="button" class="f kind-trigger" id="kind-trigger" aria-haspopup="listbox" aria-expanded="false">
-              <span id="kind-label">{kinds[0]}</span>
-            </button>
-            <span class="kind-panel" id="kind-panel" role="listbox" hidden>
-              {kinds.map((k, i) => (
-                <button
-                  type="button"
-                  class={`kind-option${i === 0 ? " kind-option--active" : ""}`}
-                  data-kind={k}
-                  role="option"
-                  aria-selected={i === 0 ? true : false}
-                >
-                  {k}
-                  <span class="kind-option__check" aria-hidden="true">✓</span>
-                </button>
-              ))}
-            </span>
-            <input type="hidden" name="kind" id="kind-input" value={kinds[0]} />
-          </span>
-          {info.sentence.for}
-        </span>
-        <span class="ln">
-          <input
-            class="f"
-            name="what"
-            placeholder={labels.find(l=>l.key==="what")?.label ?? "tu empresa o idea"}
-            aria-label={info.aria.what}
-          />.
-        </span>
-        <span class="ln">
-          {info.sentence.replyTo}
-          <input
-            class="f"
-            name="email"
-            type="email"
-            placeholder={labels.find(l=>l.key==="email")?.label ?? "tu@correo.com"}
-            autocomplete="email"
-            aria-label={info.aria.email}
-          />.
-        </span>
-      </p>
-
-      <p class="err" id="redesign-err" role="alert"></p>
-
-      <button
-        type="submit"
-        class="font-sans font-bold text-[1.05rem] px-7 py-4 rounded-full border-0 bg-ink text-contrast cursor-pointer transition-opacity hover:opacity-80"
-      >
-        {info.submit}
-      </button>
-    </form>
-
-    <p class="font-sans text-soft mt-10 text-sm capitalize">
-      {info.preferredText}
-      <a
-        href={`mailto:${email}`}
-        class="text-ink font-semibold hover:underline normal-case"
-      >
-        {email}
-      </a>
-    </p>
-  </div>
-</section>
-
-<script type="application/json" id="contact-i18n" set:html={JSON.stringify({
+const config = {
+  email: "wanderleedev@gmail.com",
   error: info.error,
   errorWhat: info.errorWhat,
   errorEmail: info.errorEmail,
@@ -118,13 +31,145 @@ const labels = info.labels;
   for: info.sentence.for,
   replyTo: info.sentence.replyTo,
   submitSubject: info.submitSubject,
-})} />
+};
+
+// Escapa "<" para que ningún texto pueda cerrar el <script> antes de tiempo
+const configJson = JSON.stringify(config).replace(/</g, "\\u003c");
+
+const inputCls =
+  "w-full rounded-2xl border border-line bg-surface px-4 py-3 font-sans text-[1.02rem] text-ink placeholder:text-muted/70 transition-colors focus:outline-none focus:border-ink aria-[invalid=true]:border-red-500";
+---
+
+<section id="contact" class="bg-surface text-ink" aria-labelledby="contact-heading">
+  <div class="mx-auto grid max-w-6xl grid-cols-1 items-start gap-10 px-6 py-20 md:grid-cols-[1fr_1.1fr] md:gap-14 md:py-28 lg:px-10">
+    <div data-reveal>
+      <p class="font-sans text-[11px] font-bold uppercase tracking-[0.25em] text-muted">
+        {info.marquee}
+      </p>
+      <h2
+        id="contact-heading"
+        class="mt-3 font-fira-sans-extra-condensed font-black uppercase leading-[0.9] tracking-tight text-[clamp(3rem,9vw,7rem)]"
+      >
+        {info.title}
+      </h2>
+      <p class="mt-4 max-w-md font-sans text-[clamp(0.95rem,1.8vw,1.05rem)] leading-relaxed text-soft">
+        {info.subtitle}
+      </p>
+
+      <div class="mt-8 flex flex-wrap items-center gap-3">
+        <a
+          href={`mailto:${config.email}`}
+          class="inline-flex items-center gap-2 rounded-full bg-ink px-6 py-3 font-sans text-sm font-bold text-surface transition-transform hover:scale-105 active:scale-95"
+        >
+          <Icon name="lucide:mail" class="h-4 w-4" aria-hidden="true" />
+          {config.email}
+        </a>
+        <a
+          href="https://www.linkedin.com/in/wanderlee-max/"
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="LinkedIn"
+          class="flex h-11 w-11 items-center justify-center rounded-full border border-line text-ink transition-transform hover:scale-105 active:scale-95"
+        >
+          <Icon name="lucide:linkedin" class="h-5 w-5" aria-hidden="true" />
+        </a>
+        <a
+          href="https://github.com/WanderleeDev"
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="GitHub"
+          class="flex h-11 w-11 items-center justify-center rounded-full border border-line text-ink transition-transform hover:scale-105 active:scale-95"
+        >
+          <Icon name="lucide:github" class="h-5 w-5" aria-hidden="true" />
+        </a>
+      </div>
+      <p class="mt-4 font-sans text-sm text-muted">{info.preferredText}</p>
+    </div>
+
+    <form
+      id="contact-form"
+      data-reveal
+      novalidate
+      class="grid gap-5 rounded-3xl border border-line bg-surface p-6 shadow-[0_20px_50px_-30px_rgba(0,0,0,0.25)] md:p-8"
+    >
+      <div class="grid gap-2">
+        <label for="f-name" class="font-sans text-[0.72rem] font-bold uppercase tracking-[0.16em] text-muted">
+          {UI.name}
+        </label>
+        <input
+          id="f-name"
+          name="name"
+          autocomplete="name"
+          placeholder={placeholder("name", "Ana Pérez")}
+          class={inputCls}
+        />
+      </div>
+
+      <fieldset class="grid min-w-0 gap-2 border-0 p-0">
+        <legend class="p-0 font-sans text-[0.72rem] font-bold uppercase tracking-[0.16em] text-muted">
+          {UI.kind}
+        </legend>
+        <div class="flex flex-wrap gap-2">
+          {kinds.map((k, i) => (
+            <label class="cursor-pointer">
+              <input type="radio" name="kind" value={k} checked={i === 0} class="peer sr-only" />
+              <span class="inline-block rounded-full border border-line px-4 py-2 font-sans text-sm font-semibold text-soft transition-colors peer-checked:border-ink peer-checked:bg-ink peer-checked:text-surface peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-ink">
+                {k}
+              </span>
+            </label>
+          ))}
+        </div>
+      </fieldset>
+
+      <div class="grid gap-2">
+        <label for="f-what" class="font-sans text-[0.72rem] font-bold uppercase tracking-[0.16em] text-muted">
+          {UI.what}
+        </label>
+        <input
+          id="f-what"
+          name="what"
+          placeholder={placeholder("what", "Acme, mi startup…")}
+          class={inputCls}
+        />
+      </div>
+
+      <div class="grid gap-2">
+        <label for="f-email" class="font-sans text-[0.72rem] font-bold uppercase tracking-[0.16em] text-muted">
+          {UI.email}
+        </label>
+        <input
+          id="f-email"
+          name="email"
+          type="email"
+          autocomplete="email"
+          placeholder={placeholder("email", "tu@correo.com")}
+          class={inputCls}
+        />
+      </div>
+
+      <p id="contact-err" class="m-0 min-h-[1.4em] font-sans text-[0.95rem] text-red-500" role="alert"></p>
+
+      <button
+        type="submit"
+        class="flex w-full items-center justify-between gap-4 rounded-2xl bg-ink px-6 py-4 font-sans text-[1.02rem] font-extrabold text-surface transition-transform hover:-translate-y-0.5 active:translate-y-0"
+      >
+        <span>{info.submit}</span>
+        <Icon name="lucide:arrow-right" class="h-5 w-5" aria-hidden="true" />
+      </button>
+    </form>
+  </div>
+</section>
+
+<script type="application/json" id="contact-config" set:html={configJson} />
+
 <script>
   import gsap from "gsap";
   import { ScrollTrigger } from "gsap/ScrollTrigger";
+
   gsap.registerPlugin(ScrollTrigger);
 
-  interface ContactI18n {
+  interface ContactConfig {
+    email: string;
     error: string;
     errorWhat: string;
     errorEmail: string;
@@ -135,287 +180,100 @@ const labels = info.labels;
     submitSubject: string;
   }
 
-  const contactI18n = JSON.parse(
-    document.getElementById("contact-i18n")?.textContent ?? "{}",
-  ) as ContactI18n;
+  let ctx: gsap.Context | null = null;
+  let ac: AbortController | null = null;
 
-  const TO = "wanderleedev@gmail.com";
-  let contactCtx: gsap.Context | null = null;
+  function readConfig(): ContactConfig {
+    const raw = document.getElementById("contact-config")?.textContent ?? "{}";
+    return JSON.parse(raw) as ContactConfig;
+  }
 
-  // ── Formulario + kind picker (wiring idempotente por DOM) ──────────────
-  function wireContact() {
-    const section = document.getElementById("redesign-contact");
-    if (!section || section.dataset.wired) return;
-    section.dataset.wired = "true";
+  /* ── Validación y envío ── */
+  function wireForm(section: HTMLElement, config: ContactConfig, signal: AbortSignal) {
+    const form = section.querySelector<HTMLFormElement>("#contact-form");
+    const err = section.querySelector<HTMLElement>("#contact-err");
+    const name = section.querySelector<HTMLInputElement>("#f-name");
+    const what = section.querySelector<HTMLInputElement>("#f-what");
+    const email = section.querySelector<HTMLInputElement>("#f-email");
+    if (!form || !err || !name || !what || !email) return;
 
-    const form = document.getElementById("redesign-form") as HTMLFormElement | null;
-    const err  = document.getElementById("redesign-err");
+    form.addEventListener(
+      "submit",
+      (e) => {
+        e.preventDefault();
+        const data = new FormData(form);
+        const values = {
+          name: String(data.get("name") ?? "").trim(),
+          what: String(data.get("what") ?? "").trim(),
+          email: String(data.get("email") ?? "").trim(),
+          kind: String(data.get("kind") ?? ""),
+        };
 
-    form?.addEventListener("submit", (e) => {
-      e.preventDefault();
-      if (!form) return;
-      const f = form.elements as any;
-      const checks: [HTMLElement, unknown, string][] = [
-        [f.name,  f.name.value.trim(),                              contactI18n.error],
-        [f.what,  f.what.value.trim(),                              contactI18n.errorWhat],
-        [f.email, f.email.value.trim() && f.email.checkValidity(), contactI18n.errorEmail],
-      ];
-      const bad = checks.find(([, val]) => !val);
-      if (!err) return;
-      if (bad) { err.textContent = bad[2] as string; (bad[0] as HTMLElement).focus(); return; }
-      err.textContent = "";
-      const text = `${contactI18n.start} ${f.name.value.trim()} ${contactI18n.andNeed} ${f.kind.value} ${contactI18n.for} ${f.what.value.trim()}.\n${contactI18n.replyTo} ${f.email.value.trim()}.`;
-      window.location.href = `mailto:${TO}?subject=${encodeURIComponent(`${contactI18n.submitSubject} – ` + f.name.value.trim())}&body=${encodeURIComponent(text)}`;
-    });
+        let problem: { el: HTMLInputElement; msg: string } | null = null;
+        if (!values.name) problem = { el: name, msg: config.error };
+        else if (!values.what) problem = { el: what, msg: config.errorWhat };
+        else if (!values.email || !email.checkValidity())
+          problem = { el: email, msg: config.errorEmail };
 
-    // ── Kind picker (estilo ThemePicker/LangPicker) ──────────────────────
-    const kindTrigger = document.getElementById("kind-trigger");
-    const kindPanel   = document.getElementById("kind-panel");
-    const kindInput   = document.getElementById("kind-input") as HTMLInputElement | null;
-    const kindLabel   = document.getElementById("kind-label");
+        // Marca el campo con error para los estilos (aria-invalid)
+        [name, what, email].forEach((el) =>
+          el.setAttribute("aria-invalid", String(problem?.el === el)),
+        );
 
-    kindTrigger?.addEventListener("click", (e) => {
-      e.stopPropagation();
-      const willOpen = kindPanel?.hidden ?? false;
-      if (kindPanel) kindPanel.hidden = !willOpen;
-      kindTrigger.setAttribute("aria-expanded", String(willOpen));
-    });
+        if (problem) {
+          err.textContent = problem.msg;
+          problem.el.focus();
+          return;
+        }
+        err.textContent = "";
 
-    kindPanel?.querySelectorAll<HTMLElement>("[data-kind]").forEach((opt) => {
-      opt.addEventListener("click", () => {
-        const value = opt.dataset.kind ?? "";
-        if (kindInput) kindInput.value = value;
-        if (kindLabel) kindLabel.textContent = value;
-        kindPanel.querySelectorAll<HTMLElement>("[data-kind]").forEach((o) => {
-          const active = o === opt;
-          o.classList.toggle("kind-option--active", active);
-          o.setAttribute("aria-selected", String(active));
-        });
-        kindPanel.hidden = true;
-        kindTrigger?.setAttribute("aria-expanded", "false");
+        const body =
+          `${config.start} ${values.name} ${config.andNeed} ${values.kind} ${config.for} ${values.what}.\n` +
+          `${config.replyTo} ${values.email}.`;
+        const subject = `${config.submitSubject} – ${values.name}`;
+
+        window.location.href =
+          `mailto:${config.email}` +
+          `?subject=${encodeURIComponent(subject)}` +
+          `&body=${encodeURIComponent(body)}`;
+      },
+      { signal },
+    );
+  }
+
+  /* ── Animaciones (dentro de gsap.context) ── */
+  function animate(section: HTMLElement) {
+    const mm = gsap.matchMedia();
+    mm.add("(prefers-reduced-motion: no-preference)", () => {
+      gsap.from(section.querySelectorAll("[data-reveal]"), {
+        opacity: 0,
+        y: 40,
+        duration: 0.9,
+        ease: "power3.out",
+        stagger: 0.15,
+        scrollTrigger: { trigger: section, start: "top 75%" },
       });
     });
-
-    document.addEventListener("click", () => {
-      if (kindPanel && !kindPanel.hidden) {
-        kindPanel.hidden = true;
-        kindTrigger?.setAttribute("aria-expanded", "false");
-      }
-    });
   }
 
-  function bootContact() {
-    contactCtx?.revert();
-    contactCtx = gsap.context(() => {
-      animContact();
-    });
-    wireContact();
+  function boot() {
+    const section = document.querySelector<HTMLElement>("#contact");
+    if (!section) return;
+
+    ctx?.revert();
+    ac?.abort();
+    ac = new AbortController();
+
+    ctx = gsap.context(() => animate(section));
+    wireForm(section, readConfig(), ac.signal);
   }
 
-  document.addEventListener("astro:page-load", bootContact);
-  bootContact();
-
-  // ── Animaciones ────────────────────────────────────────────────────────
-  function animContact() {
-  const mm = gsap.matchMedia();
-
-  mm.add("(prefers-reduced-motion: no-preference)", () => {
-    const section = document.getElementById("redesign-contact")!;
-    const mtrack  = document.getElementById("mtrack")!;
-
-    // Marquee continuo
-    const loop = gsap.to(mtrack, {
-      xPercent: -50,
-      duration: 28,
-      ease    : "none",
-      repeat  : -1,
-    });
-
-    // Velocidad reactiva al scroll
-    ScrollTrigger.create({
-      trigger: section,
-      start  : "top bottom",
-      end    : "bottom top",
-      onUpdate(self) {
-        const v = gsap.utils.clamp(-3000, 3000, self.getVelocity());
-        gsap.timeline({ overwrite: true })
-          .to(loop, { timeScale: self.direction * (1 + Math.abs(v) / 400), duration: 0.3 })
-          .to(loop, { timeScale: 1, duration: 1.2 });
-      },
-    });
-
-    // Frase aparece línea a línea
-    gsap.from(".sentence .ln", {
-      opacity : 0,
-      y       : 30,
-      duration: 0.8,
-      ease    : "power3.out",
-      stagger : 0.15,
-      scrollTrigger: { trigger: ".sentence", start: "top 80%" },
-    });
-
-    return () => loop.kill();
+  document.addEventListener("astro:before-swap", () => {
+    ctx?.revert();
+    ctx = null;
+    ac?.abort();
+    ac = null;
   });
-
-  mm.add("(prefers-reduced-motion: reduce)", () => {
-    const mtrack = document.getElementById("mtrack")!;
-    if (mtrack) mtrack.style.transform = "none";
-  });
-  }
+  document.addEventListener("astro:page-load", boot);
+  boot();
 </script>
-
-<style>
-  @layer components {
-    /* Bloque temático: sigue el fondo de página */
-    .contact {
-      color: var(--ct-ink, #111111);
-      overflow: hidden;
-      padding: clamp(40px, 7vw, 80px) 0 clamp(56px, 9vw, 110px);
-    }
-
-    /* Marquee */
-    .marquee {
-      white-space: nowrap;
-      overflow: hidden;
-      margin-bottom: clamp(40px, 7vw, 90px);
-      user-select: none;
-    }
-
-    .mtrack {
-      display: inline-flex;
-      will-change: transform;
-    }
-
-    .mtrack span {
-      font-family: "Fira Sans Extra Condensed", sans-serif;
-      font-size: clamp(3.5rem, 14vw, 11rem);
-      font-weight: 900;
-      letter-spacing: -0.04em;
-      line-height: 1;
-      padding-right: 0.5em;
-      color: transparent;
-      -webkit-text-stroke: 1.5px var(--ct-ink, #111111);
-    }
-
-    .mtrack span:nth-child(even) {
-      color: var(--ct-ink, #111111);
-      -webkit-text-stroke: 0;
-    }
-
-    /* Frase conversacional */
-    .sentence {
-      font-family: "Fira Sans Extra Condensed", sans-serif;
-      font-size: clamp(1.6rem, 4.6vw, 3.2rem);
-      font-weight: 600;
-      letter-spacing: -0.02em;
-      line-height: 1.55;
-      margin: 0 0 36px;
-    }
-
-    .ln { display: inline; }
-
-    /* Inputs inline (texto de usuario sin transformar) */
-    .f {
-      display: inline-block;
-      vertical-align: baseline;
-      font: inherit;
-      text-transform: none;
-      color: var(--ct-acc, #4f46e5);
-      background: transparent;
-      border: 0;
-      border-bottom: 2px solid var(--ct-acc, #4f46e5);
-      border-radius: 0;
-      padding: 0 0.25em;
-      margin: 0 0.2em;
-      min-width: 5ch;
-      field-sizing: content;
-      max-width: 100%;
-    }
-
-    .f::placeholder { color: var(--ct-acc, #4f46e5); opacity: 0.55; }
-
-    /* Kind picker: mismo lenguaje que ThemePicker/LangPicker */
-    .kind-wrap {
-      position: relative;
-      display: inline-block;
-    }
-
-    .kind-trigger {
-      cursor: pointer;
-    }
-
-    .kind-panel {
-      position: absolute;
-      top: calc(100% + 8px);
-      left: 0;
-      min-width: 220px;
-      z-index: 50;
-      background: color-mix(in srgb, var(--surface) 92%, transparent);
-      backdrop-filter: blur(20px) saturate(1.6);
-      -webkit-backdrop-filter: blur(20px) saturate(1.6);
-      border: 1.5px solid color-mix(in srgb, var(--ink) 12%, transparent);
-      border-radius: 14px;
-      padding: 6px;
-      display: flex;
-      flex-direction: column;
-      gap: 2px;
-      box-shadow: 0 8px 32px color-mix(in srgb, black 18%, transparent);
-      text-transform: none;
-    }
-
-    .kind-panel[hidden] {
-      display: none;
-    }
-
-    .kind-option {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 9px 12px;
-      border-radius: 9px;
-      border: none;
-      background: transparent;
-      color: var(--ink);
-      font-family: "Inter", ui-sans-serif, system-ui, sans-serif;
-      font-size: 1rem;
-      cursor: pointer;
-      text-align: left;
-      width: 100%;
-      transition: background 0.15s;
-    }
-
-    .kind-option:hover {
-      background: color-mix(in srgb, var(--ink) 8%, transparent);
-    }
-
-    .kind-option__check {
-      margin-left: auto;
-      font-size: 0.75rem;
-      opacity: 0;
-      transition: opacity 0.15s;
-    }
-
-    .kind-option--active .kind-option__check {
-      opacity: 1;
-    }
-
-    .kind-option--active {
-      background: color-mix(in srgb, var(--ink) 10%, transparent);
-      font-weight: 700;
-    }
-
-    .f:focus-visible {
-      outline: 3px solid var(--ct-ink, #111111);
-      outline-offset: 4px;
-    }
-
-    /* Error */
-    .err {
-      min-height: 1.5em;
-      color: var(--ct-err, #dc2626);
-      font-family: "Inter", ui-sans-serif, system-ui, sans-serif;
-      font-size: 1rem;
-      margin: 0 0 20px;
-    }
-  }
-</style>

@@ -9,7 +9,7 @@ import { getTranslations } from "../i18n/utils";
 import Icon from "astro-iconify";
 
 type Tech = { color: string; icon: string; name?: string };
-type Group = { title: string; accent: string; techs: Tech[] };
+type Group = { title: string; accent: string; techs: Tech[]; alsoUsed?: Tech[] };
 
 const lang = Astro.currentLocale === "en" ? "en" : "es";
 const t = getTranslations(lang);
@@ -19,15 +19,12 @@ const groups = skillsT.list as Group[];
 const descriptions = journeyT.skillDescriptions as Record<string, string>;
 
 const L = {
-  es: { groups: "Grupos de tecnologías" },
-  en: { groups: "Technology groups" },
+  es: { groups: "Grupos de tecnologías", alsoUsed: "Ocasionalmente usado" },
+  en: { groups: "Technology groups", alsoUsed: "Occasionally used" },
 }[lang];
 
 // Grupos que aparecen como paneles y como pestañas, en este orden
-const TAB_GROUPS = ["Frontend", "Backend", "Tools", "Familiar With"];
-
-// Etiquetas cortas para que quepan en el segmented control
-const TAB_LABELS: Record<string, string> = { "Familiar With": "Familiar" };
+const TAB_GROUPS = ["Frontend", "Backend", "Tools"];
 
 // Nombres legibles para los iconos de devicon / simple-icons
 const DISPLAY_NAMES: Record<string, string> = {
@@ -65,8 +62,11 @@ const unique = (techs: Tech[]) =>
 
 const panels = TAB_GROUPS.map((title) => {
   const g = groups.find((grp) => grp.title === title);
-  return g ? { ...g, key: slug(title), techs: unique(g.techs) } : null;
-}).filter((g): g is Group & { key: string } => Boolean(g));
+  if (!g) return null;
+  const main = unique(g.techs);
+  const extra = g.alsoUsed ? unique(g.alsoUsed) : [];
+  return { ...g, key: slug(title), techs: main, extra };
+}).filter((g): g is Group & { key: string; extra: Tech[] } => Boolean(g));
 ---
 
 <section
@@ -90,7 +90,7 @@ const panels = TAB_GROUPS.map((title) => {
             aria-controls={`panel-${group.key}`}
             aria-pressed={i === 0 ? "true" : "false"}
           >
-            {TAB_LABELS[group.title] ?? group.title}
+            {group.title}
           </button>
         ))
       }
@@ -119,6 +119,22 @@ const panels = TAB_GROUPS.map((title) => {
               </li>
             ))}
           </ul>
+
+          {group.extra.length ? (
+            <>
+              <h3 class="also__title">{L.alsoUsed}</h3>
+              <ul class="tech-grid tech-grid--also">
+                {group.extra.map(({ color, icon, name }) => (
+                  <li class="tech panel__item" style={`--c: ${color}`}>
+                    <span class="tech__media">
+                      <Icon name={icon} />
+                    </span>
+                    <span class="tech__name">{name ?? nameOf(icon)}</span>
+                  </li>
+                ))}
+              </ul>
+            </>
+          ) : null}
         </div>
       ))
     }
@@ -221,6 +237,20 @@ const panels = TAB_GROUPS.map((title) => {
     font-weight: 700;
     letter-spacing: 0.04em;
     color: var(--soft, #444);
+  }
+
+  /* ── Subdivisión "ocasionalmente usado" ── */
+  .also__title {
+    margin: 2rem 0 1rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--soft, #444);
+  }
+
+  .tech-grid--also .tech {
+    opacity: 0.85;
   }
 
   .tech:hover {

@@ -40,6 +40,10 @@ export const en = {
           { color: "#d2227d", icon: "devicon:ngrx" },
           { color: "#82D701", icon: "simple-icons:greensock" },
         ],
+        alsoUsed: [
+          { color: "#42b883", icon: "devicon:vuejs" },
+          { color: "#8C38EF", icon: "devicon:bootstrap" },
+        ],
       },
       {
         title: "Backend",
@@ -51,16 +55,10 @@ export const en = {
           { color: "#ED8B00", icon: "devicon:java" },
           { color: "#6DB33F", icon: "devicon:spring" },
         ],
-      },
-      {
-        title: "Familiar With",
-        accent: "#8b5cf6",
-        techs: [
+        alsoUsed: [
           { color: "#ffc331", icon: "devicon:python" },
           { color: "#009688", icon: "devicon:fastapi" },
-          { color: "#42b883", icon: "devicon:vuejs" },
           { color: "#ffffff", icon: "devicon:express" },
-          { color: "#8C38EF", icon: "devicon:bootstrap" },
         ],
       },
       {
@@ -90,7 +88,6 @@ export const en = {
       "My Stack": "The tools I use for most of my projects.",
       Frontend: "UI, animation, and interaction.",
       Backend: "APIs, data, and business logic.",
-      "Familiar With": "Technologies I know and keep exploring.",
       Tools: "Design, versioning, and deployment.",
     },
   },

@@ -1,124 +1,111 @@
 ---
 /**
- * More Work — Angular vs React banner.
- * Full-width 2:1 split: red Angular half vs blue React half, divided by a
- * single diagonal white crack (lightning switch, inline SVG).
- *  - Logos via astro-iconify (devicon:angular / devicon:react), same as HeroFan
- *  - Two stacked background blocks + crack SVG; each column visually centered
+ * More Work — Angular vs React.
+ * Banner 2:1 dividido por un corte diagonal. En escritorio la entrada es
+ * scroll-driven (solo con soporte y sin reduced motion); en móvil se apila.
  */
 import Icon from "astro-iconify";
 
+type Tier = "near" | "mid" | "far";
+type Side = "angular" | "react";
+
 interface VsTag {
   label: string;
-  x: string;
-  y: string;
-  tz: string;
-  rz: string;
-  tier: "near" | "mid" | "far";
-  drift: string;
+  side: Side;
+  x: number; // posición escritorio (%)
+  y: number;
+  mx: number; // posición móvil (%)
+  my: number;
+  tz: number; // profundidad (px)
+  rz: number; // rotación (deg)
+  tier: Tier;
+  drift: number; // duración de la flotación (s)
+  start: number; // % del scroll donde empieza a aparecer
 }
 
-const angularTags: VsTag[] = [
-  { label: "Signals",    x: "13%", y: "20%", tz: "90px",  rz: "-4deg", tier: "near", drift: "7s" },
-  { label: "NgRx",       x: "38%", y: "82%", tz: "45px",  rz: "3deg",  tier: "mid",  drift: "9s" },
-  { label: "RxJS",       x: "8%",  y: "48%", tz: "130px", rz: "-2deg", tier: "far",  drift: "11s" },
-  { label: "Standalone", x: "44%", y: "12%", tz: "20px",  rz: "2deg",  tier: "mid",  drift: "8s" },
+const TAGS: VsTag[] = [
+  { label: "Signals",    side: "angular", x: 13, y: 20, mx: 16, my: 10, tz: 90,  rz: -4, tier: "near", drift: 7,  start: 58 },
+  { label: "NgRx",       side: "angular", x: 38, y: 82, mx: 80, my: 34, tz: 45,  rz: 3,  tier: "mid",  drift: 9,  start: 60.5 },
+  { label: "RxJS",       side: "angular", x: 8,  y: 48, mx: 12, my: 32, tz: 130, rz: -2, tier: "far",  drift: 11, start: 63 },
+  { label: "Standalone", side: "angular", x: 44, y: 12, mx: 76, my: 10, tz: 20,  rz: 2,  tier: "mid",  drift: 8,  start: 65.5 },
+  { label: "useEffect",  side: "react",   x: 88, y: 22, mx: 82, my: 60, tz: 90,  rz: 4,  tier: "near", drift: 8,  start: 68 },
+  { label: "useState",   side: "react",   x: 60, y: 78, mx: 24, my: 84, tz: 45,  rz: -3, tier: "mid",  drift: 7,  start: 70.5 },
+  { label: "Suspense",   side: "react",   x: 86, y: 78, mx: 78, my: 86, tz: 130, rz: 2,  tier: "far",  drift: 10, start: 73 },
+  { label: "JSX",        side: "react",   x: 62, y: 32, mx: 18, my: 60, tz: 20,  rz: -2, tier: "mid",  drift: 9,  start: 75.5 },
 ];
 
-const reactTags: VsTag[] = [
-  { label: "useEffect", x: "88%", y: "22%", tz: "90px",  rz: "4deg",  tier: "near", drift: "8s" },
-  { label: "useState",  x: "60%", y: "78%", tz: "45px",  rz: "-3deg", tier: "mid",  drift: "7s" },
-  { label: "Suspense",  x: "86%", y: "78%", tz: "130px", rz: "2deg",  tier: "far",  drift: "10s" },
-  { label: "JSX",       x: "62%", y: "32%", tz: "20px",  rz: "-2deg", tier: "mid",  drift: "9s" },
+// Un solo origen para el corte: el SVG y los recortes de fondo usan estos puntos (en %).
+// Los valores fuera de 0–100 son intencionales: el corte cubre todo el banner.
+const CRACK: [number, number][] = [
+  [55, -4],
+  [47.9, 50],
+  [53.6, 50],
+  [46.25, 104],
 ];
+const pt = ([x, y]: [number, number]) => `${x}% ${y}%`;
+const [top, midL, midR, bot] = CRACK;
+
+const clipLeft = `polygon(-20% -4%, ${pt(top)}, ${pt(midL)}, ${pt(midR)}, ${pt(bot)}, -20% 104%)`;
+const clipRight = `polygon(${pt(top)}, 120% -4%, 120% 104%, ${pt(bot)}, ${pt(midR)}, ${pt(midL)})`;
+const crackD = CRACK.map(([x, y], i) => `${i === 0 ? "M" : "L"}${x * 12} ${y * 6}`).join(" ");
+
+// Móvil: corte horizontal, Angular arriba y React abajo
+const clipLeftM = "polygon(0 0, 100% 0, 100% 44%, 0 56%)";
+const clipRightM = "polygon(0 56%, 100% 44%, 100% 100%, 0 100%)";
 ---
 
 <div class="vs-scroll">
-<div class="vs-sticky">
-<div class="vs-banner" role="img" aria-label="Angular vs React">
-  <!-- Background split: red left, blue right -->
-  <div class="vs-bg vs-bg-left" aria-hidden="true"></div>
-  <div class="vs-bg vs-bg-right" aria-hidden="true"></div>
+  <div class="vs-sticky">
+    <div class="vs-banner" role="img" aria-label="Angular vs React">
+      <div
+        class="vs-bg vs-bg-left"
+        style={`--clip-d: ${clipLeft}; --clip-m: ${clipLeftM};`}
+        aria-hidden="true"></div>
+      <div
+        class="vs-bg vs-bg-right"
+        style={`--clip-d: ${clipRight}; --clip-m: ${clipRightM};`}
+        aria-hidden="true"></div>
 
-  <!-- Diagonal white crack, single SVG path on top -->
-  <svg class="vs-crack" viewBox="0 0 1200 600" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
-    <path
-      class="crack-edge"
-      d="M660 -20 L575 300 L643 300 L555 620"
-      pathLength="1"
-      fill="none"
-      stroke="#fff"
-      stroke-width="8"
-      vector-effect="non-scaling-stroke"
-    />
-  </svg>
+      <svg class="vs-crack" viewBox="0 0 1200 600" preserveAspectRatio="none" aria-hidden="true">
+        <path class="crack-edge" d={crackD} pathLength="1" />
+      </svg>
 
-  <!-- Floating tech tags with depth (behind the logos) -->
-  <div class="vs-tags" aria-hidden="true">
-    {[...angularTags, ...reactTags].map((tag) => (
-      <span
-        class={`vs-tag vs-tag--${tag.tier}`}
-        style={`left:${tag.x};top:${tag.y};--tz:${tag.tz};--rz:${tag.rz};animation-duration:${tag.drift};`}
-      >
-        {tag.label}
-      </span>
-    ))}
-  </div>
+      <div class="vs-tags" aria-hidden="true">
+        {TAGS.map((t) => (
+          <span
+            class={`vs-tag vs-tag--${t.tier}`}
+            style={`--x: ${t.x}%; --y: ${t.y}%; --mx: ${t.mx}%; --my: ${t.my}%; --tz: ${t.tz}px; --rz: ${t.rz}deg; --drift: ${t.drift}s; --start: ${t.start}%;`}
+          >
+            {t.label}
+          </span>
+        ))}
+      </div>
 
-  <!-- Two centered halves -->
-  <div class="vs-half">
-    <Icon name="devicon:angular" class="vs-logo" alt="Angular" />
-    <p class="vs-label">Angular</p>
-  </div>
-  <div class="vs-half vs-half-right">
-    <Icon name="devicon:react" class="vs-logo vs-logo-react" alt="React" />
-    <p class="vs-label">React</p>
+      <div class="vs-half">
+        <Icon name="devicon:angular" class="vs-logo vs-logo--angular" />
+        <p class="vs-label">Angular</p>
+      </div>
+      <div class="vs-half vs-half--right">
+        <Icon name="devicon:react" class="vs-logo vs-logo--react" />
+        <p class="vs-label">React</p>
+      </div>
+    </div>
   </div>
 </div>
-</div>
-</div>
-
-<script>
-  // devicon:react ships a hardcoded fill="#61dafb" on its inner <g>, which beats CSS.
-  // Strip the fill attribute so the brand blue below applies cleanly.
-  function bootMoreWork() {
-    document.querySelectorAll(".vs-logo-react [fill]").forEach((el) => el.removeAttribute("fill"));
-  }
-
-  document.addEventListener("astro:page-load", bootMoreWork);
-  bootMoreWork();
-</script>
 
 <style>
-  /* Wrapper doble alto: el contenido queda fijo mientras la coreografía avanza */
-  .vs-scroll {
-    position: relative;
-    height: 200dvh;
-    view-timeline-name: --vs-enter;
-    view-timeline-axis: block;
-  }
-
-  .vs-sticky {
-    position: sticky;
-    top: 0;
-    height: 100dvh;
-    display: flex;
-    align-items: center;
-    overflow: hidden;
-  }
-
+  /* ── Base: estática, siempre visible ── */
   .vs-banner {
     position: relative;
     width: 100%;
     aspect-ratio: 2 / 1;
     max-height: 100dvh;
     overflow: hidden;
+    container-type: inline-size; /* cqw dentro del banner */
     display: grid;
     grid-template-columns: 1fr 1fr;
     perspective: 1200px;
-    /* Fade casi nulo arriba y abajo — 2%/98% para un despeje prácticamente invisible */
-    mask-image: linear-gradient(to bottom, transparent 0, #000 2%, #000 98%, transparent 100%);
-    -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 2%, #000 98%, transparent 100%);
+    mask-image: linear-gradient(to bottom, transparent, #000 2%, #000 98%, transparent);
   }
 
   .vs-bg {
@@ -126,15 +113,17 @@ const reactTags: VsTag[] = [
     inset: 0;
     pointer-events: none;
   }
+
   .vs-bg-left {
-    clip-path: polygon(0 0, 54.17% 0, 47.92% 49.5%, 53.58% 49.5%, 47.08% 100%, 0 100%);
+    clip-path: var(--clip-d);
     background:
       radial-gradient(50% 65% at 30% 35%, rgba(255, 110, 150, 0.55), transparent 72%),
       radial-gradient(70% 90% at 85% 85%, rgba(60, 10, 40, 0.55), transparent 70%),
       linear-gradient(135deg, #3a0a2e 0%, #7a1243 45%, #b81e5b 78%, #ff2d78 100%);
   }
+
   .vs-bg-right {
-    clip-path: polygon(54.17% 0, 100% 0, 100% 100%, 47.08% 100%, 53.58% 49.5%, 47.92% 49.5%);
+    clip-path: var(--clip-d);
     background:
       radial-gradient(60% 80% at 85% 50%, rgba(255, 255, 255, 0.18), transparent 70%),
       radial-gradient(65% 90% at 78% 30%, rgba(180, 230, 255, 0.4), transparent 65%),
@@ -148,7 +137,12 @@ const reactTags: VsTag[] = [
     height: 100%;
     pointer-events: none;
   }
-  .vs-crack .crack-edge {
+
+  .crack-edge {
+    fill: none;
+    stroke: #fff;
+    stroke-width: 8;
+    vector-effect: non-scaling-stroke;
     filter: drop-shadow(0 0 6px rgba(255, 255, 255, 0.25));
   }
 
@@ -163,7 +157,6 @@ const reactTags: VsTag[] = [
     padding: clamp(0.5rem, 1.5cqw, 1.5rem);
   }
 
-  /* ── Capa de tags con profundidad (detrás de los logos) ── */
   .vs-tags {
     position: absolute;
     inset: 0;
@@ -174,168 +167,41 @@ const reactTags: VsTag[] = [
 
   .vs-tag {
     position: absolute;
-    transform: translate(-50%, -50%) translateZ(var(--tz, 40px)) rotate(var(--rz, 0deg));
+    left: var(--x);
+    top: var(--y);
+    transform: translate(-50%, -50%) translateZ(var(--tz)) rotate(var(--rz));
     font-family: var(--font-sans, "Inter", ui-sans-serif, system-ui, sans-serif);
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.18em;
     white-space: nowrap;
     color: #fff;
-    background: rgba(255, 255, 255, 0.13);
+    background: rgba(255, 255, 255, 0.14);
     border: 1px solid rgba(255, 255, 255, 0.35);
-    backdrop-filter: blur(6px);
-    -webkit-backdrop-filter: blur(6px);
     border-radius: 999px;
     padding: 0.45em 1.1em;
     text-shadow: 0 1px 6px rgba(0, 0, 0, 0.35);
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
-    animation: vs-drift 8s ease-in-out infinite alternate;
   }
 
-  .vs-tag--near {
-    font-size: clamp(0.7rem, 1.8cqw, 1rem);
-  }
-
-  .vs-tag--mid {
-    font-size: clamp(0.6rem, 1.4cqw, 0.8rem);
-    opacity: 0.9;
-  }
-
-  .vs-tag--far {
-    font-size: clamp(0.5rem, 1.1cqw, 0.65rem);
-    opacity: 0.7;
-  }
-
-  @keyframes vs-drift {
-    from {
-      translate: 0 0;
-    }
-    to {
-      translate: 0 -12px;
-    }
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .vs-tag {
-      animation: none;
-    }
-  }
-
-  /* ── Entrada coreografiada con scroll-driven animations ──
-     Timeline del wrapper doble (cover): se desarrolla durante el dwell fijo.
-     Sin soporte o sin movimiento: todo visible, sin animación. */
-  .vs-half:not(.vs-half-right) .vs-logo {
-    animation: vs-logo-top linear both;
-    animation-timeline: --vs-enter;
-    animation-range: cover 28% cover 38%;
-  }
-
-  .vs-half-right .vs-logo {
-    animation: vs-logo-bottom linear both;
-    animation-timeline: --vs-enter;
-    animation-range: cover 28% cover 38%;
-  }
-
-  @keyframes vs-logo-top {
-    from {
-      opacity: 0;
-      translate: 0 -48px;
-      scale: 0.9;
-    }
-  }
-
-  @keyframes vs-logo-bottom {
-    from {
-      opacity: 0;
-      translate: 0 48px;
-      scale: 0.9;
-    }
-  }
-
-  .vs-crack .crack-edge {
-    stroke-dasharray: 1;
-    stroke-dashoffset: 1;
-    animation: crack-draw linear both;
-    animation-timeline: --vs-enter;
-    animation-range: cover 36% cover 48%;
-  }
-
-  @keyframes crack-draw {
-    to {
-      stroke-dashoffset: 0;
-    }
-  }
-
-  .vs-bg-left {
-    transform-origin: left center;
-    animation: bg-paint linear both;
-    animation-timeline: view();
-    animation-range: entry 0% entry 100%;
-  }
-
-  .vs-bg-right {
-    transform-origin: right center;
-    animation: bg-paint linear both;
-    animation-timeline: view();
-    animation-range: entry 0% entry 100%;
-  }
-
-  @keyframes bg-paint {
-    from {
-      transform: scaleX(0);
-    }
-  }
-
-  .vs-tag {
-    animation:
-      tag-in linear both,
-      vs-drift 8s ease-in-out infinite alternate;
-    animation-timeline: --vs-enter, auto;
-  }
-
-  .vs-tags .vs-tag:nth-child(1) { animation-range: cover 58% cover 68%, normal; }
-  .vs-tags .vs-tag:nth-child(2) { animation-range: cover 60.5% cover 70.5%, normal; }
-  .vs-tags .vs-tag:nth-child(3) { animation-range: cover 63% cover 73%, normal; }
-  .vs-tags .vs-tag:nth-child(4) { animation-range: cover 65.5% cover 75.5%, normal; }
-  .vs-tags .vs-tag:nth-child(5) { animation-range: cover 68% cover 78%, normal; }
-  .vs-tags .vs-tag:nth-child(6) { animation-range: cover 70.5% cover 80.5%, normal; }
-  .vs-tags .vs-tag:nth-child(7) { animation-range: cover 73% cover 83%, normal; }
-  .vs-tags .vs-tag:nth-child(8) { animation-range: cover 75.5% cover 85.5%, normal; }
-
-  @keyframes tag-in {
-    from {
-      opacity: 0;
-      scale: 0.8;
-    }
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .vs-logo,
-    .vs-tag,
-    .vs-bg-left,
-    .vs-bg-right {
-      animation: none;
-    }
-    .vs-crack .crack-edge {
-      animation: none;
-    }
-  }
+  .vs-tag--near { font-size: clamp(0.7rem, 1.8cqw, 1rem); }
+  .vs-tag--mid  { font-size: clamp(0.6rem, 1.4cqw, 0.8rem); opacity: 0.9; }
+  .vs-tag--far  { font-size: clamp(0.5rem, 1.1cqw, 0.65rem); opacity: 0.7; }
 
   .vs-logo {
     width: clamp(96px, 20cqw, 240px);
     height: auto;
     display: block;
-    filter: drop-shadow(0 6px 24px rgba(255, 255, 255, 0.45)) drop-shadow(0 2px 8px rgba(0, 0, 0, 0.18));
+    filter: drop-shadow(0 6px 24px rgba(255, 255, 255, 0.45))
+      drop-shadow(0 2px 8px rgba(0, 0, 0, 0.18));
   }
-  .vs-logo-react {
+
+  .vs-logo--react {
     width: clamp(96px, 19cqw, 230px);
-    color: #0389d1;
   }
-  /* After the inline script strips the hardcoded fill attribute, paint brand blue.
-     Scoped CSS can't reach SVG internals, so use :global(). */
-  :global(.vs-logo-react g),
-  :global(.vs-logo-react path),
-  :global(.vs-logo-react circle) {
+
+  /* devicon:react trae fill en el SVG: un fill de CSS lo sobrescribe */
+  :global(.vs-logo--react *) {
     fill: #0389d1;
   }
 
@@ -352,6 +218,7 @@ const reactTags: VsTag[] = [
     text-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
   }
 
+  /* ── Móvil ── */
   @media (max-width: 640px) {
     .vs-banner {
       grid-template-columns: 1fr;
@@ -359,28 +226,98 @@ const reactTags: VsTag[] = [
       aspect-ratio: auto;
       min-height: 80svh;
     }
-    .vs-half {
-      min-height: 0;
+
+    .vs-bg-left { clip-path: var(--clip-m); }
+    .vs-bg-right { clip-path: var(--clip-m); }
+
+    .vs-crack { display: none; }
+
+    .vs-tag {
+      left: var(--mx);
+      top: var(--my);
     }
-    /* Fondos apilados: Angular arriba, React abajo, borde compartido */
-    .vs-bg-left {
-      clip-path: polygon(0 0, 100% 0, 100% 44%, 0 56%);
+  }
+
+  /* ── Entrada scroll-driven: solo con soporte y sin reduced motion ── */
+  @supports (animation-timeline: view()) {
+    @media (prefers-reduced-motion: no-preference) {
+      .vs-scroll {
+        position: relative;
+        height: 200dvh;
+        view-timeline: --vs-enter block;
+      }
+
+      .vs-sticky {
+        position: sticky;
+        top: 0;
+        height: 100dvh;
+        display: flex;
+        align-items: center;
+        overflow: hidden;
+      }
+
+      .vs-bg-left,
+      .vs-bg-right {
+        animation: bg-paint linear both;
+        animation-timeline: view();
+        animation-range: entry 0% entry 100%;
+      }
+
+      .vs-bg-left { transform-origin: left center; }
+      .vs-bg-right { transform-origin: right center; }
+
+      .crack-edge {
+        stroke-dasharray: 1;
+        stroke-dashoffset: 1;
+        animation: crack-draw linear both;
+        animation-timeline: --vs-enter;
+        animation-range: cover 36% cover 48%;
+      }
+
+      .vs-logo--angular {
+        animation: logo-from-top linear both;
+        animation-timeline: --vs-enter;
+        animation-range: cover 28% cover 38%;
+      }
+
+      .vs-logo--react {
+        animation: logo-from-bottom linear both;
+        animation-timeline: --vs-enter;
+        animation-range: cover 28% cover 38%;
+      }
+
+      .vs-tag {
+        animation:
+          tag-in linear both,
+          vs-drift var(--drift) ease-in-out infinite alternate;
+        animation-timeline: --vs-enter, auto;
+        animation-range: cover var(--start) cover calc(var(--start) + 10%), normal;
+      }
+
+      @keyframes bg-paint {
+        from { transform: scaleX(0); }
+      }
+
+      @keyframes crack-draw {
+        to { stroke-dashoffset: 0; }
+      }
+
+      @keyframes logo-from-top {
+        from { opacity: 0; translate: 0 -48px; scale: 0.9; }
+      }
+
+      @keyframes logo-from-bottom {
+        from { opacity: 0; translate: 0 48px; scale: 0.9; }
+      }
+
+      @keyframes tag-in {
+        from { opacity: 0; scale: 0.8; }
+      }
+
+      @keyframes vs-drift {
+        from { translate: 0 0; }
+        to { translate: 0 -12px; }
+      }
     }
-    .vs-bg-right {
-      clip-path: polygon(0 56%, 100% 44%, 100% 100%, 0 100%);
-    }
-    /* Sin rayo en mobile: el corte limpio ya divide */
-    .vs-crack {
-      display: none;
-    }
-    /* Tags reubicados por fila (orden: 1-4 Angular arriba, 5-8 React abajo) */
-    .vs-tags .vs-tag:nth-child(1) { left: 16%; top: 10%; }
-    .vs-tags .vs-tag:nth-child(2) { left: 80%; top: 34%; }
-    .vs-tags .vs-tag:nth-child(3) { left: 12%; top: 32%; }
-    .vs-tags .vs-tag:nth-child(4) { left: 76%; top: 10%; }
-    .vs-tags .vs-tag:nth-child(5) { left: 82%; top: 60%; }
-    .vs-tags .vs-tag:nth-child(6) { left: 24%; top: 84%; }
-    .vs-tags .vs-tag:nth-child(7) { left: 78%; top: 86%; }
-    .vs-tags .vs-tag:nth-child(8) { left: 18%; top: 60%; }
   }
 </style>

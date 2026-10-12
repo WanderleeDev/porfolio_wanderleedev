@@ -72,12 +72,12 @@ const panels = TAB_GROUPS.map((title) => {
 <section
   id="tech-journey"
   aria-label={skillsT.title ?? "Tecnologías"}
-  class="journey relative bg-surface text-ink overflow-hidden"
+  class="journey relative text-ink overflow-hidden"
 >
   <div class="track">
     <div class="panel">
-      <h2 class="panel__item panel__title">{journeyT.introTitle}</h2>
-      <p class="panel__item panel__desc">{skillsT.sectionDescription}</p>
+      <h2 class="panel__item sec-title mb-3">{journeyT.introTitle}</h2>
+      <p class="panel__item sec-desc mb-8">{skillsT.sectionDescription}</p>
     </div>
 
     <div class="tabs" role="group" aria-label={L.groups}>
@@ -104,10 +104,10 @@ const panels = TAB_GROUPS.map((title) => {
           data-panel={group.key}
           style={`--accent: ${group.accent}`}
         >
-          <h2 class="panel__item panel__title" style="color: var(--accent)">
+          <h2 class="panel__item sec-title mb-3" style="color: var(--accent)">
             {group.title}
           </h2>
-          <p class="panel__item panel__desc">{descriptions[group.title] ?? ""}</p>
+          <p class="panel__item sec-desc mb-8">{descriptions[group.title] ?? ""}</p>
 
           <ul class="tech-grid">
             {group.techs.map(({ color, icon, name }) => (
@@ -140,8 +140,8 @@ const panels = TAB_GROUPS.map((title) => {
     }
 
     <div class="panel panel--outro">
-      <h2 class="panel__item panel__title">{journeyT.outroTitle}</h2>
-      <p class="panel__item panel__desc">{journeyT.outroDesc}</p>
+      <h2 class="panel__item sec-title mb-3">{journeyT.outroTitle}</h2>
+      <p class="panel__item sec-desc mb-8">{journeyT.outroDesc}</p>
     </div>
   </div>
 
@@ -176,21 +176,6 @@ const panels = TAB_GROUPS.map((title) => {
     display: none;
   }
 
-  .panel__title {
-    margin: 0 0 0.75rem;
-    font-family: "Fira Sans Extra Condensed", system-ui, sans-serif;
-    font-weight: 900;
-    font-size: clamp(2.6rem, 9vw, 6.5rem);
-    line-height: 0.92;
-    letter-spacing: -0.02em;
-  }
-
-  .panel__desc {
-    max-width: 44ch;
-    margin: 0 0 2rem;
-    font-size: 1.05rem;
-    color: var(--soft, #444);
-  }
 
   /* ── Tecnologías ── */
   .tech-grid {
@@ -338,10 +323,10 @@ const panels = TAB_GROUPS.map((title) => {
 </style>
 
 <script>
-  import gsap from "gsap";
-  import { ScrollTrigger } from "gsap/ScrollTrigger";
+  import { gsap } from "../lib/gsap";
+  
 
-  gsap.registerPlugin(ScrollTrigger);
+  
 
   let mm: gsap.MatchMedia | null = null;
   let ac: AbortController | null = null;

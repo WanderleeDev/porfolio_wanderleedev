@@ -43,16 +43,16 @@ const inputCls =
 <section id="contact" class="bg-surface text-ink" aria-labelledby="contact-heading">
   <div class="mx-auto grid max-w-6xl grid-cols-1 items-start gap-10 px-6 py-20 md:grid-cols-[1fr_1.1fr] md:gap-14 md:py-28 lg:px-10">
     <div data-reveal>
-      <p class="font-sans text-[11px] font-bold uppercase tracking-[0.25em] text-muted">
+      <p class="sec-eyebrow">
         {info.marquee}
       </p>
       <h2
         id="contact-heading"
-        class="mt-3 font-fira-sans-extra-condensed font-black uppercase leading-[0.9] tracking-tight text-[clamp(3rem,9vw,7rem)]"
+        class="sec-title mt-3"
       >
         {info.title}
       </h2>
-      <p class="mt-4 max-w-md font-sans text-[clamp(0.95rem,1.8vw,1.05rem)] leading-relaxed text-soft">
+      <p class="sec-desc mt-4">
         {info.subtitle}
       </p>
 
@@ -83,7 +83,7 @@ const inputCls =
           <Icon name="lucide:github" class="h-5 w-5" aria-hidden="true" />
         </a>
       </div>
-      <p class="mt-4 font-sans text-sm text-muted">{info.preferredText}</p>
+      <p class="sec-eyebrow mt-4 normal-case tracking-normal text-[0.85rem] font-medium">{info.preferredText}</p>
     </div>
 
     <form
@@ -93,7 +93,7 @@ const inputCls =
       class="grid gap-5 rounded-3xl border border-line bg-surface p-6 shadow-[0_20px_50px_-30px_rgba(0,0,0,0.25)] md:p-8"
     >
       <div class="grid gap-2">
-        <label for="f-name" class="font-sans text-[0.72rem] font-bold uppercase tracking-[0.16em] text-muted">
+        <label for="f-name" class="sec-eyebrow">
           {UI.name}
         </label>
         <input
@@ -106,7 +106,7 @@ const inputCls =
       </div>
 
       <fieldset class="grid min-w-0 gap-2 border-0 p-0">
-        <legend class="p-0 font-sans text-[0.72rem] font-bold uppercase tracking-[0.16em] text-muted">
+        <legend class="sec-eyebrow p-0">
           {UI.kind}
         </legend>
         <div class="flex flex-wrap gap-2">
@@ -122,7 +122,7 @@ const inputCls =
       </fieldset>
 
       <div class="grid gap-2">
-        <label for="f-what" class="font-sans text-[0.72rem] font-bold uppercase tracking-[0.16em] text-muted">
+        <label for="f-what" class="sec-eyebrow">
           {UI.what}
         </label>
         <input
@@ -134,7 +134,7 @@ const inputCls =
       </div>
 
       <div class="grid gap-2">
-        <label for="f-email" class="font-sans text-[0.72rem] font-bold uppercase tracking-[0.16em] text-muted">
+        <label for="f-email" class="sec-eyebrow">
           {UI.email}
         </label>
         <input
@@ -163,10 +163,10 @@ const inputCls =
 <script type="application/json" id="contact-config" set:html={configJson} />
 
 <script>
-  import gsap from "gsap";
-  import { ScrollTrigger } from "gsap/ScrollTrigger";
+  import { gsap } from "../lib/gsap";
+  
 
-  gsap.registerPlugin(ScrollTrigger);
+  
 
   interface ContactConfig {
     email: string;

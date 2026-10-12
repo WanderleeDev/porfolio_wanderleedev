@@ -16,6 +16,7 @@
 import { ClientRouter } from "astro:transitions";
 import { getTranslations } from "../i18n/utils";
 import IntroCurtain from "../components/IntroCurtain.astro";
+import MainBackground from "../components/MainBackground.astro";
 
 interface Props {
   title: string;
@@ -106,6 +107,8 @@ const altTitle = altLang === "en" ? "WanderleeDev — Portfolio" : "Portafolio W
 
   <body class="overflow-x-clip">
     <IntroCurtain />
+    <MainBackground />
+
     <div>
       <slot />
     </div>

@@ -1,7 +1,5 @@
 @import "tailwindcss";
 
-/* Class-based dark mode for Tailwind v4 */
-@custom-variant dark (&:where(.dark, .dark *));
 
 /* ============================================================
    DESIGN SYSTEM — WanderleeDev Portfolio (centralized tokens)
@@ -47,7 +45,7 @@
 
   /* ── Tamaños fluidos de tipografía ── */
   --text-hero: clamp(3rem, 10vw, 8rem);
-  --text-section: clamp(2.6rem, 9vw, 6.5rem);
+  --text-section: clamp(2.5rem, 7vw, 5rem);
   --text-sub: clamp(0.7rem, 1.4vw, 0.9rem);
 
   /* ── Espaciado extra ── */
@@ -185,7 +183,7 @@
 .brutalist {
   color-scheme: light;
 
-  --color-surface: #fdfdf6;
+  --color-surface: transpatre;
   --color-ink: #0a0a0a;
   --color-soft: #333333;
   --color-muted: #555555;
@@ -229,7 +227,6 @@
   }
 
   body {
-    background-color: var(--surface);
     color: var(--ink);
   }
 
@@ -279,9 +276,13 @@
     font-size: 2.75rem;
   }
 
+  h2,
+  h3 {
+    font-size: var(--text-section);
+  }
+
   p {
     font-size: 0.8rem;
-    text-transform: uppercase;
     font-weight: 500;
     color: inherit;
   }
@@ -414,4 +415,47 @@
   unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA,
     U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193,
     U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+/* ============================================================
+   SECCIONES — tipografía compartida (hero excluido, tiene la suya)
+   sec-title   → título de sección (Fira condensed, gigante)
+   sec-desc    → párrafo de apoyo bajo el título
+   sec-eyebrow → etiqueta pequeña (kicker, labels de formulario)
+   ============================================================ */
+@layer components {
+  .sec-title {
+    margin: 0;
+    font-family: var(--font-fira-sans-extra-condensed);
+    font-weight: 900;
+    font-size: clamp(2.5rem, 7vw, 5rem) !important;
+    line-height: 0.9;
+    letter-spacing: -0.02em;
+    text-transform: uppercase;
+    color: var(--ink);
+  }
+
+  .sec-desc {
+    max-width: 44ch;
+    margin: 0;
+    font-family: var(--font-sans);
+    font-size: clamp(0.95rem, 1.8vw, 1.05rem);
+    line-height: 1.6;
+    color: var(--soft);
+  }
+
+  .sec-eyebrow {
+    margin: 0;
+    font-family: var(--font-sans);
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  /* Títulos de sección grandes, excluyendo el hero */
+  .sec-heading-lg {
+    font-size: clamp(2.5rem, 7vw, 5rem);
+  }
 }

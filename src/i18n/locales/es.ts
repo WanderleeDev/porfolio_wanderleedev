@@ -54,7 +54,7 @@ export const es = {
         ],
       },
       {
-        title: "Familiarizado con",
+        title: "Familiar With",
         accent: "#8b5cf6",
         techs: [
           { color: "#ffc331", icon: "devicon:python" },
@@ -65,21 +65,18 @@ export const es = {
         ],
       },
       {
-        title: "Herramientas",
+        title: "Tools",
         accent: "#10b981",
         techs: [
           { color: "#F05032", icon: "devicon:git" },
           { color: "#9e9e9e", icon: "devicon:github" },
           { color: "#2496ED", icon: "devicon:docker" },
           { color: "#0079BF", icon: "devicon:trello" },
-          { color: "#F24E1E", icon: "devicon:figma" },
-          { color: "#FF6C37", icon: "devicon:postman" },
           { color: "#CB3837", icon: "devicon:npm" },
-          { color: "#ffffff", icon: "devicon:vercel" },
           { color: "#007ACC", icon: "devicon:vscode", name: "VS Code" },
           { color: "#10A37F", icon: "simple-icons:openai", name: "Codex" },
-          { color: "#9e9e9e", icon: "mdi:console", name: "OpenCode" },
-          { color: "#8b5cf6", icon: "mdi:robot-outline", name: "Pi" },
+          { color: "#9e9e9e", icon: "vscode-icons:file-type-opencode", name: "OpenCode" },
+          { color: "#8b5cf6", icon: "arcticons:pi-1", name: "Pi" },
         ],
       },
     ],
@@ -94,8 +91,8 @@ export const es = {
       "Mi Stack": "Las herramientas que uso en la mayoría de mis proyectos.",
       Frontend: "Interfaces, animación e interacción.",
       Backend: "APIs, datos y lógica de negocio.",
-      "Familiarizado con": "Tecnologías que manejo y sigo explorando.",
-      Herramientas: "Diseño, versiones y despliegue.",
+      "Familiar With": "Tecnologías que manejo y sigo explorando.",
+      Tools: "Diseño, versiones y despliegue."
     },
   },
 

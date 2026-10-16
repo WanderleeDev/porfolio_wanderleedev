@@ -7,6 +7,7 @@
  */
 import { getTranslations } from "../i18n/utils";
 import Icon from "astro-iconify";
+import Title from "./typography/Title.astro";
 
 type Tech = { color: string; icon: string; name?: string };
 type Group = { title: string; accent: string; techs: Tech[]; alsoUsed?: Tech[] };
@@ -76,8 +77,8 @@ const panels = TAB_GROUPS.map((title) => {
 >
   <div class="track">
     <div class="panel">
-      <h2 class="panel__item sec-title mb-3">{journeyT.introTitle}</h2>
-      <p class="panel__item sec-desc mb-8">{skillsT.sectionDescription}</p>
+      <Title level={2} class="panel__item mb-3">{journeyT.introTitle}</Title>
+      <p class="panel__item mb-8 max-w-[44ch] font-sans text-[clamp(0.95rem,1.8vw,1.05rem)] leading-[1.6] text-soft">{skillsT.sectionDescription}</p>
     </div>
 
     <div class="tabs" role="group" aria-label={L.groups}>
@@ -104,13 +105,10 @@ const panels = TAB_GROUPS.map((title) => {
           data-panel={group.key}
           style={`--accent: ${group.accent}`}
         >
-          <h2 class="panel__item sec-title mb-3" style="color: var(--accent)">
-            {group.title}
-          </h2>
-          <p class="panel__item sec-desc mb-8">{descriptions[group.title] ?? ""}</p>
+          <Title level={2} class="panel__item mb-3" style={`color: ${group.accent}`}>{group.title}</Title>
+          <p class="panel__item mb-8 max-w-[44ch] font-sans text-[clamp(0.95rem,1.8vw,1.05rem)] leading-[1.6] text-soft">{descriptions[group.title] ?? ""}</p>
 
-          <ul class="tech-grid">
-            {group.techs.map(({ color, icon, name }) => (
+          <ul class="tech-grid">            {group.techs.map(({ color, icon, name }) => (
               <li class="tech panel__item" style={`--c: ${color}`}>
                 <span class="tech__media">
                   <Icon name={icon} />
@@ -122,7 +120,7 @@ const panels = TAB_GROUPS.map((title) => {
 
           {group.extra.length ? (
             <>
-              <h3 class="also__title">{L.alsoUsed}</h3>
+              <Title level={3} class="also__title">{L.alsoUsed}</Title>
               <ul class="tech-grid tech-grid--also">
                 {group.extra.map(({ color, icon, name }) => (
                   <li class="tech panel__item" style={`--c: ${color}`}>
@@ -140,8 +138,8 @@ const panels = TAB_GROUPS.map((title) => {
     }
 
     <div class="panel panel--outro">
-      <h2 class="panel__item sec-title mb-3">{journeyT.outroTitle}</h2>
-      <p class="panel__item sec-desc mb-8">{journeyT.outroDesc}</p>
+      <Title level={2} class="panel__item mb-3">{journeyT.outroTitle}</Title>
+      <p class="panel__item mb-8 max-w-[44ch] font-sans text-[clamp(0.95rem,1.8vw,1.05rem)] leading-[1.6] text-soft">{journeyT.outroDesc}</p>
     </div>
   </div>
 
@@ -323,7 +321,7 @@ const panels = TAB_GROUPS.map((title) => {
 </style>
 
 <script>
-  import { gsap } from "../lib/gsap";
+  import { gsap, ScrollTrigger } from "../lib/gsap";
   
 
   

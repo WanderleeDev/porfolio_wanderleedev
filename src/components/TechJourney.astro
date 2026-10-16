@@ -108,7 +108,8 @@ const panels = TAB_GROUPS.map((title) => {
           <Title level={2} class="panel__item mb-3" style={`color: ${group.accent}`}>{group.title}</Title>
           <p class="panel__item mb-8 max-w-[44ch] font-sans text-[clamp(0.95rem,1.8vw,1.05rem)] leading-[1.6] text-soft">{descriptions[group.title] ?? ""}</p>
 
-          <ul class="tech-grid">            {group.techs.map(({ color, icon, name }) => (
+          <ul class="tech-grid">
+            {group.techs.map(({ color, icon, name }) => (
               <li class="tech panel__item" style={`--c: ${color}`}>
                 <span class="tech__media">
                   <Icon name={icon} />

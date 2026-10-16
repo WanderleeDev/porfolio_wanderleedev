@@ -1,0 +1,631 @@
+---
+/**
+ * Hero — single owner of the intro and the hero content.
+ *
+ * Merges what used to be MainBackground.astro (stars canvas + badge/cat
+ * curtain) and HeroFan.astro (fanned tech cards + big condensed name).
+ *
+ * Layer order, bottom to top (S2):
+ *   #hero content -> #curtain (opaque) -> #stars-bg (warp) -> #badge-layer
+ *
+ * The opaque curtain hides the hero while the intro runs, and because the
+ * canvas sits ABOVE it the warp stays visible. After the intro the canvas
+ * drops back to z-0 so the scroll stars live behind the page content.
+ *
+ * The word reveal is pure CSS driven by --delay (S4): no GSAP writes
+ * inline transform/scale/rotate over hero elements, which is what used to
+ * flatten the fanned cards (S3).
+ */
+import Icon from "astro-iconify";
+import { getTranslations } from "../i18n/utils";
+import Title from "./typography/Title.astro";
+
+const top = "SOFWARE DEVELOPER";
+const bottom = "WANDERLEEDEV";
+
+const lang = Astro.currentLocale as "es" | "en";
+const t = getTranslations(lang);
+
+const heroWordsName = "Wanderlee Dev".split(" ");
+const heroWordsRoleLine1 = "Fullstack,".split(" ");
+const heroWordsRoleLine2 = [t("hero").titleAccent, "&", t("hero").titleEnd];
+
+const stackLogos = [
+  { icon: "devicon:postgresql", alt: "PostgreSQL", color: "#336791", rotate: "-rotate-6" },
+  { icon: "devicon:nestjs", alt: "NestJS", color: "#E0234E", rotate: "rotate-2" },
+  { icon: "devicon:angular", alt: "Angular", color: "#DD0031", rotate: "-rotate-2" },
+  { icon: "devicon:nodejs", alt: "Node.js", color: "#339933", rotate: "rotate-6" },
+];
+---
+
+<section
+  id="hero"
+  class="relative z-0 h-[110dvh] min-h-[640px] bg-surface flex flex-col items-center justify-center px-4 text-center overflow-hidden"
+  aria-label="Presentación"
+>
+  <p class="font-sans text-[11px] tracking-[0.2em] text-muted uppercase mt-1">
+    wanderleedev@gmail.com
+  </p>
+
+  <Title level={1} class="mt-4 hero-reveal">
+    {
+      heroWordsName.map((w, i) => (
+        <span class="hero-word" style={`--delay:${i}`} aria-hidden="true">
+          {w}&nbsp;
+        </span>
+      ))
+    }
+  </Title>
+
+  <div class="relative flex items-center justify-center mt-6 mb-6" aria-hidden="true">
+    {
+      stackLogos.map(({ icon, alt, color, rotate }, i) => (
+        <div
+          class={`tech-card w-28 h-28 sm:w-32 sm:h-32 md:w-40 md:h-40 rounded-2xl shadow-[0_14px_35px_-10px_rgba(0,0,0,0.12)] flex items-center justify-center bg-surface border border-line ${rotate} -ml-5 first:ml-0 hover:rotate-0 hover:scale-105 hover:z-10 hover:shadow-[0_20px_45px_-10px_rgba(0,0,0,0.18)] transition-transform duration-500 ease-out`}
+          style={`--card-i:${i}`}
+          role="img"
+          aria-label={alt}
+          data-color={color}
+        >
+          <Icon name={icon} class="w-14 h-14 sm:w-16 sm:h-16 md:w-20 md:h-20" style={{ color }} />
+        </div>
+      ))
+    }
+  </div>
+
+  <Title level={2} class="!text-muted !text-[clamp(2rem,7.5vw,5.5rem)] hero-reveal">
+    {
+      heroWordsRoleLine1.map((w, i) => (
+        <span class="hero-word" style={`--delay:${i}`} aria-hidden="true">
+          {w}&nbsp;
+        </span>
+      ))
+    }
+    <br />
+    {
+      heroWordsRoleLine2.map((w, i) => (
+        <span class="hero-word" style={`--delay:${i + 2}`} aria-hidden="true">
+          {w}&nbsp;
+        </span>
+      ))
+    }
+  </Title>
+
+  <div class="mt-6">
+    <p class="font-sans text-xs font-bold tracking-[0.2em] text-ink uppercase">
+      {t("hero").subtitle}
+    </p>
+    <p id="stack" class="font-sans text-[11px] tracking-[0.15em] text-muted uppercase mt-1">
+      PostgreSQL · NestJS · Angular · Node.js
+    </p>
+  </div>
+</section>
+
+<!-- Opaque backdrop: hides the hero while the intro runs (S2).
+     bg-contrast (--color-contrast), not bg-surface: in the neon theme
+     --color-surface is `transparent`, so the curtain would not hide anything.
+     z >= 1000 keeps the intro above ThemePicker (z-[999]), matching the
+     previous z-1000 curtain; otherwise the picker floats over the intro. -->
+<div id="curtain" class="fixed inset-0 z-[1000] bg-contrast" aria-hidden="true"></div>
+
+<!-- Above the curtain, so the warp stays visible (S2) -->
+<canvas id="stars-bg" class="fixed inset-0 size-full z-[1001] pointer-events-none" aria-hidden="true"
+></canvas>
+
+<!-- Badge sits above the canvas, so the warp never paints over it (S2) -->
+<div
+  id="badge-layer"
+  class="fixed inset-0 z-[1002] grid place-items-center pointer-events-none"
+  aria-hidden="true"
+>
+  <div
+    id="pet"
+    class="relative z-10 size-40 lg:size-64 rounded-full aspect-square bg-black drop-shadow-lg scale-0 origin-center ease-out-elastic"
+    aria-hidden="true"
+  >
+    <svg viewBox="0 0 300 300" class="absolute inset-0 size-full animate-badge-spin" aria-hidden="true">
+      <defs>
+        <path id="badge-top" d="M 46 150 A 104 104 0 0 1 254 150"></path>
+        <path id="badge-bottom" d="M 24 150 A 126 126 0 0 0 276 150"></path>
+      </defs>
+      <circle cx="150" cy="150" r="142" class="fill-none stroke-white stroke-[1.5]"></circle>
+      <circle cx="150" cy="150" r="98" class="fill-none stroke-white/70 stroke-1"></circle>
+      <circle cx="150" cy="150" r="82" class="fill-none stroke-white/30 stroke-1"></circle>
+      <circle cx="150" cy="150" r="66" class="fill-none stroke-white/15 stroke-1"></circle>
+      <circle cx="36" cy="150" r="3.5" class="fill-blue-500"></circle>
+      <circle cx="264" cy="150" r="3.5" class="fill-blue-500"></circle>
+      <text class="fill-white text-[26px] font-bold tracking-widest" text-anchor="middle">
+        <textPath href="#badge-top" startOffset="50%">{top}</textPath>
+      </text>
+      <text class="fill-white text-[26px] font-bold tracking-widest" text-anchor="middle">
+        <textPath href="#badge-bottom" startOffset="50%">{bottom}</textPath>
+      </text>
+    </svg>
+    <div
+      id="cat"
+      style="image-rendering: pixelated;"
+      class="absolute inset-[20%] rounded-full bg-[url('/cat.webp')] bg-no-repeat bg-cover bg-badge-ink"
+      aria-hidden="true">
+    </div>
+  </div>
+</div>
+
+<script is:inline define:vars={{ isDev: import.meta.env.DEV }}>
+  // Runs inline right after the curtain exists in the DOM (S5). The old copy
+  // lived in <head>, always saw a null #curtain, threw, and was swallowed by
+  // an empty catch: the repeat-visit skip never worked and the badge flashed.
+  try {
+    if (!isDev && localStorage.getItem("wdev-intro-seen") === "1") {
+      document.getElementById("curtain").style.display = "none";
+      document.getElementById("badge-layer").style.display = "none";
+      document.getElementById("stars-bg").style.zIndex = "0";
+      document.documentElement.classList.add("hero-ready");
+    }
+  } catch (e) {}
+</script>
+
+<style is:global>
+  /* Word reveal gate. Global on purpose: Title.astro renders the heading
+     class without an Astro scope attribute, so the scoped compound selector
+     (.hero-reveal .hero-word) compiled by Astro never matched at all. */
+  .hero-reveal .hero-word {
+    display: inline-block;
+    transform-origin: 50% 100%;
+    scale: 1 0;
+    transition: scale 0.8s var(--ease-out-elastic);
+    transition-delay: calc(var(--delay, 0) * 0.1s);
+  }
+
+  html.hero-ready .hero-reveal .hero-word {
+    scale: 1;
+  }
+
+  /* Cards stay invisible while the intro runs and fade in at hand-off:
+     opacity + translate only, so their rotate/scale stay owned by Tailwind
+     and the fan + hover survive (S3). fill-mode `both` holds the hidden
+     from-state while the animation is paused, which is what kept the old
+     GSAP-only version's timing. */
+  #hero .tech-card {
+    opacity: 0;
+    translate: 0 12px;
+    animation: hero-card-in 0.7s ease-out both;
+    animation-delay: calc(0.25s + var(--card-i, 0) * 0.08s);
+    animation-play-state: paused;
+  }
+
+  html.hero-ready #hero .tech-card {
+    animation-play-state: running;
+  }
+
+  @keyframes hero-card-in {
+    to {
+      opacity: 1;
+      translate: 0 0;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .hero-reveal .hero-word,
+    #hero .tech-card {
+      transition: none;
+      animation: none;
+      scale: 1;
+      opacity: 1;
+      translate: none;
+    }
+  }
+</style>
+
+<style>
+  /* @property makes the gradient custom properties animatable; without them
+     `transition: --hero-color-N` cannot interpolate and the hover gradient
+     would snap instead of cross-fading. */
+  @property --hero-color-1 {
+    syntax: "<color>";
+    inherits: false;
+    initial-value: transparent;
+  }
+
+  @property --hero-color-2 {
+    syntax: "<color>";
+    inherits: false;
+    initial-value: transparent;
+  }
+
+  @property --hero-color-3 {
+    syntax: "<color>";
+    inherits: false;
+    initial-value: transparent;
+  }
+
+  @property --hero-color-4 {
+    syntax: "<color>";
+    inherits: false;
+    initial-value: transparent;
+  }
+
+  #hero {
+    --hero-color-1: transparent;
+    --hero-color-2: transparent;
+    --hero-color-3: transparent;
+    --hero-color-4: transparent;
+
+    mask-image: linear-gradient(#000 0, #000 90%, #0000 100%);
+
+    background: linear-gradient(
+      135deg,
+      var(--hero-color-1) 0%,
+      var(--hero-color-2) 25%,
+      var(--hero-color-3) 75%,
+      var(--hero-color-4) 100%
+    );
+
+    transition:
+      --hero-color-1 500ms ease,
+      --hero-color-2 500ms ease,
+      --hero-color-3 500ms ease,
+      --hero-color-4 500ms ease,
+      font-weight 500ms ease;
+
+    &:has(.tech-card:hover) #stack {
+      color: #fff;
+    }
+
+    &:has(.tech-card:nth-child(1):hover) {
+      --hero-color-1: #1b2a41;
+      --hero-color-2: #336791;
+      --hero-color-3: #00a6fb;
+      --hero-color-4: #a9def9;
+
+      & #stack {
+        font-weight: 900;
+      }
+    }
+
+    &:has(.tech-card:nth-child(2):hover) {
+      --hero-color-1: #5c001f;
+      --hero-color-2: #e0234e;
+      --hero-color-3: #a000ff;
+      --hero-color-4: #ff7eb6;
+    }
+
+    &:has(.tech-card:nth-child(3):hover) {
+      --hero-color-1: #ff0057;
+      --hero-color-2: #dd0031;
+      --hero-color-3: #a000ff;
+      --hero-color-4: #6a00ff;
+    }
+
+    &:has(.tech-card:nth-child(4):hover) {
+      --hero-color-1: #164e24;
+      --hero-color-2: #339933;
+      --hero-color-3: #84cc16;
+      --hero-color-4: #d9f99d;
+    }
+  }
+</style>
+
+<script>
+  import { gsap, ScrollTrigger } from "../lib/gsap";
+  import { IS_DEV, storage, reducedMotion } from "../utils/extra";
+
+  // La intro asume scroll 0: si el browser restaura una posición a mitad de
+  // página, el reveal del hero nunca se vería. Mismo comportamiento previo.
+  window.scrollTo(0, 0);
+
+  const canvas = document.getElementById("stars-bg") as HTMLCanvasElement;
+  const ctx = canvas.getContext("2d")!;
+  const htmlEl = document.documentElement;
+  const curtainEl = document.getElementById("curtain") as HTMLElement;
+  const badgeLayerEl = document.getElementById("badge-layer") as HTMLElement;
+  const petEl = document.getElementById("pet") as HTMLElement;
+  const catEl = document.getElementById("cat") as HTMLElement;
+
+  // ---- Colores del canvas desde los tokens del theme activo ----
+  // El navegador resuelve cualquier valor CSS (var, hex, color-mix) a rgb().
+  const probe = document.createElement("span");
+  probe.style.display = "none";
+  document.body.appendChild(probe);
+
+  const resolveColor = (value: string) => {
+    probe.style.color = value;
+    return getComputedStyle(probe).color;
+  };
+  const parseRgb = (c: string) => c.match(/[\d.]+/g)!.slice(0, 3).map(Number);
+
+  function themeColors() {
+    const [r, g, b] = parseRgb(resolveColor("var(--color-contrast)"));
+    return {
+      core: parseRgb(resolveColor("var(--color-ink)")),
+      acc: parseRgb(resolveColor("var(--ct-acc)")),
+      muted: parseRgb(resolveColor("var(--color-muted)")),
+      additive: 0.299 * r + 0.587 * g + 0.114 * b < 128,
+    };
+  }
+
+  let theme = themeColors();
+  new MutationObserver(() => {
+    theme = themeColors();
+  }).observe(htmlEl, { attributes: true, attributeFilter: ["data-theme", "class"] });
+
+  // Sin intro en visitas repetidas (salvo en dev) o con reducedMotion
+  const skipIntro = (storage.get() && !IS_DEV) || reducedMotion;
+
+  // El script inline de arriba ya ocultó la cortina cuando pudo; esto cubre
+  // los caminos dev / reducedMotion, que sólo se pueden decidir en JS.
+  if (skipIntro) {
+    curtainEl.style.display = "none";
+    badgeLayerEl.style.display = "none";
+    htmlEl.classList.add("hero-ready");
+  } else {
+    htmlEl.style.overflow = "hidden";
+  }
+
+  const WARP_STAR_COUNT = 1500;
+  const SCROLL_STAR_COUNT = 350;
+  const DEPTH = 1000;
+  const FOCAL = 400;
+  const MAX_WARP_SPEED = 140;
+  const ACCEL_TIME = 6;
+  const DECEL_TIME = 2;
+  const TRAIL_FACTOR = 5;
+  const MAX_SPEED = 40;
+
+  // idle: no pinta nada (el canvas espera al badge); warp; scroll
+  type Mode = "idle" | "warp" | "scroll";
+  type WarpStar = { x: number; y: number; z: number; px: number; py: number };
+  type ScrollStar = { x: number; y: number; z: number; size: number; alpha: number; drift: number };
+
+  let W = 0;
+  let H = 0;
+  let DPR = 1;
+  let cx = 0;
+  let cy = 0;
+  let warpStars: WarpStar[] = [];
+  let scrollStars: ScrollStar[] = [];
+
+  const state = { mode: (skipIntro ? "scroll" : "idle") as Mode, warp: 0, target: 0, v: 0 };
+
+  const rand = (a: number, b: number) => a + Math.random() * (b - a);
+
+  // ---------- Warp (3D) ----------
+
+  function project(s: WarpStar) {
+    const k = FOCAL / s.z;
+    return { sx: cx + s.x * k, sy: cy + s.y * k };
+  }
+
+  function spawnWarp(s: WarpStar, randomZ: boolean) {
+    s.x = rand(-1, 1) * W * (DEPTH / FOCAL);
+    s.y = rand(-1, 1) * H * (DEPTH / FOCAL);
+    s.z = randomZ ? rand(1, DEPTH) : DEPTH;
+    const p = project(s);
+    s.px = p.sx;
+    s.py = p.sy;
+  }
+
+  function warpStyle(depthRatio: number, w: number) {
+    const core = Math.min(1, 0.4 + 0.6 * depthRatio + 0.3 * w);
+    const [cr, cg, cb] = theme.core;
+    const [ar, ag, ab] = theme.acc;
+    return {
+      coreColor: `rgba(${cr}, ${cg}, ${cb}, ${core})`,
+      haloColor: `rgba(${ar}, ${ag}, ${ab}, ${core * 0.6 * w * w})`,
+      coreWidth: 0.5 + depthRatio * (1.5 + 1.5 * w),
+      haloWidth: depthRatio * 5 + w * w * 10,
+    };
+  }
+
+  function strokeSegment(
+    x1: number,
+    y1: number,
+    x2: number,
+    y2: number,
+    color: string,
+    width: number,
+  ) {
+    ctx.strokeStyle = color;
+    ctx.lineWidth = width;
+    ctx.beginPath();
+    ctx.moveTo(x1, y1);
+    ctx.lineTo(x2, y2);
+    ctx.stroke();
+  }
+
+  function renderWarp() {
+    const speed = state.warp * MAX_WARP_SPEED;
+
+    // Desvanece las estelas hacia transparencia: el canvas nunca tapa el
+    // fondo real de la página (en neón es un gradiente, no un color plano).
+    ctx.globalCompositeOperation = "destination-out";
+    ctx.fillStyle = "rgba(0, 0, 0, 0.35)";
+    ctx.fillRect(0, 0, W, H);
+
+    ctx.globalCompositeOperation = theme.additive ? "lighter" : "source-over";
+    ctx.lineCap = "round";
+
+    for (const s of warpStars) {
+      const prev = project(s);
+      s.px = prev.sx;
+      s.py = prev.sy;
+
+      s.z -= speed;
+      if (s.z <= 1) {
+        spawnWarp(s, false);
+        continue;
+      }
+
+      const curr = project(s);
+      const depthRatio = 1 - s.z / DEPTH;
+      const st = warpStyle(depthRatio, state.warp);
+      strokeSegment(s.px, s.py, curr.sx, curr.sy, st.haloColor, st.haloWidth);
+      strokeSegment(s.px, s.py, curr.sx, curr.sy, st.coreColor, st.coreWidth);
+    }
+
+    ctx.globalCompositeOperation = "source-over";
+  }
+
+  // ---------- Hand-off warp -> scroll ----------
+  // Sólo pasan las estrellas visibles, en su posición exacta. No se reubica
+  // ni se agrega ninguna, así que la densidad final es la que ya se veía.
+  function handOffToScroll() {
+    scrollStars = [];
+    for (const s of warpStars) {
+      const p = project(s);
+      if (p.sx < 0 || p.sx > W || p.sy < 0 || p.sy > H) continue;
+      const depthRatio = 1 - s.z / DEPTH;
+      scrollStars.push({
+        x: p.sx,
+        y: p.sy,
+        z: 0.2 + 0.8 * depthRatio,
+        size: 0.5 + depthRatio * 1.5,
+        alpha: 0.4 + 0.6 * depthRatio,
+        drift: rand(0.05, 0.25) * (0.2 + 0.8 * depthRatio),
+      });
+    }
+    warpStars = [];
+    state.mode = "scroll";
+    // El reveal lo hace el CSS: esta clase es el único disparador (S4).
+    htmlEl.classList.add("hero-ready");
+    htmlEl.style.overflow = "";
+    // Terminada la intro, el canvas vuelve al fondo (z-0)
+    canvas.style.zIndex = "0";
+    if (!skipIntro) storage.set();
+  }
+
+  // ---------- Scroll (2D) ----------
+
+  function resetScrollStar(s: ScrollStar, fromTop: boolean) {
+    s.x = rand(0, W);
+    s.y = fromTop ? -10 : H + 10;
+    s.z = rand(0.2, 1);
+    s.size = rand(0.6, 2) * s.z + 0.3;
+    s.alpha = rand(0.4, 1) * s.z + 0.2;
+    s.drift = rand(0.05, 0.25) * s.z;
+  }
+
+  function renderScroll() {
+    state.target *= 0.92;
+    state.v += (state.target - state.v) * 0.12;
+
+    ctx.clearRect(0, 0, W, H);
+    ctx.lineCap = "round";
+
+    for (const s of scrollStars) {
+      const move = state.v * s.z * 0.8 + s.drift;
+      s.y += move;
+
+      if (move > 0 && s.y > H + 10) resetScrollStar(s, true);
+      if (move < 0 && s.y < -10) resetScrollStar(s, false);
+
+      const tail = move * TRAIL_FACTOR;
+      const [cr, cg, cb] = theme.core;
+      strokeSegment(s.x, s.y - tail, s.x, s.y, `rgba(${cr}, ${cg}, ${cb}, ${s.alpha})`, s.size);
+    }
+  }
+
+  // idle: estrellas fijas, sin movimiento ni velo. Así el canvas aparece con
+  // el gato y no se anima hasta que el gato termine su animación.
+  function renderIdle() {
+    ctx.clearRect(0, 0, W, H);
+    ctx.globalCompositeOperation = theme.additive ? "lighter" : "source-over";
+    const [mr, mg, mb] = theme.muted;
+    for (const s of warpStars) {
+      const p = project(s);
+      const st = warpStyle(1 - s.z / DEPTH, 0);
+      ctx.fillStyle = `rgba(${mr}, ${mg}, ${mb}, ${st.coreWidth * 0.6})`;
+      ctx.beginPath();
+      ctx.arc(p.sx, p.sy, st.coreWidth, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.globalCompositeOperation = "source-over";
+  }
+
+  function render() {
+    if (state.mode === "idle") return renderIdle();
+    if (state.mode === "warp") renderWarp();
+    else renderScroll();
+  }
+
+  function resize() {
+    DPR = window.devicePixelRatio || 1;
+    W = window.innerWidth;
+    H = window.innerHeight;
+    cx = W / 2;
+    cy = H / 2;
+    canvas.width = W * DPR;
+    canvas.height = H * DPR;
+    ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+
+    if (state.mode !== "scroll") {
+      warpStars = Array.from({ length: WARP_STAR_COUNT }, () => {
+        const s: WarpStar = { x: 0, y: 0, z: 0, px: 0, py: 0 };
+        spawnWarp(s, true);
+        return s;
+      });
+    } else {
+      scrollStars = Array.from({ length: SCROLL_STAR_COUNT }, () => {
+        const z = rand(0.2, 1);
+        return {
+          x: rand(0, W),
+          y: rand(0, H),
+          z,
+          size: rand(0.6, 2) * z + 0.3,
+          alpha: rand(0.4, 1) * z + 0.2,
+          drift: rand(0.05, 0.25) * z,
+        };
+      });
+    }
+  }
+
+  resize();
+  window.addEventListener("resize", resize);
+
+  ScrollTrigger.create({
+    start: 0,
+    end: "max",
+    onUpdate: (self) => {
+      if (state.mode !== "scroll") return;
+      state.target = gsap.utils.clamp(-MAX_SPEED, MAX_SPEED, self.getVelocity() / 100);
+    },
+  });
+
+  gsap.ticker.add(render);
+
+  // Warp: arranca solo cuando el badge terminó de achicarse
+  function startWarp() {
+    state.mode = "warp";
+    gsap
+      .timeline({ onComplete: handOffToScroll })
+      .to(state, { warp: 1, duration: ACCEL_TIME, ease: "power2.in" })
+      .to(state, { warp: 0, duration: DECEL_TIME, ease: "power2.out" });
+  }
+
+  if (skipIntro) {
+    state.mode = "scroll";
+  } else {
+    // Badge aparece con el canvas quieto; al terminar la animación del gato
+    // arranca el warp, junto con su salida.
+    const badgeTl = gsap.timeline({
+      paused: true,
+      onComplete: () => {
+        badgeLayerEl.style.display = "none";
+        curtainEl.style.display = "none";
+      },
+    });
+
+    badgeTl
+      .to(petEl, { scale: 1, delay: 0.3 })
+      .call(() => {
+        badgeTl.pause();
+        catEl.classList.add("animate-move-x");
+        catEl.addEventListener("animationend", () => badgeTl.resume(), { once: true });
+      })
+      .call(startWarp)
+      .to(petEl, { scale: 0, duration: 0.4, ease: "power3.in" });
+
+    Promise.race([document.fonts.ready, new Promise((r) => setTimeout(r, 1500))]).then(() =>
+      badgeTl.play(),
+    );
+  }
+</script>

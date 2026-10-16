@@ -7,16 +7,13 @@
  *     thumbnail/locale come from src/i18n/locales).
  *   - View Transitions client router.
  *   - Inline theme-preset script (runs before paint to avoid flicker).
- *   - Mounts <IntroCurtain /> (own component) first in <body> so the
- *     curtain masks the page on /es and /en. The layout keeps only the
+ * *     curtain masks the page on /es and /en. The layout keeps only the
  *     pre-paint flash guard and the hero word-reveal gate.
  *
  * Used by src/pages/index.astro (es) and src/pages/en/index.astro (en).
  */
 import { ClientRouter } from "astro:transitions";
 import { getTranslations } from "../i18n/utils";
-import IntroCurtain from "../components/IntroCurtain.astro";
-import MainBackground from "../components/MainBackground.astro";
 
 interface Props {
   title: string;
@@ -28,7 +25,6 @@ const lang = Astro.currentLocale as "es" | "en";
 const t = getTranslations(lang);
 const meta = t("metadata");
 const site = "https://wanderlee.dev";
-const isDev = import.meta.env.DEV;
 const ogLocale = lang === "en" ? "en_US" : "es_AR";
 const altLang = lang === "es" ? "en" : "es";
 const altHref = altLang === "en" ? `${site}/en` : `${site}/`;
@@ -94,20 +90,9 @@ const altTitle = altLang === "en" ? "WanderleeDev — Portfolio" : "Portafolio W
         }
       } catch (e) {}
     </script>
-    <script is:inline set:html={`
-      const __DEV__ = ${isDev};
-      try {
-        if (!__DEV__ && localStorage.getItem("wdev-intro-seen") === "1") {
-        document.querySelector('#curtain').classList.add('hidden', 'pointer-events-none')
-        }
-      } catch (e) {}
-    `}
-    ></script>
-  </head>
+      </head>
 
   <body class="overflow-x-clip">
-    <IntroCurtain />
-    <MainBackground />
 
     <div>
       <slot />

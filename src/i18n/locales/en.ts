@@ -186,4 +186,14 @@ export const en = {
     errorWhat: "Tell me what company or idea it's for.",
     errorEmail: "Please enter a valid email, like name@domain.com.",
   },
+
+  footer: {
+    tagline: "Fullstack developer",
+    contactLabel: "Contact",
+    email: "wanderleedev@gmail.com",
+    ctaLabel: "Start a project",
+    ctaAria: "Back to the contact section",
+    backToTop: "Back to top",
+    rights: "© 2026 WanderleeDev. All rights reserved.",
+  },
 };

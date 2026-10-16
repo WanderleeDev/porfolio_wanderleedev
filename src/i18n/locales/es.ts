@@ -187,4 +187,14 @@ export const es = {
     errorWhat: "Cuéntame para qué empresa o idea es.",
     errorEmail: "Escribe un correo válido, por ejemplo nombre@dominio.com.",
   },
+
+  footer: {
+    tagline: "Fullstack developer",
+    contactLabel: "Contacto",
+    email: "wanderleedev@gmail.com",
+    ctaLabel: "Empezar un proyecto",
+    ctaAria: "Volver a la sección de contacto",
+    backToTop: "Volver arriba",
+    rights: "© 2026 WanderleeDev. Todos los derechos reservados.",
+  },
 };

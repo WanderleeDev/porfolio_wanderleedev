@@ -1,79 +1,119 @@
 ---
 /**
- * Redesign footer — Spencer Gabor language:
- * black block, giant cropped banner, clients list on the right.
+ * Redesign footer — full redesign:
+ * - Asymmetric grid: CTA on the left, clients + contact + socials on the right.
+ * - Animated marquee banner ("WANDERLEEDEV") with a subtle horizontal drift.
+ * - All theming via design tokens (--color-dark-*), no raw hex.
+ * - CTA scrolls to #contact (the RedesignContact section).
+ *
+ * Texts come from i18n (`footer`), so /es and /en render in their own language.
  */
-import { cloudinary } from "../utils/cloudinary";
+import Icon from "astro-iconify";
+import { getTranslations } from "../i18n/utils";
 
-interface Props {
-  clientNames?: string[];
-  heroImage?: string;
-}
+const lang = Astro.currentLocale === "en" ? "en" : "es";
+const f = getTranslations(lang)("footer");
 
-const {
-  clientNames = ["Apple", "Amazon", "Adobe", "Google", "Nike", "The New York Times", "Lululemon", "NPR"],
-  heroImage = "https://res.cloudinary.com/dy8gpozi6/image/upload/v1765154077/tom_f0v8qy.webp",
-} = Astro.props;
+const socialLinks = [
+  { name: "LinkedIn", url: "https://www.linkedin.com/in/wanderlee-max/" },
+  { name: "GitHub", url: "https://github.com/WanderleeDev" },
+];
 ---
 
-<footer class="bg-dark-bg text-dark-ink overflow-hidden relative">
-  <div class="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 px-6 lg:px-12 py-12 md:py-16 items-start">
-    <!-- Clients list -->
-    <div class="order-2 md:order-1 max-w-md">
-      <p class="sec-eyebrow !text-dark-muted mb-4">
-        Clients Include
-      </p>
-      <p class="font-sans text-sm text-dark-ink/80 leading-relaxed">
-        {
-          clientNames.map((name) => (
-            <span class="inline-block">{name}, </span>
-          ))
-        }
-      </p>
+<footer
+  class="relative overflow-hidden bg-dark-bg text-dark-ink"
+  aria-label="Footer"
+>
+  <!-- Content grid: CTA/clients left, contact+socials right -->
+  <div class="mx-auto grid max-w-7xl grid-cols-1 items-start gap-10 px-6 py-16 md:grid-cols-[1.4fr_1fr] md:gap-12 md:px-12 md:py-24">
+    <!-- Left: closing CTA -->
+    <div>
+      <h2 class="mt-4 font-fira-sans-extra-condensed text-[clamp(2.5rem,5vw,4.5rem)] font-black uppercase leading-[1.1] tracking-tight">
+        {f.tagline}
+      </h2>
 
-      <div class="mt-8 font-sans text-xs text-dark-muted space-y-1">
-        <p>wanderleedev@gmail.com</p>
-      </div>
-
-      <div class="flex gap-4 mt-6 font-sans text-xs uppercase tracking-[0.15em]">
-        <a
-          href="https://www.linkedin.com/in/wanderlee-max/"
-          target="_blank"
-          rel="noopener noreferrer"
-          class="text-dark-muted hover:text-dark-ink transition-colors"
-        >
-          LinkedIn
-        </a>
-        <a
-          href="https://github.com/WanderleeDev"
-          target="_blank"
-          rel="noopener noreferrer"
-          class="text-dark-muted hover:text-dark-ink transition-colors"
-        >
-          GitHub
-        </a>
-      </div>
+      <a
+        href="#contact"
+        class="mt-12 inline-flex items-center gap-3 rounded-full bg-dark-ink px-8 py-5 font-sans text-sm font-extrabold uppercase tracking-[0.1em] text-dark-bg transition-transform hover:scale-105 active:scale-95 hover:bg-dark-acc hover:text-dark-bg"
+        aria-label={f.ctaAria}
+      >
+        <span>{f.ctaLabel}</span>
+        <Icon name="lucide:arrow-up-right" class="h-5 w-5" aria-hidden="true" />
+      </a>
     </div>
 
-    <!-- Hero image column -->
-    <div class="order-1 md:order-2 h-64 md:h-96 overflow-hidden rounded-2xl">
-      <img
-        src={cloudinary(heroImage, { w: 800, q: 55, f: "webp" })}
-        alt="WanderleeDev"
-        width={800}
-        height={1000}
-        class="w-full h-full object-cover object-top scale-125 -translate-y-8"
-        loading="lazy"
-        decoding="async"
-      />
+    <!-- Right: contact + socials -->
+    <div>
+      <p class="font-sans text-[0.7rem] font-bold uppercase tracking-[0.2em] text-dark-muted">
+        {f.contactLabel}
+      </p>
+      <a
+        href={`mailto:${f.email}`}
+        class="mt-2 block text-base font-semibold text-dark-ink underline-offset-4 hover:underline hover:no-underline"
+      >
+        {f.email}
+      </a>
+
+      <div class="mt-8 flex gap-4">
+        {socialLinks.map((l) => (
+          <a
+            href={l.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label={l.name}
+            class="flex size-11 items-center justify-center rounded-full border border-dark-line text-dark-ink transition-transform hover:scale-105 active:scale-95 hover:border-dark-acc hover:text-dark-acc"
+          >
+            <Icon
+              name={`lucide:${l.name === "GitHub" ? "github" : "linkedin"}`}
+              class="h-5 w-5"
+              aria-hidden="true"
+            />
+          </a>
+        ))}
+      </div>
     </div>
   </div>
 
-  <!-- Giant banner across the bottom, cropped like Spencer's -->
-  <p
-    class="font-fira-sans-extra-condensed font-black uppercase text-dark-ink/20 select-none text-center leading-none overflow-hidden whitespace-nowrap text-[22vw] translate-y-[18%] tracking-tight"
+  <!-- Animated marquee banner -->
+  <div
+    class="overflow-hidden border-t border-dark-line py-6"
     aria-hidden="true"
   >
-    WanderleeDev
-  </p>
+    <div class="flex w-max animate-footer-marquee">
+      <span class="whitespace-nowrap font-fira-sans-extra-condensed text-[clamp(3rem,8vw,7rem)] font-black uppercase leading-none text-dark-ink/15 select-none">WanderleeDev&nbsp;·&nbsp;</span>
+      <span class="whitespace-nowrap font-fira-sans-extra-condensed text-[clamp(3rem,8vw,7rem)] font-black uppercase leading-none text-dark-ink/15 select-none">WanderleeDev&nbsp;·&nbsp;</span>
+      <span class="whitespace-nowrap font-fira-sans-extra-condensed text-[clamp(3rem,8vw,7rem)] font-black uppercase leading-none text-dark-ink/15 select-none">WanderleeDev&nbsp;·&nbsp;</span>
+      <span class="whitespace-nowrap font-fira-sans-extra-condensed text-[clamp(3rem,8vw,7rem)] font-black uppercase leading-none text-dark-ink/15 select-none">WanderleeDev&nbsp;·&nbsp;</span>
+    </div>
+  </div>
+
+  <!-- Bottom bar -->
+  <div class="mx-auto flex max-w-7xl flex-col items-center justify-between gap-4 px-6 py-6 md:flex-row md:px-12">
+    <p class="font-sans text-xs text-dark-muted">© 2026 WanderleeDev</p>
+    <button
+      type="button"
+      class="flex size-11 items-center justify-center rounded-full border border-dark-line text-dark-ink transition-transform hover:scale-105 active:scale-95 hover:border-dark-acc hover:text-dark-acc"
+      aria-label={f.backToTop}
+    >
+      <Icon name="lucide:arrow-up" class="h-5 w-5" aria-hidden="true" />
+    </button>
+  </div>
 </footer>
+
+<script is:inline>
+  // Smooth scroll for CTA and back-to-top (respects reduced motion).
+  const reduced = () => matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  document.querySelector('footer a[href="#contact"]')?.addEventListener("click", (e) => {
+    e.preventDefault();
+    const target = document.querySelector("#contact");
+    if (target) target.scrollIntoView({ behavior: reduced() ? "auto" : "smooth" });
+  });
+
+  // Back-to-top button (the one in the bottom bar).
+  document
+    .querySelector('footer [aria-label*="arriba" i], footer [aria-label*="top" i]')
+    ?.addEventListener("click", () => {
+      window.scrollTo({ top: 0, behavior: reduced() ? "auto" : "smooth" });
+    });
+</script>

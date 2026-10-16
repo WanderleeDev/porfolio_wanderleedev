@@ -1,39 +1,192 @@
 ---
-import { getTranslations } from "../i18n/utils";
+/**
+ * My Stack — stacking cards.
+ *
+ * One card per group (Frontend / Backend / Tools, from `skills.list`
+ * skipping the "Mi Stack" summary at index 0).
+ *
+ * Layout (CodyHouse / GSAP pin pattern): each card is pinned in place by
+ * ScrollTrigger (`pin: true`) while the next card slides over it. As the
+ * next card approaches, the covered card scales down and fades. The last
+ * card stays at full scale/opacity.
+ *
+ * Data contract (unchanged): each group has `title`, `accent`, `techs`
+ * ([{ color, icon, name? }]) and optional `alsoUsed` with the same shape.
+ */
 import Icon from "astro-iconify";
+import Title from "./typography/Title.astro";
+import { getTranslations } from "../i18n/utils";
 
 const lang = Astro.currentLocale as "es" | "en";
 const t = getTranslations(lang);
 const skillsT = t("skills");
-const groups = skillsT.list;
-const journeyT = t("journey");
 
-const descriptions = journeyT.skillDescriptions;
-const one =groups[0]
+type Tech = { color: string; icon: string; name?: string };
+type Group = { title: string; accent: string; techs: Tech[]; alsoUsed?: Tech[] };
+
+const groups = (skillsT.list as Group[]).slice(1);
+
+const labelOf = (tech: Tech) => tech.name ?? tech.icon.split(":").pop() ?? tech.icon;
+const displayName = (tech: Tech) => labelOf(tech).replace(/[-_]+/g, " ");
 ---
-<section class="h-dvh ">
-    <h2
-      class="m-0 font-fira-sans-extra-condensed font-black text-[64px] uppercase tracking-tight leading-none text-ink"
-    >
-      Experimental
-    </h2>
 
-    <div class="grid grid-cols-2 h-full items-center relative">
-        <h3 class="text-6xl">
-            {one.title}
-        </h3>
-        <div class="absolute inset-0 p-8">
+<section id="my-stack" class="relative px-4 py-16 md:py-24" aria-label={skillsT.sectionTitle}>
+  <div class="mx-auto max-w-5xl">
+    <Title level={2} class="!text-[clamp(2.5rem,7vw,5rem)]">{skillsT.sectionTitle}</Title>
+    <p class="mt-3 max-w-[60ch] font-sans text-[clamp(0.95rem,1.8vw,1.05rem)] leading-[1.6] text-soft">
+      {skillsT.sectionDescription}
+    </p>
 
-        {
-            one.techs.map(({icon, color}) =>  {
-                const t = () => Math.ceil(Math.random() * 100)
-                return 
-                <Icon 
-                    name={icon} 
-                    // class={`size-16 absolute top-[${t()}%] left-2/4 -trasnlate-x-2/4 -trasnlate-y-2/4`} 
-                />
-            })
-        }
-        </div>
+    <div class="stack mt-10" id="stack-cards">
+      {
+        groups.map((group, i) => (
+          <article
+            class="stack-card flex flex-col rounded-3xl border border-line bg-surface p-6 shadow-[0_20px_60px_-20px_rgba(0,0,0,0.25)] md:min-h-[480px] md:p-10"
+            style={`--stack-i:${i}; --stack-accent:${group.accent}`}
+            aria-label={group.title}
+          >
+            <header class="flex items-center gap-4">
+              <span class="stack-dot" aria-hidden="true"></span>
+              <Title level={3} class="!text-[clamp(1.75rem,4.5vw,3rem)]">
+                {group.title}
+              </Title>
+            </header>
+
+            <ul class="mt-8 grid grid-cols-3 gap-4 sm:grid-cols-4 md:grid-cols-6 md:gap-6" aria-label={group.title}>
+              {group.techs.map((tech) => (
+                <li
+                  class="flex aspect-square flex-col items-center justify-center gap-1.5 rounded-2xl border border-line bg-surface p-2"
+                  title={labelOf(tech)}
+                >
+                  <Icon
+                    name={tech.icon}
+                    class="size-10 shrink-0 md:size-12"
+                    style={{ color: tech.color }}
+                    aria-hidden="true"
+                  />
+                  <span class="w-full truncate text-center font-sans text-[10px] font-bold uppercase leading-tight tracking-wider text-muted">
+                    {displayName(tech)}
+                  </span>
+                </li>
+              ))}
+            </ul>
+
+            {group.alsoUsed?.length ? (
+              <footer class="mt-8 flex flex-wrap items-center gap-3 border-t border-line pt-5 md:mt-auto">
+                <span class="font-sans text-[11px] font-bold tracking-[0.2em] text-muted uppercase">
+                  {lang === "en" ? "Also used" : "También usado"}
+                </span>
+                {group.alsoUsed.map((tech) => (
+                  <span class="flex flex-col items-center gap-1">
+                    <span
+                      class="flex size-10 items-center justify-center rounded-xl border border-line bg-surface"
+                      title={labelOf(tech)}
+                    >
+                      <Icon
+                        name={tech.icon}
+                        class="size-6"
+                        style={{ color: tech.color }}
+                        aria-hidden="true"
+                      />
+                    </span>
+                    <span class="max-w-16 truncate text-center font-sans text-[9px] font-bold uppercase leading-tight tracking-wider text-muted">
+                      {displayName(tech)}
+                    </span>
+                  </span>
+                ))}
+              </footer>
+            ) : null}
+          </article>
+        ))
+      }
     </div>
+  </div>
 </section>
+
+<script>
+  import { gsap, ScrollTrigger } from "../lib/gsap";
+
+  function initStack() {
+    // Idempotent: kill any previous runs.
+    document.querySelectorAll("#my-stack .stack-card").forEach((el) => {
+      gsap.killTweensOf(el);
+    });
+    ScrollTrigger.getAll()
+      .filter((st) => st.vars.id?.startsWith("stack-"))
+      .forEach((st) => st.kill());
+
+    const cards = gsap.utils.toArray<HTMLElement>("#my-stack .stack-card");
+    const stack = document.getElementById("stack-cards");
+    if (cards.length < 2 || !stack) return;
+
+    // Reduced motion: leave the cards in normal flow, no transforms.
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+    const STICKY_TOP = 112; // px from the top of the viewport where cards pin
+    const STEP = 20;       // vertical offset between stacked cards
+
+    // Give each card a little bottom margin so the pins have room to stack
+    // without overlapping the next card's natural position.
+    gsap.set(cards, { marginBottom: "2.5rem" });
+
+    cards.forEach((card, i) => {
+      const top = STICKY_TOP + i * STEP;
+
+      // Pin the card in place; the rest of the stack scrolls over it.
+      ScrollTrigger.create({
+        id: `stack-pin-${i}`,
+        trigger: card,
+        start: `top ${top}`,
+        endTrigger: stack,
+        end: "bottom bottom",
+        pin: true,
+        anticipatePin: 1,
+        invalidateOnRefresh: true,
+      });
+
+      // Reduce the card when the next one slides over it.
+      if (i < cards.length - 1) {
+        const next = cards[i + 1];
+        gsap.to(card, {
+          scale: 0.92,
+          opacity: 0.5,
+          ease: "none",
+          scrollTrigger: {
+            id: `stack-scale-${i}`,
+            trigger: next,
+            start: `top ${STICKY_TOP + (i + 1) * STEP + 300}`,
+            end: `top ${top + 40}`,
+            scrub: true,
+            invalidateOnRefresh: true,
+          },
+        });
+      }
+    });
+
+    ScrollTrigger.refresh();
+  }
+
+  document.addEventListener("astro:page-load", initStack);
+  initStack();
+</script>
+
+<style>
+  .stack-card {
+    position: relative;
+    /* Solid theme background so cards behind never show through.
+       --color-contrast (not --color-surface): opaque in all three themes,
+       transparent would leak in neon. */
+    background-color: var(--color-contrast);
+    transform-origin: center top;
+    will-change: transform, opacity;
+  }
+
+  .stack-dot {
+    inline-size: 0.9rem;
+    block-size: 0.9rem;
+    border-radius: 9999px;
+    background: var(--stack-accent, currentColor);
+    box-shadow: 0 0 24px 4px var(--stack-accent, transparent);
+    flex: none;
+  }
+</style>

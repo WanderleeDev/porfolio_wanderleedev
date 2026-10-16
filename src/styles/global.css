@@ -55,10 +55,21 @@
 
   --animate-move-x: move-x 1.2s steps(12, jump-none) 2 forwards .3s;
   --animate-badge-spin: badge-spin 14s linear infinite;
+  --animate-footer-marquee: footer-marquee 24s linear infinite;
 
   @keyframes badge-spin {
     to {
       transform: rotate(360deg);
+    }
+  }
+
+  @keyframes footer-marquee {
+    from {
+      transform: translateX(0);
+    }
+
+    to {
+      transform: translateX(-50%);
     }
   }
 
@@ -179,41 +190,6 @@
   background-attachment: fixed;
 }
 
-/* ── Tema brutalista: papel, negro puro, bordes duros ── */
-.brutalist {
-  color-scheme: light;
-
-  --color-surface: transpatre;
-  --color-ink: #0a0a0a;
-  --color-soft: #333333;
-  --color-muted: #555555;
-  --color-line: #0a0a0a;
-  --color-badge: #ffea00;
-  --color-badge-ink: #0a0a0a;
-  --color-contrast: #ffffff;
-
-  --surface: var(--color-surface);
-  --ink: var(--color-ink);
-  --soft: var(--color-soft);
-  --muted: var(--color-muted);
-  --line: var(--color-line);
-  --badge: var(--color-badge);
-  --badge-ink: var(--color-badge-ink);
-
-  --ct-ink: var(--color-ink);
-  --ct-acc: #c2410c;
-  --ct-err: #b91c1c;
-}
-
-.brutalist .bg-badge {
-  border: 2px solid #0a0a0a;
-  box-shadow: 4px 4px 0 #0a0a0a;
-}
-
-.brutalist #route-progress {
-  background-color: var(--color-badge);
-}
-
 /* ── Base layer (fonts, cursor, scroll) ── */
 @layer base {
   html {
@@ -269,16 +245,6 @@
   ::-webkit-scrollbar-thumb {
     background: #2b097a;
     border-radius: 4px;
-  }
-
-  h1 {
-    font-weight: 700;
-    font-size: 2.75rem;
-  }
-
-  h2,
-  h3 {
-    font-size: var(--text-section);
   }
 
   p {
@@ -417,45 +383,3 @@
     U+2212, U+2215, U+FEFF, U+FFFD;
 }
 
-/* ============================================================
-   SECCIONES — tipografía compartida (hero excluido, tiene la suya)
-   sec-title   → título de sección (Fira condensed, gigante)
-   sec-desc    → párrafo de apoyo bajo el título
-   sec-eyebrow → etiqueta pequeña (kicker, labels de formulario)
-   ============================================================ */
-@layer components {
-  .sec-title {
-    margin: 0;
-    font-family: var(--font-fira-sans-extra-condensed);
-    font-weight: 900;
-    font-size: clamp(2.5rem, 7vw, 5rem) !important;
-    line-height: 0.9;
-    letter-spacing: -0.02em;
-    text-transform: uppercase;
-    color: var(--ink);
-  }
-
-  .sec-desc {
-    max-width: 44ch;
-    margin: 0;
-    font-family: var(--font-sans);
-    font-size: clamp(0.95rem, 1.8vw, 1.05rem);
-    line-height: 1.6;
-    color: var(--soft);
-  }
-
-  .sec-eyebrow {
-    margin: 0;
-    font-family: var(--font-sans);
-    font-size: 0.7rem;
-    font-weight: 700;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    color: var(--muted);
-  }
-
-  /* Títulos de sección grandes, excluyendo el hero */
-  .sec-heading-lg {
-    font-size: clamp(2.5rem, 7vw, 5rem);
-  }
-}

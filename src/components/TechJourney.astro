@@ -66,8 +66,8 @@ const panels = TAB_GROUPS.map((title) => {
   if (!g) return null;
   const main = unique(g.techs);
   const extra = g.alsoUsed ? unique(g.alsoUsed) : [];
-  return { ...g, key: slug(title), techs: main, extra };
-}).filter((g): g is Group & { key: string; extra: Tech[] } => Boolean(g));
+  return { ...g, key: slug(title), title, techs: main, extra };
+}).filter((g): g is Group & { key: string; title: string; extra: Tech[] } => Boolean(g));
 ---
 
 <section

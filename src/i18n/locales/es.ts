@@ -13,6 +13,8 @@ export const es = {
     sectionTitle: "Tecnologías",
     sectionDescription:
       "Herramientas modernas que utilizo para construir experiencias web rápidas, escalables y accesibles.",
+    groupsLabel: "Grupos de tecnologías",
+    alsoUsedLabel: "Ocasionalmente usado",
     list: [
       {
         title: "Mi Stack",
@@ -63,18 +65,21 @@ export const es = {
         ],
       },
       {
-        title: "Tools",
+        title: "AI & Tools",
         accent: "#10b981",
         techs: [
           { color: "#F05032", icon: "devicon:git" },
           { color: "#9e9e9e", icon: "devicon:github" },
           { color: "#2496ED", icon: "devicon:docker" },
           { color: "#0079BF", icon: "devicon:trello" },
-          { color: "#CB3837", icon: "devicon:npm" },
+          { color: "#0000F2", icon: "selfhst:hermes-agent", name: "Hermes Agent" },
           { color: "#007ACC", icon: "devicon:vscode", name: "VS Code" },
           { color: "#10A37F", icon: "simple-icons:openai", name: "Codex" },
           { color: "#9e9e9e", icon: "vscode-icons:file-type-opencode", name: "OpenCode" },
           { color: "#8b5cf6", icon: "arcticons:pi-1", name: "Pi" },
+        ],
+        alsoUsed: [
+          { color: "#FE2857", icon: "devicon:intellij", name: "IntelliJ IDEA" },
         ],
       },
     ],
@@ -89,7 +94,7 @@ export const es = {
       "Mi Stack": "Las herramientas que uso en la mayoría de mis proyectos.",
       Frontend: "Interfaces, animación e interacción.",
       Backend: "APIs, datos y lógica de negocio.",
-      Tools: "Diseño, versiones y despliegue."
+      "AI & Tools": "IA, diseño, versiones y despliegue."
     },
   },
 

@@ -12,6 +12,8 @@ export const en = {
     sectionTitle: "Tech",
     sectionDescription:
       "Modern tools I use to build fast, scalable, and accessible web experiences.",
+    groupsLabel: "Technology groups",
+    alsoUsedLabel: "Occasionally used",
     list: [
       {
         title: "My Stack",
@@ -62,18 +64,21 @@ export const en = {
         ],
       },
       {
-        title: "Tools",
+        title: "AI & Tools",
         accent: "#10b981",
         techs: [
           { color: "#F05032", icon: "devicon:git" },
           { color: "#9e9e9e", icon: "devicon:github" },
           { color: "#2496ED", icon: "devicon:docker" },
           { color: "#0079BF", icon: "devicon:trello" },
-          { color: "#CB3837", icon: "devicon:npm" },
+          { color: "#0000F2", icon: "selfhst:hermes-agent", name: "Hermes Agent" },
           { color: "#007ACC", icon: "devicon:vscode", name: "VS Code" },
           { color: "#10A37F", icon: "simple-icons:openai", name: "Codex" },
           { color: "#9e9e9e", icon: "vscode-icons:file-type-opencode", name: "OpenCode" },
           { color: "#8b5cf6", icon: "arcticons:pi-1", name: "Pi" },
+        ],
+        alsoUsed: [
+          { color: "#FE2857", icon: "devicon:intellij", name: "IntelliJ IDEA" },
         ],
       },
     ],
@@ -88,7 +93,7 @@ export const en = {
       "My Stack": "The tools I use for most of my projects.",
       Frontend: "UI, animation, and interaction.",
       Backend: "APIs, data, and business logic.",
-      Tools: "Design, versioning, and deployment.",
+      "AI & Tools": "AI, design, versioning, and deployment.",
     },
   },
 

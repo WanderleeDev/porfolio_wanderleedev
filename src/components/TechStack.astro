@@ -1,0 +1,240 @@
+---
+/**
+ * TechStack — sección "Tecnologías" (única).
+ *
+ * Layout:
+ * - Escritorio (≥768px): 2 columnas. Izquierda sticky con el nombre del
+ *   grupo activo (cambia al hacer scroll); derecha con las cards de cada
+ *   grupo apilándose ("stacking": sticky + z-index creciente, la siguiente
+ *   tapa a la anterior).
+ * - Móvil (<768px): una columna, encabezado sticky arriba y cards en flujo
+ *   normal.
+ *
+ * Datos: `skills.list` de i18n (grupos Frontend / Backend / Tools);
+ * "Mi Stack" (index 0) es el resumen del hero y no se repite aquí.
+ *
+ * Estilos: Tailwind utilities únicamente (sin bloque <style>). Los colores
+ * vienen de los datos vía la custom property --accent / style del icono.
+ */
+import Icon from "astro-iconify";
+import Title from "./typography/Title.astro";
+import { getTranslations } from "../i18n/utils";
+
+const lang = Astro.currentLocale as "es" | "en";
+const t = getTranslations(lang);
+const skillsT = t("skills");
+const descriptions = t("journey").skillDescriptions as Record<string, string>;
+
+type Tech = { color: string; icon: string; name?: string };
+type Group = { title: string; accent: string; techs: Tech[]; alsoUsed?: Tech[] };
+type SkillsContent = {
+  list: Group[];
+  sectionTitle: string;
+  sectionDescription: string;
+  groupsLabel: string;
+  alsoUsedLabel: string;
+};
+
+const skills = skillsT as SkillsContent;
+
+const slug = (value: string) => value.toLowerCase().replace(/\s+/g, "-");
+
+const slugLabel = (tech: Tech) => (tech.name ?? tech.icon.split(":").pop() ?? tech.icon).replace(/[-_]+/g, " ");
+
+const groups = skills.list.slice(1).map((group) => {
+
+  // Dentro de un grupo cada tecnología aparece una sola vez.
+  const seen = new Set<string>();
+  const techs = group.techs.filter((tech) => (seen.has(tech.icon) ? false : (seen.add(tech.icon), true)));
+
+  return { ...group, techs, key: slug(group.title) };
+}).filter((group): group is Group & { key: string } => Boolean(group));
+
+// Clases literales (no interpoladas a medias) para que Tailwind las genere:
+// cada card se pega un poco más abajo que la anterior y queda por encima.
+// En móvil el encabezado sticky mide ~85px, así que las cards arrancan en 92px;
+// el encabezado (z-40) siempre queda por encima de las cards apiladas.
+const CARD_TOP = ["top-[92px] md:top-24", "top-[104px] md:top-28", "top-[116px] md:top-32"];
+const CARD_Z = ["z-[1] md:z-10", "z-[2] md:z-20", "z-[3] md:z-30"];
+
+const CROSSFADE =
+  "col-start-1 row-start-1 translate-y-3 opacity-0 transition duration-300 ease-out motion-reduce:transition-none data-[active=true]:translate-y-0 data-[active=true]:opacity-100";
+---
+
+<section id="tech-stack" class="relative px-4 py-16 md:py-24" aria-label={skillsT.sectionTitle}>
+  <div class="mx-auto max-w-6xl">
+    <Title level={2} class="!text-[clamp(2.5rem,7vw,5rem)]">{skillsT.sectionTitle}</Title>
+    <p class="mt-3 max-w-[60ch] font-sans text-[clamp(0.95rem,1.8vw,1.05rem)] leading-[1.6] text-soft">
+      {skillsT.sectionDescription}
+    </p>
+
+    <div class="mt-10 flex flex-col gap-8 md:mt-14 md:grid md:grid-cols-[minmax(12rem,20rem)_1fr] md:gap-10 lg:gap-14">
+      <!-- Columna izquierda: título sticky del grupo activo -->
+      <div
+        class="sticky top-0 z-40 -mx-4 border-b border-line bg-contrast px-4 py-3 md:top-28 md:z-10 md:mx-0 md:self-start md:border-0 md:bg-transparent md:px-0 md:py-0"
+      >
+        <span class="font-sans text-[10px] font-bold uppercase tracking-[0.2em] text-muted">
+          {skills.groupsLabel}
+        </span>
+
+        <div class="mt-1 grid">
+          {
+            groups.map((group, i) => (
+              <div
+                class={CROSSFADE}
+                data-title={group.key}
+                data-active={i === 0 ? "true" : "false"}
+                aria-hidden={i === 0 ? "false" : "true"}
+              >
+                <Title level={3} class="!text-[clamp(2.25rem,6vw,4.5rem)]" style={`color: ${group.accent}`}>
+                  {group.title}
+                </Title>
+              </div>
+            ))
+          }
+        </div>
+
+        <div class="mt-2 hidden md:grid">
+          {
+            groups.map((group, i) => (
+              <p
+                class={`${CROSSFADE} max-w-[38ch] font-sans text-[clamp(0.95rem,1.8vw,1.05rem)] leading-[1.6] text-soft`}
+                data-desc={group.key}
+                data-active={i === 0 ? "true" : "false"}
+              >
+                {descriptions[group.title] ?? ""}
+              </p>
+            ))
+          }
+        </div>
+      </div>
+
+      <!-- Columna derecha: cards apiladas -->
+      <div class="flex flex-col gap-6 md:gap-8" id="stack-cards">
+        {
+          groups.map((group, i) => (
+            <article
+              class={`sticky flex min-h-[22rem] flex-col rounded-3xl border border-line bg-contrast p-6 shadow-[0_20px_60px_-20px_rgba(0,0,0,0.25)] md:min-h-[75vh] md:p-10 ${CARD_TOP[i] ?? ""} ${CARD_Z[i] ?? ""}`}
+              style={`--accent: ${group.accent}`}
+              data-panel={group.key}
+              aria-label={group.title}
+            >
+              <header class="flex items-center gap-3">
+                <span
+                  class="size-2.5 shrink-0 rounded-full bg-[var(--accent)] shadow-[0_0_18px_3px_var(--accent)]"
+                  aria-hidden="true"
+                >
+                </span>
+                <span class="font-sans text-[11px] font-bold uppercase tracking-[0.2em] text-soft">
+                  {group.title}
+                </span>
+                <span class="ml-auto font-sans text-[11px] font-bold uppercase tracking-[0.2em] text-muted">
+                  {group.techs.length}
+                </span>
+              </header>
+
+              <ul class="mt-6 grid grid-cols-3 gap-3 sm:grid-cols-4 md:my-auto md:grid-cols-5 md:gap-5 lg:grid-cols-6" aria-label={group.title}>
+                {group.techs.map((tech) => (
+                  <li
+                    class="flex aspect-square flex-col items-center justify-center gap-1.5 rounded-2xl border border-line bg-surface p-2 transition-transform duration-300 hover:-translate-y-1"
+                    title={slugLabel(tech)}
+                  >
+                    <Icon
+                      name={tech.icon}
+                      class="size-9 shrink-0 md:size-11"
+                      style={{ color: tech.color }}
+                      aria-hidden="true"
+                    />
+                    <span class="w-full truncate text-center font-sans text-[10px] font-bold lowercase leading-tight tracking-wider text-muted">
+                      {slugLabel(tech)}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+
+              {group.alsoUsed?.length ? (
+                <footer class="mt-6 flex flex-wrap items-center gap-3 border-t border-line pt-4 md:pt-6">
+                  <span class="font-sans text-[11px] font-bold tracking-[0.2em] text-muted uppercase">
+                    {skills.alsoUsedLabel}
+                  </span>
+                  {group.alsoUsed.map((tech) => (
+                    <span class="flex flex-col items-center gap-1" title={slugLabel(tech)}>
+                      <span class="flex size-10 items-center justify-center rounded-xl border border-line bg-surface">
+                        <Icon name={tech.icon} class="size-6" style={{ color: tech.color }} aria-hidden="true" />
+                      </span>
+                      <span class="max-w-16 truncate text-center font-sans text-[9px] font-bold lowercase leading-tight tracking-wider text-muted">
+                        {slugLabel(tech)}
+                      </span>
+                    </span>
+                  ))}
+                </footer>
+              ) : null}
+            </article>
+          ))
+        }
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  let observer: IntersectionObserver | null = null;
+
+  function initTechStack() {
+    observer?.disconnect();
+    observer = null;
+
+    const section = document.querySelector<HTMLElement>("#tech-stack");
+    if (!section) return;
+
+    const cards = Array.from(section.querySelectorAll<HTMLElement>("[data-panel]"));
+    if (cards.length < 2) return;
+
+    const titles = Array.from(section.querySelectorAll<HTMLElement>("[data-title]"));
+    const descs = Array.from(section.querySelectorAll<HTMLElement>("[data-desc]"));
+
+    // Banda fina alrededor del centro de la viewport: la card que la cruza
+    // es la activa, así el título de la izquierda sigue al stacking.
+    const inBand = new Set<HTMLElement>();
+    let active = "";
+
+    const setActive = (key: string) => {
+      if (!key || key === active) return;
+      active = key;
+      titles.forEach((el) => {
+        const on = el.dataset.title === key;
+        el.dataset.active = String(on);
+        el.setAttribute("aria-hidden", String(!on));
+      });
+      descs.forEach((el) => {
+        el.dataset.active = String(el.dataset.desc === key);
+      });
+    };
+
+    setActive(cards[0].dataset.panel ?? "");
+
+    // Banda fina en el centro de la viewport. La card activa es la de mayor
+    // z-index que la cruza: la que esta tapando al resto del stack.
+    observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          const el = entry.target as HTMLElement;
+          if (entry.isIntersecting) inBand.add(el);
+          else inBand.delete(el);
+        });
+        const onTop = [...cards].reverse().find((card) => inBand.has(card));
+        if (onTop) setActive(onTop.dataset.panel ?? "");
+      },
+      { rootMargin: "-48% 0px -47% 0px" },
+    );
+
+    cards.forEach((card) => observer?.observe(card));
+  }
+
+  document.addEventListener("astro:before-swap", () => {
+    observer?.disconnect();
+    observer = null;
+  });
+  document.addEventListener("astro:page-load", initTechStack);
+  initTechStack();
+</script>

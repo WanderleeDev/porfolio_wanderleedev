@@ -166,7 +166,7 @@ export default function ContactForm({ lang }: ContactFormProps) {
       <button
         type="submit"
         disabled={isSubmitting}
-        className="flex w-full items-center justify-between gap-4 rounded-card bg-ink px-6 py-4 font-sans text-[1.02rem] font-extrabold text-contrast transition-transform hover:-translate-y-0.5 active:translate-y-0 disabled:opacity-60"
+        className="flex w-full items-center justify-between gap-4 rounded-card bg-ink px-6 py-4 font-sans text-[1.02rem] font-extrabold text-contrast transition-transform hover:scale-105 active:scale-95 disabled:opacity-60"
       >
         <span>{isSubmitting ? info.status.sending : info.submit}</span>
         <svg

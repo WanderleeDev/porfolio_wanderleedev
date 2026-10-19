@@ -114,7 +114,7 @@ const CROSSFADE =
         {
           groups.map((group, i) => (
             <article
-              class={`sticky flex min-h-[22rem] flex-col rounded-3xl border border-line bg-contrast p-6 shadow-[0_20px_60px_-20px_rgba(0,0,0,0.25)] md:min-h-[75vh] md:p-10 ${CARD_TOP[i] ?? ""} ${CARD_Z[i] ?? ""}`}
+              class={`sticky flex min-h-[22rem] flex-col rounded-3xl border border-line bg-contrast p-6 shadow-card md:min-h-[75vh] md:p-10 ${CARD_TOP[i] ?? ""} ${CARD_Z[i] ?? ""}`}
               style={`--accent: ${group.accent}`}
               data-panel={group.key}
               aria-label={group.title}
@@ -159,7 +159,7 @@ const CROSSFADE =
                   </span>
                   {group.alsoUsed.map((tech) => (
                     <span class="flex flex-col items-center gap-1" title={slugLabel(tech)}>
-                      <span class="flex size-10 items-center justify-center rounded-xl border border-line bg-surface">
+                      <span class="flex size-10 items-center justify-center rounded-card border border-line bg-surface">
                         <Icon name={tech.icon} class="size-6" style={{ color: tech.color }} aria-hidden="true" />
                       </span>
                       <span class="max-w-16 truncate text-center font-sans text-[9px] font-bold lowercase leading-tight tracking-wider text-muted">

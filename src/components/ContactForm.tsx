@@ -82,7 +82,7 @@ export default function ContactForm({ lang }: ContactFormProps) {
           autoComplete="name"
           placeholder={placeholders.name}
           aria-invalid={formErrors.name ? "true" : "false"}
-          className="w-full rounded-2xl border border-line bg-surface px-4 py-3 font-sans text-[1.02rem] text-ink placeholder:text-muted/70 transition-colors focus:outline-none focus:border-ink aria-[invalid=true]:border-red-500"
+          className="input aria-[invalid=true]:border-red-500"
           {...register("name")}
         />
         {formErrors.name && (
@@ -123,7 +123,7 @@ export default function ContactForm({ lang }: ContactFormProps) {
           type="text"
           placeholder={placeholders.what}
           aria-invalid={formErrors.what ? "true" : "false"}
-          className="w-full rounded-2xl border border-line bg-surface px-4 py-3 font-sans text-[1.02rem] text-ink placeholder:text-muted/70 transition-colors focus:outline-none focus:border-ink aria-[invalid=true]:border-red-500"
+          className="input aria-[invalid=true]:border-red-500"
           {...register("what")}
         />
         {formErrors.what && (
@@ -143,7 +143,7 @@ export default function ContactForm({ lang }: ContactFormProps) {
           autoComplete="email"
           placeholder={placeholders.email}
           aria-invalid={formErrors.email ? "true" : "false"}
-          className="w-full rounded-2xl border border-line bg-surface px-4 py-3 font-sans text-[1.02rem] text-ink placeholder:text-muted/70 transition-colors focus:outline-none focus:border-ink aria-[invalid=true]:border-red-500"
+          className="input aria-[invalid=true]:border-red-500"
           {...register("email")}
         />
         {formErrors.email && (
@@ -166,7 +166,7 @@ export default function ContactForm({ lang }: ContactFormProps) {
       <button
         type="submit"
         disabled={isSubmitting}
-        className="flex w-full items-center justify-between gap-4 rounded-2xl bg-ink px-6 py-4 font-sans text-[1.02rem] font-extrabold text-contrast transition-transform hover:-translate-y-0.5 active:translate-y-0 disabled:opacity-60"
+        className="btn btn-primary flex w-full items-center justify-between gap-4 rounded-2xl px-6 py-4 text-[1.02rem] font-extrabold hover:-translate-y-0.5 disabled:opacity-60"
       >
         <span>{isSubmitting ? info.status.sending : info.submit}</span>
         <svg

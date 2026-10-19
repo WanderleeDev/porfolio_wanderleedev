@@ -71,7 +71,7 @@ export default function ContactForm({ lang }: ContactFormProps) {
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} noValidate className="grid gap-5 rounded-3xl border border-line bg-surface p-6 shadow-[0_20px_50px_-30px_rgba(0,0,0,0.25)] md:p-8">
+    <form id="contact-form" onSubmit={handleSubmit(onSubmit)} noValidate className="grid gap-5 rounded-3xl border border-line bg-surface p-6 shadow-[0_20px_50px_-30px_rgba(0,0,0,0.25)] md:p-8">
       <div className="grid gap-2">
         <label htmlFor="f-name" className="font-sans text-[0.72rem] font-bold uppercase tracking-[0.16em] text-muted">
           {fields.name}
@@ -106,7 +106,7 @@ export default function ContactForm({ lang }: ContactFormProps) {
                 className="peer sr-only"
                 {...register("kind")}
               />
-              <span className="inline-block rounded-full border border-line px-4 py-2 font-sans text-sm font-semibold text-soft transition-colors peer-checked:border-ink peer-checked:bg-ink peer-checked:text-surface peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-ink">
+              <span className="inline-block rounded-full border border-line px-4 py-2 font-sans text-sm font-semibold text-soft transition-colors peer-checked:border-ink peer-checked:bg-ink peer-checked:text-contrast peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-ink">
                 {k}
               </span>
             </label>
@@ -166,7 +166,7 @@ export default function ContactForm({ lang }: ContactFormProps) {
       <button
         type="submit"
         disabled={isSubmitting}
-        className="flex w-full items-center justify-between gap-4 rounded-2xl bg-ink px-6 py-4 font-sans text-[1.02rem] font-extrabold text-surface transition-transform hover:-translate-y-0.5 active:translate-y-0 disabled:opacity-60"
+        className="flex w-full items-center justify-between gap-4 rounded-2xl bg-ink px-6 py-4 font-sans text-[1.02rem] font-extrabold text-contrast transition-transform hover:-translate-y-0.5 active:translate-y-0 disabled:opacity-60"
       >
         <span>{isSubmitting ? info.status.sending : info.submit}</span>
         <svg

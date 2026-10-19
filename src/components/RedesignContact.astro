@@ -16,7 +16,7 @@ const config = {
 ---
 
 <section id="contact" class="text-ink" aria-labelledby="contact-heading">
-  <div class="mx-auto grid max-w-6xl grid-cols-1 items-start gap-10 px-6 py-20 md:grid-cols-[1fr_1.1fr] md:gap-14 md:py-28 lg:px-10">
+  <div class="mx-auto grid max-w-6xl grid-cols-1 items-start gap-10 py-20 md:grid-cols-[1fr_1.1fr] md:gap-14 md:py-28">
     <!-- Left: intro + direct contact -->
     <div data-reveal>
       <p class="font-sans text-[0.7rem] font-bold uppercase tracking-[0.25em] text-muted">{info.marquee}</p>
@@ -33,7 +33,7 @@ const config = {
       <div class="mt-8 flex flex-wrap items-center gap-3">
         <a
           href={`mailto:${config.email}`}
-          class="inline-flex items-center gap-2 rounded-full bg-ink px-6 py-3 font-sans text-sm font-bold text-surface transition-transform hover:scale-105 active:scale-95"
+          class="inline-flex items-center gap-2 rounded-full bg-ink px-6 py-3 font-sans text-sm font-bold text-contrast transition-transform hover:scale-105 active:scale-95"
         >
           <Icon name="lucide:mail" class="h-4 w-4" aria-hidden="true" />
           {config.email}

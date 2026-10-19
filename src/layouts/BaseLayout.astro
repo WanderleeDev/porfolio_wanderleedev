@@ -1,18 +1,4 @@
 ---
-/**
- * BaseLayout — shared <html>/<head>/<body> shell for the redesign pages.
- *
- * Responsibilities:
- *   - Open Graph + Twitter Card tags, i18n-aware (title/description/
- *     thumbnail/locale come from src/i18n/locales).
- *   - View Transitions client router.
- *   - Inline theme-preset script (runs before paint to avoid flicker).
- * *     curtain masks the page on /es and /en. The layout keeps only the
- *     pre-paint flash guard and the hero word-reveal gate.
- *
- * Used by src/pages/index.astro (es) and src/pages/en/index.astro (en).
- */
-import { ClientRouter } from "astro:transitions";
 import { getTranslations } from "../i18n/utils";
 
 interface Props {
@@ -76,7 +62,7 @@ const altTitle = altLang === "en" ? "WanderleeDev — Portfolio" : "Portafolio W
 
     <script is:inline>
       try {
-        var ALL = ["light", "dark", "neon", "brutalist"];
+        var ALL = ["light", "dark", "neon"];
         var s = localStorage.getItem("wdev-theme") || "system";
         if (ALL.indexOf(s) < 0) s = "system";
         var r = document.documentElement;
@@ -90,10 +76,9 @@ const altTitle = altLang === "en" ? "WanderleeDev — Portfolio" : "Portafolio W
         }
       } catch (e) {}
     </script>
-      </head>
+  </head>
 
   <body class="overflow-x-clip">
-
     <div>
       <slot />
     </div>

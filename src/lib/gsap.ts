@@ -7,7 +7,8 @@ import gsap from "gsap";
 import { Draggable } from "gsap/Draggable";
 import { InertiaPlugin } from "gsap/InertiaPlugin";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { ScrollSmoother } from "gsap/ScrollSmoother";
 
-gsap.registerPlugin(Draggable, InertiaPlugin, ScrollTrigger);
+gsap.registerPlugin(Draggable, InertiaPlugin, ScrollTrigger, ScrollSmoother);
 
-export { gsap, Draggable, InertiaPlugin, ScrollTrigger };
+export { gsap, Draggable, InertiaPlugin, ScrollTrigger, ScrollSmoother };

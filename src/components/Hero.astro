@@ -43,7 +43,7 @@ const stackLogos = [
   class="relative z-0 h-[110dvh] min-h-[640px] bg-surface flex flex-col items-center justify-center px-4 text-center overflow-hidden"
   aria-label="Presentación"
 >
-  <p class="font-sans text-[11px] tracking-[0.2em] text-muted uppercase mt-1">
+  <p class="hero-fade font-sans text-[11px] tracking-[0.2em] text-muted uppercase mt-1">
     wanderleedev@gmail.com
   </p>
 
@@ -91,7 +91,7 @@ const stackLogos = [
     }
   </Title>
 
-  <div class="mt-6">
+  <div class="hero-fade mt-6">
     <p class="font-sans text-xs font-bold tracking-[0.2em] text-ink uppercase">
       {t("hero").subtitle}
     </p>
@@ -165,152 +165,43 @@ const stackLogos = [
 </script>
 
 <style is:global>
-  /* Word reveal gate. Global on purpose: Title.astro renders the heading
-     class without an Astro scope attribute, so the scoped compound selector
-     (.hero-reveal .hero-word) compiled by Astro never matched at all. */
+  /* Estados iniciales de la intro. La animación la maneja una única
+     timeline de GSAP (ver revealHero en el script): sin transitions ni
+     animations CSS compitiendo. Global porque Title.astro renderiza sin
+     scope y el selector compuesto de Astro nunca matcheaba. */
   .hero-reveal .hero-word {
     display: inline-block;
     transform-origin: 50% 100%;
-    scale: 1 0;
-    transition: scale 0.8s var(--ease-out-elastic);
-    transition-delay: calc(var(--delay, 0) * 0.1s);
+    /* transform (no la propiedad `scale`): GSAP anima scaleY sobre el
+       transform, así no se multiplican. */
+    transform: scaleY(0);
   }
 
-  html.hero-ready .hero-reveal .hero-word {
-    scale: 1;
+  /* Opacity pura: nunca toca el rotate/scale de Tailwind del fan. */
+  #hero .hero-fade {
+    opacity: 0;
   }
 
-  /* Cards stay invisible while the intro runs and fade in at hand-off:
-     opacity + translate only, so their rotate/scale stay owned by Tailwind
-     and the fan + hover survive (S3). fill-mode `both` holds the hidden
-     from-state while the animation is paused, which is what kept the old
-     GSAP-only version's timing. */
   #hero .tech-card {
     opacity: 0;
-    translate: 0 12px;
-    animation: hero-card-in 0.7s ease-out both;
-    animation-delay: calc(0.25s + var(--card-i, 0) * 0.08s);
-    animation-play-state: paused;
-  }
-
-  html.hero-ready #hero .tech-card {
-    animation-play-state: running;
-  }
-
-  @keyframes hero-card-in {
-    to {
-      opacity: 1;
-      translate: 0 0;
-    }
   }
 
   @media (prefers-reduced-motion: reduce) {
     .hero-reveal .hero-word,
+    #hero .hero-fade,
     #hero .tech-card {
-      transition: none;
-      animation: none;
-      scale: 1;
       opacity: 1;
       translate: none;
+      transform: none;
     }
   }
 </style>
 
-<style>
-  /* @property makes the gradient custom properties animatable; without them
-     `transition: --hero-color-N` cannot interpolate and the hover gradient
-     would snap instead of cross-fading. */
-  @property --hero-color-1 {
-    syntax: "<color>";
-    inherits: false;
-    initial-value: transparent;
-  }
-
-  @property --hero-color-2 {
-    syntax: "<color>";
-    inherits: false;
-    initial-value: transparent;
-  }
-
-  @property --hero-color-3 {
-    syntax: "<color>";
-    inherits: false;
-    initial-value: transparent;
-  }
-
-  @property --hero-color-4 {
-    syntax: "<color>";
-    inherits: false;
-    initial-value: transparent;
-  }
-
-  #hero {
-    --hero-color-1: transparent;
-    --hero-color-2: transparent;
-    --hero-color-3: transparent;
-    --hero-color-4: transparent;
-
-    mask-image: linear-gradient(#000 0, #000 90%, #0000 100%);
-
-    background: linear-gradient(
-      135deg,
-      var(--hero-color-1) 0%,
-      var(--hero-color-2) 25%,
-      var(--hero-color-3) 75%,
-      var(--hero-color-4) 100%
-    );
-
-    transition:
-      --hero-color-1 500ms ease,
-      --hero-color-2 500ms ease,
-      --hero-color-3 500ms ease,
-      --hero-color-4 500ms ease,
-      font-weight 500ms ease;
-
-    &:has(.tech-card:hover) #stack {
-      color: #fff;
-    }
-
-    &:has(.tech-card:nth-child(1):hover) {
-      --hero-color-1: #1b2a41;
-      --hero-color-2: #336791;
-      --hero-color-3: #00a6fb;
-      --hero-color-4: #a9def9;
-
-      & #stack {
-        font-weight: 900;
-      }
-    }
-
-    &:has(.tech-card:nth-child(2):hover) {
-      --hero-color-1: #5c001f;
-      --hero-color-2: #e0234e;
-      --hero-color-3: #a000ff;
-      --hero-color-4: #ff7eb6;
-    }
-
-    &:has(.tech-card:nth-child(3):hover) {
-      --hero-color-1: #ff0057;
-      --hero-color-2: #dd0031;
-      --hero-color-3: #a000ff;
-      --hero-color-4: #6a00ff;
-    }
-
-    &:has(.tech-card:nth-child(4):hover) {
-      --hero-color-1: #164e24;
-      --hero-color-2: #339933;
-      --hero-color-3: #84cc16;
-      --hero-color-4: #d9f99d;
-    }
-  }
-</style>
 
 <script>
   import { gsap, ScrollTrigger } from "../lib/gsap";
   import { IS_DEV, storage, reducedMotion } from "../utils/extra";
 
-  // La intro asume scroll 0: si el browser restaura una posición a mitad de
-  // página, el reveal del hero nunca se vería. Mismo comportamiento previo.
   window.scrollTo(0, 0);
 
   const canvas = document.getElementById("stars-bg") as HTMLCanvasElement;
@@ -485,11 +376,10 @@ const stackLogos = [
     }
     warpStars = [];
     state.mode = "scroll";
-    // El reveal lo hace el CSS: esta clase es el único disparador (S4).
-    htmlEl.classList.add("hero-ready");
     htmlEl.style.overflow = "";
     // Terminada la intro, el canvas vuelve al fondo (z-0)
     canvas.style.zIndex = "0";
+    revealHero();
     if (!skipIntro) storage.set();
   }
 
@@ -592,6 +482,23 @@ const stackLogos = [
 
   gsap.ticker.add(render);
 
+  // ---------- Reveal del Hero: una sola timeline ----------
+  // email/stack -> palabras con stagger elástico -> fan de cards.
+  // fontWeight del h1 usa steps(1) porque font-weight no interpola.
+  function revealHero() {
+    htmlEl.classList.add("hero-ready");
+    const hero = document.getElementById("hero");
+    if (!hero) return;
+    const words = hero.querySelectorAll(".hero-reveal .hero-word");
+    const fades = hero.querySelectorAll(".hero-fade");
+    const cards = hero.querySelectorAll(".tech-card");
+    gsap
+      .timeline()
+      .to(fades, { opacity: 1, duration: 0.6, ease: "power2.out" }, 0)
+      .to(words, { scaleY: 1, duration: 0.8, ease: "elastic.out(1, 0.45)", stagger: 0.08 }, 0.1)
+      .fromTo(cards, { opacity: 0, y: 12 }, { opacity: 1, y: 0, duration: 0.7, ease: "power2.out", stagger: 0.08, clearProps: "transform,translate,rotate,scale" }, 0.45);
+  }
+
   // Warp: arranca solo cuando el badge terminó de achicarse
   function startWarp() {
     state.mode = "warp";
@@ -603,6 +510,9 @@ const stackLogos = [
 
   if (skipIntro) {
     state.mode = "scroll";
+    gsap.set("#hero .hero-reveal .hero-word", { scaleY: 1 });
+    gsap.set("#hero .hero-fade", { opacity: 1 });
+    gsap.set("#hero .tech-card", { opacity: 1 });
   } else {
     // Badge aparece con el canvas quieto; al terminar la animación del gato
     // arranca el warp, junto con su salida.
@@ -614,15 +524,39 @@ const stackLogos = [
       },
     });
 
+    // El `animationend` del gato es la señal para continuar, pero si por
+    // cualquier motivo no dispara (fuente, tab oculta, animation cancelada),
+    // el fallback por tiempo evita que la intro quede trabada con las
+    // cards en opacity 0. Bandera once: solo el primero que llegue resume.
+    let badgeResumed = false;
+    const resumeBadge = () => {
+      if (badgeResumed) return;
+      badgeResumed = true;
+      badgeTl.resume();
+    };
+
     badgeTl
       .to(petEl, { scale: 1, delay: 0.3 })
       .call(() => {
         badgeTl.pause();
         catEl.classList.add("animate-move-x");
-        catEl.addEventListener("animationend", () => badgeTl.resume(), { once: true });
+        catEl.addEventListener("animationend", resumeBadge, { once: true });
+        window.setTimeout(resumeBadge, 3500);
       })
       .call(startWarp)
       .to(petEl, { scale: 0, duration: 0.4, ease: "power3.in" });
+
+    // Última red: si a los 20s el hero no hizo reveal, se fuerza el
+    // hand-off para no dejar la página con el contenido invisible.
+    window.setTimeout(() => {
+      if (!htmlEl.classList.contains("hero-ready")) {
+        try {
+          handOffToScroll();
+        } catch {
+          /* el hand-off ya corrió o el canvas no existe */
+        }
+      }
+    }, 20000);
 
     Promise.race([document.fonts.ready, new Promise((r) => setTimeout(r, 1500))]).then(() =>
       badgeTl.play(),

@@ -1,14 +1,14 @@
 ---
 import Icon from "astro-iconify";
 import { getTranslations } from "../i18n/utils";
+import Title from "./typography/Title.astro";
 
 interface Item {
   title: string;
-  src: string;
-  alt?: string;
+  image: string;
   description?: string;
-  demoUrl?: string;
-  techs?: string[];
+  demo_url?: string;
+  technologies?: string[];
   label?: string;
 }
 
@@ -30,10 +30,8 @@ const icon = "w-5 h-5";
   class="relative w-full h-dvh flex flex-col items-center text-ink overflow-hidden pt-6 md:pt-20"
 >
   <header class="pt-8 md:pt-10 pb-5 md:pb-8 text-center shrink-0 z-10">
-    <h2 class="sec-title">
-      {title}
-    </h2>
-    <p class="sec-desc mx-auto mt-3">
+    <Title level={2}>{title}</Title>
+    <p class="mx-auto mt-3 max-w-[44ch] font-sans text-[clamp(0.95rem,1.8vw,1.05rem)] leading-[1.6] text-soft">
       {subtitle}
     </p>
   </header>
@@ -53,8 +51,8 @@ const icon = "w-5 h-5";
             commandfor={`fw-dlg-${i}`}
           >
             <img
-              src={item.src}
-              alt={item.alt ?? item.title}
+              src={item.image}
+              alt={item.title}
               draggable="false"
               loading="lazy"
               decoding="async"
@@ -119,45 +117,42 @@ const icon = "w-5 h-5";
 
           <div class="grid gap-6 md:gap-8 md:grid-cols-[1.15fr_1fr] md:items-center">
             <img
-              src={item.src}
-              alt={item.alt ?? item.title}
+              src={item.image}
+              alt={item.title}
               loading="lazy"
               decoding="async"
               class="w-full h-64 md:h-[58vh] object-cover rounded-2xl block"
             />
 
             <div class="md:pr-2">
-              <p class="sec-eyebrow flex items-baseline justify-between gap-4 !text-soft">
+              <p class="flex items-baseline justify-between gap-4 font-sans text-[0.7rem] font-bold uppercase tracking-[0.2em] !text-soft">
                 <span>{L.personal}</span>
                 <span class="text-muted tabular-nums">
                   {pad(i + 1)} / {pad(items.length)}
                 </span>
               </p>
 
-              <h3
-                id={`fw-dlg-${i}-title`}
-                class="sec-heading-lg sec-title mt-3"
-              >
+              <Title level={3} id={`fw-dlg-${i}-title`} class="mt-3">
                 {item.title}
-              </h3>
+              </Title>
 
               {item.description && (
-                <p class="sec-desc mt-4 !max-w-none ">
+                <p class="mt-4 max-w-none font-sans text-[clamp(0.95rem,1.8vw,1.05rem)] leading-[1.6] text-soft">
                   {item.description}
                 </p>
               )}
 
-              {item.techs?.length ? (
+              {item.technologies?.length ? (
                 <div class="mt-5 flex flex-wrap gap-2">
-                  {item.techs.map((tech) => (
+                  {item.technologies.map((tech) => (
                     <span class={chip}>{tech}</span>
                   ))}
                 </div>
               ) : null}
 
-              {item.demoUrl && (
+              {item.demo_url && (
                 <a
-                  href={item.demoUrl}
+                  href={item.demo_url}
                   target="_blank"
                   rel="noopener noreferrer"
                   class="mt-7 inline-flex items-center gap-2 font-sans font-bold text-[0.95rem] text-ink hover:gap-3 transition-all"

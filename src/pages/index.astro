@@ -1,17 +1,9 @@
 ---
-/**
- * Redesign index (es) — shared BaseLayout provides <html>/<head> with
- * i18n Open Graph tags, the View Transitions client router, the
- * theme-preset script, and the Hero component, which owns the
- * curtain intro, the stars canvas and the hero word-reveal. The global stylesheet is imported here
- * so fonts/Tailwind/theme vars load on every locale page.
- */
 import BaseLayout from "../layouts/BaseLayout.astro";
 import "../styles/global.css";
 import Hero from "../components/Hero.astro";
 import FeaturedWork from "../components/FeaturedWork.astro";
-import TechJourney from "../components/TechJourney.astro";
-import MoreWork from "../components/MoreWork.astro";
+import TechStack from "../components/TechStack.astro";
 import RedesignContact from "../components/RedesignContact.astro";
 import RedesignFooter from "../components/RedesignFooter.astro";
 import ThemePicker from "../components/ThemePicker.astro";
@@ -26,19 +18,9 @@ const projects = t("projects").list;
 <BaseLayout title={meta.title} description={meta.description}>
   <ThemePicker />
   <Hero />
-  <FeaturedWork
-    items={projects.map((p) => ({
-      title: p.title,
-      src: p.image,
-      alt: p.title,
-      description: p.description,
-      demoUrl: p.demo_url,
-      techs: p.technologies,
-      label: p.label,
-    }))}
-  />
-  <TechJourney />
-  <MoreWork />
+  <FeaturedWork items={projects} />
+  <TechStack />
+  <!-- <MoreWork />  -->
   <RedesignContact />
   <RedesignFooter />
 </BaseLayout>

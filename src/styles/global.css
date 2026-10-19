@@ -43,6 +43,11 @@
   --color-badge: #e5e5e5;
   --color-badge-ink: #374151;
 
+  /* ── Radius & shadows centralizados ── */
+  --radius-card: 1rem;
+  --radius-pill: 9999px;
+  --shadow-card: 0 20px 50px -30px rgba(0, 0, 0, 0.25);
+
   /* ── Tamaños fluidos de tipografía ── */
   --text-hero: clamp(3rem, 10vw, 8rem);
   --text-section: clamp(2.5rem, 7vw, 5rem);
@@ -188,49 +193,6 @@
   background-color: #000;
   background-image: radial-gradient(at 20% 30%, #38bdf859 0%, #0000 60%), radial-gradient(at 80% 70%, #8b5cf647 0%, #0000 70%);
   background-attachment: fixed;
-}
-
-/* ── Design system utilities (centralized) ── */
-@layer components {
-  .btn {
-    @apply inline-flex items-center justify-center gap-2 font-sans font-bold transition-transform active:scale-95;
-  }
-  .btn-pill {
-    @apply rounded-full;
-  }
-  .btn-primary {
-    @apply bg-ink text-contrast;
-  }
-  .btn-secondary {
-    @apply border border-line bg-surface text-ink;
-  }
-  .btn-icon {
-    @apply flex size-11 items-center justify-center rounded-full border border-line text-ink;
-  }
-  .btn-dark {
-    @apply bg-dark-ink text-dark-bg hover:bg-dark-acc hover:text-dark-bg;
-  }
-  .card {
-    @apply rounded-2xl border border-line bg-surface;
-  }
-  .card-hover {
-    @apply transition-transform duration-300 hover:-translate-y-1;
-  }
-  .input {
-    @apply w-full rounded-2xl border border-line bg-surface px-4 py-3 font-sans text-[1.02rem] text-ink placeholder:text-muted/70 transition-colors focus:outline-none focus:border-ink;
-  }
-  .shadow-card {
-    @apply shadow-[0_20px_50px_-30px_rgba(0,0,0,0.25)];
-  }
-  .hover-scale {
-    @apply transition-transform hover:scale-105;
-  }
-  .hover-lift {
-    @apply transition-transform hover:-translate-y-1;
-  }
-  .link {
-    @apply text-ink underline-offset-4 hover:underline;
-  }
 }
 
 /* ── Base layer (fonts, cursor, scroll) ── */

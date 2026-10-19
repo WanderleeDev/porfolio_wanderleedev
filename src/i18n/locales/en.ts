@@ -181,6 +181,18 @@ export const en = {
       email: "Your email",
       kind: "What do you need",
     },
+    fields: {
+      kind: "Project type",
+      name: "Name",
+      what: "Company or idea",
+      email: "Email",
+    },
+    status: {
+      sending: "Sending...",
+      success: "Message sent. Thank you!",
+      error: "Could not send. Please try again.",
+      network: "Network error, please try again.",
+    },
     labels: [
       { label: "your name", key: "name" },
       { label: "your enterprise or idea", key: "what" },

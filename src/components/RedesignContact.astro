@@ -6,36 +6,13 @@
  */
 import Icon from "astro-iconify";
 import { getTranslations } from "../i18n/utils";
+import ContactForm from "./ContactForm";
 
 const lang = Astro.currentLocale === "en" ? "en" : "es";
 const info = getTranslations(lang)("contactSection");
-const kinds: string[] = info.kinds;
-
-const UI = {
-  es: { kind: "Tipo de proyecto", name: "Nombre", what: "Empresa o idea", email: "Correo" },
-  en: { kind: "Project type", name: "Name", what: "Company or idea", email: "Email" },
-}[lang];
-
-const placeholder = (key: string, fallback: string) =>
-  info.labels.find((l: { key: string }) => l.key === key)?.label ?? fallback;
-
 const config = {
   email: "wanderleedev@gmail.com",
-  error: info.error,
-  errorWhat: info.errorWhat,
-  errorEmail: info.errorEmail,
-  start: info.sentence.start,
-  andNeed: info.sentence.andNeed,
-  for: info.sentence.for,
-  replyTo: info.sentence.replyTo,
-  submitSubject: info.submitSubject,
 };
-
-// Escapa "<" para que ningún texto pueda cerrar el <script> antes de tiempo
-const configJson = JSON.stringify(config).replace(/</g, "\\u003c");
-
-const inputCls =
-  "w-full rounded-2xl border border-line bg-surface px-4 py-3 font-sans text-[1.02rem] text-ink placeholder:text-muted/70 transition-colors focus:outline-none focus:border-ink aria-[invalid=true]:border-red-500";
 ---
 
 <section id="contact" class="text-ink" aria-labelledby="contact-heading">
@@ -85,154 +62,21 @@ const inputCls =
     </div>
 
     <!-- Right: the form, one field per row -->
-    <form
-      id="contact-form"
-      data-reveal
-      novalidate
-      class="grid gap-5 rounded-3xl border border-line bg-surface p-6 shadow-[0_20px_50px_-30px_rgba(0,0,0,0.25)] md:p-8"
-    >
-      <div class="grid gap-2">
-        <label for="f-name" class="font-sans text-[0.72rem] font-bold uppercase tracking-[0.16em] text-muted">{UI.name}</label>
-        <input
-          id="f-name"
-          name="name"
-          autocomplete="name"
-          placeholder={placeholder("name", "Ana Pérez")}
-          class={inputCls}
-        />
-      </div>
-
-      <fieldset class="grid min-w-0 gap-2 border-0 p-0">
-        <legend class="p-0 font-sans text-[0.72rem] font-bold uppercase tracking-[0.16em] text-muted">{UI.kind}</legend>
-        <div class="flex flex-wrap gap-2">
-          {kinds.map((k, i) => (
-            <label class="cursor-pointer">
-              <input type="radio" name="kind" value={k} checked={i === 0} class="peer sr-only" />
-              <span class="inline-block rounded-full border border-line px-4 py-2 font-sans text-sm font-semibold text-soft transition-colors peer-checked:border-ink peer-checked:bg-ink peer-checked:text-surface peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-ink">
-                {k}
-              </span>
-            </label>
-          ))}
-        </div>
-      </fieldset>
-
-      <div class="grid gap-2">
-        <label for="f-what" class="font-sans text-[0.72rem] font-bold uppercase tracking-[0.16em] text-muted">{UI.what}</label>
-        <input
-          id="f-what"
-          name="what"
-          placeholder={placeholder("what", "Acme, mi startup…")}
-          class={inputCls}
-        />
-      </div>
-
-      <div class="grid gap-2">
-        <label for="f-email" class="font-sans text-[0.72rem] font-bold uppercase tracking-[0.16em] text-muted">{UI.email}</label>
-        <input
-          id="f-email"
-          name="email"
-          type="email"
-          autocomplete="email"
-          placeholder={placeholder("email", "tu@correo.com")}
-          class={inputCls}
-        />
-      </div>
-
-      <p id="contact-err" class="m-0 min-h-[1.4em] font-sans text-[0.95rem] text-red-500" role="alert"></p>
-
-      <button
-        type="submit"
-        class="flex w-full items-center justify-between gap-4 rounded-2xl bg-ink px-6 py-4 font-sans text-[1.02rem] font-extrabold text-surface transition-transform hover:-translate-y-0.5 active:translate-y-0"
-      >
-        <span>{info.submit}</span>
-        <Icon name="lucide:arrow-right" class="h-5 w-5" aria-hidden="true" />
-      </button>
-    </form>
+    <div data-reveal>
+      <ContactForm
+      client:load
+      lang={lang}
+    />
+    </div>
   </div>
 </section>
 
-<script type="application/json" id="contact-config" set:html={configJson} />
 
 <script>
   import { gsap } from "../lib/gsap";
-  
-
-  
-
-  interface ContactConfig {
-    email: string;
-    error: string;
-    errorWhat: string;
-    errorEmail: string;
-    start: string;
-    andNeed: string;
-    for: string;
-    replyTo: string;
-    submitSubject: string;
-  }
 
   let ctx: gsap.Context | null = null;
-  let ac: AbortController | null = null;
 
-  function readConfig(): ContactConfig {
-    const raw = document.getElementById("contact-config")?.textContent ?? "{}";
-    return JSON.parse(raw) as ContactConfig;
-  }
-
-  /* ── Validación y envío ── */
-  function wireForm(section: HTMLElement, config: ContactConfig, signal: AbortSignal) {
-    const form = section.querySelector<HTMLFormElement>("#contact-form");
-    const err = section.querySelector<HTMLElement>("#contact-err");
-    const name = section.querySelector<HTMLInputElement>("#f-name");
-    const what = section.querySelector<HTMLInputElement>("#f-what");
-    const email = section.querySelector<HTMLInputElement>("#f-email");
-    if (!form || !err || !name || !what || !email) return;
-
-    form.addEventListener(
-      "submit",
-      (e) => {
-        e.preventDefault();
-        const data = new FormData(form);
-        const values = {
-          name: String(data.get("name") ?? "").trim(),
-          what: String(data.get("what") ?? "").trim(),
-          email: String(data.get("email") ?? "").trim(),
-          kind: String(data.get("kind") ?? ""),
-        };
-
-        let problem: { el: HTMLInputElement; msg: string } | null = null;
-        if (!values.name) problem = { el: name, msg: config.error };
-        else if (!values.what) problem = { el: what, msg: config.errorWhat };
-        else if (!values.email || !email.checkValidity())
-          problem = { el: email, msg: config.errorEmail };
-
-        // Marca el campo con error para los estilos (aria-invalid)
-        [name, what, email].forEach((el) =>
-          el.setAttribute("aria-invalid", String(problem?.el === el)),
-        );
-
-        if (problem) {
-          err.textContent = problem.msg;
-          problem.el.focus();
-          return;
-        }
-        err.textContent = "";
-
-        const body =
-          `${config.start} ${values.name} ${config.andNeed} ${values.kind} ${config.for} ${values.what}.\n` +
-          `${config.replyTo} ${values.email}.`;
-        const subject = `${config.submitSubject} – ${values.name}`;
-
-        window.location.href =
-          `mailto:${config.email}` +
-          `?subject=${encodeURIComponent(subject)}` +
-          `&body=${encodeURIComponent(body)}`;
-      },
-      { signal },
-    );
-  }
-
-  /* ── Animaciones (dentro de gsap.context) ── */
   function animate(section: HTMLElement) {
     const mm = gsap.matchMedia();
     mm.add("(prefers-reduced-motion: no-preference)", () => {
@@ -250,20 +94,13 @@ const inputCls =
   function boot() {
     const section = document.querySelector<HTMLElement>("#contact");
     if (!section) return;
-
     ctx?.revert();
-    ac?.abort();
-    ac = new AbortController();
-
     ctx = gsap.context(() => animate(section));
-    wireForm(section, readConfig(), ac.signal);
   }
 
   document.addEventListener("astro:before-swap", () => {
     ctx?.revert();
     ctx = null;
-    ac?.abort();
-    ac = null;
   });
   document.addEventListener("astro:page-load", boot);
   boot();

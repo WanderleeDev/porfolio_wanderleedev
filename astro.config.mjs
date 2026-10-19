@@ -1,5 +1,7 @@
 // @ts-check
 import { defineConfig } from "astro/config";
+import react from "@astrojs/react";
+import node from "@astrojs/node";
 import tailwindcss from "@tailwindcss/vite";
 
 export default defineConfig({
@@ -11,7 +13,9 @@ export default defineConfig({
     domains: ["res.cloudinary.com"],
   },
 
-  integrations: [],
+  integrations: [react()],
+  output: "static",
+  adapter: node({ mode: "standalone" }),
   i18n: {
     defaultLocale: "es",
     locales: ["es", "en"],

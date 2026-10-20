@@ -43,10 +43,13 @@ streaming chat panel backed by the AI SDK and the `GATEWAY_LLM` OpenAI-compatibl
   `bg-badge`, `text-badge-ink`, `bg-contrast`, `rounded-card`, `shadow-card`) so it
   follows the active theme, and its labels come from the i18n dictionaries.
 - S7: "quiero agregar este pet al chat https://www.npmjs.com/package/@wanderleedev/pixel-pet"
-  → The chat header shows a `<pixel-pet>` that reacts to the conversation
-  (listening / thinking / talking / idle). The web component is registered from the
-  Astro layer, where `customElements` exists, and the React island reports chat
-  events through a window event.
+  → The chat shows a `<pixel-pet>` that reacts to the conversation (listening /
+  thinking / talking / idle). The web component is registered from the Astro layer,
+  where `customElements` exists, and the React island reports chat events through a
+  window event.
+- S7b: "no me gusta donde esta puesto opciones?"
+  → The pet lives in a fixed container beside the launcher button, so it stays visible
+  with the chat closed, like a desktop pet, and never competes with the panel header.
 
 ## Tasks
 
@@ -144,6 +147,11 @@ streaming chat panel backed by the AI SDK and the `GATEWAY_LLM` OpenAI-compatibl
   updated to match. PNG stays the better format because the art has soft alpha edges:
   171KB against 723KB original, while WebP grows past 250KB on the semi-transparent
   gradients.
+- Pet placement (S7b): the pet and the launcher share one fixed container so they can
+  never overlap (12px gap, aligned bottom edge). The open panel clears them by 20px and
+  covers neither. Both fit in a 390px viewport. The footer bottom bar moves to
+  `md:pr-40` because the pet now occupies the space the back-to-top button was using;
+  after the change the gap is 116px and that button still scrolls to the top.
 
 ## Work-unit evidence
 - Branch: `feature/chat-widget` (from `main`).
@@ -151,7 +159,8 @@ streaming chat panel backed by the AI SDK and the `GATEWAY_LLM` OpenAI-compatibl
   footer adjustment), `7a45c42` (U3 this document), `8da8abd` (U4 commit identities),
   `77cda12` (U5 drop the unused @ai-sdk/openai provider), `d24abaa` (U6 elastic entrance +
   fullscreen margin), `83bd4c9` (U7 this update), `45ac7e8` (U8 commit identities),
-  `ffdb7ba` (U9 pixel pet assets + deps), `1b567f6` (U10 pixel pet integration).
+  `ffdb7ba` (U9 pixel pet assets + deps), `1b567f6` (U10 pixel pet integration),
+  `5d7a7ef` (U11 pet moved next to the launcher).
 - Slice boundary: 732 authored changed lines across the eleven commits, past the
   ~400-line review budget. The overage comes from this document (170 lines) and the
   re-scaled sprite (binary), not from the shipped behaviour, so the feature stays a

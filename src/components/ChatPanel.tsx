@@ -26,7 +26,7 @@ export default function ChatPanel({ lang }: ChatPanelProps) {
     const [input, setInput] = useState("");
     const prevStatus = useRef<string>("ready");
 
-    const { messages, sendMessage, status, error, stop, setMessages } = useChat({
+    const { messages, sendMessage, status, error, stop } = useChat({
         transport: new DefaultChatTransport({ api: "/api/chat" }),
     });
 
@@ -41,9 +41,7 @@ export default function ChatPanel({ lang }: ChatPanelProps) {
         prevStatus.current = status;
     }, [status]);
 
-    const lastUser = [...messages].reverse().find((m) => m.role === "user");
     const lastAssistant = [...messages].reverse().find((m) => m.role === "assistant");
-    const question = textOf(lastUser);
     const answer = textOf(lastAssistant);
 
     const onSubmit = (e: React.FormEvent) => {
@@ -112,16 +110,6 @@ export default function ChatPanel({ lang }: ChatPanelProps) {
                     </button>
                 </div>
             </form>
-
-            {question && (
-                <button
-                    type="button"
-                    onClick={() => setMessages([])}
-                    className="self-center px-4 py-2 font-sans text-xs font-bold uppercase tracking-[0.12em] text-muted transition-colors hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink"
-                >
-                    {t.clear}
-                </button>
-            )}
 
             {error && (
                 <p className="px-4 pb-2 font-sans text-sm text-red-500" role="alert">

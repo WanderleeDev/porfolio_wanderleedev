@@ -122,6 +122,11 @@
   --ct-acc: #4f46e5;
   --ct-err: #dc2626;
 
+  /* Fondo del sitio: lo comparten <html> y la cortina de la intro, para
+     que el paso de la intro al tema no produzca un salto de color. */
+  --page-bg-color: #ffffff;
+  --page-bg-image: none;
+
   /* Tema de página (light): espejo semántico para var() directo */
   --surface: var(--color-surface);
   --ink: var(--color-ink);
@@ -157,6 +162,9 @@
   --badge: var(--color-badge);
   --badge-ink: var(--color-badge-ink);
 
+  --page-bg-color: #161824;
+  --page-bg-image: none;
+
   /* Contacto temático en dark: vuelve al celeste claro */
   --ct-ink: var(--color-dark-ink);
   --ct-acc: var(--color-dark-acc);
@@ -184,6 +192,9 @@
   --badge: var(--color-badge);
   --badge-ink: var(--color-badge-ink);
 
+  --page-bg-color: #000;
+  --page-bg-image: radial-gradient(at 20% 30%, #38bdf859 0%, #0000 60%), radial-gradient(at 80% 70%, #8b5cf647 0%, #0000 70%);
+
   --ct-ink: var(--color-dark-ink);
   --ct-acc: var(--color-dark-acc);
   --ct-err: var(--color-dark-err);
@@ -194,12 +205,8 @@
    canvas de estrellas con z-index negativo queda entre el fondo y el
    contenido). */
 html {
-  background-color: var(--surface);
-}
-
-.neon {
-  background-color: #000;
-  background-image: radial-gradient(at 20% 30%, #38bdf859 0%, #0000 60%), radial-gradient(at 80% 70%, #8b5cf647 0%, #0000 70%);
+  background-color: var(--page-bg-color);
+  background-image: var(--page-bg-image);
   background-attachment: fixed;
 }
 

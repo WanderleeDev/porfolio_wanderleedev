@@ -104,11 +104,12 @@ const stackLogos = [
 </section>
 
 <!-- Opaque backdrop: hides the hero while the intro runs (S2).
-     bg-contrast (--color-contrast), not bg-surface: in the neon theme
-     --color-surface is `transparent`, so the curtain would not hide anything.
-     z >= 1000 keeps the intro above ThemePicker (z-[999]), matching the
-     previous z-1000 curtain; otherwise the picker floats over the intro. -->
-<div id="curtain" class="fixed inset-0 z-[1000] bg-contrast" aria-hidden="true"></div>
+     Pinta el mismo fondo que el sitio (--page-bg-color/--page-bg-image), así
+     la intro arranca ya con el tema definitivo y no hay salto de color al
+     terminar. z >= 1000 keeps the intro above ThemePicker (z-[999]),
+     matching the previous z-1000 curtain; otherwise the picker floats over
+     the intro. -->
+<div id="curtain" class="fixed inset-0 z-[1000]" aria-hidden="true"></div>
 
 <!-- Above the curtain, so the warp stays visible (S2) -->
 <canvas id="stars-bg" class="fixed inset-0 size-full z-[1001] pointer-events-none" aria-hidden="true"
@@ -188,6 +189,14 @@ const stackLogos = [
   #hero .tech-card {
     opacity: 0;
     --card-scale: 0;
+  }
+
+  /* La cortina de la intro usa el fondo del sitio: en neón arranca con el
+     negro + glows y no con un azul distinto que después se reemplaza. */
+  #curtain {
+    background-color: var(--page-bg-color);
+    background-image: var(--page-bg-image);
+    background-attachment: fixed;
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -395,6 +404,7 @@ const stackLogos = [
     // el fondo del sitio (html) y el contenido, así las estrellas se ven
     // detrás del hero en vez de taparlo.
     canvas.style.zIndex = "-1";
+    revealHero();
     revealHero();
     if (!skipIntro) storage.set();
   }

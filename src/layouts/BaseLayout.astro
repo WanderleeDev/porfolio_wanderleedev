@@ -82,5 +82,28 @@ const altTitle = altLang === "en" ? "WanderleeDev — Portfolio" : "Portafolio W
     <div>
       <slot />
     </div>
+
+    <script>
+      import { gsap } from "../lib/gsap";
+
+      function revealAll() {
+        if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+        const els = document.querySelectorAll<HTMLElement>("[data-reveal]");
+        els.forEach((el) => {
+          if (el.dataset.revealed === "true") return;
+          el.dataset.revealed = "true";
+          gsap.from(el, {
+            opacity: 0,
+            y: 40,
+            duration: 0.9,
+            ease: "power3.out",
+            scrollTrigger: { trigger: el, start: "top 80%" },
+          });
+        });
+      }
+
+      document.addEventListener("astro:page-load", revealAll);
+      revealAll();
+    </script>
   </body>
 </html>

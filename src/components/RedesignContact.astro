@@ -72,36 +72,3 @@ const config = {
 </section>
 
 
-<script>
-  import { gsap } from "../lib/gsap";
-
-  let ctx: gsap.Context | null = null;
-
-  function animate(section: HTMLElement) {
-    const mm = gsap.matchMedia();
-    mm.add("(prefers-reduced-motion: no-preference)", () => {
-      gsap.from(section.querySelectorAll("[data-reveal]"), {
-        opacity: 0,
-        y: 40,
-        duration: 0.9,
-        ease: "power3.out",
-        stagger: 0.15,
-        scrollTrigger: { trigger: section, start: "top 75%" },
-      });
-    });
-  }
-
-  function boot() {
-    const section = document.querySelector<HTMLElement>("#contact");
-    if (!section) return;
-    ctx?.revert();
-    ctx = gsap.context(() => animate(section));
-  }
-
-  document.addEventListener("astro:before-swap", () => {
-    ctx?.revert();
-    ctx = null;
-  });
-  document.addEventListener("astro:page-load", boot);
-  boot();
-</script>

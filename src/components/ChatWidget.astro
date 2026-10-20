@@ -23,20 +23,21 @@ const t = getTranslations(lang)("chat");
     id="chat-dialog"
     aria-label={t.title}
     closedby="any"
-    class="m-0 inset-auto right-5 bottom-24 open:flex h-[min(32rem,calc(100dvh-7rem))] max-h-[min(32rem,calc(100dvh-7rem))] w-[min(24rem,calc(100vw-2.5rem))] max-w-none flex-col overflow-hidden rounded-card border border-line bg-contrast text-ink shadow-card transition-all duration-700 ease-out-elastic backdrop:bg-black/40 backdrop:transition-opacity backdrop:duration-700 starting:scale-95 starting:opacity-0 starting:backdrop:opacity-0 has-[:checked]:inset-4 has-[:checked]:w-auto has-[:checked]:h-auto has-[:checked]:max-h-none has-[:checked]:max-w-none has-[:checked]:rounded-3xl has-[:checked]:ease-out md:has-[:checked]:inset-6"
+    class="m-0 inset-auto right-5 bottom-24 open:flex h-[min(32rem,calc(100dvh-7rem))] max-h-[min(32rem,calc(100dvh-7rem))] w-[min(24rem,calc(100vw-2.5rem))] max-w-none flex-col overflow-hidden rounded-card border border-line bg-contrast text-ink transition-all duration-700 ease-out-elastic backdrop:bg-black/40 backdrop:transition-opacity backdrop:duration-700 starting:scale-95 starting:opacity-0 starting:backdrop:opacity-0 has-[:checked]:inset-4 has-[:checked]:w-auto has-[:checked]:h-auto has-[:checked]:max-h-none has-[:checked]:max-w-none has-[:checked]:rounded-3xl has-[:checked]:ease-out md:has-[:checked]:inset-6"
 >
     <div
         id="chat-pet-stage"
         aria-label={t.pet}
-        class="pointer-events-auto absolute z-[100] hidden items-center justify-center rounded-full border border-line bg-contrast shadow-card"
+        class="pointer-events-auto absolute z-[100] flex items-center justify-center rounded-full border border-line bg-contrast"
+        hidden
     >
         <pixel-pet
             id="chat-pet"
             src="/pet/cat.json"
             lang={lang}
-            scale="1"
+            scale="2"
             sleep-after="45"
-            class="size-20 shrink-0 drop-shadow-lg"
+            class="h-[90px] w-[72px] shrink-0"
         ></pixel-pet>
     </div>
 
@@ -96,10 +97,15 @@ const t = getTranslations(lang)("chat");
      * abierto. Al cerrar vuelve a su contenedor fijo, junto al launcher.
      */
     const positionStage = () => {
-        if (!stage) return;
-        const size = 82;
-        const right = 12;
-        const top = 88;
+        if (!stage || stage.hidden) return;
+        const bubble = document.querySelector("#chat-dialog .rounded-card");
+        const r = bodyDialog?.getBoundingClientRect();
+        if (!r) return;
+        const size = 96;
+        // El pet se solapa con el borde derecho del globo, como si el globo saliera de el
+        const br = bubble?.getBoundingClientRect();
+        const right = br ? Math.max(0, window.innerWidth - br.right - size + 28) : 12;
+        const top = br ? br.top + br.height / 2 - size / 2 : r.top + 88;
         stage.style.right = `${right}px`;
         stage.style.top = `${top}px`;
         stage.style.left = "";
@@ -110,7 +116,7 @@ const t = getTranslations(lang)("chat");
 
     const setStage = (show: boolean) => {
         if (!stage) return;
-        stage.classList.toggle("hidden", !show);
+        stage.hidden = !show;
         if (show) requestAnimationFrame(positionStage);
     };
 

@@ -56,9 +56,9 @@ export default function ChatPanel({ lang }: ChatPanelProps) {
     };
 
     return (
-        <div className="flex flex-col">
-            <div className="flex min-h-56 flex-1 items-center justify-center gap-4 px-4 pb-4 pr-28">
-                <div className="relative min-w-0 flex-1">
+        <div className="flex min-h-0 flex-1 flex-col">
+            <div className="flex min-h-0 flex-1 flex-col overflow-y-auto px-4 pb-4 pr-32">
+                <div className="my-auto">
                     <div className="rounded-card border border-line bg-badge p-4">
                         {answer ? (
                             <p className="font-sans text-sm whitespace-pre-wrap text-badge-ink">

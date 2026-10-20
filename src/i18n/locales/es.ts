@@ -181,6 +181,21 @@ export const es = {
     errorEmail: "Escribe un correo válido, por ejemplo nombre@dominio.com.",
   },
 
+  chat: {
+    title: "Chat",
+    subtitle: "Preguntame sobre mi trabajo",
+    open: "Abrir chat",
+    close: "Cerrar chat",
+    fullscreen: "Pantalla completa",
+    clear: "Limpiar",
+    empty: "Hola! Soy el asistente de este portafolio. Preguntame por los proyectos, el stack o cómo contactarme.",
+    placeholder: "Escribí un mensaje…",
+    typing: "Escribiendo…",
+    send: "Enviar",
+    stop: "Detener",
+    error: "No pude responder. Probá de nuevo.",
+  },
+
   footer: {
     tagline: "Fullstack developer",
     contactLabel: "Contacto",

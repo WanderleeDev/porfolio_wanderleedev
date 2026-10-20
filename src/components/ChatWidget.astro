@@ -1,0 +1,73 @@
+---
+import Icon from "astro-iconify";
+import ChatPanel from "./ChatPanel.tsx";
+import { getTranslations } from "../i18n/utils";
+
+const lang = Astro.currentLocale as "es" | "en";
+const t = getTranslations(lang)("chat");
+---
+
+<button
+    type="button"
+    command="show-modal"
+    commandfor="chat-dialog"
+    aria-label={t.open}
+    class="fixed bottom-5 right-5 z-[999] flex size-14 items-center justify-center rounded-full bg-ink text-contrast shadow-card transition-transform duration-200 hover:scale-105 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink"
+>
+    <Icon name="lucide:message-circle" class="size-6" aria-hidden="true" />
+</button>
+
+<dialog
+    id="chat-dialog"
+    aria-label={t.title}
+    closedby="any"
+    class="m-0 inset-auto right-5 bottom-24 open:flex h-[min(32rem,calc(100dvh-7rem))] max-h-[min(32rem,calc(100dvh-7rem))] w-[min(24rem,calc(100vw-2.5rem))] max-w-none flex-col overflow-hidden rounded-card border border-line bg-contrast text-ink shadow-card transition-all duration-200 ease-out backdrop:bg-black/40 backdrop:transition-opacity backdrop:duration-200 starting:scale-95 starting:opacity-0 starting:backdrop:opacity-0 has-[:checked]:inset-0 has-[:checked]:h-dvh has-[:checked]:w-dvw has-[:checked]:max-h-none has-[:checked]:max-w-none has-[:checked]:rounded-none"
+>
+    <header class="flex items-center justify-between gap-3 border-b border-line px-4 py-3">
+        <div class="min-w-0">
+            <h2 class="truncate font-sans text-sm font-bold uppercase tracking-[0.16em]">
+                {t.title}
+            </h2>
+            <p class="truncate font-sans text-xs text-muted">{t.subtitle}</p>
+        </div>
+        <div class="flex shrink-0 items-center gap-1">
+            <label
+                class="flex size-8 cursor-pointer items-center justify-center rounded-full border border-line text-soft transition-colors hover:text-ink"
+            >
+                <input type="checkbox" class="peer sr-only" />
+                <Icon
+                    name="lucide:maximize-2"
+                    class="size-4 peer-checked:hidden"
+                    aria-hidden="true"
+                />
+                <Icon
+                    name="lucide:minimize-2"
+                    class="hidden size-4 peer-checked:block"
+                    aria-hidden="true"
+                />
+                <span class="sr-only">{t.fullscreen}</span>
+            </label>
+            <button
+                type="button"
+                command="close"
+                commandfor="chat-dialog"
+                aria-label={t.close}
+                class="flex size-8 items-center justify-center rounded-full border border-line text-soft transition-colors hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink"
+            >
+                <Icon name="lucide:x" class="size-4" aria-hidden="true" />
+            </button>
+        </div>
+    </header>
+
+    <ChatPanel client:load lang={lang} />
+</dialog>
+
+<script>
+    const dialog = document.getElementById("chat-dialog") as HTMLDialogElement | null;
+
+    document
+        .querySelector<HTMLButtonElement>('button[commandfor="chat-dialog"]')
+        ?.addEventListener("click", () => {
+            requestAnimationFrame(() => dialog?.querySelector("input")?.focus());
+        });
+</script>

@@ -1,5 +1,6 @@
 ---
 import { getTranslations } from "../i18n/utils";
+import ChatWidget from "../components/ChatWidget.astro";
 
 interface Props {
   title: string;
@@ -154,5 +155,6 @@ const altTitle = altLang === "en" ? "WanderleeDev — Portfolio" : "Portafolio W
       document.addEventListener("astro:page-load", boot);
       boot();
     </script>
+    <ChatWidget />
   </body>
 </html>

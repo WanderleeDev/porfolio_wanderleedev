@@ -121,14 +121,12 @@ const CROSSFADE =
             >
               <header class="flex items-center gap-3">
                 <span
-                  class="size-2.5 shrink-0 rounded-full bg-[var(--accent)] shadow-[0_0_18px_3px_var(--accent)]"
-                  aria-hidden="true"
+                  class="font-sans text-[11px] font-bold uppercase tracking-[0.2em]"
+                  style={`color: ${group.accent}`}
                 >
-                </span>
-                <span class="font-sans text-[11px] font-bold uppercase tracking-[0.2em] text-soft">
                   {group.title}
                 </span>
-                <span class="ml-auto font-sans text-[11px] font-bold uppercase tracking-[0.2em] text-muted">
+                <span class="ml-auto rounded-full border border-line px-2.5 py-0.5 font-sans text-[10px] font-bold tabular-nums text-muted">
                   {group.techs.length}
                 </span>
               </header>

@@ -220,7 +220,7 @@ const icon = "w-5 h-5";
     // JS solo mide lo que el CSS ya resolvió.
     const cardW = cards[0].offsetWidth;
     const cardH = cards[0].offsetHeight;
-    const gapPct = parseFloat(getComputedStyle(track).getPropertyValue("--fw-gap")) || 0.1;
+    const gapPct = (parseFloat(getComputedStyle(track).getPropertyValue("--fw-gap")) || 10) / 100;
     const step = cardW + Math.round(vw * gapPct);
     const loop = N * step;
     const baseX = vw / 2 - cardW / 2 - loop;

@@ -35,7 +35,7 @@ const socialLinks = [
 
       <a
         href="#contact"
-        class="inline-flex items-center gap-3 rounded-full bg-dark-ink px-8 py-5 text-sm font-extrabold uppercase tracking-[0.1em] text-dark-bg transition-transform hover:-translate-y-0.5 active:translate-y-0 hover:bg-dark-acc hover:text-dark-bg"
+        class="inline-flex items-center gap-3 rounded-full bg-dark-ink px-8 py-5 text-sm font-extrabold uppercase tracking-[0.1em] text-dark-bg transition-colors hover:bg-dark-acc hover:text-dark-bg"
         aria-label={f.ctaAria}
       >
         <span>{f.ctaLabel}</span>
@@ -62,7 +62,7 @@ const socialLinks = [
             target="_blank"
             rel="noopener noreferrer"
             aria-label={l.name}
-            class="flex size-11 items-center justify-center rounded-full border border-dark-line text-dark-ink transition-transform hover:scale-105 active:scale-95 hover:border-dark-acc hover:text-dark-acc"
+            class="flex size-11 items-center justify-center rounded-full border border-dark-line text-dark-ink transition-colors hover:border-dark-acc hover:text-dark-acc"
           >
             <Icon
               name={`lucide:${l.name === "GitHub" ? "github" : "linkedin"}`}
@@ -93,7 +93,7 @@ const socialLinks = [
     <p class="font-sans text-xs text-dark-muted">© 2026 WanderleeDev</p>
     <button
       type="button"
-      class="flex size-11 items-center justify-center rounded-full border border-dark-line text-dark-ink transition-transform hover:scale-105 active:scale-95 hover:border-dark-acc hover:text-dark-acc"
+      class="flex size-11 items-center justify-center rounded-full border border-dark-line text-dark-ink transition-colors hover:border-dark-acc hover:text-dark-acc"
       aria-label={f.backToTop}
     >
       <Icon name="lucide:arrow-up" class="h-5 w-5" aria-hidden="true" />

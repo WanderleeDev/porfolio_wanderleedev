@@ -187,7 +187,7 @@ const stackLogos = [
      rotate nunca entra al transform. */
   #hero .tech-card {
     opacity: 0;
-    --card-scale: 0.55;
+    --card-scale: 0;
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -531,7 +531,7 @@ const stackLogos = [
     waveKeys.forEach((key, w) => {
       tl.to(
         waves.get(key)!,
-        { "--card-scale": 1, duration: 0.7, ease: "back.out(1.4)" },
+        { "--card-scale": 1, duration: 0.9, ease: "elastic.out(1, 0.45)" },
         0.45 + w * 0.12,
       );
     });

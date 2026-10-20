@@ -71,7 +71,7 @@ export default function ContactForm({ lang }: ContactFormProps) {
   };
 
   return (
-    <form id="contact-form" onSubmit={handleSubmit(onSubmit)} noValidate className="grid gap-5 rounded-3xl border border-line bg-surface p-6 shadow-card md:p-8">
+    <form id="contact-form" onSubmit={handleSubmit(onSubmit)} noValidate className="grid gap-5 rounded-3xl border border-line bg-contrast p-6 shadow-card md:p-8">
       <div className="grid gap-2">
         <label htmlFor="f-name" className="font-sans text-[0.72rem] font-bold uppercase tracking-[0.16em] text-muted">
           {fields.name}
@@ -82,7 +82,7 @@ export default function ContactForm({ lang }: ContactFormProps) {
           autoComplete="name"
           placeholder={placeholders.name}
           aria-invalid={formErrors.name ? "true" : "false"}
-          className="w-full rounded-card border border-line bg-surface px-4 py-3 font-sans text-[1.02rem] text-ink placeholder:text-muted/70 transition-colors focus:outline-none focus:border-ink aria-[invalid=true]:border-red-500"
+          className="w-full rounded-card border border-line bg-field px-4 py-3 font-sans text-[1.02rem] text-ink placeholder:text-muted/70 transition-colors focus:outline-none focus:border-ink aria-[invalid=true]:border-red-500"
           {...register("name")}
         />
         {formErrors.name && (
@@ -96,7 +96,7 @@ export default function ContactForm({ lang }: ContactFormProps) {
         <legend className="p-0 font-sans text-[0.72rem] font-bold uppercase tracking-[0.16em] text-muted">
           {fields.kind}
         </legend>
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-wrap gap-2 pt-2">
           {info.kinds.map((k: string, i: number) => (
             <label key={k} className="cursor-pointer">
               <input
@@ -123,7 +123,7 @@ export default function ContactForm({ lang }: ContactFormProps) {
           type="text"
           placeholder={placeholders.what}
           aria-invalid={formErrors.what ? "true" : "false"}
-          className="w-full rounded-card border border-line bg-surface px-4 py-3 font-sans text-[1.02rem] text-ink placeholder:text-muted/70 transition-colors focus:outline-none focus:border-ink aria-[invalid=true]:border-red-500"
+          className="w-full rounded-card border border-line bg-field px-4 py-3 font-sans text-[1.02rem] text-ink placeholder:text-muted/70 transition-colors focus:outline-none focus:border-ink aria-[invalid=true]:border-red-500"
           {...register("what")}
         />
         {formErrors.what && (
@@ -143,7 +143,7 @@ export default function ContactForm({ lang }: ContactFormProps) {
           autoComplete="email"
           placeholder={placeholders.email}
           aria-invalid={formErrors.email ? "true" : "false"}
-          className="w-full rounded-card border border-line bg-surface px-4 py-3 font-sans text-[1.02rem] text-ink placeholder:text-muted/70 transition-colors focus:outline-none focus:border-ink aria-[invalid=true]:border-red-500"
+          className="w-full rounded-card border border-line bg-field px-4 py-3 font-sans text-[1.02rem] text-ink placeholder:text-muted/70 transition-colors focus:outline-none focus:border-ink aria-[invalid=true]:border-red-500"
           {...register("email")}
         />
         {formErrors.email && (

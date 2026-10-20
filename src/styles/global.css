@@ -42,6 +42,9 @@
   --color-line: #e5e7eb;
   --color-badge: #e5e5e5;
   --color-badge-ink: #374151;
+  /* Fondo de campos de formulario: en light/dark igual que la superficie,
+     en neón un panel sólido para que los inputs se lean sobre el card. */
+  --color-field: #ffffff;
 
   /* ── Radius & shadows centralizados ── */
   --radius-card: 1rem;
@@ -153,6 +156,7 @@
   --color-line: #3a3f55;
   --color-badge: #3a3f55;
   --color-badge-ink: #eceef3;
+  --color-field: #161824;
 
   --surface: var(--color-surface);
   --ink: var(--color-ink);
@@ -183,6 +187,7 @@
   --color-line: #2a2f45;
   --color-badge: #1c2133;
   --color-badge-ink: #eef1f8;
+  --color-field: #171c30;
 
   --surface: var(--color-surface);
   --ink: var(--color-ink);

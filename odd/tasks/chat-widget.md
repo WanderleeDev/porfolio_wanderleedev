@@ -50,6 +50,10 @@ streaming chat panel backed by the AI SDK and the `GATEWAY_LLM` OpenAI-compatibl
 - S7b: "no me gusta donde esta puesto opciones?"
   → The pet lives in a fixed container beside the launcher button, so it stays visible
   with the chat closed, like a desktop pet, and never competes with the panel header.
+- S7c: "si queda atras pierde el foco bo puede toar el lugar el btn que muestra y tambien mandarlo
+  adelante cuando se abre el modal"
+  → The pet must not stay behind the modal backdrop, must not take the place of the
+  launcher button, and must be brought forward when the modal opens.
 
 ## Tasks
 
@@ -152,6 +156,15 @@ streaming chat panel backed by the AI SDK and the `GATEWAY_LLM` OpenAI-compatibl
   covers neither. Both fit in a 390px viewport. The footer bottom bar moves to
   `md:pr-40` because the pet now occupies the space the back-to-top button was using;
   after the change the gap is 116px and that button still scrolls to the top.
+- Pet vs. the modal (S7c): a modal dialog lives in the browser top layer, so its backdrop
+  paints above every z-index and the rest of the document becomes inert, which left the pet
+  dimmed behind the backdrop and unclickable. The pet now moves into the dialog while it
+  is open and back to its host on close; being in the same top layer puts it in front of
+  the backdrop, and `position: fixed` keeps resolving against the viewport so it does not
+  move. Verified: the hit test returns chat-pet first with the modal open, the pet stays
+  clickable, keeps its viewport position (1128,644) with a 12px gap to the launcher and
+  does not cover the close button, returns to its host on close, does not close the modal
+  when clicked, and light dismiss still works.
 
 ## Work-unit evidence
 - Branch: `feature/chat-widget` (from `main`).
@@ -160,7 +173,7 @@ streaming chat panel backed by the AI SDK and the `GATEWAY_LLM` OpenAI-compatibl
   `77cda12` (U5 drop the unused @ai-sdk/openai provider), `d24abaa` (U6 elastic entrance +
   fullscreen margin), `83bd4c9` (U7 this update), `45ac7e8` (U8 commit identities),
   `ffdb7ba` (U9 pixel pet assets + deps), `1b567f6` (U10 pixel pet integration),
-  `5d7a7ef` (U11 pet moved next to the launcher).
+  `5d7a7ef` (U11 pet moved next to the launcher), `1bb08ab` (U12 pet in front of the modal).
 - Slice boundary: 732 authored changed lines across the eleven commits, past the
   ~400-line review budget. The overage comes from this document (170 lines) and the
   re-scaled sprite (binary), not from the shipped behaviour, so the feature stays a

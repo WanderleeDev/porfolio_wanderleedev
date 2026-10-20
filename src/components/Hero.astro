@@ -45,14 +45,17 @@ const stackLogos = [
   class="relative z-0 h-[110dvh] min-h-[640px] flex flex-col items-center justify-center px-4 text-center overflow-hidden"
   aria-label="Presentación"
 >
-  <p class="hero-fade font-sans text-[11px] tracking-[0.2em] text-muted uppercase mt-1">
+  <p class="hero-fade opacity-0 font-sans text-[11px] tracking-[0.2em] text-muted uppercase mt-1 motion-reduce:opacity-100">
     wanderleedev@gmail.com
   </p>
 
-  <Title level={1} class="mt-4 hero-reveal">
+  <Title level={1} class="mt-4">
     {
       heroWordsName.map((w, i) => (
-        <span class="hero-word" style={`--delay:${i}`} aria-hidden="true">
+        <span
+          class="hero-word inline-block origin-bottom [transform:scaleY(0)] motion-reduce:[transform:none]"
+          aria-hidden="true"
+        >
           {w}&nbsp;
         </span>
       ))
@@ -63,11 +66,9 @@ const stackLogos = [
     {
       stackLogos.map(({ icon, alt, color, rotate }, i) => (
         <div
-          class={`tech-card transform-[scale(var(--card-scale,1))] w-28 h-28 sm:w-32 sm:h-32 md:w-40 md:h-40 rounded-card shadow-[0_14px_35px_-10px_rgba(0,0,0,0.12)] flex items-center justify-center bg-surface border border-line ${rotate} -ml-5 first:ml-0 hover:rotate-0 hover:scale-105 hover:z-10 hover:shadow-[0_20px_45px_-10px_rgba(0,0,0,0.18)] transition-[scale,rotate] duration-500 ease-out`}
-          style={`--card-i:${i}`}
+          class={`tech-card transform-[scale(var(--card-scale,1))] [--card-scale:0] opacity-0 motion-reduce:opacity-100 motion-reduce:[--card-scale:1] w-28 h-28 sm:w-32 sm:h-32 md:w-40 md:h-40 rounded-card shadow-[0_14px_35px_-10px_rgba(0,0,0,0.12)] flex items-center justify-center bg-surface border border-line ${rotate} -ml-5 first:ml-0 hover:rotate-0 hover:scale-105 hover:z-10 hover:shadow-[0_20px_45px_-10px_rgba(0,0,0,0.18)] transition-[scale,rotate] duration-500 ease-out`}
           role="img"
           aria-label={alt}
-          data-color={color}
         >
           <Icon name={icon} class="w-14 h-14 sm:w-16 sm:h-16 md:w-20 md:h-20" style={{ color }} />
         </div>
@@ -75,10 +76,13 @@ const stackLogos = [
     }
   </div>
 
-  <Title level={2} class="!text-muted !text-[clamp(2rem,7.5vw,5.5rem)] hero-reveal">
+  <Title level={2} class="!text-muted !text-[clamp(2rem,7.5vw,5.5rem)]">
     {
       heroWordsRoleLine1.map((w, i) => (
-        <span class="hero-word" style={`--delay:${i}`} aria-hidden="true">
+        <span
+          class="hero-word inline-block origin-bottom [transform:scaleY(0)] motion-reduce:[transform:none]"
+          aria-hidden="true"
+        >
           {w}&nbsp;
         </span>
       ))
@@ -86,14 +90,17 @@ const stackLogos = [
     <br />
     {
       heroWordsRoleLine2.map((w, i) => (
-        <span class="hero-word" style={`--delay:${i + 2}`} aria-hidden="true">
+        <span
+          class="hero-word inline-block origin-bottom [transform:scaleY(0)] motion-reduce:[transform:none]"
+          aria-hidden="true"
+        >
           {w}&nbsp;
         </span>
       ))
     }
   </Title>
 
-  <div class="hero-fade mt-6">
+  <div class="hero-fade mt-6 opacity-0 motion-reduce:opacity-100">
     <p class="font-sans text-xs font-bold tracking-[0.2em] text-ink uppercase">
       {t("hero").subtitle}
     </p>
@@ -109,7 +116,11 @@ const stackLogos = [
      terminar. z >= 1000 keeps the intro above ThemePicker (z-[999]),
      matching the previous z-1000 curtain; otherwise the picker floats over
      the intro. -->
-<div id="curtain" class="fixed inset-0 z-[1000]" aria-hidden="true"></div>
+<div
+  id="curtain"
+  class="fixed inset-0 z-[1000] [background-color:var(--page-bg-color)] [background-image:var(--page-bg-image)] [background-attachment:fixed]"
+  aria-hidden="true"
+></div>
 
 <!-- Above the curtain, so the warp stays visible (S2) -->
 <canvas id="stars-bg" class="fixed inset-0 size-full z-[1001] pointer-events-none" aria-hidden="true"
@@ -165,54 +176,6 @@ const stackLogos = [
   } catch (e) {}
 </script>
 
-<style is:global>
-  /* Estados iniciales de la intro. La animación la maneja una única
-     timeline de GSAP (ver revealHero en el script): sin transitions ni
-     animations CSS compitiendo. Global porque Title.astro renderiza sin
-     scope y el selector compuesto de Astro nunca matcheaba. */
-  .hero-reveal .hero-word {
-    display: inline-block;
-    transform-origin: 50% 100%;
-    /* transform (no la propiedad `scale`): GSAP anima scaleY sobre el
-       transform, así no se multiplican. */
-    transform: scaleY(0);
-  }
-
-  /* Opacity pura: nunca toca el rotate/scale de Tailwind del fan. */
-  #hero .hero-fade {
-    opacity: 0;
-  }
-
-  /* La escala de entrada vive en --card-scale (propiedad `scale`, que
-     compone con el `rotate` de Tailwind). GSAP anima la variable; el
-     rotate nunca entra al transform. */
-  #hero .tech-card {
-    opacity: 0;
-    --card-scale: 0;
-  }
-
-  /* La cortina de la intro usa el fondo del sitio: en neón arranca con el
-     negro + glows y no con un azul distinto que después se reemplaza. */
-  #curtain {
-    background-color: var(--page-bg-color);
-    background-image: var(--page-bg-image);
-    background-attachment: fixed;
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .hero-reveal .hero-word,
-    #hero .hero-fade,
-    #hero .tech-card {
-      opacity: 1;
-      translate: none;
-      transform: none;
-    }
-
-    #hero .tech-card {
-      --card-scale: 1;
-    }
-  }
-</style>
 
 
 <script>
@@ -515,7 +478,7 @@ const stackLogos = [
     htmlEl.classList.add("hero-ready");
     const hero = document.getElementById("hero");
     if (!hero) return;
-    const words = hero.querySelectorAll(".hero-reveal .hero-word");
+    const words = hero.querySelectorAll(".hero-word");
     const fades = hero.querySelectorAll(".hero-fade");
     const cards = hero.querySelectorAll(".tech-card");
 
@@ -561,7 +524,7 @@ const stackLogos = [
 
   if (skipIntro) {
     state.mode = "scroll";
-    gsap.set("#hero .hero-reveal .hero-word", { scaleY: 1 });
+    gsap.set("#hero .hero-word", { scaleY: 1 });
     gsap.set("#hero .hero-fade", { opacity: 1 });
     gsap.set("#hero .tech-card", { opacity: 1, "--card-scale": 1 });
   } else {

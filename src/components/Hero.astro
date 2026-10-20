@@ -61,7 +61,7 @@ const stackLogos = [
     {
       stackLogos.map(({ icon, alt, color, rotate }, i) => (
         <div
-          class={`tech-card w-28 h-28 sm:w-32 sm:h-32 md:w-40 md:h-40 rounded-card shadow-[0_14px_35px_-10px_rgba(0,0,0,0.12)] flex items-center justify-center bg-surface border border-line ${rotate} -ml-5 first:ml-0 hover:rotate-0 hover:scale-105 hover:z-10 hover:shadow-[0_20px_45px_-10px_rgba(0,0,0,0.18)] transition-transform duration-500 ease-out`}
+          class={`tech-card transform-[scale(var(--card-scale,1))] w-28 h-28 sm:w-32 sm:h-32 md:w-40 md:h-40 rounded-card shadow-[0_14px_35px_-10px_rgba(0,0,0,0.12)] flex items-center justify-center bg-surface border border-line ${rotate} -ml-5 first:ml-0 hover:rotate-0 hover:scale-105 hover:z-10 hover:shadow-[0_20px_45px_-10px_rgba(0,0,0,0.18)] transition-[scale,rotate] duration-500 ease-out`}
           style={`--card-i:${i}`}
           role="img"
           aria-label={alt}
@@ -182,8 +182,12 @@ const stackLogos = [
     opacity: 0;
   }
 
+  /* La escala de entrada vive en --card-scale (propiedad `scale`, que
+     compone con el `rotate` de Tailwind). GSAP anima la variable; el
+     rotate nunca entra al transform. */
   #hero .tech-card {
     opacity: 0;
+    --card-scale: 0.55;
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -193,6 +197,10 @@ const stackLogos = [
       opacity: 1;
       translate: none;
       transform: none;
+    }
+
+    #hero .tech-card {
+      --card-scale: 1;
     }
   }
 </style>
@@ -244,12 +252,18 @@ const stackLogos = [
 
   // El script inline de arriba ya ocultó la cortina cuando pudo; esto cubre
   // los caminos dev / reducedMotion, que sólo se pueden decidir en JS.
+  // Botón de tema (dark mode) y selector de idioma: ocultos durante la
+  // intro y revelados al final (ver revealHero).
+  const pickers = gsap.utils.toArray<HTMLElement>("#theme-trigger, #lang-trigger");
+
   if (skipIntro) {
     curtainEl.style.display = "none";
     badgeLayerEl.style.display = "none";
     htmlEl.classList.add("hero-ready");
+    gsap.set(pickers, { opacity: 1 });
   } else {
     htmlEl.style.overflow = "hidden";
+    gsap.set(pickers, { opacity: 0 });
   }
 
   const WARP_STAR_COUNT = 1500;
@@ -492,11 +506,36 @@ const stackLogos = [
     const words = hero.querySelectorAll(".hero-reveal .hero-word");
     const fades = hero.querySelectorAll(".hero-fade");
     const cards = hero.querySelectorAll(".tech-card");
-    gsap
-      .timeline()
-      .to(fades, { opacity: 1, duration: 0.6, ease: "power2.out" }, 0)
-      .to(words, { scaleY: 1, duration: 0.8, ease: "elastic.out(1, 0.45)", stagger: 0.08 }, 0.1)
-      .fromTo(cards, { opacity: 0, y: 12 }, { opacity: 1, y: 0, duration: 0.7, ease: "power2.out", stagger: 0.08, clearProps: "transform,translate,rotate,scale" }, 0.45);
+
+    // Entrada de las cards: scale desde el centro, en oleadas simétricas
+    // (cada oleada es un par espejo: una card impar y una par). Sin stagger
+    // lineal y sin animar opacity: aparecen al 100% y crecen desde el centro.
+    const mid = (cards.length - 1) / 2;
+    const waves = new Map<number, HTMLElement[]>();
+    cards.forEach((card, i) => {
+      const key = Math.abs(i - mid);
+      const list = waves.get(key) ?? [];
+      list.push(card);
+      waves.set(key, list);
+    });
+    const waveKeys = [...waves.keys()].sort((a, b) => a - b);
+
+    const tl = gsap.timeline();
+    tl.to(fades, { opacity: 1, duration: 0.6, ease: "power2.out" }, 0)
+      .to(words, { scaleY: 1, duration: 0.8, ease: "elastic.out(1, 0.45)", stagger: 0.08 }, 0.1);
+
+    // Opacity sin animación: las cards aparecen de golpe y sólo crece el scale.
+    gsap.set(cards, { opacity: 1 });
+
+    // Botón de tema (dark mode) y selector de idioma: aparecen al final.
+    waveKeys.forEach((key, w) => {
+      tl.to(
+        waves.get(key)!,
+        { "--card-scale": 1, duration: 0.7, ease: "back.out(1.4)" },
+        0.45 + w * 0.12,
+      );
+    });
+    tl.to(pickers, { opacity: 1, duration: 0.5, ease: "power2.out" }, "+=0.15");
   }
 
   // Warp: arranca solo cuando el badge terminó de achicarse
@@ -512,7 +551,7 @@ const stackLogos = [
     state.mode = "scroll";
     gsap.set("#hero .hero-reveal .hero-word", { scaleY: 1 });
     gsap.set("#hero .hero-fade", { opacity: 1 });
-    gsap.set("#hero .tech-card", { opacity: 1 });
+    gsap.set("#hero .tech-card", { opacity: 1, "--card-scale": 1 });
   } else {
     // Badge aparece con el canvas quieto; al terminar la animación del gato
     // arranca el warp, junto con su salida.

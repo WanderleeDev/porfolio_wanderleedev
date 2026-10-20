@@ -92,13 +92,24 @@ const altTitle = altLang === "en" ? "WanderleeDev — Portfolio" : "Portafolio W
         els.forEach((el) => {
           if (el.dataset.revealed === "true") return;
           el.dataset.revealed = "true";
-          gsap.from(el, {
+          const opts = {
             opacity: 0,
             y: 40,
             duration: 0.9,
             ease: "power3.out",
             scrollTrigger: { trigger: el, start: "top 80%" },
-          });
+          };
+          // Si el bloque contiene un título, el fade del contenedor taparía
+          // la animación de palabras: se animan los hijos que no son título.
+          const title = el.querySelector("h1, h2, h3");
+          if (title) {
+            const others = Array.from(el.children).filter(
+              (c) => !(c instanceof HTMLElement && c.matches("h1, h2, h3")),
+            );
+            if (others.length) gsap.from(others, { ...opts, stagger: 0.15 });
+            return;
+          }
+          gsap.from(el, opts);
         });
       }
 
@@ -107,6 +118,7 @@ const altTitle = altLang === "en" ? "WanderleeDev — Portfolio" : "Portafolio W
         const headings = document.querySelectorAll<HTMLElement>("h1, h2, h3");
         headings.forEach((h) => {
           if (h.closest("#hero")) return;
+          if (h.closest("dialog")) return;
           if (h.dataset.titleSplit === "true") return;
           if (h.querySelector(".hero-word, .title-word")) return;
           const text = (h.textContent || "").trim();

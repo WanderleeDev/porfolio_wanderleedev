@@ -394,6 +394,7 @@
   display: inline-block;
   transform-origin: 50% 100%;
   transform: scaleY(0);
+  font: inherit;
 }
 
 @media (prefers-reduced-motion: reduce) {

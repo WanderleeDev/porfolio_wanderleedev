@@ -178,6 +178,8 @@ const CROSSFADE =
 </section>
 
 <script>
+  import { gsap } from "../lib/gsap";
+
   let observer: IntersectionObserver | null = null;
 
   function initTechStack() {
@@ -198,6 +200,37 @@ const CROSSFADE =
     const inBand = new Set<HTMLElement>();
     let active = "";
 
+    // Título de grupo partido en palabras para el reveal elástico.
+    const splitTitle = (el: HTMLElement) => {
+      const heading = el.querySelector("h3");
+      if (!heading || heading.dataset.titleSplit === "true") return null;
+      const text = (heading.textContent || "").trim();
+      if (!text) return null;
+      heading.textContent = "";
+      text.split(/\s+/).forEach((w) => {
+        const span = document.createElement("span");
+        span.className = "title-word";
+        span.textContent = w + "\u00A0";
+        heading.appendChild(span);
+      });
+      heading.dataset.titleSplit = "true";
+      return heading;
+    };
+
+    const revealTitle = (el: HTMLElement) => {
+      const heading = el.querySelector("h3");
+      if (!heading) return;
+      const words = heading.querySelectorAll<HTMLElement>(".title-word");
+      if (!words.length) return;
+      gsap.set(words, { scaleY: 0 });
+      gsap.to(words, {
+        scaleY: 1,
+        duration: 0.8,
+        ease: "elastic.out(1, 0.45)",
+        stagger: 0.08,
+      });
+    };
+
     const setActive = (key: string) => {
       if (!key || key === active) return;
       active = key;
@@ -205,12 +238,14 @@ const CROSSFADE =
         const on = el.dataset.title === key;
         el.dataset.active = String(on);
         el.setAttribute("aria-hidden", String(!on));
+        if (on) revealTitle(el);
       });
       descs.forEach((el) => {
         el.dataset.active = String(el.dataset.desc === key);
       });
     };
 
+    titles.forEach((el) => splitTitle(el));
     setActive(cards[0].dataset.panel ?? "");
 
     // Banda fina en el centro de la viewport. La card activa es la de mayor

@@ -119,6 +119,8 @@ const altTitle = altLang === "en" ? "WanderleeDev — Portfolio" : "Portafolio W
         headings.forEach((h) => {
           if (h.closest("#hero")) return;
           if (h.closest("dialog")) return;
+          // Los títulos de grupo del TechStack se animan al activarse, no al scrollear.
+          if (h.closest("[data-title]")) return;
           if (h.dataset.titleSplit === "true") return;
           if (h.querySelector(".hero-word, .title-word")) return;
           const text = (h.textContent || "").trim();

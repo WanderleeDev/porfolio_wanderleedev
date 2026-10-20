@@ -84,7 +84,7 @@ const altTitle = altLang === "en" ? "WanderleeDev — Portfolio" : "Portafolio W
     </div>
 
     <script>
-      import { gsap } from "../lib/gsap";
+      import { gsap, ScrollTrigger } from "../lib/gsap";
 
       function revealAll() {
         if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
@@ -102,8 +102,43 @@ const altTitle = altLang === "en" ? "WanderleeDev — Portfolio" : "Portafolio W
         });
       }
 
-      document.addEventListener("astro:page-load", revealAll);
-      revealAll();
+      function animateSectionTitles() {
+        if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+        const headings = document.querySelectorAll<HTMLElement>("h1, h2, h3");
+        headings.forEach((h) => {
+          if (h.closest("#hero")) return;
+          if (h.dataset.titleSplit === "true") return;
+          if (h.querySelector(".hero-word, .title-word")) return;
+          const text = (h.textContent || "").trim();
+          if (!text) return;
+          const words = text.split(/\s+/);
+          h.textContent = "";
+          words.forEach((w) => {
+            const span = document.createElement("span");
+            span.className = "title-word";
+            span.textContent = w + "\u00A0";
+            h.appendChild(span);
+          });
+          h.dataset.titleSplit = "true";
+          const wordEls = h.querySelectorAll<HTMLElement>(".title-word");
+          gsap.set(wordEls, { scaleY: 0 });
+          gsap.to(wordEls, {
+            scaleY: 1,
+            duration: 0.8,
+            ease: "elastic.out(1, 0.45)",
+            stagger: 0.08,
+            scrollTrigger: { trigger: h, start: "top 85%" },
+          });
+        });
+      }
+
+      function boot() {
+        revealAll();
+        animateSectionTitles();
+      }
+
+      document.addEventListener("astro:page-load", boot);
+      boot();
     </script>
   </body>
 </html>

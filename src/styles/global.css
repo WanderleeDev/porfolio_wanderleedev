@@ -388,3 +388,16 @@
     U+2212, U+2215, U+FEFF, U+FFFD;
 }
 
+
+/* ── Title word reveal (hero-style) ── */
+.title-word {
+  display: inline-block;
+  transform-origin: 50% 100%;
+  transform: scaleY(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .title-word {
+    transform: none;
+  }
+}

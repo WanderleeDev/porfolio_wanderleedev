@@ -2,18 +2,28 @@
 /**
  * ThemePicker + LangPicker — selectores flotantes de tema e idioma.
  * Posición fija esquina superior derecha.
- * CSS moderno: @starting-style, color-mix, backdrop-filter.
+ * Estilos: utilidades Tailwind (el reveal del panel usa `starting:`).
  */
 
-// Detectar idioma actual desde la URL
 const pathname = Astro.url.pathname;
 const currentLang = pathname.startsWith("/en") ? "en" : "es";
 
-// URL del otro idioma
 const altLang = currentLang === "es" ? "en" : "es";
 const altPath  = currentLang === "es"
   ? "/en" + (pathname === "/" ? "" : pathname)
   : pathname.replace(/^\/en/, "") || "/";
+
+const trigger =
+  "flex size-11 items-center justify-center rounded-full border-[1.5px] border-[color-mix(in_srgb,currentColor_20%,transparent)] bg-[color-mix(in_srgb,canvas_85%,transparent)] p-0 text-[canvastext] backdrop-blur-[12px] backdrop-saturate-[1.4] [transition:background_0.2s,border-color_0.2s,scale_0.15s] hover:bg-[color-mix(in_srgb,canvas_95%,transparent)] hover:scale-[1.08] focus-visible:outline-2 focus-visible:outline-[canvastext] focus-visible:outline-offset-[3px]";
+
+const panel =
+  "absolute top-[calc(100%_+_8px)] right-0 flex min-w-40 flex-col gap-0.5 rounded-[14px] border-[1.5px] border-[color-mix(in_srgb,currentColor_12%,transparent)] bg-[color-mix(in_srgb,canvas_92%,transparent)] p-1.5 shadow-[0_8px_32px_color-mix(in_srgb,black_18%,transparent)] backdrop-blur-[20px] backdrop-saturate-[1.6] [transition:opacity_0.18s_ease,translate_0.18s_ease] starting:opacity-0 starting:translate-y-[-6px]";
+
+const option =
+  "group relative flex w-full items-center gap-2.5 rounded-[9px] px-3 py-[9px] text-left font-sans text-[0.8rem] font-medium tracking-[0.04em] text-[canvastext] no-underline transition-[background] duration-150 hover:bg-[color-mix(in_srgb,canvastext_8%,transparent)] focus-visible:outline-2 focus-visible:outline-[canvastext] focus-visible:outline-offset-[-2px] focus-visible:rounded-[9px] aria-selected:bg-[color-mix(in_srgb,canvastext_10%,transparent)] aria-selected:font-bold";
+
+const optionIcon = "size-4 shrink-0 opacity-70 [&_svg]:size-full";
+const optionCheck = "ml-auto text-[0.75rem] opacity-0 transition-opacity duration-150 group-aria-selected:opacity-100";
 ---
 
 <div class="fixed top-5 right-5 z-[999] flex items-center gap-2" id="theme-picker" transition:animate={false}>
@@ -21,8 +31,9 @@ const altPath  = currentLang === "es"
   <!-- ── Lang picker ── -->
   <div class="relative">
     <button
-      class="theme-trigger peer"
+      class={trigger}
       id="lang-trigger"
+      data-trigger
       aria-label="Cambiar idioma"
       aria-expanded="false"
       aria-controls="lang-panel"
@@ -32,42 +43,43 @@ const altPath  = currentLang === "es"
       </span>
     </button>
 
-    <div class="theme-panel" id="lang-panel" role="listbox" aria-label="Seleccionar idioma" hidden>
+    <div class={panel} id="lang-panel" data-panel role="listbox" aria-label="Seleccionar idioma" hidden>
       <a
-        class={`theme-option${currentLang === "es" ? " theme-option--active" : ""}`}
+        class={option}
         href="/"
         role="option"
         aria-selected={currentLang === "es" ? true : false}
         hreflang="es"
       >
-        <span class="theme-option__icon lang-flag" aria-hidden="true">🇪🇸</span>
+        <span class="flex size-4 shrink-0 items-center justify-center text-base leading-none" aria-hidden="true">🇪🇸</span>
         Español
-        <span class="theme-option__check" aria-hidden="true">✓</span>
+        <span class={optionCheck} aria-hidden="true">✓</span>
       </a>
       <a
-        class={`theme-option${currentLang === "en" ? " theme-option--active" : ""}`}
+        class={option}
         href="/en"
         role="option"
         aria-selected={currentLang === "en" ? true : false}
         hreflang="en"
       >
-        <span class="theme-option__icon lang-flag" aria-hidden="true">🇺🇸</span>
+        <span class="flex size-4 shrink-0 items-center justify-center text-base leading-none" aria-hidden="true">🇺🇸</span>
         English
-        <span class="theme-option__check" aria-hidden="true">✓</span>
+        <span class={optionCheck} aria-hidden="true">✓</span>
       </a>
     </div>
   </div>
 
   <!-- ── Theme picker ── -->
-  <div class="picker-wrap">
+  <div class="relative">
     <button
-      class="theme-trigger peer"
+      class={trigger}
       id="theme-trigger"
+      data-trigger
       aria-label="Cambiar tema"
       aria-expanded="false"
       aria-controls="theme-panel"
     >
-      <span class="theme-trigger__icon flex items-center justify-center" id="theme-icon" aria-hidden="true">
+      <span class="flex size-5 items-center justify-center [&_svg]:size-full" id="theme-icon" aria-hidden="true">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <circle cx="12" cy="12" r="4"/>
           <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/>
@@ -75,44 +87,44 @@ const altPath  = currentLang === "es"
       </span>
     </button>
 
-    <div class="theme-panel" id="theme-panel" role="listbox" aria-label="Seleccionar tema" hidden>
-      <button class="theme-option" data-theme="system" role="option">
-        <span class="theme-option__icon" aria-hidden="true">
+    <div class={panel} id="theme-panel" data-panel role="listbox" aria-label="Seleccionar tema" hidden>
+      <button class={option} data-theme="system" role="option">
+        <span class={optionIcon} aria-hidden="true">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/>
           </svg>
         </span>
         Sistema
-        <span class="theme-option__check" aria-hidden="true">✓</span>
+        <span class={optionCheck} aria-hidden="true">✓</span>
       </button>
-      <button class="theme-option" data-theme="light" role="option">
-        <span class="theme-option__icon" aria-hidden="true">
+      <button class={option} data-theme="light" role="option">
+        <span class={optionIcon} aria-hidden="true">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <circle cx="12" cy="12" r="4"/>
             <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/>
           </svg>
         </span>
         Claro
-        <span class="theme-option__check" aria-hidden="true">✓</span>
+        <span class={optionCheck} aria-hidden="true">✓</span>
       </button>
-      <button class="theme-option" data-theme="dark" role="option">
-        <span class="theme-option__icon" aria-hidden="true">
+      <button class={option} data-theme="dark" role="option">
+        <span class={optionIcon} aria-hidden="true">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
           </svg>
         </span>
         Oscuro
-        <span class="theme-option__check" aria-hidden="true">✓</span>
+        <span class={optionCheck} aria-hidden="true">✓</span>
       </button>
-      <button class="theme-option" data-theme="neon" role="option">
-        <span class="theme-option__icon" aria-hidden="true">
+      <button class={option} data-theme="neon" role="option">
+        <span class={optionIcon} aria-hidden="true">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M12 3l1.8 4.7 4.7 1.8-4.7 1.8L12 16l-1.8-4.7L5.5 9.5l4.7-1.8z"/>
             <path d="M19 15l.9 2.1 2.1.9-2.1.9L19 21l-.9-2.1-2.1-.9 2.1-.9z"/>
           </svg>
         </span>
         Neón
-        <span class="theme-option__check" aria-hidden="true">✓</span>
+        <span class={optionCheck} aria-hidden="true">✓</span>
       </button>
     </div>
   </div>
@@ -132,37 +144,33 @@ const altPath  = currentLang === "es"
     neon:   `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.8 4.7 4.7 1.8-4.7 1.8L12 16l-1.8-4.7L5.5 9.5l4.7-1.8z"/><path d="M19 15l.9 2.1 2.1.9-2.1.9L19 21l-.9-2.1-2.1-.9 2.1-.9z"/></svg>`,
   };
 
+  const root = document.getElementById("theme-picker")!;
+
   function applyTheme(theme: Theme) {
-    const root = document.documentElement;
-    THEMES.forEach((t) => root.classList.remove(t));
+    const html = document.documentElement;
+    THEMES.forEach((t) => html.classList.remove(t));
     if (theme === "system") {
-      root.removeAttribute("data-theme");
+      html.removeAttribute("data-theme");
       const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-      root.classList.toggle("dark", prefersDark);
+      html.classList.toggle("dark", prefersDark);
     } else {
-      root.classList.add(theme);
-      root.setAttribute("data-theme", theme);
+      html.classList.add(theme);
+      html.setAttribute("data-theme", theme);
     }
   }
 
   function updateUI(theme: Theme) {
-    const icon    = document.getElementById("theme-icon")!;
-    const options = document.querySelectorAll<HTMLElement>(".theme-option[data-theme]");
+    const icon = document.getElementById("theme-icon")!;
+    const options = root.querySelectorAll<HTMLElement>("[data-theme]");
     icon.innerHTML = icons[theme];
-    options.forEach(opt => {
-      const active = opt.dataset.theme === theme;
-      opt.setAttribute("aria-selected", String(active));
-      opt.classList.toggle("theme-option--active", active);
+    options.forEach((opt) => {
+      opt.setAttribute("aria-selected", String(opt.dataset.theme === theme));
     });
   }
 
   function getSaved(): Theme {
     const raw = localStorage.getItem(STORAGE_KEY);
     return (THEMES as string[]).includes(raw ?? "") ? (raw as Theme) : "system";
-  }
-
-  function resolveSystem(): Exclude<Theme, "system"> {
-    return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
   }
 
   function setTheme(theme: Theme) {
@@ -176,47 +184,46 @@ const altPath  = currentLang === "es"
     applyTheme(getSaved());
     updateUI(getSaved());
 
-    const root = document.getElementById("theme-picker");
-    if (!root || root.dataset.wired) return;
+    if (root.dataset.wired) return;
     root.dataset.wired = "true";
 
-  // ── Toggle panels ─────────────────────────────────────────────────────────
-  function setupToggle(triggerId: string, panelId: string) {
-    const trigger = document.getElementById(triggerId)!;
-    const panel   = document.getElementById(panelId)!;
+    function setupToggle(triggerId: string, panelId: string) {
+      const trigger = document.getElementById(triggerId)!;
+      const panel = document.getElementById(panelId)!;
 
-    trigger.addEventListener("click", (e) => {
-      e.stopPropagation();
-      const open = !panel.hidden;
-      // Cerrar el otro panel
-      document.querySelectorAll<HTMLElement>(".theme-panel").forEach(p => {
-        if (p !== panel) { p.hidden = true; }
+      trigger.addEventListener("click", (e) => {
+        e.stopPropagation();
+        const open = !panel.hidden;
+        root.querySelectorAll<HTMLElement>("[data-panel]").forEach((p) => {
+          if (p !== panel) p.hidden = true;
+        });
+        root.querySelectorAll<HTMLElement>("[data-trigger]").forEach((t) => {
+          if (t !== trigger) t.setAttribute("aria-expanded", "false");
+        });
+        panel.hidden = open;
+        trigger.setAttribute("aria-expanded", String(!open));
       });
-      document.querySelectorAll<HTMLElement>(".theme-trigger").forEach(t => {
-        if (t !== trigger) t.setAttribute("aria-expanded", "false");
+    }
+
+    setupToggle("theme-trigger", "theme-panel");
+    setupToggle("lang-trigger", "lang-panel");
+
+    // Cerrar al hacer click fuera
+    document.addEventListener("click", () => {
+      root.querySelectorAll<HTMLElement>("[data-panel]").forEach((p) => (p.hidden = true));
+      root.querySelectorAll<HTMLElement>("[data-trigger]").forEach((t) =>
+        t.setAttribute("aria-expanded", "false"),
+      );
+    });
+
+    // ── Opciones de tema ──────────────────────────────────────────────────
+    root.querySelectorAll<HTMLElement>("[data-theme]").forEach((opt) => {
+      opt.addEventListener("click", () => {
+        setTheme(opt.dataset.theme as Theme);
+        document.getElementById("theme-panel")!.hidden = true;
+        document.getElementById("theme-trigger")!.setAttribute("aria-expanded", "false");
       });
-      panel.hidden = open;
-      trigger.setAttribute("aria-expanded", String(!open));
     });
-  }
-
-  setupToggle("theme-trigger", "theme-panel");
-  setupToggle("lang-trigger",  "lang-panel");
-
-  // Cerrar al hacer click fuera
-  document.addEventListener("click", () => {
-    document.querySelectorAll<HTMLElement>(".theme-panel").forEach(p => p.hidden = true);
-    document.querySelectorAll<HTMLElement>(".theme-trigger").forEach(t => t.setAttribute("aria-expanded", "false"));
-  });
-
-  // ── Opciones de tema ──────────────────────────────────────────────────────
-  document.querySelectorAll<HTMLElement>(".theme-option[data-theme]").forEach(opt => {
-    opt.addEventListener("click", () => {
-      setTheme(opt.dataset.theme as Theme);
-      document.getElementById("theme-panel")!.hidden = true;
-      document.getElementById("theme-trigger")!.setAttribute("aria-expanded", "false");
-    });
-  });
   }
 
   document.addEventListener("astro:page-load", bootPicker);
@@ -231,168 +238,3 @@ const altPath  = currentLang === "es"
     }
   });
 </script>
-
-<style>
-  @layer components {
-    /* Layout fijo esquina superior derecha */
-    .pickers {
-      position: fixed;
-      top: 1.25rem;
-      right: 1.25rem;
-      z-index: 999;
-      display: flex;
-      gap: 8px;
-      align-items: center;
-    }
-
-    .picker-wrap {
-      position: relative;
-    }
-
-    /* ── Trigger button ── */
-    .theme-trigger {
-      width: 44px;
-      height: 44px;
-      border-radius: 50%;
-      border: 1.5px solid color-mix(in srgb, currentColor 20%, transparent);
-      background: color-mix(in srgb, canvas 85%, transparent);
-      backdrop-filter: blur(12px) saturate(1.4);
-      -webkit-backdrop-filter: blur(12px) saturate(1.4);
-      color: canvastext;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 0;
-      transition: background 0.2s, border-color 0.2s, scale 0.15s;
-    }
-
-    .theme-trigger:hover {
-      background: color-mix(in srgb, canvas 95%, transparent);
-      scale: 1.08;
-    }
-
-    .theme-trigger:focus-visible {
-      outline: 2px solid canvastext;
-      outline-offset: 3px;
-    }
-
-    /* ── Trigger icon helper (inline SVG sizing) ── */
-    .theme-trigger__icon {
-      width: 20px;
-      height: 20px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .theme-trigger__icon svg {
-      width: 100%;
-      height: 100%;
-    }
-
-    /* ── Panel dropdown ── */
-    .theme-panel {
-      position: absolute;
-      top: calc(100% + 8px);
-      right: 0;
-      min-width: 160px;
-      background: color-mix(in srgb, canvas 92%, transparent);
-      backdrop-filter: blur(20px) saturate(1.6);
-      -webkit-backdrop-filter: blur(20px) saturate(1.6);
-      border: 1.5px solid color-mix(in srgb, currentColor 12%, transparent);
-      border-radius: 14px;
-      padding: 6px;
-      display: flex;
-      flex-direction: column;
-      gap: 2px;
-      box-shadow: 0 8px 32px color-mix(in srgb, black 18%, transparent);
-      transition: opacity 0.18s ease, translate 0.18s ease;
-    }
-
-    .theme-panel[hidden] {
-      display: none;
-    }
-
-    @starting-style {
-      .theme-panel:not([hidden]) {
-        opacity: 0;
-        translate: 0 -6px;
-      }
-    }
-
-    /* ── Opciones ── */
-    .theme-option {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 9px 12px;
-      border-radius: 9px;
-      border: none;
-      background: transparent;
-      color: canvastext;
-      font-family: "Inter", ui-sans-serif, system-ui, sans-serif;
-      font-size: 0.8rem;
-      font-weight: 500;
-      letter-spacing: 0.04em;
-      cursor: pointer;
-      text-align: left;
-      width: 100%;
-      transition: background 0.15s;
-      position: relative;
-    }
-
-    .theme-option:hover {
-      background: color-mix(in srgb, canvastext 8%, transparent);
-    }
-
-    .theme-option:focus-visible {
-      outline: 2px solid canvastext;
-      outline-offset: -2px;
-      border-radius: 9px;
-    }
-
-    .theme-option__icon {
-      width: 16px;
-      height: 16px;
-      flex-shrink: 0;
-      opacity: 0.7;
-    }
-
-    .theme-option__icon svg {
-      width: 100%;
-      height: 100%;
-    }
-
-    .theme-option__check {
-      margin-left: auto;
-      font-size: 0.75rem;
-      opacity: 0;
-      transition: opacity 0.15s;
-    }
-
-    .theme-option--active .theme-option__check {
-      opacity: 1;
-    }
-
-    .theme-option--active {
-      background: color-mix(in srgb, canvastext 10%, transparent);
-      font-weight: 700;
-    }
-
-    a.theme-option {
-      text-decoration: none;
-    }
-
-    .lang-flag {
-      font-size: 1rem;
-      line-height: 1;
-      width: 16px;
-      height: 16px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      opacity: 1;
-    }
-  }
-</style>

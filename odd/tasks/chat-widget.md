@@ -116,5 +116,14 @@ streaming chat panel backed by the AI SDK and the `GATEWAY_LLM` OpenAI-compatibl
   gap, no overlap); the footer copyright on the left is unaffected.
 
 ## Work-unit evidence
-- Not committed yet (work unit pending user review).
+- Branch: `feature/chat-widget` (from `main`).
+- Commits: `295a843` (U1 endpoint + deps + env example), `0a0e5b0` (U2 widget + i18n +
+  footer adjustment), `7a45c42` (U3 this document).
+- Slice boundary: 429 authored changed lines across the three commits, past the ~400-line
+  review budget. The overage comes from this document (120 lines), not from the shipped
+  behavior (307 lines across U1 and U2), so the whole feature stays a single-PR candidate.
+- Rollback: `295a843` removes the endpoint and its dependencies; `0a0e5b0` removes the
+  widget, its locales and the footer padding; `7a45c42` removes the document. None of them
+  touches unrelated work.
+- Not pushed and no PR opened: delivery stays a user decision.
 

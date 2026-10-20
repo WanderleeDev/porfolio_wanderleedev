@@ -197,6 +197,9 @@ streaming chat panel backed by the AI SDK and the `GATEWAY_LLM` OpenAI-compatibl
   visible y Detener aparece al lado como un boton cuadrado pequeno. Verificado: vacio ->
   Enviar deshabilitado; con texto -> habilitado; durante el streaming -> Detener visible y
   Enviar presente; al terminar -> Detener desaparece.
+- Boton "Limpiar" retirado: el dibujo del usuario muestra una sola fila de input con un
+  unico boton y ninguna accion de limpiar, asi que el control extra debajo del input se
+  elimina junto con sus claves de i18n (clear, asked).
 
 ## Work-unit evidence
 - Branch: `feature/chat-widget` (from `main`).

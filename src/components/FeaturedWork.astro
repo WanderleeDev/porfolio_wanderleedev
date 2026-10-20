@@ -41,12 +41,12 @@ const icon = "w-5 h-5";
     data-reveal
     class="relative flex-1 w-full overflow-hidden flex items-center justify-center cursor-grab active:cursor-grabbing"
   >
-    <div id="fw-track" class="absolute top-0 left-0 h-full w-full [--fw-gap:10%] md:[--fw-gap:12%] lg:[--fw-gap:14%]">
+    <div id="fw-track" class="absolute top-0 left-0">
       {
         items.map((item, i) => (
           <button
             type="button"
-            class="fw__card absolute top-0 left-0 aspect-[2/3] w-[86%] max-w-[340px] overflow-hidden rounded-card border border-line text-left origin-[50%_100%] will-change-transform md:aspect-[20/21] md:w-[58%] md:max-w-[420px] lg:w-[48%] lg:max-w-[544px] md:max-h-[70%]"
+            class="fw__card absolute top-0 left-0 rounded-card border border-line overflow-hidden text-left origin-[50%_100%] will-change-transform"
             data-title={item.title}
             command="show-modal"
             commandfor={`fw-dlg-${i}`}
@@ -216,17 +216,23 @@ const icon = "w-5 h-5";
 
     // Geometría responsive
     const vw = stage.clientWidth;
-    // Tamaño y separación de las cards: los define Tailwind (breakpoints).
-    // JS solo mide lo que el CSS ya resolvió.
-    const cardW = cards[0].offsetWidth;
-    const cardH = cards[0].offsetHeight;
-    const gapPct = (parseFloat(getComputedStyle(track).getPropertyValue("--fw-gap")) || 10) / 100;
-    const step = cardW + Math.round(vw * gapPct);
+    const vh = stage.clientHeight;
+    const isMobile = vw < 640;
+    const isTablet = vw < 1024;
+    const cardW = Math.min(
+      Math.round(vw * (isMobile ? 0.72 : isTablet ? 0.58 : 0.48)),
+      isMobile ? 340 : isTablet ? 420 : 544,
+    );
+    const cardH = Math.min(Math.round(cardW * 1.05), Math.round(vh * 0.7));
+    const step = cardW + Math.round(vw * (isMobile ? 0.1 : isTablet ? 0.12 : 0.14));
     const loop = N * step;
     const baseX = vw / 2 - cardW / 2 - loop;
     const wrap = gsap.utils.wrap(baseX - loop / 2, baseX + loop / 2);
 
+    track.style.height = `${cardH}px`;
     cards.forEach((card, i) => {
+      card.style.width = `${cardW}px`;
+      card.style.height = `${cardH}px`;
       card.style.left = `${i * step}px`;
     });
 

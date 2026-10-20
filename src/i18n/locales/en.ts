@@ -12,7 +12,6 @@ export const en = {
     sectionTitle: "Tech",
     sectionDescription:
       "Modern tools I use to build fast, scalable, and accessible web experiences.",
-    groupsLabel: "Technology groups",
     alsoUsedLabel: "Occasionally used",
     list: [
       {
@@ -82,13 +81,9 @@ export const en = {
         ],
       },
     ],
-    attr_data: "skills",
   },
 
   journey: {
-    introTitle: "My stack, end to end",
-    outroTitle: "Now, what I built with them",
-    outroDesc: "Keep scrolling to see the projects.",
     skillDescriptions: {
       "My Stack": "The tools I use for most of my projects.",
       Frontend: "UI, animation, and interaction.",
@@ -98,9 +93,6 @@ export const en = {
   },
 
   projects: {
-    sectionTitle: "Projects",
-    sectionDescription:
-      "Fullstack projects showcasing my expertise in frontend, backend, and application architecture.",
     list: [
       {
         title: "Ecommerce",
@@ -142,7 +134,6 @@ export const en = {
         label: "view switch 2 clone demo",
       },
     ],
-    attr_data: "projects",
   },
 
   hero: {
@@ -167,19 +158,6 @@ export const en = {
     subtitle: "Ready to start your next project? Send me a message and let's make it happen.",
     submit: "Open in my email",
     preferredText: "Prefer to write yourself?",
-    submitSubject: "Project",
-    sentence: {
-      start: "Hi, I'm",
-      andNeed: "and I need",
-      for: "for",
-      replyTo: "Reply to",
-    },
-    aria: {
-      name: "Your name",
-      what: "Your company or idea",
-      email: "Your email",
-      kind: "What do you need",
-    },
     fields: {
       kind: "Project type",
       name: "Name",
@@ -190,7 +168,6 @@ export const en = {
       sending: "Sending...",
       success: "Message sent. Thank you!",
       error: "Could not send. Please try again.",
-      network: "Network error, please try again.",
     },
     labels: [
       { label: "your name", key: "name" },

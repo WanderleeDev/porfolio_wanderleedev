@@ -29,7 +29,7 @@ const lang = Astro.currentLocale as "es" | "en";
 const t = getTranslations(lang);
 
 const heroWordsName = "Wanderlee Dev".split(" ");
-const heroWordsRoleLine1 = "Fullstack,".split(" ");
+const heroWordsRoleLine1 = t("hero").title.split(" ");
 const heroWordsRoleLine2 = [t("hero").titleAccent, "&", t("hero").titleEnd];
 
 const stackLogos = [

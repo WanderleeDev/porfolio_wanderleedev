@@ -13,7 +13,6 @@ export const es = {
     sectionTitle: "Tecnologías",
     sectionDescription:
       "Herramientas modernas que utilizo para construir experiencias web rápidas, escalables y accesibles.",
-    groupsLabel: "Grupos de tecnologías",
     alsoUsedLabel: "Ocasionalmente usado",
     list: [
       {
@@ -83,13 +82,9 @@ export const es = {
         ],
       },
     ],
-    attr_data: "skills",
   },
 
   journey: {
-    introTitle: "Mi stack, de punta a punta",
-    outroTitle: "Ahora, lo que hice con ellas",
-    outroDesc: "Sigue bajando para ver los proyectos.",
     skillDescriptions: {
       "Mi Stack": "Las herramientas que uso en la mayoría de mis proyectos.",
       Frontend: "Interfaces, animación e interacción.",
@@ -99,9 +94,6 @@ export const es = {
   },
 
   projects: {
-    sectionTitle: "Proyectos",
-    sectionDescription:
-      "Proyectos fullstack que demuestran mi dominio en frontend, backend y arquitectura de aplicaciones.",
     list: [
       {
         title: "Ecommerce",
@@ -143,7 +135,6 @@ export const es = {
         label: "ver demo switch 2 clone",
       },
     ],
-    attr_data: "projects",
   },
 
   hero: {
@@ -168,19 +159,6 @@ export const es = {
     subtitle: "¿Listo para empezar tu próximo proyecto? Envíame un mensaje y lo hacemos realidad.",
     submit: "Abrir en mi correo",
     preferredText: "¿Prefieres escribir tú?",
-    submitSubject: "Proyecto",
-    sentence: {
-      start: "Hola, soy",
-      andNeed: "y necesito",
-      for: "para",
-      replyTo: "Respóndeme en",
-    },
-    aria: {
-      name: "Tu nombre",
-      what: "Tu empresa o idea",
-      email: "Tu correo",
-      kind: "Qué necesitas",
-    },
     fields: {
       kind: "Tipo de proyecto",
       name: "Nombre",
@@ -191,7 +169,6 @@ export const es = {
       sending: "Enviando...",
       success: "Mensaje enviado. ¡Gracias!",
       error: "No se pudo enviar. Intentalo de nuevo.",
-      network: "Error de red, intentalo de nuevo.",
     },
     labels: [
       { label: "tu nombre", key: "name" },

@@ -13,25 +13,12 @@
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
   --font-fira-sans-extra-condensed: "Fira Sans Extra Condensed", sans-serif;
 
-  /* ── Breakpoints ── */
-  --breakpoint-xs: 400px;
-
-  /* ── Paleta base del redesign (secciones claras) ── */
-  --color-rd-bg: #ffffff;
-  --color-rd-ink: #111111;
-  --color-rd-ink-soft: #6b7280;
-  --color-rd-ink-muted: #9ca3af;
-  --color-rd-border: #e5e7eb;
-  --color-rd-badge-bg: #e5e5e5;
-  --color-rd-badge-ink: #374151;
-
   /* ── Paleta oscura (contacto, footer) ── */
   --color-dark-bg: #161824;
   --color-dark-ink: #eceef3;
   --color-dark-muted: #a3a9bf;
   --color-dark-line: #3a3f55;
   --color-dark-acc: #8fa0ff;
-  --color-dark-err: #ff8f93;
 
   /* ── Tokens semánticos (light por defecto = .light) ── */
   --color-surface: #ffffff;
@@ -48,16 +35,7 @@
 
   /* ── Radius & shadows centralizados ── */
   --radius-card: 1rem;
-  --radius-pill: 9999px;
   --shadow-card: 0 20px 50px -30px rgba(0, 0, 0, 0.25);
-
-  /* ── Tamaños fluidos de tipografía ── */
-  --text-hero: clamp(3rem, 10vw, 8rem);
-  --text-section: clamp(2.5rem, 7vw, 5rem);
-  --text-sub: clamp(0.7rem, 1.4vw, 0.9rem);
-
-  /* ── Espaciado extra ── */
-  --spacing-120: 31.25rem;
 
   --ease-out-elastic: linear(0, .5737 7.6%, .8382 11.87%, .9463 14.19%, 1.0292 16.54%, 1.0886 18.97%, 1.1258 21.53%, 1.137 22.97%, 1.1424 24.48%, 1.1423 26.1%, 1.1366 27.86%, 1.1165 31.01%, 1.0507 38.62%, 1.0219 42.57%, .9995 46.99%, .9872 51.63%, .9842 58.77%, 1.0011 81.26%, 1);
 
@@ -98,50 +76,13 @@
 .light {
   color-scheme: light;
 
-  --rd-bg: var(--color-rd-bg);
-  --rd-ink: var(--color-rd-ink);
-  --rd-ink-soft: var(--color-rd-ink-soft);
-  --rd-ink-muted: var(--color-rd-ink-muted);
-  --rd-border: var(--color-rd-border);
-  --rd-badge-bg: var(--color-rd-badge-bg);
-  --rd-badge-ink: var(--color-rd-badge-ink);
-
-  --dark-bg: var(--color-dark-bg);
-  --dark-ink: var(--color-dark-ink);
-  --dark-muted: var(--color-dark-muted);
-  --dark-line: var(--color-dark-line);
-  --dark-acc: var(--color-dark-acc);
-  --dark-err: var(--color-dark-err);
-
-  /* Contacto: siempre oscuro, independiente del tema de página */
-  --c-bg: var(--dark-bg);
-  --c-ink: var(--dark-ink);
-  --c-mute: var(--dark-muted);
-  --c-acc: var(--dark-acc);
-  --c-err: var(--dark-err);
-
   /* Contacto temático: sigue el fondo de página (transparente) */
-  --ct-ink: var(--color-ink);
   --ct-acc: #4f46e5;
-  --ct-err: #dc2626;
 
   /* Fondo del sitio: lo comparten <html> y la cortina de la intro, para
      que el paso de la intro al tema no produzca un salto de color. */
   --page-bg-color: #ffffff;
   --page-bg-image: none;
-
-  /* Tema de página (light): espejo semántico para var() directo */
-  --surface: var(--color-surface);
-  --ink: var(--color-ink);
-  --soft: var(--color-soft);
-  --muted: var(--color-muted);
-  --line: var(--color-line);
-  --badge: var(--color-badge);
-  --badge-ink: var(--color-badge-ink);
-
-  --text-hero: var(--text-hero);
-  --text-section: var(--text-section);
-  --text-sub: var(--text-sub);
 }
 
 /* ── Tema oscuro de página: mismos nombres, valores dark ── */
@@ -158,21 +99,11 @@
   --color-badge-ink: #eceef3;
   --color-field: #161824;
 
-  --surface: var(--color-surface);
-  --ink: var(--color-ink);
-  --soft: var(--color-soft);
-  --muted: var(--color-muted);
-  --line: var(--color-line);
-  --badge: var(--color-badge);
-  --badge-ink: var(--color-badge-ink);
-
   --page-bg-color: #161824;
   --page-bg-image: none;
 
   /* Contacto temático en dark: vuelve al celeste claro */
-  --ct-ink: var(--color-dark-ink);
   --ct-acc: var(--color-dark-acc);
-  --ct-err: var(--color-dark-err);
 }
 
 /* ── Tema neón: negro con glows, secciones transparentes ── */
@@ -189,20 +120,10 @@
   --color-badge-ink: #eef1f8;
   --color-field: #171c30;
 
-  --surface: var(--color-surface);
-  --ink: var(--color-ink);
-  --soft: var(--color-soft);
-  --muted: var(--color-muted);
-  --line: var(--color-line);
-  --badge: var(--color-badge);
-  --badge-ink: var(--color-badge-ink);
-
   --page-bg-color: #000;
   --page-bg-image: radial-gradient(at 20% 30%, #38bdf859 0%, #0000 60%), radial-gradient(at 80% 70%, #8b5cf647 0%, #0000 70%);
 
-  --ct-ink: var(--color-dark-ink);
   --ct-acc: var(--color-dark-acc);
-  --ct-err: var(--color-dark-err);
 }
 
 /* El fondo del sitio vive en el elemento raíz: su fondo se pinta como fondo
@@ -228,7 +149,7 @@ html {
   }
 
   body {
-    color: var(--ink);
+    color: var(--color-ink);
   }
 
   /* Scroll lock puro CSS: con cualquier modal abierto, el documento no scrollea */
@@ -281,57 +202,18 @@ html {
 
 /* ── Utilities layer ── */
 @layer utilities {
-  .section-page {
-    content-visibility: auto;
-    contain-intrinsic-size: auto 100dvh;
+  /* Título de sección: se animan sus palabras al entrar al viewport. */
+  .title-word {
+    display: inline-block;
+    transform-origin: 50% 100%;
+    transform: scaleY(0);
+    font: inherit;
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .float-element {
-      animation: none !important;
+    .title-word {
+      transform: none;
     }
-  }
-
-  .font-inherit {
-    font-family: inherit;
-  }
-
-  /* Tag de tech: en light/dark es surface, en neón el glow custom */
-  .bg-tag {
-    background-color: var(--surface);
-  }
-
-  .neon .bg-tag {
-    background-color: #1b1e24;
-    background-image: none;
-    border-radius: 8px;
-  }
-
-  .font-banner {
-    font-size: clamp(3rem, 15vw + 1rem, 6rem);
-    line-height: 1;
-    max-width: 10ch;
-
-    @media (width >=768px) {
-      font-size: 11vw;
-      max-width: 17ch;
-      line-height: 1.2;
-    }
-
-    @media (width >=1024px) {
-      line-height: 0.95;
-    }
-  }
-
-  .clip-bevel {
-    clip-path: polygon(0 var(--bv, 12px),
-        var(--bv, 12px) 0,
-        calc(100% - var(--bv, 12px)) 0,
-        100% var(--bv, 12px),
-        100% calc(100% - var(--bv, 12px)),
-        calc(100% - var(--bv, 12px)) 100%,
-        var(--bv, 12px) 100%,
-        0 calc(100% - var(--bv, 12px)));
   }
 }
 
@@ -408,17 +290,3 @@ html {
     U+2212, U+2215, U+FEFF, U+FFFD;
 }
 
-
-/* ── Title word reveal (hero-style) ── */
-.title-word {
-  display: inline-block;
-  transform-origin: 50% 100%;
-  transform: scaleY(0);
-  font: inherit;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .title-word {
-    transform: none;
-  }
-}

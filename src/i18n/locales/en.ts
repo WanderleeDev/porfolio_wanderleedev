@@ -165,7 +165,6 @@ export const en = {
   contactSection: {
     title: "Let's Talk",
     subtitle: "Ready to start your next project? Send me a message and let's make it happen.",
-    marquee: "Email me",
     submit: "Open in my email",
     preferredText: "Prefer to write yourself?",
     submitSubject: "Project",

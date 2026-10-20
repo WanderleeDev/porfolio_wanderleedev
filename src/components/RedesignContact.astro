@@ -7,6 +7,7 @@
 import Icon from "astro-iconify";
 import { getTranslations } from "../i18n/utils";
 import ContactForm from "./ContactForm";
+import Title from "./typography/Title.astro";
 
 const lang = Astro.currentLocale === "en" ? "en" : "es";
 const info = getTranslations(lang)("contactSection");
@@ -19,13 +20,9 @@ const config = {
   <div class="mx-auto grid max-w-6xl grid-cols-1 items-start gap-10 py-20 md:grid-cols-[1fr_1.1fr] md:gap-14 md:py-28">
     <!-- Left: intro + direct contact -->
     <div data-reveal>
-      <p class="font-sans text-[0.7rem] font-bold uppercase tracking-[0.25em] text-muted">{info.marquee}</p>
-      <h2
-        id="contact-heading"
-        class="mt-3 font-fira-sans-extra-condensed font-black uppercase leading-[0.9] tracking-tight text-[clamp(3rem,9vw,7rem)]"
-      >
+      <Title level={2} id="contact-heading" class="mt-3 !text-[clamp(3rem,9vw,7rem)]">
         {info.title}
-      </h2>
+      </Title>
       <p class="mt-4 max-w-md font-sans text-[clamp(0.95rem,1.8vw,1.05rem)] leading-relaxed text-soft">
         {info.subtitle}
       </p>

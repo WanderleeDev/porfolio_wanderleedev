@@ -166,7 +166,6 @@ export const es = {
   contactSection: {
     title: "Hablemos",
     subtitle: "¿Listo para empezar tu próximo proyecto? Envíame un mensaje y lo hacemos realidad.",
-    marquee: "Escríbeme",
     submit: "Abrir en mi correo",
     preferredText: "¿Prefieres escribir tú?",
     submitSubject: "Proyecto",

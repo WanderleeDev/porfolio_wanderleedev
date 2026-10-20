@@ -1,22 +1,14 @@
 ---
 /**
- * Hero — single owner of the intro and the hero content.
+ * Hero — contenido del hero y su intro (cortina, canvas de estrellas, badge).
  *
- * Merges what used to be MainBackground.astro (stars canvas + badge/cat
- * curtain) and HeroFan.astro (fanned tech cards + big condensed name).
+ * Capas, de abajo hacia arriba:
+ *   #hero content -> #curtain (opaca) -> #stars-bg (warp) -> #badge-layer
  *
- * Layer order, bottom to top (S2):
- *   #hero content -> #curtain (opaque) -> #stars-bg (warp) -> #badge-layer
- *
- * The opaque curtain hides the hero while the intro runs, and because the
- * canvas sits ABOVE it the warp stays visible. After the intro the canvas
- * drops to a negative z-index so the scroll stars live behind the page
- * content: the site background lives on <html>, so the canvas paints above
- * that background and below every section.
- *
- * The word reveal is pure CSS driven by --delay (S4): no GSAP writes
- * inline transform/scale/rotate over hero elements, which is what used to
- * flatten the fanned cards (S3).
+ * La cortina oculta el hero mientras corre la intro y el canvas va por encima
+ * para que el warp se vea. Al terminar, el canvas pasa a z-index negativo:
+ * el fondo del sitio vive en <html>, así las estrellas quedan entre ese
+ * fondo y el contenido.
  */
 import Icon from "astro-iconify";
 import { getTranslations } from "../i18n/utils";
@@ -110,23 +102,21 @@ const stackLogos = [
   </div>
 </section>
 
-<!-- Opaque backdrop: hides the hero while the intro runs (S2).
-     Pinta el mismo fondo que el sitio (--page-bg-color/--page-bg-image), así
-     la intro arranca ya con el tema definitivo y no hay salto de color al
-     terminar. z >= 1000 keeps the intro above ThemePicker (z-[999]),
-     matching the previous z-1000 curtain; otherwise the picker floats over
-     the intro. -->
+<!-- Cortina opaca: oculta el hero mientras corre la intro. Pinta el mismo
+     fondo que el sitio, así la intro arranca ya con el tema definitivo y no
+     hay salto de color al terminar. z >= 1000 la deja por encima del
+     ThemePicker (z-[999]). -->
 <div
   id="curtain"
   class="fixed inset-0 z-[1000] [background-color:var(--page-bg-color)] [background-image:var(--page-bg-image)] [background-attachment:fixed]"
   aria-hidden="true"
 ></div>
 
-<!-- Above the curtain, so the warp stays visible (S2) -->
+<!-- Sobre la cortina, para que el warp se vea -->
 <canvas id="stars-bg" class="fixed inset-0 size-full z-[1001] pointer-events-none" aria-hidden="true"
 ></canvas>
 
-<!-- Badge sits above the canvas, so the warp never paints over it (S2) -->
+<!-- El badge va sobre el canvas, para que el warp no lo tape -->
 <div
   id="badge-layer"
   class="fixed inset-0 z-[1002] grid place-items-center pointer-events-none"
@@ -163,9 +153,8 @@ const stackLogos = [
 </div>
 
 <script is:inline define:vars={{ isDev: import.meta.env.DEV }}>
-  // Runs inline right after the curtain exists in the DOM (S5). The old copy
-  // lived in <head>, always saw a null #curtain, threw, and was swallowed by
-  // an empty catch: the repeat-visit skip never worked and the badge flashed.
+  // Corre inline apenas la cortina existe en el DOM: si viviera en <head>,
+  // vería un #curtain null y el skip de visita repetida no funcionaría.
   try {
     if (!isDev && localStorage.getItem("wdev-intro-seen") === "1") {
       document.getElementById("curtain").style.display = "none";
@@ -192,8 +181,8 @@ const stackLogos = [
   const petEl = document.getElementById("pet") as HTMLElement;
   const catEl = document.getElementById("cat") as HTMLElement;
 
-  // ---- Colores del canvas desde los tokens del theme activo ----
-  // El navegador resuelve cualquier valor CSS (var, hex, color-mix) a rgb().
+  // Colores del canvas desde los tokens del theme activo: el navegador
+  // resuelve cualquier valor CSS (var, hex, color-mix) a rgb().
   const probe = document.createElement("span");
   probe.style.display = "none";
   document.body.appendChild(probe);
@@ -265,7 +254,7 @@ const stackLogos = [
 
   const rand = (a: number, b: number) => a + Math.random() * (b - a);
 
-  // ---------- Warp (3D) ----------
+  // Warp (3D)
 
   function project(s: WarpStar) {
     const k = FOCAL / s.z;
@@ -342,7 +331,7 @@ const stackLogos = [
     ctx.globalCompositeOperation = "source-over";
   }
 
-  // ---------- Hand-off warp -> scroll ----------
+  // Hand-off: warp -> scroll
   // Sólo pasan las estrellas visibles, en su posición exacta. No se reubica
   // ni se agrega ninguna, así que la densidad final es la que ya se veía.
   function handOffToScroll() {
@@ -372,7 +361,7 @@ const stackLogos = [
     if (!skipIntro) storage.set();
   }
 
-  // ---------- Scroll (2D) ----------
+  // Scroll (2D)
 
   function resetScrollStar(s: ScrollStar, fromTop: boolean) {
     s.x = rand(0, W);
@@ -471,7 +460,7 @@ const stackLogos = [
 
   gsap.ticker.add(render);
 
-  // ---------- Reveal del Hero: una sola timeline ----------
+  // Reveal del hero: una sola timeline
   // email/stack -> palabras con stagger elástico -> fan de cards.
   // fontWeight del h1 usa steps(1) porque font-weight no interpola.
   function revealHero() {

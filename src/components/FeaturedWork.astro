@@ -214,8 +214,8 @@ const icon = "w-5 h-5";
     }
     const cards = gsap.utils.toArray<HTMLElement>(".fw__card", track);
 
-    // Geometría: el tamaño de la card y el gap los define Tailwind
-    // (breakpoints + medidas relativas). JS solo mide lo ya resuelto.
+    // Geometría: el tamaño de la card y el gap los define Tailwind.
+    // JS solo mide lo ya resuelto.
     const vw = stage.clientWidth;
     const cardW = cards[0].offsetWidth;
     const cardH = cards[0].offsetHeight;

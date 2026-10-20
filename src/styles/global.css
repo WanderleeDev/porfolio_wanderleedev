@@ -2,11 +2,11 @@
 
 
 /* ============================================================
-   DESIGN SYSTEM — WanderleeDev Portfolio (centralized tokens)
-   Light lives under :root / .light, dark under .dark.
-   Components must use Tailwind semantic classes only:
+   DESIGN SYSTEM — WanderleeDev Portfolio (tokens centralizados)
+   Claro en :root / .light, oscuro en .dark, neón en .neon.
+   Los componentes usan sólo clases semánticas de Tailwind:
    bg-surface text-ink text-soft text-muted border-line
-   bg-badge text-badge-ink — never raw hex.
+   bg-badge text-badge-ink — nunca hex sueltos.
    ============================================================ */
 @theme {
   /* ── Tipografía: títulos condensados, resto Inter ── */
@@ -70,7 +70,7 @@
   }
 }
 
-/* ── Variables globales (compat con componentes existentes) ── */
+/* ── Tema claro (por defecto) ── */
 :root,
 :root.light,
 .light {
@@ -85,7 +85,7 @@
   --page-bg-image: none;
 }
 
-/* ── Tema oscuro de página: mismos nombres, valores dark ── */
+/* ── Tema oscuro: mismos nombres, valores dark ── */
 .dark {
   color-scheme: dark;
 

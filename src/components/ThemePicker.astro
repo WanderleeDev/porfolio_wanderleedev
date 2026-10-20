@@ -28,7 +28,7 @@ const optionCheck = "ml-auto text-[0.75rem] opacity-0 transition-opacity duratio
 
 <div class="fixed top-5 right-5 z-[999] flex items-center gap-2" id="theme-picker" transition:animate={false}>
 
-  <!-- ── Lang picker ── -->
+  <!-- Selector de idioma -->
   <div class="relative">
     <button
       class={trigger}
@@ -69,7 +69,7 @@ const optionCheck = "ml-auto text-[0.75rem] opacity-0 transition-opacity duratio
     </div>
   </div>
 
-  <!-- ── Theme picker ── -->
+  <!-- Selector de tema -->
   <div class="relative">
     <button
       class={trigger}
@@ -179,7 +179,7 @@ const optionCheck = "ml-auto text-[0.75rem] opacity-0 transition-opacity duratio
     updateUI(theme);
   }
 
-  // ── Boot: aplica theme siempre; listeners una vez por DOM ─────────────
+  // Boot: aplica el theme siempre; los listeners se registran una sola vez por DOM.
   function bootPicker() {
     applyTheme(getSaved());
     updateUI(getSaved());
@@ -216,7 +216,7 @@ const optionCheck = "ml-auto text-[0.75rem] opacity-0 transition-opacity duratio
       );
     });
 
-    // ── Opciones de tema ──────────────────────────────────────────────────
+    // Opciones de tema
     root.querySelectorAll<HTMLElement>("[data-theme]").forEach((opt) => {
       opt.addEventListener("click", () => {
         setTheme(opt.dataset.theme as Theme);

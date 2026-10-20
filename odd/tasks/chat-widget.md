@@ -42,6 +42,11 @@ streaming chat panel backed by the AI SDK and the `GATEWAY_LLM` OpenAI-compatibl
   use the repo's semantic design tokens (`bg-surface`, `text-ink`, `border-line`,
   `bg-badge`, `text-badge-ink`, `bg-contrast`, `rounded-card`, `shadow-card`) so it
   follows the active theme, and its labels come from the i18n dictionaries.
+- S7: "quiero agregar este pet al chat https://www.npmjs.com/package/@wanderleedev/pixel-pet"
+  → The chat header shows a `<pixel-pet>` that reacts to the conversation
+  (listening / thinking / talking / idle). The web component is registered from the
+  Astro layer, where `customElements` exists, and the React island reports chat
+  events through a window event.
 
 ## Tasks
 
@@ -53,6 +58,8 @@ streaming chat panel backed by the AI SDK and the `GATEWAY_LLM` OpenAI-compatibl
   `src/layouts/BaseLayout.astro` — inline
 - T4 — T1,T2,T3 — verification: `bun run build`, live endpoint call, browser check —
   inline
+- T5 — S7 — `public/pet/{cat.json,cat.png}` (re-scaled sprite) and the `<pixel-pet>`
+  integration in `ChatWidget.astro` + `ChatPanel.tsx` — inline
 
 ## Task status
 
@@ -126,19 +133,31 @@ streaming chat panel backed by the AI SDK and the `GATEWAY_LLM` OpenAI-compatibl
   with `rounded-3xl` retained; no horizontal overflow (scrollWidth === clientWidth).
 - The expansion uses `has-[:checked]:ease-out` so the elastic overshoot cannot push the
   panel past the viewport while it grows.
+- Pixel pet (S7): the tag upgrades and the sheet loads (state idle, sprite 432x900,
+  accessible label "Gato: En reposo" in Spanish and "Cat: Idle" in English). Event
+  mapping verified end to end: typing -> listening, send -> thinking, token -> talking,
+  done -> idle. A real message round trip drives the pet on its own (thinking, talking,
+  idle). `prefers-reduced-motion` stops the animation (animation-name none). The pet
+  fits the header in the light, dark and neon themes. 0 console errors or warnings.
+- Sprite re-scaling: the upstream sheet is 2232x4620 with 186x231 frames, too large for
+  the header, so it is re-scaled to 36x45 frames (432x900) and the manifest frame size
+  updated to match. PNG stays the better format because the art has soft alpha edges:
+  171KB against 723KB original, while WebP grows past 250KB on the semi-transparent
+  gradients.
 
 ## Work-unit evidence
 - Branch: `feature/chat-widget` (from `main`).
 - Commits: `295a843` (U1 endpoint + deps + env example), `0a0e5b0` (U2 widget + i18n +
   footer adjustment), `7a45c42` (U3 this document), `8da8abd` (U4 commit identities),
   `77cda12` (U5 drop the unused @ai-sdk/openai provider), `d24abaa` (U6 elastic entrance +
-  fullscreen margin), `83bd4c9` (U7 this update).
-- Slice boundary: 449 authored changed lines across the seven commits, past the ~400-line
-  review budget. The overage comes from this document (145 lines), not from the shipped
-  behavior (304 lines across U1, U2, U5 and U6), so the whole feature stays a single-PR
-  candidate.
+  fullscreen margin), `83bd4c9` (U7 this update), `45ac7e8` (U8 commit identities),
+  `ffdb7ba` (U9 pixel pet assets + deps), `1b567f6` (U10 pixel pet integration).
+- Slice boundary: 732 authored changed lines across the eleven commits, past the
+  ~400-line review budget. The overage comes from this document (170 lines) and the
+  re-scaled sprite (binary), not from the shipped behaviour, so the feature stays a
+  single-PR candidate. Split into two PRs if the reviewer wants the pet separated.
 - Rollback: `295a843` removes the endpoint and its dependencies; `0a0e5b0` removes the
-  widget, its locales and the footer padding; `7a45c42` removes the document. None of them
-  touches unrelated work.
+  widget, its locales and the footer padding; `ffdb7ba` and `1b567f6` remove the pet
+  and its assets. None of them touches unrelated work.
 - Not pushed and no PR opened: delivery stays a user decision.
 

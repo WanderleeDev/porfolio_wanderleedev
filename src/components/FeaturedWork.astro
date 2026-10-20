@@ -220,10 +220,14 @@ const icon = "w-5 h-5";
     const isMobile = vw < 640;
     const isTablet = vw < 1024;
     const cardW = Math.min(
-      Math.round(vw * (isMobile ? 0.72 : isTablet ? 0.58 : 0.48)),
+      Math.round(vw * (isMobile ? 0.86 : isTablet ? 0.58 : 0.48)),
       isMobile ? 340 : isTablet ? 420 : 544,
     );
-    const cardH = Math.min(Math.round(cardW * 1.05), Math.round(vh * 0.7));
+    // En móvil la card crece en alto para aprovechar el espacio vertical
+    // disponible; en el resto se mantiene la proporción de escritorio.
+    const cardH = isMobile
+      ? Math.min(Math.round(vh * 0.78), Math.round(cardW * 1.5))
+      : Math.min(Math.round(cardW * 1.05), Math.round(vh * 0.7));
     const step = cardW + Math.round(vw * (isMobile ? 0.1 : isTablet ? 0.12 : 0.14));
     const loop = N * step;
     const baseX = vw / 2 - cardW / 2 - loop;

@@ -62,7 +62,7 @@ const CROSSFADE =
 ---
 
 <section id="tech-stack" class="relative px-4 py-16 md:py-24" aria-label={skillsT.sectionTitle}>
-  <div class="mx-auto max-w-6xl text-center" data-reveal>
+  <div class="mx-auto max-w-6xl text-left md:text-center" data-reveal>
     <Title level={2} class="!text-[clamp(2.5rem,7vw,5rem)]">{skillsT.sectionTitle}</Title>
     <p class="mx-auto mt-3 max-w-[60ch] font-sans text-[clamp(0.95rem,1.8vw,1.05rem)] leading-[1.6] text-soft">
       {skillsT.sectionDescription}
@@ -71,7 +71,7 @@ const CROSSFADE =
     <div class="mt-10 flex flex-col gap-8 md:mt-14 md:grid md:grid-cols-[minmax(12rem,20rem)_1fr] md:gap-10 lg:gap-14">
       <!-- Columna izquierda: título sticky del grupo activo -->
       <div
-        class="sticky top-0 z-40 -mx-4 border-b border-line bg-contrast px-4 py-3 text-center md:top-28 md:z-10 md:mx-0 md:self-start md:border-0 md:bg-transparent md:px-0 md:py-0 md:text-left"
+        class="sticky top-0 z-40 -mx-4 border-b border-line bg-contrast px-4 py-3 md:top-28 md:z-10 md:mx-0 md:self-start md:border-0 md:bg-transparent md:px-0 md:py-0 md:text-left"
       >
         <span class="font-sans text-[10px] font-bold uppercase tracking-[0.2em] text-muted">
           {skills.groupsLabel}

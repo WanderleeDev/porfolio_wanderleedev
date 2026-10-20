@@ -11,9 +11,13 @@ streaming chat panel backed by the AI SDK and the `GATEWAY_LLM` OpenAI-compatibl
   starting style para animarlo, puedes usar un dialog y el btn sea un comand invoker para facilitar la
   integracion que ocupe todoel espacio"
   → Chat lives in a `<dialog>` opened through the Command Invoker API
-  (`command="show-modal" commandfor="chat-dialog"`), animated with `starting:`, plus a
-  maximize button that toggles fullscreen via `has-[:checked]:`. The chat sits in the
-  lower-right corner (explicit user choice), above the fixed launcher.
+  (`command="show-modal" commandfor="chat-dialog"`), animated with `starting:` and the repo's
+  `--ease-out-elastic` token, plus a maximize button that toggles fullscreen via
+  `has-[:checked]:`.
+- S1e: "me parece que debe haber un margen estetico cuando el modal ocupe toda la pantalla o sea
+  que no cupe todo, busca armonia en el espacio q se deje"
+  → Fullscreen keeps a margin instead of bleeding to the edges: `inset-4` on mobile and
+  `md:inset-6` on desktop, with `rounded-3xl` retained.
 - S1c: "tenemos iconify xq no usar su componete en lugar de usar svg crdos"
   → All icons come from `astro-iconify` (`<Icon name="lucide:…" />`); no inline SVG markup.
 - S1d: "no me dejes comentarios y todo tailwind"
@@ -114,6 +118,14 @@ streaming chat panel backed by the AI SDK and the `GATEWAY_LLM` OpenAI-compatibl
   arriba" button at the end of the page, so the footer's bottom bar now uses `md:pr-20`.
   Measured after the fix: launcher right edge 1252 vs footer button right edge 1192 (4px
   gap, no overlap); the footer copyright on the left is unaffected.
+- Entrance animation uses the repo's `--ease-out-elastic` token: sampled scale goes
+  0.95 -> 0.9679 -> 0.9919 -> 1.00449 -> 1.0071 -> 1, so the panel overshoots and
+  settles instead of moving linearly.
+- Fullscreen keeps an aesthetic margin instead of bleeding to the edges: measured 24px
+  left/top/bottom on desktop (`md:inset-6`) and 16px on a 390px viewport (`inset-4`),
+  with `rounded-3xl` retained; no horizontal overflow (scrollWidth === clientWidth).
+- The expansion uses `has-[:checked]:ease-out` so the elastic overshoot cannot push the
+  panel past the viewport while it grows.
 
 ## Work-unit evidence
 - Branch: `feature/chat-widget` (from `main`).

@@ -26,7 +26,6 @@ const t = getTranslations(lang)("chat");
         <Icon name="lucide:message-circle" class="size-6" aria-hidden="true" />
     </button>
 </div>
-
 <dialog
     id="chat-dialog"
     aria-label={t.title}
@@ -69,6 +68,17 @@ const t = getTranslations(lang)("chat");
         </div>
     </header>
 
+    <div id="chat-pet-stage" class="flex shrink-0 items-end justify-center bg-contrast px-4 pt-3">
+        <pixel-pet
+            id="chat-pet"
+            src="/pet/cat.json"
+            lang={lang}
+            scale="1"
+            sleep-after="45"
+            class="size-20 shrink-0 drop-shadow-lg"
+        ></pixel-pet>
+    </div>
+
     <ChatPanel client:load lang={lang} />
 </dialog>
 
@@ -77,6 +87,7 @@ const t = getTranslations(lang)("chat");
 
     const dialog = document.getElementById("chat-dialog") as HTMLDialogElement | null;
     const petHost = document.getElementById("chat-pet-host");
+    const stage = document.getElementById("chat-pet-stage");
     const pet = document.getElementById("chat-pet") as (HTMLElement & {
         feed?: (e: string) => void;
     }) | null;
@@ -86,17 +97,18 @@ const t = getTranslations(lang)("chat");
      * cualquier z-index: tapa la mascota y, al ser modal, deja inerte todo lo
      * de afuera. Para que la mascota siga en primer plano y sea interactiva
      * mientras el chat esta abierto, se la mueve dentro del dialog (mismo top
-     * layer) en posicion fixed, que sigue resolviendo contra el viewport, y se
-     * la devuelve al contenedor exterior al cerrar.
+     * layer) y se la devuelve al contenedor exterior al cerrar.
      */
     const place = (inside: boolean) => {
         if (!dialog || !pet || !petHost) return;
         if (inside) {
-            dialog.appendChild(pet);
-            pet.classList.add("fixed", "bottom-5", "right-[5.5rem]");
+            stage.appendChild(pet);
+            pet.classList.remove("size-14");
+            pet.classList.add("size-20");
         } else {
             petHost.prepend(pet);
-            pet.classList.remove("fixed", "bottom-5", "right-[5.5rem]");
+            pet.classList.remove("size-20");
+            pet.classList.add("size-14");
         }
     };
 

@@ -187,6 +187,7 @@ export const en = {
     close: "Close chat",
     fullscreen: "Full screen",
     clear: "Clear",
+    asked: "You asked:",
     empty: "Hi! I'm this portfolio's assistant. Ask me about the projects, the stack or how to get in touch.",
     placeholder: "Type a message…",
     typing: "Typing…",

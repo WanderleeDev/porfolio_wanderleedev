@@ -188,6 +188,7 @@ export const es = {
     close: "Cerrar chat",
     fullscreen: "Pantalla completa",
     clear: "Limpiar",
+    asked: "Preguntaste:",
     empty: "Hola! Soy el asistente de este portafolio. Preguntame por los proyectos, el stack o cómo contactarme.",
     placeholder: "Escribí un mensaje…",
     typing: "Escribiendo…",

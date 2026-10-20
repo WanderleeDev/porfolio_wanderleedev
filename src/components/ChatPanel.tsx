@@ -55,28 +55,9 @@ export default function ChatPanel({ lang }: ChatPanelProps) {
 
     return (
         <div className="flex flex-col">
-            <div className="flex flex-col gap-2 px-4 pb-3">
-                {question && (
-                    <div className="flex items-center justify-between gap-3">
-                        <p className="min-w-0 truncate font-sans text-xs text-muted">
-                            {t.asked} {question}
-                        </p>
-                        <button
-                            type="button"
-                            onClick={() => setMessages([])}
-                            className="shrink-0 font-sans text-xs font-bold uppercase tracking-[0.12em] text-muted transition-colors hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink"
-                        >
-                            {t.clear}
-                        </button>
-                    </div>
-                )}
-
-                <div className="relative">
-                    <div
-                        aria-hidden="true"
-                        className="absolute -top-2 left-1/2 size-4 -translate-x-1/2 rotate-45 border-l border-t border-line bg-badge"
-                    ></div>
-                    <div className="relative rounded-card border border-line bg-badge p-4">
+            <div className="flex min-h-56 flex-1 items-center justify-center gap-4 px-4 pb-4 pr-28">
+                <div className="relative min-w-0 flex-1">
+                    <div className="rounded-card border border-line bg-badge p-4">
                         {answer ? (
                             <p className="font-sans text-sm whitespace-pre-wrap text-badge-ink">
                                 {answer}
@@ -90,12 +71,6 @@ export default function ChatPanel({ lang }: ChatPanelProps) {
                         )}
                     </div>
                 </div>
-
-                {error && (
-                    <p className="font-sans text-sm text-red-500" role="alert">
-                        {t.error}
-                    </p>
-                )}
             </div>
 
             <form
@@ -130,6 +105,22 @@ export default function ChatPanel({ lang }: ChatPanelProps) {
                     </button>
                 )}
             </form>
+
+            {question && (
+                <button
+                    type="button"
+                    onClick={() => setMessages([])}
+                    className="self-center px-4 py-2 font-sans text-xs font-bold uppercase tracking-[0.12em] text-muted transition-colors hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink"
+                >
+                    {t.clear}
+                </button>
+            )}
+
+            {error && (
+                <p className="px-4 pb-2 font-sans text-sm text-red-500" role="alert">
+                    {t.error}
+                </p>
+            )}
         </div>
     );
 }

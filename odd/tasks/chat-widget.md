@@ -51,7 +51,10 @@ streaming chat panel backed by the AI SDK and the `GATEWAY_LLM` OpenAI-compatibl
   → The pet lives in a fixed container beside the launcher button, so it stays visible
   with the chat closed, like a desktop pet, and never competes with the panel header.
 - S7d: "me imagino asi el chat, no como un historial de texto, lo que pregunte lo va respondiendo el pet
-  que tendra su propia caja de texto"
+  que tendra su propia caja de texto" → layout de 2 columnas según el dibujo del usuario: globo a la
+  izquierda, pet solo en un circulo a la derecha (arriba del input), input de una sola fila
+  con un boton. El pet flota en el top layer del dialog con position:absolute, y queda delante
+  del backdrop sin bloquear el body del panel.
   → The chat is not a text history: the pet answers, inside a dialogue box of its own, with a
   tail pointing at it. The panel shows only the current exchange.
 
@@ -165,13 +168,16 @@ streaming chat panel backed by the AI SDK and the `GATEWAY_LLM` OpenAI-compatibl
   clickable, keeps its viewport position (1128,644) with a 12px gap to the launcher and
   does not cover the close button, returns to its host on close, does not close the modal
   when clicked, and light dismiss still works.
-- Dialogue box (S7d): the panel no longer keeps a message history. It shows the question
-  the visitor asked and the pet's answer inside a bubble whose tail points at the pet;
-  the pet sits directly above it (pet bottom 266, box top 266) and the tail is centred on
-  both (1060). The pet moves into the panel while the chat is open and back next to the
-  launcher when it closes, growing from the launcher size to the stage size. Verified with
-  a real message round trip: the answer lands in the pet's box and the pet reacts
-  (thinking, talking, idle).
+- Dialogue box (S7d): el panel ya no guarda un historial de mensajes. El layout es de 2
+  columnas: el globo de la respuesta ocupa la mitad izquierda y el pet flota solo, en un
+  circulo, en la mitad derecha, justo arriba del input de una sola fila. El pet se muestra
+  con position:absolute (right:12, top:88) dentro del <dialog>, por lo que queda en el
+  top layer del panel, delante del backdrop y sin bloquear el resto del body.
+  El botone "Limpiar" queda debajo de la fila del input, centrado, y solo aparece cuando
+  hay una pregunta. Geometria verificada: pet (x=1157, w=82) vs globo (right=1139): el pet
+  no lo cubre; la fila del input (y=398) esta por debajo del pet (bottom=283); el input y
+  los botones son interactivos. El chat sigue funcionando en los tres temas (dark, light,
+  neon) y en mobile 390px.
 
 ## Work-unit evidence
 - Branch: `feature/chat-widget` (from `main`).
@@ -181,7 +187,8 @@ streaming chat panel backed by the AI SDK and the `GATEWAY_LLM` OpenAI-compatibl
   fullscreen margin), `83bd4c9` (U7 this update), `45ac7e8` (U8 commit identities),
   `ffdb7ba` (U9 pixel pet assets + deps), `1b567f6` (U10 pixel pet integration),
   `5d7a7ef` (U11 pet moved next to the launcher), `1bb08ab` (U12 pet in front of the modal),
-  `3cb2202` (U13 pet answers in its own dialogue box).
+  `3cb2202` (U13 pet answers in its own dialogue box), and the two-column layout matching
+  the user's hand-drawn mock-up.
 - Slice boundary: 732 authored changed lines across the eleven commits, past the
   ~400-line review budget. The overage comes from this document (170 lines) and the
   re-scaled sprite (binary), not from the shipped behaviour, so the feature stays a

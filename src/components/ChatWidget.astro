@@ -7,15 +7,7 @@ const lang = Astro.currentLocale as "es" | "en";
 const t = getTranslations(lang)("chat");
 ---
 
-<div id="chat-pet-host" class="fixed right-5 bottom-5 z-[999] flex items-end gap-3">
-    <pixel-pet
-        id="chat-pet"
-        src="/pet/cat.json"
-        lang={lang}
-        scale="1"
-        sleep-after="45"
-        class="size-14 shrink-0 drop-shadow-lg"
-    ></pixel-pet>
+<div id="chat-launcher" class="fixed right-5 bottom-5 z-[999] flex items-end gap-3">
     <button
         type="button"
         command="show-modal"
@@ -26,12 +18,28 @@ const t = getTranslations(lang)("chat");
         <Icon name="lucide:message-circle" class="size-6" aria-hidden="true" />
     </button>
 </div>
+
 <dialog
     id="chat-dialog"
     aria-label={t.title}
     closedby="any"
     class="m-0 inset-auto right-5 bottom-24 open:flex h-[min(32rem,calc(100dvh-7rem))] max-h-[min(32rem,calc(100dvh-7rem))] w-[min(24rem,calc(100vw-2.5rem))] max-w-none flex-col overflow-hidden rounded-card border border-line bg-contrast text-ink shadow-card transition-all duration-700 ease-out-elastic backdrop:bg-black/40 backdrop:transition-opacity backdrop:duration-700 starting:scale-95 starting:opacity-0 starting:backdrop:opacity-0 has-[:checked]:inset-4 has-[:checked]:w-auto has-[:checked]:h-auto has-[:checked]:max-h-none has-[:checked]:max-w-none has-[:checked]:rounded-3xl has-[:checked]:ease-out md:has-[:checked]:inset-6"
 >
+    <div
+        id="chat-pet-stage"
+        aria-label={t.pet}
+        class="pointer-events-auto absolute z-[100] hidden items-center justify-center rounded-full border border-line bg-contrast shadow-card"
+    >
+        <pixel-pet
+            id="chat-pet"
+            src="/pet/cat.json"
+            lang={lang}
+            scale="1"
+            sleep-after="45"
+            class="size-20 shrink-0 drop-shadow-lg"
+        ></pixel-pet>
+    </div>
+
     <header class="flex items-center justify-between gap-3 border-b border-line px-4 py-3">
         <div class="min-w-0">
             <h2 class="truncate font-sans text-sm font-bold uppercase tracking-[0.16em]">
@@ -68,61 +76,58 @@ const t = getTranslations(lang)("chat");
         </div>
     </header>
 
-    <div id="chat-pet-stage" class="flex shrink-0 items-end justify-center bg-contrast px-4 pt-3">
-        <pixel-pet
-            id="chat-pet"
-            src="/pet/cat.json"
-            lang={lang}
-            scale="1"
-            sleep-after="45"
-            class="size-20 shrink-0 drop-shadow-lg"
-        ></pixel-pet>
-    </div>
-
     <ChatPanel client:load lang={lang} />
 </dialog>
 
 <script>
     import "@wanderleedev/pixel-pet/define";
 
-    const dialog = document.getElementById("chat-dialog") as HTMLDialogElement | null;
-    const petHost = document.getElementById("chat-pet-host");
+    const bodyDialog = document.getElementById("chat-dialog") as HTMLDialogElement | null;
     const stage = document.getElementById("chat-pet-stage");
     const pet = document.getElementById("chat-pet") as (HTMLElement & {
         feed?: (e: string) => void;
     }) | null;
 
     /**
-     * El backdrop de un <dialog> modal vive en el top layer, por encima de
-     * cualquier z-index: tapa la mascota y, al ser modal, deja inerte todo lo
-     * de afuera. Para que la mascota siga en primer plano y sea interactiva
-     * mientras el chat esta abierto, se la mueve dentro del dialog (mismo top
-     * layer) y se la devuelve al contenedor exterior al cerrar.
+     * La mascota es un hijo del <dialog> con position:fixed: vive en el mismo
+     * top layer que el panel, por eso queda por delante del backdrop y el resto
+     * del panel se ve y se toca normal. Se la ancla al borde derecho del panel,
+     * a la altura de la fila del globo, y se muestra solo mientras el chat esta
+     * abierto. Al cerrar vuelve a su contenedor fijo, junto al launcher.
      */
-    const place = (inside: boolean) => {
-        if (!dialog || !pet || !petHost) return;
-        if (inside) {
-            stage.appendChild(pet);
-            pet.classList.remove("size-14");
-            pet.classList.add("size-20");
-        } else {
-            petHost.prepend(pet);
-            pet.classList.remove("size-20");
-            pet.classList.add("size-14");
-        }
+    const positionStage = () => {
+        if (!stage) return;
+        const size = 82;
+        const right = 12;
+        const top = 88;
+        stage.style.right = `${right}px`;
+        stage.style.top = `${top}px`;
+        stage.style.left = "";
+        stage.style.bottom = "";
+        stage.style.width = `${size}px`;
+        stage.style.height = `${size}px`;
     };
 
-    dialog?.addEventListener("close", () => place(false));
+    const setStage = (show: boolean) => {
+        if (!stage) return;
+        stage.classList.toggle("hidden", !show);
+        if (show) requestAnimationFrame(positionStage);
+    };
 
-    document
-        .querySelector<HTMLButtonElement>('button[commandfor="chat-dialog"]')
-        ?.addEventListener("click", () => {
-            requestAnimationFrame(() => {
-                place(true);
-                dialog?.querySelector("input")?.focus();
-                pet?.feed?.("greet");
+    bodyDialog?.addEventListener("close", () => setStage(false));
+    window.addEventListener("resize", positionStage);
+
+    document.querySelectorAll<HTMLButtonElement>("button[commandfor='chat-dialog']").forEach(
+        (b) => {
+            b.addEventListener("click", () => {
+                requestAnimationFrame(() => {
+                    setStage(true);
+                    bodyDialog?.querySelector("input")?.focus();
+                    pet?.feed?.("greet");
+                });
             });
-        });
+        },
+    );
 
     window.addEventListener("chat:event", ((e: CustomEvent<string>) => {
         pet?.feed?.(e.detail);

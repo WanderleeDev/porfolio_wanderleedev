@@ -1,0 +1,217 @@
+{
+  "name": {
+    "es": "Gato",
+    "en": "Cat"
+  },
+  "sheet": "cat.png",
+  "frame": {
+    "w": 36,
+    "h": 45
+  },
+  "cols": 12,
+  "rows": 20,
+  "states": {
+    "talking": {
+      "row": 0,
+      "frames": 12,
+      "dur": 1.8,
+      "label": {
+        "es": "Hablando",
+        "en": "Talking"
+      }
+    },
+    "sleeping": {
+      "row": 1,
+      "frames": 12,
+      "dur": 3.6,
+      "label": {
+        "es": "Durmiendo",
+        "en": "Sleeping"
+      }
+    },
+    "idea": {
+      "row": 2,
+      "frames": 12,
+      "dur": 2.7,
+      "label": {
+        "es": "Idea",
+        "en": "Idea"
+      },
+      "loop": false,
+      "next": "idle"
+    },
+    "eating": {
+      "row": 3,
+      "frames": 12,
+      "dur": 3.3,
+      "label": {
+        "es": "Comiendo",
+        "en": "Eating"
+      }
+    },
+    "idle": {
+      "row": 4,
+      "frames": 12,
+      "dur": 3.6,
+      "label": {
+        "es": "En reposo",
+        "en": "Idle"
+      }
+    },
+    "waking": {
+      "row": 5,
+      "frames": 12,
+      "dur": 3,
+      "label": {
+        "es": "Despertando",
+        "en": "Waking up"
+      },
+      "loop": false,
+      "next": "idle"
+    },
+    "listening": {
+      "row": 6,
+      "frames": 12,
+      "dur": 2.4,
+      "label": {
+        "es": "Escuchando",
+        "en": "Listening"
+      }
+    },
+    "thinking": {
+      "row": 7,
+      "frames": 12,
+      "dur": 2.7,
+      "label": {
+        "es": "Pensando",
+        "en": "Thinking"
+      }
+    },
+    "searching": {
+      "row": 8,
+      "frames": 12,
+      "dur": 2.7,
+      "label": {
+        "es": "Buscando",
+        "en": "Searching"
+      }
+    },
+    "confused": {
+      "row": 9,
+      "frames": 12,
+      "dur": 2.4,
+      "label": {
+        "es": "No sabe",
+        "en": "Confused"
+      }
+    },
+    "error": {
+      "row": 10,
+      "frames": 12,
+      "dur": 1.8,
+      "label": {
+        "es": "Error",
+        "en": "Error"
+      }
+    },
+    "happy": {
+      "row": 11,
+      "frames": 12,
+      "dur": 2.7,
+      "label": {
+        "es": "Feliz",
+        "en": "Happy"
+      },
+      "loop": false,
+      "next": "idle"
+    },
+    "sad": {
+      "row": 12,
+      "frames": 12,
+      "dur": 2.4,
+      "label": {
+        "es": "Triste",
+        "en": "Sad"
+      },
+      "loop": false,
+      "next": "idle"
+    },
+    "angry": {
+      "row": 13,
+      "frames": 12,
+      "dur": 1.2,
+      "label": {
+        "es": "Enojado",
+        "en": "Angry"
+      },
+      "loop": false,
+      "next": "idle"
+    },
+    "surprised": {
+      "row": 14,
+      "frames": 12,
+      "dur": 1.5,
+      "label": {
+        "es": "Sorprendido",
+        "en": "Surprised"
+      },
+      "loop": false,
+      "next": "idle"
+    },
+    "nod": {
+      "row": 15,
+      "frames": 12,
+      "dur": 1.8,
+      "label": {
+        "es": "Asiente",
+        "en": "Nodding"
+      },
+      "loop": false,
+      "next": "idle"
+    },
+    "shake": {
+      "row": 16,
+      "frames": 12,
+      "dur": 1.8,
+      "label": {
+        "es": "Niega",
+        "en": "Shaking head"
+      },
+      "loop": false,
+      "next": "idle"
+    },
+    "greet": {
+      "row": 17,
+      "frames": 12,
+      "dur": 2.4,
+      "label": {
+        "es": "Saluda",
+        "en": "Waving hello"
+      },
+      "loop": false,
+      "next": "idle"
+    },
+    "bye": {
+      "row": 18,
+      "frames": 12,
+      "dur": 2.4,
+      "label": {
+        "es": "Se despide",
+        "en": "Waving goodbye"
+      },
+      "loop": false,
+      "next": "idle"
+    },
+    "cite": {
+      "row": 19,
+      "frames": 12,
+      "dur": 2.7,
+      "label": {
+        "es": "Mostrando una fuente",
+        "en": "Showing a source"
+      },
+      "loop": false,
+      "next": "idle"
+    }
+  }
+}

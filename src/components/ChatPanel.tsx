@@ -9,10 +9,15 @@ export interface ChatPanelProps {
     lang: Lang;
 }
 
+function emitPet(event: string) {
+    window.dispatchEvent(new CustomEvent("chat:event", { detail: event }));
+}
+
 export default function ChatPanel({ lang }: ChatPanelProps) {
     const t = getTranslations(lang)("chat");
     const [input, setInput] = useState("");
     const scrollRef = useRef<HTMLDivElement>(null);
+    const prevStatus = useRef<string>("ready");
 
     const { messages, sendMessage, status, error, stop, setMessages } = useChat({
         transport: new DefaultChatTransport({ api: "/api/chat" }),
@@ -24,6 +29,14 @@ export default function ChatPanel({ lang }: ChatPanelProps) {
         const el = scrollRef.current;
         if (el) el.scrollTop = el.scrollHeight;
     }, [messages]);
+
+    useEffect(() => {
+        if (status === "submitted") emitPet("send");
+        else if (status === "streaming") emitPet("token");
+        else if (status === "error") emitPet("error");
+        else if (status === "ready" && prevStatus.current !== "ready") emitPet("done");
+        prevStatus.current = status;
+    }, [status]);
 
     const onSubmit = (e: React.FormEvent) => {
         e.preventDefault();
@@ -82,7 +95,10 @@ export default function ChatPanel({ lang }: ChatPanelProps) {
             >
                 <input
                     value={input}
-                    onChange={(e) => setInput(e.target.value)}
+                    onChange={(e) => {
+                        setInput(e.target.value);
+                        emitPet("typing");
+                    }}
                     placeholder={t.placeholder}
                     aria-label={t.placeholder}
                     className="min-w-0 flex-1 rounded-full border border-line bg-field px-4 py-2 font-sans text-sm text-ink placeholder:text-muted focus:outline-none focus:border-ink"

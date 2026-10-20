@@ -24,11 +24,21 @@ const t = getTranslations(lang)("chat");
     class="m-0 inset-auto right-5 bottom-24 open:flex h-[min(32rem,calc(100dvh-7rem))] max-h-[min(32rem,calc(100dvh-7rem))] w-[min(24rem,calc(100vw-2.5rem))] max-w-none flex-col overflow-hidden rounded-card border border-line bg-contrast text-ink shadow-card transition-all duration-700 ease-out-elastic backdrop:bg-black/40 backdrop:transition-opacity backdrop:duration-700 starting:scale-95 starting:opacity-0 starting:backdrop:opacity-0 has-[:checked]:inset-4 has-[:checked]:w-auto has-[:checked]:h-auto has-[:checked]:max-h-none has-[:checked]:max-w-none has-[:checked]:rounded-3xl has-[:checked]:ease-out md:has-[:checked]:inset-6"
 >
     <header class="flex items-center justify-between gap-3 border-b border-line px-4 py-3">
-        <div class="min-w-0">
-            <h2 class="truncate font-sans text-sm font-bold uppercase tracking-[0.16em]">
-                {t.title}
-            </h2>
-            <p class="truncate font-sans text-xs text-muted">{t.subtitle}</p>
+        <div class="flex min-w-0 items-center gap-3">
+            <pixel-pet
+                id="chat-pet"
+                src="/pet/cat.json"
+                lang={lang}
+                scale="1"
+                sleep-after="45"
+                class="size-11 shrink-0"
+            ></pixel-pet>
+            <div class="min-w-0">
+                <h2 class="truncate font-sans text-sm font-bold uppercase tracking-[0.16em]">
+                    {t.title}
+                </h2>
+                <p class="truncate font-sans text-xs text-muted">{t.subtitle}</p>
+            </div>
         </div>
         <div class="flex shrink-0 items-center gap-1">
             <label
@@ -63,11 +73,23 @@ const t = getTranslations(lang)("chat");
 </dialog>
 
 <script>
+    import "@wanderleedev/pixel-pet/define";
+
     const dialog = document.getElementById("chat-dialog") as HTMLDialogElement | null;
+    const pet = document.getElementById("chat-pet") as (HTMLElement & {
+        feed?: (e: string) => void;
+    }) | null;
 
     document
         .querySelector<HTMLButtonElement>('button[commandfor="chat-dialog"]')
         ?.addEventListener("click", () => {
-            requestAnimationFrame(() => dialog?.querySelector("input")?.focus());
+            requestAnimationFrame(() => {
+                dialog?.querySelector("input")?.focus();
+                pet?.feed?.("greet");
+            });
         });
+
+    window.addEventListener("chat:event", ((e: CustomEvent<string>) => {
+        pet?.feed?.(e.detail);
+    }) as EventListener);
 </script>

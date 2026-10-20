@@ -7,7 +7,7 @@ const lang = Astro.currentLocale as "es" | "en";
 const t = getTranslations(lang)("chat");
 ---
 
-<div class="fixed right-5 bottom-5 z-[999] flex items-end gap-3">
+<div id="chat-pet-host" class="fixed right-5 bottom-5 z-[999] flex items-end gap-3">
     <pixel-pet
         id="chat-pet"
         src="/pet/cat.json"
@@ -76,14 +76,37 @@ const t = getTranslations(lang)("chat");
     import "@wanderleedev/pixel-pet/define";
 
     const dialog = document.getElementById("chat-dialog") as HTMLDialogElement | null;
+    const petHost = document.getElementById("chat-pet-host");
     const pet = document.getElementById("chat-pet") as (HTMLElement & {
         feed?: (e: string) => void;
     }) | null;
+
+    /**
+     * El backdrop de un <dialog> modal vive en el top layer, por encima de
+     * cualquier z-index: tapa la mascota y, al ser modal, deja inerte todo lo
+     * de afuera. Para que la mascota siga en primer plano y sea interactiva
+     * mientras el chat esta abierto, se la mueve dentro del dialog (mismo top
+     * layer) en posicion fixed, que sigue resolviendo contra el viewport, y se
+     * la devuelve al contenedor exterior al cerrar.
+     */
+    const place = (inside: boolean) => {
+        if (!dialog || !pet || !petHost) return;
+        if (inside) {
+            dialog.appendChild(pet);
+            pet.classList.add("fixed", "bottom-5", "right-[5.5rem]");
+        } else {
+            petHost.prepend(pet);
+            pet.classList.remove("fixed", "bottom-5", "right-[5.5rem]");
+        }
+    };
+
+    dialog?.addEventListener("close", () => place(false));
 
     document
         .querySelector<HTMLButtonElement>('button[commandfor="chat-dialog"]')
         ?.addEventListener("click", () => {
             requestAnimationFrame(() => {
+                place(true);
                 dialog?.querySelector("input")?.focus();
                 pet?.feed?.("greet");
             });

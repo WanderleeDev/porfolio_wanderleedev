@@ -57,6 +57,11 @@ streaming chat panel backed by the AI SDK and the `GATEWAY_LLM` OpenAI-compatibl
   del backdrop sin bloquear el body del panel.
   → The chat is not a text history: the pet answers, inside a dialogue box of its own, with a
   tail pointing at it. The panel shows only the current exchange.
+- S7e: "el chat tiene espacio de sombra y no debería, el pet no llena el globo, sí debería"
+  → No shadow halo on the panel, the pet badge or the bubble. The pet sprite fills its own
+  circle and overlaps the answer bubble.
+- S7f: "ya no me deja enviar nada, el btn está disabled"
+  → Send stays visible while the model streams; Stop sits beside it instead of replacing it.
 
 ## Tasks
 
@@ -178,6 +183,20 @@ streaming chat panel backed by the AI SDK and the `GATEWAY_LLM` OpenAI-compatibl
   no lo cubre; la fila del input (y=398) esta por debajo del pet (bottom=283); el input y
   los botones son interactivos. El chat sigue funcionando en los tres temas (dark, light,
   neon) y en mobile 390px.
+- Sombras y tamaño del pet (S7e): el panel, el badge del pet y el globo tenian un halo de
+  sombra que el dibujo no tiene; los tres quedan planos. El sprite del pet se dibuja a
+  frame.w * scale, asi que con scale 1 el arte era de 36x45 dentro de un host de 112px y
+  el gato quedaba flotando en espacio vacio. Ahora corre con scale 2 y el host mide lo
+  mismo que el arte (72x90), dentro de un circulo de 96px que se solapa con el globo de
+  la respuesta por 60px. Una respuesta larga desbordaba el panel y su parte superior era
+  inalcanzable, asi que el body es un contenedor con scroll y el globo se centra con
+  my-auto (centra sin recortar). Medido: box-shadow "none" en los tres; el sprite mide
+  exactamente su host; una respuesta de 749 caracteres llega hasta su final con scroll.
+- Boton de enviar (S7f): mientras el modelo escribia, el boton de enviar se reemplazaba por
+  el de detener, asi que no se podia enviar el siguiente mensaje. Ahora Enviar sigue
+  visible y Detener aparece al lado como un boton cuadrado pequeno. Verificado: vacio ->
+  Enviar deshabilitado; con texto -> habilitado; durante el streaming -> Detener visible y
+  Enviar presente; al terminar -> Detener desaparece.
 
 ## Work-unit evidence
 - Branch: `feature/chat-widget` (from `main`).

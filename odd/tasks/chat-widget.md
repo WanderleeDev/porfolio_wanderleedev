@@ -50,10 +50,10 @@ streaming chat panel backed by the AI SDK and the `GATEWAY_LLM` OpenAI-compatibl
 - S7b: "no me gusta donde esta puesto opciones?"
   → The pet lives in a fixed container beside the launcher button, so it stays visible
   with the chat closed, like a desktop pet, and never competes with the panel header.
-- S7c: "si queda atras pierde el foco bo puede toar el lugar el btn que muestra y tambien mandarlo
-  adelante cuando se abre el modal"
-  → The pet must not stay behind the modal backdrop, must not take the place of the
-  launcher button, and must be brought forward when the modal opens.
+- S7d: "me imagino asi el chat, no como un historial de texto, lo que pregunte lo va respondiendo el pet
+  que tendra su propia caja de texto"
+  → The chat is not a text history: the pet answers, inside a dialogue box of its own, with a
+  tail pointing at it. The panel shows only the current exchange.
 
 ## Tasks
 
@@ -165,6 +165,13 @@ streaming chat panel backed by the AI SDK and the `GATEWAY_LLM` OpenAI-compatibl
   clickable, keeps its viewport position (1128,644) with a 12px gap to the launcher and
   does not cover the close button, returns to its host on close, does not close the modal
   when clicked, and light dismiss still works.
+- Dialogue box (S7d): the panel no longer keeps a message history. It shows the question
+  the visitor asked and the pet's answer inside a bubble whose tail points at the pet;
+  the pet sits directly above it (pet bottom 266, box top 266) and the tail is centred on
+  both (1060). The pet moves into the panel while the chat is open and back next to the
+  launcher when it closes, growing from the launcher size to the stage size. Verified with
+  a real message round trip: the answer lands in the pet's box and the pet reacts
+  (thinking, talking, idle).
 
 ## Work-unit evidence
 - Branch: `feature/chat-widget` (from `main`).
@@ -173,7 +180,8 @@ streaming chat panel backed by the AI SDK and the `GATEWAY_LLM` OpenAI-compatibl
   `77cda12` (U5 drop the unused @ai-sdk/openai provider), `d24abaa` (U6 elastic entrance +
   fullscreen margin), `83bd4c9` (U7 this update), `45ac7e8` (U8 commit identities),
   `ffdb7ba` (U9 pixel pet assets + deps), `1b567f6` (U10 pixel pet integration),
-  `5d7a7ef` (U11 pet moved next to the launcher), `1bb08ab` (U12 pet in front of the modal).
+  `5d7a7ef` (U11 pet moved next to the launcher), `1bb08ab` (U12 pet in front of the modal),
+  `3cb2202` (U13 pet answers in its own dialogue box).
 - Slice boundary: 732 authored changed lines across the eleven commits, past the
   ~400-line review budget. The overage comes from this document (170 lines) and the
   re-scaled sprite (binary), not from the shipped behaviour, so the feature stays a

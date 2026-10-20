@@ -189,7 +189,15 @@
   --ct-err: var(--color-dark-err);
 }
 
-.neon body {
+/* El fondo del sitio vive en el elemento raíz: su fondo se pinta como fondo
+   del canvas del navegador, es decir SIEMPRE debajo de cualquier capa (el
+   canvas de estrellas con z-index negativo queda entre el fondo y el
+   contenido). */
+html {
+  background-color: var(--surface);
+}
+
+.neon {
   background-color: #000;
   background-image: radial-gradient(at 20% 30%, #38bdf859 0%, #0000 60%), radial-gradient(at 80% 70%, #8b5cf647 0%, #0000 70%);
   background-attachment: fixed;

@@ -9,7 +9,6 @@
     "astro": "astro"
   },
   "dependencies": {
-    "@ai-sdk/openai": "^4.0.98",
     "@ai-sdk/openai-compatible": "^3.0.74",
     "@ai-sdk/react": "^4.0.150",
     "@astrojs/node": "^11.1.9",

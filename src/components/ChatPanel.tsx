@@ -79,7 +79,7 @@ export default function ChatPanel({ lang }: ChatPanelProps) {
     return (
         <div className="flex flex-col gap-3">
             <div className="pr-36">
-                <div className="flex min-h-[200px] flex-col items-start gap-3 rounded-card border border-line bg-badge p-6">
+                <div className="flex min-h-[200px] max-h-[calc(100dvh-15rem)] flex-col items-start gap-3 overflow-y-auto rounded-card border border-line bg-badge p-6">
                     {parts.length === 0 ? (
                         isBusy ? (
                             <p className="font-sans text-lg text-badge-ink" role="status">

@@ -1,5 +1,6 @@
 ---
 import { getTranslations } from "../i18n/utils";
+import { Font } from "astro:assets";
 import ChatWidget from "../components/ChatWidget.astro";
 
 interface Props {
@@ -23,6 +24,11 @@ const altTitle = altLang === "en" ? "WanderleeDev — Portfolio" : "Portafolio W
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width" />
+    <Font cssVariable="--font-inter" preload />
+    <Font
+      cssVariable="--font-fira"
+      preload={[{ weight: 900, style: "normal", subset: "latin" }]}
+    />
     <meta name="description" content={description} />
     <meta name="keywords" content={meta.keywords} />
     <link rel="icon" href="/favicon_default.svg" type="image/svg+xml" />

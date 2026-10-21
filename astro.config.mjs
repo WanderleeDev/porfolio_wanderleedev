@@ -1,10 +1,31 @@
 // @ts-check
-import { defineConfig } from "astro/config";
+import { defineConfig, fontProviders } from "astro/config";
 import react from "@astrojs/react";
 import node from "@astrojs/node";
 import tailwindcss from "@tailwindcss/vite";
 
 export default defineConfig({
+  fonts: [
+    {
+      provider: fontProviders.fontsource(),
+      name: "Inter",
+      cssVariable: "--font-inter",
+      weights: ["100 900"],
+      styles: ["normal"],
+      subsets: ["latin"],
+      fallbacks: ["sans-serif"],
+    },
+    {
+      provider: fontProviders.fontsource(),
+      name: "Fira Sans Extra Condensed",
+      cssVariable: "--font-fira",
+      weights: [700, 900],
+      styles: ["normal"],
+      subsets: ["latin"],
+      fallbacks: ["sans-serif"],
+    },
+  ],
+
   vite: {
     plugins: [tailwindcss()],
   },

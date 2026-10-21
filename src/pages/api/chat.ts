@@ -3,20 +3,23 @@ import {
     convertToModelMessages,
     createUIMessageStreamResponse,
     extractReasoningMiddleware,
-    stepCountIs,
     streamText,
     tool,
-    toUIMessageStream,
     wrapLanguageModel,
+    type ToolExecutionOptions,
     type UIMessage,
+    type UIMessageChunk,
 } from "ai";
 import { createOpenAICompatible } from "@ai-sdk/openai-compatible";
 import { z } from "zod";
 import {
     filterProjects,
     filterStack,
+    getProjects,
+    getStack,
     resolveLocale,
 } from "../../i18n/portfolio-data";
+import { getTranslations } from "../../i18n/utils";
 
 export const prerender = false;
 
@@ -31,12 +34,9 @@ const gatewayModel = readEnv("LLM_MODEL");
 
 const SYSTEM_PROMPT = `You are the assistant of WanderleeDev's personal portfolio website.
 
-WanderleeDev is a fullstack developer focused on agentic AI and product work. Main
-stack: PostgreSQL, NestJS, Angular, Node.js, TypeScript, TailwindCSS, Astro.
-Frontend: HTML5, CSS3, JavaScript, TypeScript, Angular, React, Next.js, Astro, Vue.js,
-TailwindCSS, Sass, NgRx, GSAP. Backend: Node.js, NestJS, Express, PostgreSQL, Java,
-Spring Boot, Python, FastAPI. AI: LLM gateways, AI SDK streaming, tool-using agents,
-RAG, evaluation.
+WanderleeDev is a fullstack developer focused on agentic AI and product work. He works
+with PostgreSQL, NestJS, Angular, Node.js, TypeScript, TailwindCSS and Astro on the
+frontend and backend, and he builds AI agents with LLM gateways and the AI SDK.
 
 Featured projects:
 - Portfolio AI Chat: Astro, React, TypeScript, Vercel AI SDK, pixel-pet agent. Streaming
@@ -50,14 +50,101 @@ Featured projects:
 - Switch 2 Clone: Vue, TailwindCSS, TypeScript. Nintendo Switch 2 landing page.
 
 Contact: wanderleedev@gmail.com · github.com/WanderleeDev ·
-linkedin.com/in/wanderlee-max/
+linkedin.com/in/wanderlee-max/`;
 
-Answer questions about the portfolio, the stack and the projects. Keep answers short
-and to the point. Reply in the same language the visitor writes in.
+const CARD_RULES = `When the visitor asks about the projects or the technology stack, a structured
+card is rendered right below your message, with the real data. In that case your
+message must be ONE short sentence of at most 15 words that introduces the card.
 
-When a visitor asks about your projects or your technology stack, call the
-showProjects or showStack tool to render a structured card instead of only listing
-them in text.`;
+Never enumerate the projects, the technologies or their descriptions in your own
+words: the card shows all of them.`;
+
+const FORMAT_RULES = `Your reply is plain text for a chat bubble. Never use HTML tags, markdown,
+lists, tables, JSON payloads or code blocks. Answer in at most three short
+sentences, and only what was asked.`;
+
+const LANGUAGE_RULES = {
+    es: "Answer in Spanish.",
+    en: "Answer in English.",
+} as const;
+
+function buildSystemPrompt(locale: "es" | "en"): string {
+    return [
+        SYSTEM_PROMPT,
+        "",
+        LANGUAGE_RULES[locale],
+        "",
+        FORMAT_RULES,
+        "",
+        CARD_RULES,
+    ].join("\n");
+}
+
+type ToolName = "showProjects" | "showStack";
+
+const INTENT_PATTERNS: Array<{ tool: ToolName; pattern: RegExp }> = [
+    { tool: "showProjects", pattern: /\b(proyecto|proyectos|trabajo|trabajos|portfolio)\b/i },
+    {
+        tool: "showStack",
+        pattern: /\b(stack|tecnolog\w*|herramienta\w*|lenguaje\w*|framework\w*|librer\w+)\b/i,
+    },
+];
+
+function detectToolIntent(text: string, locale: "es" | "en"): ToolName[] {
+    const intents = INTENT_PATTERNS.filter(({ pattern }) => pattern.test(text)).map(({ tool }) => tool);
+    if (intents.includes("showProjects") && mentionsSpecificProject(text, locale)) {
+        return intents.filter((tool) => tool !== "showProjects");
+    }
+    return intents;
+}
+
+const GENERIC_PROJECT_WORDS = new Set(["portfolio"]);
+
+function mentionsSpecificProject(text: string, locale: "es" | "en"): boolean {
+    const haystack = text.toLowerCase();
+    return getProjects(locale).some((project) => {
+        const words = project.title.toLowerCase().split(/\s+/);
+        return words.some(
+            (word) => word.length >= 4 && !GENERIC_PROJECT_WORDS.has(word) && haystack.includes(word),
+        );
+    });
+}
+
+function lastUserText(messages: UIMessage[]): string {
+    for (let i = messages.length - 1; i >= 0; i--) {
+        const message = messages[i];
+        if (message.role !== "user") continue;
+        return message.parts
+            .map((p) => (p.type === "text" ? ((p as { text?: string }).text ?? "") : ""))
+            .join(" ")
+            .trim();
+    }
+    return "";
+}
+
+function withoutToolResults(messages: UIMessage[]): UIMessage[] {
+    const stripped = messages.map((message) => {
+        if (message.role !== "assistant") return message;
+        const parts = message.parts.filter(
+            (p) => p.type === "text" && (p as { text?: string }).text?.trim(),
+        );
+        return { ...message, parts } as UIMessage;
+    });
+    return stripped.filter((message) => message.role !== "assistant" || message.parts.length > 0);
+}
+
+function projectFocus(text: string, locale: "es" | "en"): string | undefined {
+    const haystack = text.toLowerCase();
+    const mentioned = getProjects(locale).flatMap((p) => p.technologies);
+    return mentioned.find((tech) => haystack.includes(tech.toLowerCase()));
+}
+
+function stackFocus(text: string, locale: "es" | "en"): string | undefined {
+    const haystack = text.toLowerCase();
+    return getStack(locale)
+        .map((category) => category.title)
+        .find((title) => title.length > 3 && haystack.includes(title.toLowerCase()));
+}
 
 export const POST: APIRoute = async ({ request }) => {
     if (!gatewayUrl || !gatewayKey || !gatewayModel) {
@@ -66,6 +153,8 @@ export const POST: APIRoute = async ({ request }) => {
 
     const { messages }: { messages: UIMessage[] } = await request.json();
     const locale = resolveLocale(request.headers.get("x-locale"));
+    const question = lastUserText(messages);
+    const intents = detectToolIntent(question, locale);
 
     const llm = createOpenAICompatible({
         name: "wanderlee-gateway",
@@ -78,38 +167,100 @@ export const POST: APIRoute = async ({ request }) => {
         middleware: extractReasoningMiddleware({ tagName: "think" }),
     });
 
+    const tools = {
+        showProjects: tool({
+            description:
+                "Show WanderleeDev's featured portfolio projects with their description and technologies.",
+            inputSchema: z.object({
+                focus: z
+                    .string()
+                    .optional()
+                    .describe("Optional filter, e.g. 'frontend', 'angular', 'ecommerce'"),
+            }),
+            execute: async ({ focus }) => ({ projects: filterProjects(locale, focus) }),
+        }),
+        showStack: tool({
+            description:
+                "Show WanderleeDev's technology stack grouped by category (frontend, backend, AI, ...).",
+            inputSchema: z.object({
+                category: z
+                    .string()
+                    .optional()
+                    .describe("Optional category filter, e.g. 'frontend', 'backend', 'ai'"),
+            }),
+            execute: async ({ category }) => ({ categories: filterStack(locale, category) }),
+        }),
+    };
+
+    const inputs: Record<ToolName, Record<string, string>> = {
+        showProjects: { focus: projectFocus(question, locale) ?? "" },
+        showStack: { category: stackFocus(question, locale) ?? "" },
+    };
+
+    const cardChunks: UIMessageChunk[] = [];
+    for (const name of intents) {
+        const toolCallId = `card-${name}`;
+        const execute = tools[name].execute as (
+            input: Record<string, string>,
+            options: ToolExecutionOptions,
+        ) => Promise<unknown>;
+        const output = await execute(inputs[name], {
+            toolCallId,
+            messages: [],
+            context: undefined,
+        });
+        cardChunks.push(
+            { type: "tool-input-available", toolCallId, toolName: name, input: inputs[name] },
+            { type: "tool-output-available", toolCallId, output },
+        );
+    }
+
+    if (intents.length > 0) {
+        const t = getTranslations(locale)("chat");
+        const intro =
+            intents.length > 1
+                ? t.cardProjectsAndStack
+                : intents[0] === "showProjects"
+                  ? t.cardProjects
+                  : t.cardStack;
+
+        const stream = new ReadableStream<UIMessageChunk>({
+            start(controller) {
+                controller.enqueue({ type: "start" });
+                controller.enqueue({ type: "start-step" });
+                controller.enqueue({ type: "text-start", id: "txt-card" });
+                controller.enqueue({ type: "text-delta", id: "txt-card", delta: intro });
+                controller.enqueue({ type: "text-end", id: "txt-card" });
+                for (const chunk of cardChunks) controller.enqueue(chunk);
+                controller.enqueue({ type: "finish-step" });
+                controller.enqueue({ type: "finish", finishReason: "stop" });
+                controller.close();
+            },
+        });
+
+        return createUIMessageStreamResponse({ stream });
+    }
+
     const result = streamText({
         model,
-        system: SYSTEM_PROMPT,
-        messages: await convertToModelMessages(messages),
-        tools: {
-            showProjects: tool({
-                description:
-                    "Show WanderleeDev's featured portfolio projects with their description and technologies.",
-                inputSchema: z.object({
-                    focus: z
-                        .string()
-                        .optional()
-                        .describe("Optional filter, e.g. 'frontend', 'angular', 'ecommerce'"),
-                }),
-                execute: async ({ focus }) => ({ projects: filterProjects(locale, focus) }),
-            }),
-            showStack: tool({
-                description:
-                    "Show WanderleeDev's technology stack grouped by category (frontend, backend, AI, ...).",
-                inputSchema: z.object({
-                    category: z
-                        .string()
-                        .optional()
-                        .describe("Optional category filter, e.g. 'frontend', 'backend', 'ai'"),
-                }),
-                execute: async ({ category }) => ({ categories: filterStack(locale, category) }),
-            }),
-        },
-        stopWhen: stepCountIs(3),
+        system: buildSystemPrompt(locale),
+        messages: await convertToModelMessages(withoutToolResults(messages)),
     });
 
-    return createUIMessageStreamResponse({
-        stream: toUIMessageStream({ stream: result.stream, sendReasoning: true }),
+    const modelStream = result.toUIMessageStream({ sendReasoning: true });
+
+    const stream = new ReadableStream<UIMessageChunk>({
+        async start(controller) {
+            const reader = modelStream.getReader();
+            while (true) {
+                const { done, value } = await reader.read();
+                if (done) break;
+                controller.enqueue(value);
+            }
+            for (const chunk of cardChunks) controller.enqueue(chunk);
+            controller.close();
+        },
     });
+
+    return createUIMessageStreamResponse({ stream });
 };

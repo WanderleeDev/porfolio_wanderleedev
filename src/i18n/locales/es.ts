@@ -197,6 +197,9 @@ export const es = {
     stop: "Detener",
     error: "No pude responder. Probá de nuevo.",
     toolLoading: "Preparando tarjeta…",
+    cardProjects: "Estos son mis proyectos destacados:",
+    cardStack: "Este es el stack con el que trabajo:",
+    cardProjectsAndStack: "Estos son mis proyectos y el stack con el que trabajo:",
     suggestions: {
       projects: "Mis proyectos",
       technologies: "Tecnologías",

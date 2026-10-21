@@ -197,6 +197,9 @@ export const en = {
     stop: "Stop",
     error: "I couldn't answer. Please try again.",
     toolLoading: "Preparing card…",
+    cardProjects: "These are my featured projects:",
+    cardStack: "This is the stack I work with:",
+    cardProjectsAndStack: "These are my projects and the stack I work with:",
     suggestions: {
       projects: "My projects",
       technologies: "Technologies",

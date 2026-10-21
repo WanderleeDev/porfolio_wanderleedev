@@ -59,6 +59,13 @@ export default function ChatPanel({ lang }: ChatPanelProps) {
 
     const lastAssistant = [...messages].reverse().find((m) => m.role === "assistant");
     const parts = lastAssistant?.parts ?? [];
+    const seenTools = new Set<string>();
+    const visibleParts = parts.filter((part) => {
+        if (!isToolPart(part) || part.state !== "output-available") return true;
+        if (seenTools.has(part.type)) return false;
+        seenTools.add(part.type);
+        return true;
+    });
 
     const onSubmit = (e: React.FormEvent) => {
         e.preventDefault();
@@ -90,7 +97,7 @@ export default function ChatPanel({ lang }: ChatPanelProps) {
                             <p className="font-sans text-lg leading-[1.6] text-badge-ink">{t.empty}</p>
                         )
                     ) : (
-                        parts.map((part, i) => {
+                        visibleParts.map((part, i) => {
                             if (part.type === "reasoning") {
                                 const reasoning = part as { text?: string; state?: string };
                                 if (!reasoning.text?.trim()) return null;

@@ -139,7 +139,7 @@ export const en = {
 
   hero: {
     title: "Fullstack,",
-    titleSecond: "AI tools & agentic development.",
+    titleSecond: "AI & agentic development.",
     subtitle: "Main stack",
   },
 
@@ -196,7 +196,7 @@ export const en = {
   },
 
   footer: {
-    tagline: "Software developer",
+    tagline: "Fullstack developer",
     contactLabel: "Contact",
     email: "wanderleedev@gmail.com",
     ctaLabel: "Start a project",

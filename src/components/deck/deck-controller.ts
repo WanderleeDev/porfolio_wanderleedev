@@ -216,50 +216,107 @@ export function initDeck(root: HTMLElement) {
   });
 
   // ===== Minimapa =====
+  // Esquema en cruz: columna central (arriba / principal / abajo) flanqueada
+  // por los slides horizontales vecinos.
   const minimap = document.createElement('div');
   minimap.className =
-    'fixed bottom-6 right-6 z-30 flex gap-1.5 rounded-2xl border border-white/10 bg-slate-900/80 p-2 shadow-lg backdrop-blur-md';
+    'fixed bottom-6 right-6 z-30 grid grid-cols-[48px_60px_48px] grid-rows-[34px_48px_34px] items-center justify-items-center gap-1.5 rounded-[22px] border border-white/20 bg-slate-900/85 p-3 shadow-lg backdrop-blur-md';
   minimap.setAttribute('data-minimap', '');
+  minimap.setAttribute('role', 'group');
   minimap.setAttribute('aria-label', 'Minimapa del deck');
   minimap.style.display = 'none';
   root.appendChild(minimap);
 
-  const mmThumbs: HTMLButtonElement[] = [];
+  const MM_CELL =
+    'block h-full cursor-pointer rounded-[10px] border-2 bg-white/5 transition-colors hover:border-sky-400';
+  const MM_ON_BORDER = 'rgb(56 189 248)';
+  const MM_OFF_BORDER = 'rgb(255 255 255 / 0.2)';
+  const MM_ON_FILL = 'rgb(56 189 248 / 0.18)';
+  const MM_OFF_FILL = 'rgb(255 255 255 / 0.05)';
+
+  type MmCell = { el: HTMLButtonElement; kind: 'h' | 'v'; i: number };
+  const mmCells: MmCell[] = [];
+
+  function mmButton(label: string, placement: string, onClick: () => void) {
+    const box = document.createElement('button');
+    box.type = 'button';
+    box.setAttribute('aria-label', label);
+    box.className = `${MM_CELL} ${placement}`;
+    box.addEventListener('click', onClick);
+    minimap.appendChild(box);
+    return box;
+  }
+
+  // Navegación a un slide vertical: el mapa es explícito, así que mueve la
+  // columna aunque el bloqueo vertical esté activo.
+  function scrollV(i: number) {
+    if (!holder) return;
+    const idx = Math.max(0, Math.min(i, vslides.length - 1));
+    if (current !== holderIndex) goTo(holderIndex);
+    holder.scrollTo({ top: vslides[idx].offsetTop, behavior: 'smooth' });
+  }
+
   function buildMinimap() {
     minimap.innerHTML = '';
-    mmThumbs.length = 0;
-    hslides.forEach((slide, i) => {
-      const box = document.createElement('button');
-      box.type = 'button';
-      box.setAttribute('aria-label', slide.dataset.title ?? `Slide ${i + 1}`);
-      box.className =
-        'relative block h-[75px] w-[120px] shrink-0 cursor-pointer overflow-hidden rounded-lg border-2 border-transparent bg-slate-800/60 transition-colors hover:border-sky-400';
-      const rect = slide.getBoundingClientRect();
-      const scale = 75 / (rect.height || window.innerHeight);
-      const inner = document.createElement('div');
-      inner.className = 'absolute inset-0 origin-top-left';
-      inner.style.width = `${rect.width}px`;
-      inner.style.height = `${rect.height}px`;
-      inner.style.transform = `scale(${scale})`;
-      const clone = slide.cloneNode(true) as HTMLElement;
-      clone.querySelectorAll('canvas,astro-island,script,style').forEach((el) => el.remove());
-      const stripData = (el: Element) => {
-        Array.from(el.attributes).forEach((a) => {
-          if (a.name.startsWith('data-')) el.removeAttribute(a.name);
-        });
-        el.querySelectorAll('*').forEach(stripData);
-      };
-      stripData(clone);
-      inner.appendChild(clone);
-      box.appendChild(inner);
-      box.addEventListener('click', () => goTo(i, instant));
-      minimap.appendChild(box);
-      mmThumbs.push(box);
-    });
+    mmCells.length = 0;
+    if (hslides.length === 0) return;
+
+    const center = holderIndex >= 0 ? holderIndex : Math.floor(hslides.length / 2);
+    const left = center - 1;
+    const right = center + 1;
+
+    if (vslides.length > 0) {
+      mmCells.push({
+        kind: 'v',
+        i: 0,
+        el: mmButton(vslides[0].dataset.title ?? 'Arriba', 'col-start-2 row-start-1 w-[42px]', () => scrollV(0)),
+      });
+    }
+    if (left >= 0) {
+      mmCells.push({
+        kind: 'h',
+        i: left,
+        el: mmButton(hslides[left].dataset.title ?? `Slide ${left + 1}`, 'col-start-1 row-start-2 w-full', () => goTo(left)),
+      });
+    }
+    const middle = holder && vslides.length > 1 ? 1 : -1;
+    mmCells.push(
+      middle >= 0
+        ? {
+            kind: 'v',
+            i: middle,
+            el: mmButton(hslides[center].dataset.title ?? `Slide ${center + 1}`, 'col-start-2 row-start-2 w-full', () => scrollV(middle)),
+          }
+        : {
+            kind: 'h',
+            i: center,
+            el: mmButton(hslides[center].dataset.title ?? `Slide ${center + 1}`, 'col-start-2 row-start-2 w-full', () => goTo(center)),
+          },
+    );
+    if (right < hslides.length) {
+      mmCells.push({
+        kind: 'h',
+        i: right,
+        el: mmButton(hslides[right].dataset.title ?? `Slide ${right + 1}`, 'col-start-3 row-start-2 w-full', () => goTo(right)),
+      });
+    }
+    if (vslides.length > 2) {
+      const last = vslides.length - 1;
+      mmCells.push({
+        kind: 'v',
+        i: last,
+        el: mmButton(vslides[last].dataset.title ?? 'Abajo', 'col-start-2 row-start-3 w-[42px]', () => scrollV(last)),
+      });
+    }
   }
 
   function updateMinimapActive() {
-    mmThumbs.forEach((b, i) => b.classList.toggle('border-sky-400', i === current));
+    mmCells.forEach(({ el, kind, i }) => {
+      const on = kind === 'h' ? i === current : current === holderIndex && i === vCurrent;
+      el.style.borderColor = on ? MM_ON_BORDER : MM_OFF_BORDER;
+      el.style.backgroundColor = on ? MM_ON_FILL : MM_OFF_FILL;
+      el.setAttribute('aria-current', on ? 'true' : 'false');
+    });
   }
 
   window.addEventListener('deck:settings', (e) => {

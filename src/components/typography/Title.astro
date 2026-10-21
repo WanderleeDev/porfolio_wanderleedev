@@ -25,16 +25,18 @@ interface Props {
   id?: string;
   style?: string;
   size?: string;
+  family?: "condensed" | "sans";
 }
 
-const { level, class: className = "", id, style, size } = Astro.props;
+const { level, class: className = "", id, style, size, family = "condensed" } = Astro.props;
 
 const inlineStyle = size
   ? `--title-size: ${size};${style ? ` ${style}` : ""}`
   : style;
 
 const titleClass = (lvl: Props["level"]): string => {
-  const base = "font-fira-sans-extra-condensed font-black uppercase leading-[0.9] tracking-tight text-ink m-0";
+  const familyClass = family === "sans" ? "font-sans" : "font-fira-sans-extra-condensed";
+  const base = `${familyClass} font-black uppercase leading-[0.9] tracking-tight text-ink m-0`;
   const scaled = (lvl: Props["level"]): string => {
     switch (lvl) {
       case 1:

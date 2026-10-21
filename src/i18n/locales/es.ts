@@ -193,6 +193,11 @@ export const es = {
     send: "Enviar",
     stop: "Detener",
     error: "No pude responder. Probá de nuevo.",
+    suggestions: {
+      projects: "Mis proyectos",
+      technologies: "Tecnologías",
+      contact: "Contáctame",
+    },
   },
 
   footer: {

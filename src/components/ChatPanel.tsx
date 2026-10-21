@@ -33,6 +33,20 @@ export default function ChatPanel({ lang }: ChatPanelProps) {
     const isBusy = status === "submitted" || status === "streaming";
     const textInputRef = useRef<HTMLInputElement>(null);
 
+    const suggestions = [
+        { key: "projects", prompt: t.suggestions.projects },
+        { key: "technologies", prompt: t.suggestions.technologies },
+        { key: "contact", prompt: t.suggestions.contact },
+    ];
+
+    const ask = (prompt: string) => {
+        if (isBusy) return;
+        setInput(prompt);
+        sendMessage({ text: prompt });
+        setInput("");
+        textInputRef.current?.focus();
+    };
+
     useEffect(() => {
         if (status === "submitted") emitPet("send");
         else if (status === "streaming") emitPet("token");
@@ -113,6 +127,21 @@ export default function ChatPanel({ lang }: ChatPanelProps) {
                 <p className="font-sans text-sm text-red-500" role="alert">
                     {t.error}
                 </p>
+            )}
+
+            {!isBusy && messages.length === 0 && (
+                <div className="flex flex-wrap gap-2">
+                    {suggestions.map((s) => (
+                        <button
+                            key={s.key}
+                            type="button"
+                            onClick={() => ask(s.prompt)}
+                            className="rounded-full border border-line bg-surface px-4 py-2 font-sans text-sm text-ink transition-colors hover:bg-badge"
+                        >
+                            {s.prompt}
+                        </button>
+                    ))}
+                </div>
             )}
         </div>
     );

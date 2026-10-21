@@ -4,10 +4,9 @@ type Cell = { type: 'h' | 'v'; i: number; row: number; col: number; title: strin
 
 // Clases Tailwind reutilizables
 const ARROW_OFF = 'pointer-events-none';
-const PANEL_OPEN = ['opacity-100', 'pointer-events-auto', 'scale-100'];
-const PANEL_CLOSED = ['opacity-0', 'pointer-events-none', 'scale-[1.08]'];
 const THUMB = 'flex flex-col items-center justify-center gap-1.5 p-4 rounded-[18px] border-2 border-transparent bg-slate-800 text-slate-50 cursor-pointer transition-all enabled:hover:scale-[1.03] enabled:hover:border-sky-400 disabled:opacity-35 disabled:cursor-not-allowed';
 const THUMB_CURRENT = ['border-sky-400', 'ring-4', 'ring-sky-400/20'];
+const NATIVE_COMMAND = 'commandForElement' in HTMLButtonElement.prototype;
 
 export function initDeck(root: HTMLElement) {
   const q = <T extends Element>(sel: string) => root.querySelector<T>(sel);
@@ -33,9 +32,8 @@ export function initDeck(root: HTMLElement) {
   const upBtn = q<HTMLButtonElement>('[data-up]')!;
   const downBtn = q<HTMLButtonElement>('[data-down]')!;
   const counter = q<HTMLElement>('[data-counter]')!;
-  const lockBtn = q<HTMLButtonElement>('[data-lock]')!;
-  const overviewBtn = q<HTMLButtonElement>('[data-overview]')!;
-  const panel = q<HTMLElement>('[data-overview-panel]')!;
+  const panel = q<HTMLDialogElement>('[data-overview-panel]')!;
+  if (!panel.id) panel.id = 'deck-overview';
   const grid = q<HTMLElement>('[data-ov-grid]')!;
   const taskChecks = qa<HTMLInputElement>('[data-task]');
   const taskCount = q<HTMLElement>('[data-task-count]');
@@ -65,12 +63,6 @@ export function initDeck(root: HTMLElement) {
     const onHolder = current === holderIndex;
     upBtn.disabled = !holder || locked || !onHolder || vCurrent === 0;
     downBtn.disabled = !holder || locked || !onHolder || vCurrent === vslides.length - 1;
-
-    lockBtn.hidden = !holder;
-    lockBtn.textContent = locked ? '🔒 Vertical bloqueado' : '🔓 Vertical libre';
-    lockBtn.setAttribute('aria-pressed', String(locked));
-    lockBtn.classList.toggle('border-sky-400', !locked);
-    lockBtn.classList.toggle('text-sky-400', !locked);
 
     // Congelar el vertical: sin overflow ni snap
     if (holder) {
@@ -122,7 +114,6 @@ export function initDeck(root: HTMLElement) {
   nextBtn.addEventListener('click', () => goTo(current + 1));
   upBtn.addEventListener('click', () => goToV(vCurrent - 1));
   downBtn.addEventListener('click', () => goToV(vCurrent + 1));
-  lockBtn.addEventListener('click', () => setLock(!locked));
 
   // ===== Tareas =====
   function syncTasks() {
@@ -199,18 +190,13 @@ export function initDeck(root: HTMLElement) {
 
   function openOverview() {
     renderOverview();
-    panel.classList.remove(...PANEL_CLOSED);
-    panel.classList.add(...PANEL_OPEN);
-    panel.setAttribute('aria-hidden', 'false');
+    if (!panel.open) panel.showModal();
   }
 
   function closeOverview() {
-    panel.classList.remove(...PANEL_OPEN);
-    panel.classList.add(...PANEL_CLOSED);
-    panel.setAttribute('aria-hidden', 'true');
+    if (panel.open) panel.close();
   }
 
-  overviewBtn.addEventListener('click', openOverview);
   panel.addEventListener('click', (e) => {
     if (e.target === panel) closeOverview();
   });
@@ -236,6 +222,7 @@ export function initDeck(root: HTMLElement) {
 
   type MmCell = { el: HTMLButtonElement; kind: 'h' | 'v'; i: number; hiddenWhenLocked?: boolean };
   const mmCells: MmCell[] = [];
+  let expandBtn: HTMLButtonElement | null = null;
 
   function mmButton(label: string, placement: string, onClick: () => void) {
     const box = document.createElement('button');
@@ -260,6 +247,25 @@ export function initDeck(root: HTMLElement) {
     minimap.innerHTML = '';
     mmCells.length = 0;
     if (hslides.length === 0) return;
+
+    // Botón expandir: esquina libre de la grilla. Usa el invocador de comandos
+    // nativo (`command="show-modal"`) para abrir el <dialog> de vista general.
+    expandBtn = document.createElement('button');
+    expandBtn.type = 'button';
+    expandBtn.className =
+      'col-start-3 row-start-1 justify-self-end self-start flex size-5 cursor-pointer items-center justify-center rounded-[6px] border border-white/20 bg-white/5 text-white/55 transition-colors hover:border-sky-400 hover:text-sky-400';
+    expandBtn.setAttribute('aria-label', 'Abrir vista general');
+    expandBtn.innerHTML =
+      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="size-3"><path d="M15 3h6v6"/><path d="M9 21H3v-6"/><path d="M21 3l-7 7"/><path d="M3 21l7-7"/></svg>';
+    if (NATIVE_COMMAND) {
+      expandBtn.setAttribute('command', 'show-modal');
+      expandBtn.setAttribute('commandfor', panel.id);
+      expandBtn.addEventListener('click', renderOverview);
+    } else {
+      expandBtn.addEventListener('click', openOverview);
+    }
+    expandBtn.style.display = settings.overview ? '' : 'none';
+    minimap.appendChild(expandBtn);
 
     const center = holderIndex >= 0 ? holderIndex : Math.floor(hslides.length / 2);
     const left = center - 1;
@@ -329,17 +335,18 @@ export function initDeck(root: HTMLElement) {
   window.addEventListener('deck:settings', (e) => {
     const s = e.detail as { lock: boolean; overview: boolean; minimap: boolean };
     if (s.lock !== locked) setLock(s.lock);
-    overviewBtn.style.display = s.overview ? '' : 'none';
+    if (expandBtn) expandBtn.style.display = s.overview ? '' : 'none';
     minimap.style.display = s.minimap ? '' : 'none';
   });
 
   // ===== Teclado =====
   window.addEventListener('keydown', (e) => {
     if (e.key === 'o' || e.key === 'O') {
-      panel.classList.contains('opacity-100') ? closeOverview() : openOverview();
+      panel.open ? closeOverview() : openOverview();
       return;
     }
     if (e.key === 'Escape') return closeOverview();
+    if (panel.open) return;
 
     switch (e.key) {
       case 'ArrowRight': e.preventDefault(); goTo(current + 1); break;
@@ -361,7 +368,6 @@ export function initDeck(root: HTMLElement) {
   track.scrollLeft = hslides[start]?.offsetLeft ?? 0;
   if (holder && vslides[vstart]) holder.scrollTop = vslides[vstart].offsetTop;
 
-  overviewBtn.style.display = settings.overview ? '' : 'none';
   buildMinimap();
   updateMinimapActive();
   minimap.style.display = settings.minimap ? '' : 'none';

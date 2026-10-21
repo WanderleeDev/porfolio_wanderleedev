@@ -47,3 +47,23 @@
   mobile 390px. Bug corregido: el switch usaba hasAttribute('data-on') (siempre
   presente) y el CSS data-[on]: matcheaba cualquier valor -> se paso a
   comparar el valor con data-[on=true]:.
+
+## Cambio posterior (pedido del usuario)
+
+- T6 · minimapa + vista general · `deck-controller.ts`, `Deck.astro`:
+  - Se elimina el botón suelto 🔒 "Vertical libre": el bloqueo queda en el
+    engranaje (switch "Bloqueo vertical") y en el gate de tareas. Invalidado S3
+    en su parte de "los botones sueltos se mantienen".
+  - Se elimina el botón suelto ⊞ "Vista general"; ahora es un botón expandir
+    dentro del minimapa (celda libre de la grilla, esquina superior derecha).
+  - La vista general pasa de `<div>` con clases de opacidad a `<dialog>`
+    (`#deck-overview`) abierto con el **invocador de comandos nativo**
+    (`command="show-modal"` + `commandfor="deck-overview"`), con fallback a
+    `showModal()` si el navegador no soporta `commandForElement`.
+  - El minimapa ahora es un esquema en cruz con cinco cajas de 48px; con el
+    vertical bloqueado oculta Arriba/Abajo conservando su espacio.
+  - Evidencia (Chromium 1440x900): 0 botones sueltos, expand abre el dialog
+    (`open=true`, 5 celdas), Escape cierra, click en miniatura navega y cierra,
+    el switch "Vista general" oculta/muestra el expand, flechas no navegan con
+    el modal abierto, 0 errores de consola.
+

@@ -22,9 +22,6 @@ const { start = 1, vstart = 1, tasks = [] } = Astro.props;
 
   <div class="fixed z-10 top-5 left-5 text-sm text-slate-400 tabular-nums" data-counter></div>
 
-  <button class="fixed z-10 top-20 right-5 rounded-full border border-white/15 bg-slate-800 px-4 py-2 text-sm cursor-pointer" data-lock aria-pressed="true">🔒 Vertical bloqueado</button>
-  <button class="fixed z-10 bottom-5 left-5 rounded-full border border-white/15 bg-slate-800 px-4 py-2 text-sm cursor-pointer" data-overview>⊞ Vista general</button>
-
   {tasks.length > 0 && (
     <aside class="fixed z-10 top-18 right-5 w-60 rounded-2xl border border-white/10 bg-slate-800 p-4 text-sm">
       <div class="flex justify-between mb-2.5 text-xs uppercase tracking-widest text-slate-400">
@@ -39,9 +36,15 @@ const { start = 1, vstart = 1, tasks = [] } = Astro.props;
     </aside>
   )}
 
-  <div class="fixed inset-0 z-20 flex items-center justify-center bg-slate-950/95 opacity-0 pointer-events-none scale-[1.08] transition-all duration-300" data-overview-panel aria-hidden="true">
-    <div class="grid w-[min(92vw,1100px)] h-[min(86vh,720px)] gap-[1.5vmin]" data-ov-grid></div>
-  </div>
+  <dialog
+    id="deck-overview"
+    data-overview-panel
+    class="m-0 h-full w-full max-w-none max-h-none border-0 bg-slate-950/95 p-0 text-slate-50"
+  >
+    <div class="flex h-full w-full items-center justify-center">
+      <div class="grid w-[min(92vw,1100px)] h-[min(86vh,720px)] gap-[1.5vmin]" data-ov-grid></div>
+    </div>
+  </dialog>
 </div>
 
 <script>

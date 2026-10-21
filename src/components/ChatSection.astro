@@ -7,7 +7,7 @@ const lang = Astro.currentLocale as "es" | "en";
 const t = getTranslations(lang)("chat");
 ---
 
-<section class="w-full max-w-3xl" aria-label={t.title}>
+<section class="w-full max-w-5xl" aria-label={t.title}>
   <div class="relative">
     <ChatPanel client:load lang={lang} />
 
@@ -20,9 +20,9 @@ const t = getTranslations(lang)("chat");
         id="chat-pet"
         src="/pet/cat.json"
         lang={lang}
-        scale="2"
+        scale="4"
         sleep-after="45"
-        class="h-[90px] w-[72px] shrink-0"
+        class="h-[180px] w-[144px] shrink-0"
       ></pixel-pet>
     </div>
   </div>

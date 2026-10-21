@@ -55,18 +55,18 @@ export default function ChatPanel({ lang }: ChatPanelProps) {
 
     return (
         <div className="flex flex-col gap-3">
-            <div className="pr-28">
-                <div className="rounded-card border border-line bg-badge p-4">
+            <div className="pr-36">
+                <div className="flex min-h-[220px] items-center rounded-card border border-line bg-badge p-6">
                     {answer ? (
-                        <p className="font-sans text-sm whitespace-pre-wrap text-badge-ink">
+                        <p className="font-sans text-lg leading-[1.6] whitespace-pre-wrap text-badge-ink">
                             {answer}
                         </p>
                     ) : isBusy ? (
-                        <p className="font-sans text-sm text-badge-ink" role="status">
+                        <p className="font-sans text-lg text-badge-ink" role="status">
                             {t.typing}
                         </p>
                     ) : (
-                        <p className="font-sans text-sm text-badge-ink">{t.empty}</p>
+                        <p className="font-sans text-lg leading-[1.6] text-badge-ink">{t.empty}</p>
                     )}
                 </div>
             </div>
@@ -84,7 +84,7 @@ export default function ChatPanel({ lang }: ChatPanelProps) {
                     }}
                     placeholder={t.placeholder}
                     aria-label={t.placeholder}
-                    className="min-w-0 flex-1 rounded-full border border-line bg-field px-4 py-2 font-sans text-sm text-ink placeholder:text-muted focus:outline-none focus:border-ink"
+                    className="min-w-0 flex-1 rounded-full border border-line bg-field px-6 py-3.5 font-sans text-base text-ink placeholder:text-muted focus:outline-none focus:border-ink"
                 />
                 <div className="flex shrink-0 items-center gap-2">
                     {isBusy && (
@@ -93,7 +93,7 @@ export default function ChatPanel({ lang }: ChatPanelProps) {
                             onClick={stop}
                             aria-label={t.stop}
                             title={t.stop}
-                            className="flex size-9 items-center justify-center rounded-full border border-line font-sans text-xs font-bold uppercase tracking-[0.12em] text-soft transition-colors hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink"
+                            className="flex size-11 items-center justify-center rounded-full border border-line font-sans text-xs font-bold uppercase tracking-[0.12em] text-soft transition-colors hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink"
                         >
                             <span aria-hidden="true">■</span>
                         <span className="sr-only">{t.stop}</span>
@@ -102,7 +102,7 @@ export default function ChatPanel({ lang }: ChatPanelProps) {
                     <button
                         type="submit"
                         disabled={!input.trim() || isBusy}
-                        className="shrink-0 rounded-full bg-ink px-4 py-2 font-sans text-xs font-bold uppercase tracking-[0.12em] text-contrast transition hover:brightness-90 disabled:opacity-40 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink"
+                        className="shrink-0 rounded-full bg-ink px-6 py-3 font-sans text-sm font-bold uppercase tracking-[0.12em] text-contrast transition hover:brightness-90 disabled:opacity-40 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink"
                     >
                         {t.send}
                     </button>

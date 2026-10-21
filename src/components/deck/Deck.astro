@@ -7,7 +7,7 @@ interface Props {
 const { start = 1, vstart = 1, tasks = [] } = Astro.props;
 ---
 
-<div class="relative w-dvw h-dvh overflow-hidden bg-slate-900 text-slate-50 font-sans" data-deck data-start={start} data-vstart={vstart}>
+<div class="relative w-dvw h-dvh overflow-hidden  text-slate-50 font-sans" data-deck data-start={start} data-vstart={vstart}>
   <div
     class="relative h-full w-full flex overflow-x-auto overflow-y-hidden snap-x snap-mandatory scroll-smooth overscroll-contain [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
     data-track

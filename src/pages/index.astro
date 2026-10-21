@@ -5,6 +5,7 @@ import Hero from "../components/Hero.astro";
 import ThemePicker from "../components/ThemePicker.astro";
 import ChatSection from "../components/ChatSection.astro";
 import Icon from "astro-iconify";
+import Title from "../components/typography/Title.astro";
 import Deck from "../components/deck/Deck.astro";
 import Slide from "../components/deck/Slide.astro";
 import VStack from "../components/deck/VStack.astro";
@@ -16,6 +17,7 @@ const t = getTranslations(lang);
 const meta = t("metadata");
 const c = t("contactSection");
 const f = t("footer");
+const chat = t("chat");
 
 const links = [
   { icon: "lucide:mail", label: f.email, href: `mailto:${f.email}` },
@@ -32,15 +34,20 @@ const links = [
   <ThemePicker />
   <Deck start={1} vstart={1}>
     <Slide title={c.title}>
-      <div class="flex w-full max-w-3xl flex-col items-center gap-6">
+      <div class="flex w-full max-w-5xl flex-col items-center gap-10 md:gap-16">
         <div class="text-center">
-          <h2 class="text-4xl font-bold md:text-5xl">{c.title}</h2>
-          <p class="mx-auto mt-3 max-w-[46ch] font-sans text-[clamp(0.95rem,1.8vw,1.05rem)] leading-[1.6] text-soft">
+          <span class="font-sans text-xs font-bold uppercase tracking-[0.3em] text-muted">
+            {f.contactLabel}
+          </span>
+          <Title level={2} family="sans" size="clamp(3.5rem,8vw,7rem)" class="mt-4">
+            {c.title}
+          </Title>
+          <p class="mx-auto mt-6 max-w-[42ch] font-sans text-[clamp(1.1rem,2.4vw,1.5rem)] leading-[1.5] text-soft">
             {c.subtitle}
           </p>
         </div>
 
-        <ul class="flex flex-wrap items-center justify-center gap-3">
+        <ul class="flex flex-wrap items-center justify-center gap-4">
           {
             links.map((l) => (
               <li>
@@ -48,9 +55,9 @@ const links = [
                   href={l.href}
                   target={l.href.startsWith("http") ? "_blank" : undefined}
                   rel={l.href.startsWith("http") ? "noopener" : undefined}
-                  class="inline-flex items-center gap-2 rounded-full border border-line bg-surface px-4 py-2 font-sans text-sm text-ink transition-colors hover:bg-badge"
+                  class="inline-flex items-center gap-3 rounded-full border border-line bg-surface px-8 py-4 font-sans text-lg text-ink transition-colors hover:bg-badge"
                 >
-                  <Icon name={l.icon} class="size-4" aria-hidden="true" />
+                  <Icon name={l.icon} class="size-6" aria-hidden="true" />
                   {l.label}
                 </a>
               </li>
@@ -75,7 +82,17 @@ const links = [
     </Slide>
 
     <Slide title="Final">
-      <ChatSection />
+      <div class="flex w-full max-w-5xl flex-col items-center gap-8">
+        <div class="text-center">
+          <span class="font-sans text-xs font-bold uppercase tracking-[0.3em] text-muted">
+            {chat.title}
+          </span>
+          <p class="mt-3 font-sans text-[clamp(1.1rem,2.4vw,1.5rem)] leading-[1.5] text-soft">
+            {chat.subtitle}
+          </p>
+        </div>
+        <ChatSection />
+      </div>
     </Slide>
   </Deck>
 </BaseLayout>

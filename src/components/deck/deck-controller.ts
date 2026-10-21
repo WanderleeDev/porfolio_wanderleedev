@@ -243,8 +243,13 @@ export function initDeck(root: HTMLElement) {
       inner.style.transform = `scale(${scale})`;
       const clone = slide.cloneNode(true) as HTMLElement;
       clone.querySelectorAll('canvas,astro-island,script,style').forEach((el) => el.remove());
-      clone.removeAttribute('data-hslide');
-      clone.removeAttribute('data-title');
+      const stripData = (el: Element) => {
+        Array.from(el.attributes).forEach((a) => {
+          if (a.name.startsWith('data-')) el.removeAttribute(a.name);
+        });
+        el.querySelectorAll('*').forEach(stripData);
+      };
+      stripData(clone);
       inner.appendChild(clone);
       box.appendChild(inner);
       box.addEventListener('click', () => goTo(i, instant));

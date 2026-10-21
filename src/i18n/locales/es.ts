@@ -138,9 +138,8 @@ export const es = {
   },
 
   hero: {
-    title: "Software developer & IA.",
-    titleAccent: "diseño",
-    titleEnd: "producto.",
+    title: "Fullstack,",
+    titleSecond: "AI tools & desarrollo agéntico.",
     subtitle: "Stack principal",
   },
 

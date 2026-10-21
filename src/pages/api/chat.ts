@@ -110,6 +110,6 @@ export const POST: APIRoute = async ({ request }) => {
     });
 
     return createUIMessageStreamResponse({
-        stream: toUIMessageStream({ stream: result.stream, sendReasoning: false }),
+        stream: toUIMessageStream({ stream: result.stream, sendReasoning: true }),
     });
 };

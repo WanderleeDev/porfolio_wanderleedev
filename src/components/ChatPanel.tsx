@@ -3,6 +3,7 @@ import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport, type UIMessagePart } from "ai";
 import { getTranslations } from "../i18n/utils";
 import { ProjectsCard } from "./chat/ProjectsCard";
+import { ReasoningBlock } from "./chat/ReasoningBlock";
 import { TechnologiesCard } from "./chat/TechnologiesCard";
 import type { PortfolioProject, PortfolioStackCategory } from "../i18n/portfolio-data";
 
@@ -90,6 +91,23 @@ export default function ChatPanel({ lang }: ChatPanelProps) {
                         )
                     ) : (
                         parts.map((part, i) => {
+                            if (part.type === "reasoning") {
+                                const reasoning = part as { text?: string; state?: string };
+                                if (!reasoning.text?.trim()) return null;
+                                return (
+                                    <ReasoningBlock
+                                        key={i}
+                                        text={reasoning.text}
+                                        streaming={reasoning.state === "streaming"}
+                                        labels={{
+                                            thinking: t.thinking,
+                                            show: t.reasoningShow,
+                                            hide: t.reasoningHide,
+                                        }}
+                                    />
+                                );
+                            }
+
                             if (part.type === "text") {
                                 const text = (part as { text?: string }).text;
                                 return text ? (

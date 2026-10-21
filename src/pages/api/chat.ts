@@ -3,12 +3,20 @@ import {
     convertToModelMessages,
     createUIMessageStreamResponse,
     extractReasoningMiddleware,
+    stepCountIs,
     streamText,
+    tool,
     toUIMessageStream,
     wrapLanguageModel,
     type UIMessage,
 } from "ai";
 import { createOpenAICompatible } from "@ai-sdk/openai-compatible";
+import { z } from "zod";
+import {
+    filterProjects,
+    filterStack,
+    resolveLocale,
+} from "../../i18n/portfolio-data";
 
 export const prerender = false;
 
@@ -45,7 +53,11 @@ Contact: wanderleedev@gmail.com · github.com/WanderleeDev ·
 linkedin.com/in/wanderlee-max/
 
 Answer questions about the portfolio, the stack and the projects. Keep answers short
-and to the point. Reply in the same language the visitor writes in.`;
+and to the point. Reply in the same language the visitor writes in.
+
+When a visitor asks about your projects or your technology stack, call the
+showProjects or showStack tool to render a structured card instead of only listing
+them in text.`;
 
 export const POST: APIRoute = async ({ request }) => {
     if (!gatewayUrl || !gatewayKey || !gatewayModel) {
@@ -53,6 +65,7 @@ export const POST: APIRoute = async ({ request }) => {
     }
 
     const { messages }: { messages: UIMessage[] } = await request.json();
+    const locale = resolveLocale(request.headers.get("x-locale"));
 
     const llm = createOpenAICompatible({
         name: "wanderlee-gateway",
@@ -69,6 +82,31 @@ export const POST: APIRoute = async ({ request }) => {
         model,
         system: SYSTEM_PROMPT,
         messages: await convertToModelMessages(messages),
+        tools: {
+            showProjects: tool({
+                description:
+                    "Show WanderleeDev's featured portfolio projects with their description and technologies.",
+                inputSchema: z.object({
+                    focus: z
+                        .string()
+                        .optional()
+                        .describe("Optional filter, e.g. 'frontend', 'angular', 'ecommerce'"),
+                }),
+                execute: async ({ focus }) => ({ projects: filterProjects(locale, focus) }),
+            }),
+            showStack: tool({
+                description:
+                    "Show WanderleeDev's technology stack grouped by category (frontend, backend, AI, ...).",
+                inputSchema: z.object({
+                    category: z
+                        .string()
+                        .optional()
+                        .describe("Optional category filter, e.g. 'frontend', 'backend', 'ai'"),
+                }),
+                execute: async ({ category }) => ({ categories: filterStack(locale, category) }),
+            }),
+        },
+        stopWhen: stepCountIs(3),
     });
 
     return createUIMessageStreamResponse({

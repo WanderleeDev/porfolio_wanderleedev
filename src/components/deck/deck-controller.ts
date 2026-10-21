@@ -1,3 +1,5 @@
+import { loadSettings } from './deck-settings';
+
 type Cell = { type: 'h' | 'v'; i: number; row: number; col: number; title: string };
 
 // Clases Tailwind reutilizables
@@ -24,6 +26,7 @@ export function initDeck(root: HTMLElement) {
 
   const start = Number(root.dataset.start ?? 0);
   const vstart = Number(root.dataset.vstart ?? 0);
+  const settings = loadSettings();
 
   const prevBtn = q<HTMLButtonElement>('[data-prev]')!;
   const nextBtn = q<HTMLButtonElement>('[data-next]')!;
@@ -39,7 +42,7 @@ export function initDeck(root: HTMLElement) {
 
   let current = start;
   let vCurrent = vstart;
-  let locked = !!holder;
+  let locked = settings.lock;
 
   // ===== Movimiento =====
   function goTo(i: number, behavior: ScrollBehavior = 'smooth') {
@@ -77,6 +80,7 @@ export function initDeck(root: HTMLElement) {
       holder.classList.toggle('snap-mandatory', !locked);
       holder.classList.toggle('snap-none', locked);
     }
+    updateMinimapActive();
   }
 
   function setLock(on: boolean) {
@@ -211,6 +215,55 @@ export function initDeck(root: HTMLElement) {
     if (e.target === panel) closeOverview();
   });
 
+  // ===== Minimapa =====
+  const minimap = document.createElement('div');
+  minimap.className =
+    'fixed bottom-6 right-6 z-30 flex gap-1.5 rounded-2xl border border-white/10 bg-slate-900/80 p-2 shadow-lg backdrop-blur-md';
+  minimap.setAttribute('data-minimap', '');
+  minimap.setAttribute('aria-label', 'Minimapa del deck');
+  minimap.style.display = 'none';
+  root.appendChild(minimap);
+
+  const mmThumbs: HTMLButtonElement[] = [];
+  function buildMinimap() {
+    minimap.innerHTML = '';
+    mmThumbs.length = 0;
+    hslides.forEach((slide, i) => {
+      const box = document.createElement('button');
+      box.type = 'button';
+      box.setAttribute('aria-label', slide.dataset.title ?? `Slide ${i + 1}`);
+      box.className =
+        'relative block h-[75px] w-[120px] shrink-0 cursor-pointer overflow-hidden rounded-lg border-2 border-transparent bg-slate-800/60 transition-colors hover:border-sky-400';
+      const rect = slide.getBoundingClientRect();
+      const scale = 75 / (rect.height || window.innerHeight);
+      const inner = document.createElement('div');
+      inner.className = 'absolute inset-0 origin-top-left';
+      inner.style.width = `${rect.width}px`;
+      inner.style.height = `${rect.height}px`;
+      inner.style.transform = `scale(${scale})`;
+      const clone = slide.cloneNode(true) as HTMLElement;
+      clone.querySelectorAll('canvas,astro-island,script,style').forEach((el) => el.remove());
+      clone.removeAttribute('data-hslide');
+      clone.removeAttribute('data-title');
+      inner.appendChild(clone);
+      box.appendChild(inner);
+      box.addEventListener('click', () => goTo(i, instant));
+      minimap.appendChild(box);
+      mmThumbs.push(box);
+    });
+  }
+
+  function updateMinimapActive() {
+    mmThumbs.forEach((b, i) => b.classList.toggle('border-sky-400', i === current));
+  }
+
+  window.addEventListener('deck:settings', (e) => {
+    const s = e.detail as { lock: boolean; overview: boolean; minimap: boolean };
+    if (s.lock !== locked) setLock(s.lock);
+    overviewBtn.style.display = s.overview ? '' : 'none';
+    minimap.style.display = s.minimap ? '' : 'none';
+  });
+
   // ===== Teclado =====
   window.addEventListener('keydown', (e) => {
     if (e.key === 'o' || e.key === 'O') {
@@ -238,5 +291,11 @@ export function initDeck(root: HTMLElement) {
   // ===== Estado inicial =====
   track.scrollLeft = hslides[start]?.offsetLeft ?? 0;
   if (holder && vslides[vstart]) holder.scrollTop = vslides[vstart].offsetTop;
+
+  overviewBtn.style.display = settings.overview ? '' : 'none';
+  buildMinimap();
+  updateMinimapActive();
+  minimap.style.display = settings.minimap ? '' : 'none';
+
   updateUI();
 }

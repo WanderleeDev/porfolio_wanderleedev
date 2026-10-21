@@ -150,8 +150,8 @@ export function initDeck(root: HTMLElement) {
 
   function renderOverview() {
     // El número de columnas y filas depende de cuántos slides haya
-    grid.style.gridTemplateColumns = `repeat(${hslides.length}, 1fr)`;
-    grid.style.gridTemplateRows = `repeat(${Math.max(vslides.length, 1)}, 1fr)`;
+    grid.style.gridTemplateColumns = `repeat(${hslides.length}, minmax(0, 1fr))`;
+    grid.style.gridTemplateRows = `repeat(${Math.max(vslides.length, 1)}, minmax(0, 1fr))`;
     grid.innerHTML = '';
 
     cells.forEach((c) => {

@@ -39,10 +39,13 @@ const { start = 1, vstart = 1, tasks = [] } = Astro.props;
   <dialog
     id="deck-overview"
     data-overview-panel
-    class="m-0 h-full w-full max-w-none max-h-none border-0 bg-slate-950/95 p-0 text-slate-50"
+    class="m-0 h-full w-full max-w-none max-h-none overflow-hidden border-0 bg-slate-950/95 p-0 text-slate-50 transition-opacity duration-300 starting:opacity-0"
   >
     <div class="flex h-full w-full items-center justify-center">
-      <div class="grid w-[min(92vw,1100px)] h-[min(86vh,720px)] gap-[1.5vmin]" data-ov-grid></div>
+      <div
+        class="grid w-[min(92vw,1100px)] h-[min(86vh,720px)] gap-[1.5vmin] transition-all duration-1000 delay-150 ease-out-elastic starting:scale-0"
+        data-ov-grid
+      ></div>
     </div>
   </dialog>
 </div>

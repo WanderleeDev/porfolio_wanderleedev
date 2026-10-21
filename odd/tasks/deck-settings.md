@@ -66,4 +66,15 @@
     (`open=true`, 5 celdas), Escape cierra, click en miniatura navega y cierra,
     el switch "Vista general" oculta/muestra el expand, flechas no navegan con
     el modal abierto, 0 errores de consola.
+  - T7 · animación elástica · `Deck.astro`, `deck-controller.ts`: la apertura
+    reusa el mismo patrón del diálogo de `FeaturedWork.astro`
+    (`ease-out-elastic` + `starting:scale-0`). El `scale-0` va en el grid, no en
+    el dialog, porque el dialog ocupa todo el viewport; el dialog hace
+    `transition-opacity` con `starting:opacity-0`. `overflow-hidden` en el
+    dialog evita scrollbars transitorias durante el rebote (overshoot ~1.14).
+    Además `renderOverview` usa `minmax(0, 1fr)` para que las columnas no
+    desborden en mobile (`1fr` heredaba min-content).
+  - Evidencia T7: muestreo de `scale` computado 0 → 0.62 → 0.99 → 1.0002 →
+    `none`; el pico elástico ~1.14 a los 250ms; se reproduce en cada apertura;
+    `scrollWidth === clientWidth` en 1440x900 y 390x844.
 

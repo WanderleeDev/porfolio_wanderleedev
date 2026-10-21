@@ -54,28 +54,26 @@ export default function ChatPanel({ lang }: ChatPanelProps) {
     };
 
     return (
-        <div className="flex min-h-0 flex-1 flex-col">
-            <div className="flex min-h-0 flex-1 flex-col overflow-y-auto px-4 pb-4 pr-32">
-                <div className="my-auto">
-                    <div className="rounded-card border border-line bg-badge p-4">
-                        {answer ? (
-                            <p className="font-sans text-sm whitespace-pre-wrap text-badge-ink">
-                                {answer}
-                            </p>
-                        ) : isBusy ? (
-                            <p className="font-sans text-sm text-badge-ink" role="status">
-                                {t.typing}
-                            </p>
-                        ) : (
-                            <p className="font-sans text-sm text-badge-ink">{t.empty}</p>
-                        )}
-                    </div>
+        <div className="flex flex-col gap-3">
+            <div className="pr-28">
+                <div className="rounded-card border border-line bg-badge p-4">
+                    {answer ? (
+                        <p className="font-sans text-sm whitespace-pre-wrap text-badge-ink">
+                            {answer}
+                        </p>
+                    ) : isBusy ? (
+                        <p className="font-sans text-sm text-badge-ink" role="status">
+                            {t.typing}
+                        </p>
+                    ) : (
+                        <p className="font-sans text-sm text-badge-ink">{t.empty}</p>
+                    )}
                 </div>
             </div>
 
             <form
                 onSubmit={onSubmit}
-                className="flex items-center gap-2 border-t border-line px-4 py-3"
+                className="flex items-center gap-2"
             >
                 <input
                     ref={textInputRef}
@@ -112,7 +110,7 @@ export default function ChatPanel({ lang }: ChatPanelProps) {
             </form>
 
             {error && (
-                <p className="px-4 pb-2 font-sans text-sm text-red-500" role="alert">
+                <p className="font-sans text-sm text-red-500" role="alert">
                     {t.error}
                 </p>
             )}

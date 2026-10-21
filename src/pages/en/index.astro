@@ -9,6 +9,8 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
 import "../../styles/global.css";
 import Hero from "../../components/Hero.astro";
 import ThemePicker from "../../components/ThemePicker.astro";
+import ChatSection from "../../components/ChatSection.astro";
+import Icon from "astro-iconify";
 import Deck from "../../components/deck/Deck.astro";
 import Slide from "../../components/deck/Slide.astro";
 import VStack from "../../components/deck/VStack.astro";
@@ -18,15 +20,49 @@ import { getTranslations } from "../../i18n/utils";
 const lang = Astro.currentLocale as "es" | "en";
 const t = getTranslations(lang);
 const meta = t("metadata");
+const c = t("contactSection");
+const f = t("footer");
+
+const links = [
+  { icon: "lucide:mail", label: f.email, href: `mailto:${f.email}` },
+  { icon: "lucide:github", label: "github.com/WanderleeDev", href: "https://github.com/WanderleeDev" },
+  {
+    icon: "lucide:linkedin",
+    label: "linkedin.com/in/wanderlee-max",
+    href: "https://linkedin.com/in/wanderlee-max",
+  },
+];
 ---
 
 <BaseLayout title={meta.title} description={meta.description}>
   <ThemePicker />
   <Deck start={1} vstart={1}>
-    <Slide title="Start">
-      <div>
-        <span class="text-sky-400 text-xs uppercase tracking-widest">Welcome</span>
-        <h2 class="text-5xl font-bold mt-2">My presentation</h2>
+    <Slide title={c.title}>
+      <div class="flex w-full max-w-3xl flex-col items-center gap-6">
+        <div class="text-center">
+          <h2 class="text-4xl font-bold md:text-5xl">{c.title}</h2>
+          <p class="mx-auto mt-3 max-w-[46ch] font-sans text-[clamp(0.95rem,1.8vw,1.05rem)] leading-[1.6] text-soft">
+            {c.subtitle}
+          </p>
+        </div>
+
+        <ul class="flex flex-wrap items-center justify-center gap-3">
+          {
+            links.map((l) => (
+              <li>
+                <a
+                  href={l.href}
+                  target={l.href.startsWith("http") ? "_blank" : undefined}
+                  rel={l.href.startsWith("http") ? "noopener" : undefined}
+                  class="inline-flex items-center gap-2 rounded-full border border-line bg-surface px-4 py-2 font-sans text-sm text-ink transition-colors hover:bg-badge"
+                >
+                  <Icon name={l.icon} class="size-4" aria-hidden="true" />
+                  {l.label}
+                </a>
+              </li>
+            ))
+          }
+        </ul>
       </div>
     </Slide>
 
@@ -45,7 +81,7 @@ const meta = t("metadata");
     </Slide>
 
     <Slide title="End">
-      <h2 class="text-5xl font-bold">Thanks</h2>
+      <ChatSection />
     </Slide>
   </Deck>
 </BaseLayout>

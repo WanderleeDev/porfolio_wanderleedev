@@ -1,0 +1,59 @@
+---
+import Icon from "astro-iconify";
+import ChatPanel from "./ChatPanel.tsx";
+import { getTranslations } from "../i18n/utils";
+
+const lang = Astro.currentLocale as "es" | "en";
+const t = getTranslations(lang)("chat");
+---
+
+<section class="w-full max-w-3xl" aria-label={t.title}>
+  <div class="relative">
+    <ChatPanel client:load lang={lang} />
+
+    <div
+      id="chat-pet-stage"
+      aria-label={t.pet}
+      class="pointer-events-none absolute right-0 top-0 flex items-center justify-center"
+    >
+      <pixel-pet
+        id="chat-pet"
+        src="/pet/cat.json"
+        lang={lang}
+        scale="2"
+        sleep-after="45"
+        class="h-[90px] w-[72px] shrink-0"
+      ></pixel-pet>
+    </div>
+  </div>
+</section>
+
+<script>
+  import "@wanderleedev/pixel-pet/define";
+
+  const pet = document.getElementById("chat-pet") as (HTMLElement & {
+    feed?: (e: string) => void;
+  }) | null;
+
+  let meowAudio: HTMLAudioElement | null = null;
+  let lastMeow = 0;
+
+  const meow = () => {
+    try {
+      if (!meowAudio) {
+        meowAudio = new Audio("/meowth.mp3");
+        meowAudio.volume = 0.35;
+      }
+      const now = Date.now();
+      if (now - lastMeow < 2500) return;
+      lastMeow = now;
+      meowAudio.currentTime = 0;
+      void meowAudio.play()?.catch(() => undefined);
+    } catch (e) {}
+  };
+
+  window.addEventListener("chat:event", ((e: CustomEvent<string>) => {
+    pet?.feed?.(e.detail);
+    if (e.detail === "token") meow();
+  }) as EventListener);
+</script>

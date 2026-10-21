@@ -138,10 +138,9 @@ export const es = {
   },
 
   hero: {
-    title: "Fullstack,",
-    titleAccent: "agéntico",
-    titleEnd: "producto,",
-    titleThird: "contando con IA.",
+    title: "Software developer & IA.",
+    titleAccent: "diseño",
+    titleEnd: "producto.",
     subtitle: "Stack principal",
   },
 
@@ -198,7 +197,7 @@ export const es = {
   },
 
   footer: {
-    tagline: "AI developer",
+    tagline: "Software developer",
     contactLabel: "Contacto",
     email: "wanderleedev@gmail.com",
     ctaLabel: "Empezar un proyecto",

@@ -23,7 +23,6 @@ const t = getTranslations(lang);
 const heroWordsName = "Wanderlee Dev".split(" ");
 const heroWordsRoleLine1 = t("hero").title.split(" ");
 const heroWordsRoleLine2 = [t("hero").titleAccent, "&", t("hero").titleEnd];
-const heroWordsRoleLine3 = [t("hero").titleThird];
 
 const stackLogos = [
   { icon: "devicon:postgresql", alt: "PostgreSQL", color: "#336791", rotate: "-rotate-6" },
@@ -83,17 +82,6 @@ const stackLogos = [
     <br />
     {
       heroWordsRoleLine2.map((w, i) => (
-        <span
-          class="hero-word inline-block origin-bottom [transform:scaleY(0)] motion-reduce:[transform:none]"
-          aria-hidden="true"
-        >
-          {w}&nbsp;
-        </span>
-      ))
-    }
-    <br />
-    {
-      heroWordsRoleLine3.map((w, i) => (
         <span
           class="hero-word inline-block origin-bottom [transform:scaleY(0)] motion-reduce:[transform:none]"
           aria-hidden="true"

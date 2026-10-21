@@ -222,6 +222,22 @@ export const en = {
     select: "Pick track",
   },
 
+  credits: {
+    title: "Credits",
+    open: "View credits",
+    close: "Close credits",
+    pause: "Pause",
+    resume: "Resume",
+    restart: "Restart",
+    closing: "WanderleeDev",
+    roles: {
+      role: "Fullstack Developer",
+      stack: "Stack",
+      projects: "Projects",
+      contact: "Contact",
+    },
+  },
+
   footer: {
     tagline: "Fullstack developer",
     contactLabel: "Contact",

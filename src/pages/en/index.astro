@@ -10,6 +10,7 @@ import "../../styles/global.css";
 import Hero from "../../components/Hero.astro";
 import ThemePicker from "../../components/ThemePicker.astro";
 import ChatSection from "../../components/ChatSection.astro";
+import Credits from "../../components/credits/Credits.astro";
 import Icon from "astro-iconify";
 import Deck from "../../components/deck/Deck.astro";
 import Slide from "../../components/deck/Slide.astro";
@@ -36,6 +37,7 @@ const links = [
 
 <BaseLayout title={meta.title} description={meta.description}>
   <ThemePicker />
+  <Credits lang="en" />
   <Deck start={1} vstart={1}>
     <Slide title={c.title}>
       <div class="flex w-full max-w-3xl flex-col items-center gap-6">

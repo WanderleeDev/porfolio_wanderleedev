@@ -8,24 +8,15 @@
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import "../../styles/global.css";
 import Hero from "../../components/Hero.astro";
-import FeaturedWork from "../../components/FeaturedWork.astro";
-import TechStack from "../../components/TechStack.astro";
-import ContactSection from "../../components/ContactSection.astro";
-import Footer from "../../components/Footer.astro";
 import ThemePicker from "../../components/ThemePicker.astro";
 import { getTranslations } from "../../i18n/utils";
 
 const lang = Astro.currentLocale as "es" | "en";
 const t = getTranslations(lang);
 const meta = t("metadata");
-const projects = t("projects").list;
 ---
 
 <BaseLayout title={meta.title} description={meta.description}>
   <ThemePicker />
   <Hero />
-  <FeaturedWork items={projects} />
-  <TechStack />
-  <ContactSection />
-  <Footer />
 </BaseLayout>

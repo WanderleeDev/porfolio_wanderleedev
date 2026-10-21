@@ -57,6 +57,7 @@ routing the player to the other slides, new icon sets.
   `src/pages/index.astro`.
 - [x] T4 — Verify: production build, deck keyboard behavior, playback,
   track switching, theming in light/dark/neon.
+- [x] T5 — Cover the player logic with `bun:test` after the review correction.
 
 ## Acceptance criteria
 
@@ -89,6 +90,22 @@ routing the player to the other slides, new icon sets.
 - Fan geometry moved to `svh`-relative sizes after the first render clipped on
   mobile and collided with the deck's bottom control at 720px height.
 
+## T5: unit coverage for the player logic
+
+Review correction (finding R3-004): the component's contract shipped with only
+manual evidence.
+
+- `src/components/music-player/player-core.ts` extracts the pure logic:
+  `formatTime`, `clamp`, `wrapIndex`, `nextTrackIndex`, `seekPercent`,
+  `seekTime`, `applyVolumeInput`, `toggleMute`, `transportLabelKey`,
+  `isGuardedDeckKey`.
+- `src/components/music-player/player-core.test.ts` covers every export with
+  `bun:test`; `bun test` reports 9 pass / 0 fail.
+- `src/components/MusicPlayer.astro` delegates to those helpers instead of
+  keeping duplicated inline copies. Runtime behaviour unchanged.
+- `package.json` gains `"test": "bun test"`.
+- Commit `071deb9`.
+
 ## Verification evidence
 
 - Card selection syncs cover, title, artist and `aria-pressed`; the demo clip
@@ -96,6 +113,8 @@ routing the player to the other slides, new icon sets.
 - Arrow keys pressed with focus inside the player do not scroll the deck
   (`scrollTop` unchanged).
 - Light, dark and neon render with tokens only.
+- `bun test`: 9 pass, 0 fail, 18 assertions.
+- `bun run build`: completes, both locales prerendered.
 - Known limitation: `.fan-card` rotations overflow the fan box by ~60px, so at
   720px viewport height the deck's fixed down button grazes the bottom tips of
   the outer cards. The deck's fixed side arrows also overlap the player card on
@@ -106,4 +125,6 @@ routing the player to the other slides, new icon sets.
 - Replace `DEMO_SRC` (`/meowth.mp3`, 0.63s) with one real mp3 per track; the
   card's `data-src` is the single point of change if each track gets its own
   `src`.
+- DOM-level coverage of the event wiring (click, ended, keydown) still needs a
+  DOM harness; the current suite covers the pure logic only.
 

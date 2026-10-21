@@ -4,9 +4,11 @@
  * Posición fija esquina superior derecha.
  * Estilos: utilidades Tailwind (el reveal del panel usa `starting:`).
  */
+import Icon from "astro-iconify";
 
 const pathname = Astro.url.pathname;
 const currentLang = pathname.startsWith("/en") ? "en" : "es";
+const isEn = currentLang === "en";
 
 const altLang = currentLang === "es" ? "en" : "es";
 const altPath  = currentLang === "es"
@@ -36,6 +38,16 @@ const settingIcon = "size-4 shrink-0 opacity-70 [&_svg]:size-full";
 ---
 
 <div class="fixed top-5 right-5 z-[999] flex items-center gap-2" id="theme-picker" transition:animate={false}>
+
+  <!-- Vista de créditos -->
+  <button
+    class={trigger}
+    id="credits-trigger"
+    type="button"
+    aria-label={isEn ? "View credits" : "Ver créditos"}
+  >
+    <Icon name="lucide:scroll-text" class="size-5" aria-hidden="true" />
+  </button>
 
   <!-- Selector de idioma -->
   <div class="relative">
@@ -321,6 +333,15 @@ const settingIcon = "size-4 shrink-0 opacity-70 [&_svg]:size-full";
 
   document.addEventListener("astro:page-load", bootPicker);
   bootPicker();
+
+  const creditsTrigger = document.getElementById("credits-trigger");
+  if (creditsTrigger && creditsTrigger.dataset.wired !== "true") {
+    creditsTrigger.dataset.wired = "true";
+    creditsTrigger.addEventListener("click", (e) => {
+      e.stopPropagation();
+      document.dispatchEvent(new CustomEvent("credits:toggle"));
+    });
+  }
 
   // Escuchar cambios del sistema (una vez por carga completa)
   window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => {

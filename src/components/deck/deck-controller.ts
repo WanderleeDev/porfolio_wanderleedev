@@ -340,8 +340,20 @@ export function initDeck(root: HTMLElement) {
     minimap.style.display = s.minimap ? '' : 'none';
   });
 
+  // Otro modal abierto (ej. la vista de créditos) toma el foco: el deck no
+  // se navega con las flechas mientras esté.
+  const otherModalOpen = () =>
+    [...document.querySelectorAll('dialog[open]')].some((d) => d.id !== panel.id);
+
+  const NAV_KEYS = new Set(['ArrowRight', 'ArrowLeft', 'ArrowUp', 'ArrowDown', 'Home', 'End', ' ']);
+
   // ===== Teclado =====
   window.addEventListener('keydown', (e) => {
+    if (otherModalOpen()) {
+      // Sin preventDefault el navegador scrollea el track del deck por su cuenta.
+      if (NAV_KEYS.has(e.key)) e.preventDefault();
+      return;
+    }
     if (e.key === 'o' || e.key === 'O') {
       panel.open ? closeOverview() : openOverview();
       return;

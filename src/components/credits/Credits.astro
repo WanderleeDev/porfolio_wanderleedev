@@ -1,0 +1,302 @@
+---
+/**
+ * Vista de créditos: texto que sube en loop, al estilo créditos de película.
+ * Overlay modal: el deck queda detrás y no se navega con las flechas.
+ */
+import { getCredits } from "../../i18n/credits";
+
+interface Props {
+  lang: "es" | "en";
+}
+
+const { lang } = Astro.props;
+const t = getCredits(lang);
+const isEn = lang === "en";
+const labels = {
+  open: isEn ? "View credits" : "Ver créditos",
+  close: isEn ? "Close credits" : "Cerrar créditos",
+  pause: isEn ? "Pause" : "Pausar",
+  resume: isEn ? "Resume" : "Continuar",
+  restart: isEn ? "Restart" : "Reiniciar",
+  title: isEn ? "Credits" : "Créditos",
+};
+
+const blocks = t.blocks;
+---
+
+<dialog
+  id="deck-credits"
+  data-credits
+  data-pause-label={labels.pause}
+  data-resume-label={labels.resume}
+  aria-label={labels.title}
+  class="m-0 h-dvh w-dvw max-h-none max-w-none border-0 bg-transparent p-0 text-ink"
+>
+  <div class="relative flex h-full w-full flex-col overflow-hidden" data-credits-root>
+    <div class="flex-1 overflow-hidden" data-credits-viewport>
+      <div class="flex w-full flex-col items-center gap-16 px-6 py-[45vh] text-center" data-credits-track>
+        {
+          blocks.map((block) => (
+            <section class="flex w-full max-w-3xl flex-col items-center gap-3" data-credits-block={block.id}>
+              <h2 class="font-fira-sans-extra-condensed text-[clamp(0.8rem,1.6vw,1.1rem)] font-bold uppercase tracking-[0.42em] text-muted">
+                {block.label}
+              </h2>
+              {block.title && (
+                <p class="font-fira-sans-extra-condensed text-[clamp(2rem,6vw,4.5rem)] font-bold uppercase leading-[0.95] tracking-[0.02em] text-ink">
+                  {block.title}
+                </p>
+              )}
+              {block.lines && (
+                <div class="flex flex-col items-center gap-3">
+                  {block.lines.map((line) => (
+                    <p
+                      class:list={[
+                        "max-w-[46ch] font-sans leading-[1.45]",
+                        line.variant === "heading"
+                          ? "font-fira-sans-extra-condensed text-[clamp(1.1rem,2.6vw,1.9rem)] uppercase tracking-[0.08em] text-ink"
+                          : "text-[clamp(0.9rem,1.7vw,1.1rem)] text-soft",
+                      ]}
+                    >
+                      {line.text}
+                    </p>
+                  ))}
+                </div>
+              )}
+              {block.links && (
+                <ul class="flex flex-col items-center gap-2">
+                  {block.links.map((link) => (
+                    <li>
+                      <a
+                        href={link.href}
+                        target={link.href.startsWith("http") ? "_blank" : undefined}
+                        rel={link.href.startsWith("http") ? "noopener" : undefined}
+                        class="font-sans text-[clamp(0.9rem,1.7vw,1.1rem)] text-ink underline decoration-line underline-offset-4 transition-colors hover:text-soft"
+                      >
+                        {link.label}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </section>
+          ))
+        }
+        <p class="font-fira-sans-extra-condensed text-[clamp(2.5rem,8vw,6rem)] font-bold uppercase tracking-[0.06em] text-ink">
+          {t.closing}
+        </p>
+      </div>
+    </div>
+
+    <div class="absolute bottom-6 right-6 z-20 flex items-center gap-2">
+      <button
+        type="button"
+        data-credits-pause
+        aria-label={labels.pause}
+        class="flex size-11 items-center justify-center rounded-full border border-line bg-surface/80 text-ink backdrop-blur-md transition-colors hover:bg-badge"
+      >
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true" class="size-4">
+          <path d="M9 5v14M15 5v14" />
+        </svg>
+      </button>
+      <button
+        type="button"
+        data-credits-restart
+        aria-label={labels.restart}
+        class="flex size-11 items-center justify-center rounded-full border border-line bg-surface/80 text-ink backdrop-blur-md transition-colors hover:bg-badge"
+      >
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="size-4">
+          <path d="M3 12a9 9 0 1 0 3-6.7" />
+          <path d="M3 4v5h5" />
+        </svg>
+      </button>
+      <button
+        type="button"
+        data-credits-close
+        aria-label={labels.close}
+        class="flex size-11 items-center justify-center rounded-full border border-line bg-surface/80 text-ink backdrop-blur-md transition-colors hover:bg-badge"
+      >
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true" class="size-4">
+          <path d="M18 6 6 18M6 6l12 12" />
+        </svg>
+      </button>
+    </div>
+  </div>
+</dialog>
+
+<style>
+  dialog[data-credits] {
+    color: var(--color-ink);
+  }
+
+  dialog[data-credits]::backdrop {
+    background-color: color-mix(in srgb, var(--page-bg-color) 94%, transparent);
+    backdrop-filter: blur(10px);
+  }
+
+  [data-credits-viewport] {
+    -webkit-mask-image: linear-gradient(
+      to bottom,
+      transparent 0,
+      #000 14%,
+      #000 86%,
+      transparent 100%
+    );
+    mask-image: linear-gradient(
+      to bottom,
+      transparent 0,
+      #000 14%,
+      #000 86%,
+      transparent 100%
+    );
+  }
+
+  [data-credits-track] {
+    animation: credits-rise var(--credits-duration, 48s) linear infinite;
+    will-change: transform;
+  }
+
+  [data-credits][data-paused="true"] [data-credits-track] {
+    animation-play-state: paused;
+  }
+
+  @keyframes credits-rise {
+    from {
+      transform: translateY(0);
+    }
+
+    to {
+      transform: translateY(-50%);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    [data-credits-viewport] {
+      overflow-y: auto;
+      -webkit-mask-image: none;
+      mask-image: none;
+    }
+
+    [data-credits-track] {
+      animation: none;
+    }
+  }
+</style>
+
+<script>
+  const CREDITS_SPEED_PX_PER_SECOND = 45;
+
+  function isTyping(target: EventTarget | null): boolean {
+    if (!(target instanceof HTMLElement)) return false;
+    const tag = target.tagName;
+    return (
+      tag === "INPUT" ||
+      tag === "TEXTAREA" ||
+      tag === "SELECT" ||
+      target.isContentEditable
+    );
+  }
+
+  function initCredits() {
+    const dialog = document.querySelector<HTMLDialogElement>("dialog[data-credits]");
+    if (!dialog || dialog.dataset.wired === "true") return;
+    dialog.dataset.wired = "true";
+
+    const track = dialog.querySelector<HTMLElement>("[data-credits-track]")!;
+    const viewport = dialog.querySelector<HTMLElement>("[data-credits-viewport]")!;
+    const pauseBtn = dialog.querySelector<HTMLButtonElement>("[data-credits-pause]")!;
+    const restartBtn = dialog.querySelector<HTMLButtonElement>("[data-credits-restart]")!;
+    const closeBtn = dialog.querySelector<HTMLButtonElement>("[data-credits-close]")!;
+
+    const pauseLabel = dialog.dataset.pauseLabel ?? "Pausar";
+    const resumeLabel = dialog.dataset.resumeLabel ?? "Continuar";
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    const original = [...track.children];
+    let manualPaused = false;
+    let hovering = false;
+
+    function buildTrack(copies: number) {
+      const nodes: Node[] = [];
+      for (let i = 0; i < copies; i++) {
+        for (const child of original) nodes.push(child.cloneNode(true));
+      }
+      track.replaceChildren(...nodes);
+    }
+
+    function measure() {
+      if (reduced) return;
+      const height = track.scrollHeight / 2;
+      if (height <= 0) return;
+      const seconds = Math.max(20, Math.round(height / CREDITS_SPEED_PX_PER_SECOND));
+      track.style.setProperty("--credits-duration", `${seconds}s`);
+    }
+
+    function restart() {
+      measure();
+      track.style.animation = "none";
+      void track.offsetHeight;
+      track.style.animation = "";
+    }
+    function syncPaused() {
+      const paused = manualPaused || hovering;
+      if (paused) {
+        dialog.setAttribute("data-paused", "true");
+      } else {
+        dialog.removeAttribute("data-paused");
+      }
+      pauseBtn.setAttribute("aria-label", paused ? resumeLabel : pauseLabel);
+      pauseBtn.setAttribute("aria-pressed", String(manualPaused));
+    }
+
+    pauseBtn.addEventListener("click", () => {
+      manualPaused = !manualPaused;
+      syncPaused();
+    });
+
+    restartBtn.addEventListener("click", restart);
+    closeBtn.addEventListener("click", () => dialog.close());
+
+    viewport.addEventListener("mouseenter", () => {
+      hovering = true;
+      syncPaused();
+    });
+    viewport.addEventListener("mouseleave", () => {
+      hovering = false;
+      syncPaused();
+    });
+
+    dialog.addEventListener("close", () => {
+      manualPaused = false;
+      hovering = false;
+      syncPaused();
+    });
+
+    function open() {
+      if (dialog.open) return;
+      dialog.showModal();
+      buildTrack(2);
+      restart();
+    }
+
+    document.addEventListener("credits:toggle", () => {
+      if (dialog.open) {
+        dialog.close();
+        return;
+      }
+      open();
+    });
+
+    window.addEventListener("keydown", (e) => {
+      if (e.key !== "c" || e.metaKey || e.ctrlKey || e.altKey) return;
+      if (isTyping(e.target)) return;
+      if (dialog.open) {
+        dialog.close();
+        return;
+      }
+      open();
+    });
+  }
+
+  document.addEventListener("astro:page-load", initCredits);
+  initCredits();
+</script>

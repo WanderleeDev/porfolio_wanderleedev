@@ -9,6 +9,10 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
 import "../../styles/global.css";
 import Hero from "../../components/Hero.astro";
 import ThemePicker from "../../components/ThemePicker.astro";
+import Deck from "../../components/deck/Deck.astro";
+import Slide from "../../components/deck/Slide.astro";
+import VStack from "../../components/deck/VStack.astro";
+import VSlide from "../../components/deck/VSlide.astro";
 import { getTranslations } from "../../i18n/utils";
 
 const lang = Astro.currentLocale as "es" | "en";
@@ -18,5 +22,30 @@ const meta = t("metadata");
 
 <BaseLayout title={meta.title} description={meta.description}>
   <ThemePicker />
-  <Hero />
+  <Deck start={1} vstart={1}>
+    <Slide title="Start">
+      <div>
+        <span class="text-sky-400 text-xs uppercase tracking-widest">Welcome</span>
+        <h2 class="text-5xl font-bold mt-2">My presentation</h2>
+      </div>
+    </Slide>
+
+    <Slide title="Main">
+      <VStack>
+        <VSlide title="Top">
+          <h3 class="text-4xl font-bold">Top content</h3>
+        </VSlide>
+        <VSlide title="Main" class="!p-0">
+          <Hero />
+        </VSlide>
+        <VSlide title="Bottom">
+          <h3 class="text-4xl font-bold">Bottom content</h3>
+        </VSlide>
+      </VStack>
+    </Slide>
+
+    <Slide title="End">
+      <h2 class="text-5xl font-bold">Thanks</h2>
+    </Slide>
+  </Deck>
 </BaseLayout>

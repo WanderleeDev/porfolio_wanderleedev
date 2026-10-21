@@ -2,8 +2,9 @@ export const en = {
   metadata: {
     title: "Portfolio WanderleeDev",
     description:
-      "Portfolio of WanderleeDev, a web developer showcasing projects and skills.",
-    keywords: "portfolio, WanderleeDev, web developer, projects, skills",
+      "Portfolio of WanderleeDev, a fullstack developer focused on agentic AI, showcasing projects and skills.",
+    keywords:
+      "portfolio, WanderleeDev, web developer, agentic AI, AI developer, projects, skills",
     thumbnail:
       "https://res.cloudinary.com/dy8gpozi6/image/upload/v1765775796/porfolio_en_onrfod.webp",
   },
@@ -138,8 +139,9 @@ export const en = {
 
   hero: {
     title: "Fullstack,",
-    titleAccent: "design",
-    titleEnd: "modern.",
+    titleAccent: "agentic",
+    titleEnd: "product,",
+    titleThird: "powered by AI.",
     subtitle: "Main stack",
   },
 
@@ -196,7 +198,7 @@ export const en = {
   },
 
   footer: {
-    tagline: "Fullstack developer",
+    tagline: "AI developer",
     contactLabel: "Contact",
     email: "wanderleedev@gmail.com",
     ctaLabel: "Start a project",

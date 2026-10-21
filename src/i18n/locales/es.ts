@@ -2,9 +2,9 @@ export const es = {
   metadata: {
     title: "Portafolio WanderleeDev",
     description:
-      "Portafolio de WanderleeDev, desarrollador web mostrando proyectos y habilidades.",
+      "Portafolio de WanderleeDev, desarrollador fullstack enfocado en IA agéntica, mostrando proyectos y habilidades.",
     keywords:
-      "portafolio, WanderleeDev, desarrollador web, proyectos, habilidades",
+      "portafolio, WanderleeDev, desarrollador web, IA agéntica, AI developer, proyectos, habilidades",
     thumbnail:
       "https://res.cloudinary.com/dy8gpozi6/image/upload/v1765775796/porfolio_es_u4q2rs.webp",
   },
@@ -139,8 +139,9 @@ export const es = {
 
   hero: {
     title: "Fullstack,",
-    titleAccent: "diseño",
-    titleEnd: "moderno.",
+    titleAccent: "agéntico",
+    titleEnd: "producto,",
+    titleThird: "contando con IA.",
     subtitle: "Stack principal",
   },
 
@@ -197,7 +198,7 @@ export const es = {
   },
 
   footer: {
-    tagline: "Fullstack developer",
+    tagline: "AI developer",
     contactLabel: "Contacto",
     email: "wanderleedev@gmail.com",
     ctaLabel: "Empezar un proyecto",

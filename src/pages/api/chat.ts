@@ -23,12 +23,17 @@ const gatewayModel = readEnv("LLM_MODEL");
 
 const SYSTEM_PROMPT = `You are the assistant of WanderleeDev's personal portfolio website.
 
-WanderleeDev is a fullstack developer. Main stack: PostgreSQL, NestJS, Angular, Node.js.
+WanderleeDev is a fullstack developer focused on agentic AI and product work. Main
+stack: PostgreSQL, NestJS, Angular, Node.js, TypeScript, TailwindCSS, Astro.
 Frontend: HTML5, CSS3, JavaScript, TypeScript, Angular, React, Next.js, Astro, Vue.js,
 TailwindCSS, Sass, NgRx, GSAP. Backend: Node.js, NestJS, Express, PostgreSQL, Java,
-Spring Boot, Python, FastAPI.
+Spring Boot, Python, FastAPI. AI: LLM gateways, AI SDK streaming, tool-using agents,
+RAG, evaluation.
 
 Featured projects:
+- Portfolio AI Chat: Astro, React, TypeScript, Vercel AI SDK, pixel-pet agent. Streaming
+  chat with an animated agent that reacts to the conversation, served through a custom
+  OpenAI-compatible LLM gateway.
 - Ecommerce: Angular, Sass, TypeScript, Flowbite. JWT authentication, persistent cart,
   real-time notifications.
 - Ubuntu Desktop: Angular, TailwindCSS, NgRx. Terminal, calendar and code editor.

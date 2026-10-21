@@ -120,6 +120,23 @@ const t = getTranslations(lang)("chat");
         if (show) requestAnimationFrame(positionStage);
     };
 
+    let meowAudio: HTMLAudioElement | null = null;
+    let lastMeow = 0;
+
+    const meow = () => {
+        try {
+            if (!meowAudio) {
+                meowAudio = new Audio("/meowth.mp3");
+                meowAudio.volume = 0.35;
+            }
+            const now = Date.now();
+            if (now - lastMeow < 2500) return;
+            lastMeow = now;
+            meowAudio.currentTime = 0;
+            void meowAudio.play()?.catch(() => undefined);
+        } catch (e) {}
+    };
+
     bodyDialog?.addEventListener("close", () => setStage(false));
     window.addEventListener("resize", positionStage);
 
@@ -137,5 +154,6 @@ const t = getTranslations(lang)("chat");
 
     window.addEventListener("chat:event", ((e: CustomEvent<string>) => {
         pet?.feed?.(e.detail);
+        if (e.detail === "token") meow();
     }) as EventListener);
 </script>

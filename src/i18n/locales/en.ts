@@ -193,6 +193,7 @@ export const en = {
     send: "Send",
     stop: "Stop",
     error: "I couldn't answer. Please try again.",
+    toolLoading: "Preparing card…",
     suggestions: {
       projects: "My projects",
       technologies: "Technologies",

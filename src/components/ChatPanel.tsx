@@ -1,7 +1,10 @@
 import { useEffect, useRef, useState } from "react";
 import { useChat } from "@ai-sdk/react";
-import { DefaultChatTransport } from "ai";
+import { DefaultChatTransport, type UIMessagePart } from "ai";
 import { getTranslations } from "../i18n/utils";
+import { ProjectsCard } from "./chat/ProjectsCard";
+import { TechnologiesCard } from "./chat/TechnologiesCard";
+import type { PortfolioProject, PortfolioStackCategory } from "../i18n/portfolio-data";
 
 type Lang = "es" | "en";
 
@@ -13,12 +16,10 @@ function emitPet(event: string) {
     window.dispatchEvent(new CustomEvent("chat:event", { detail: event }));
 }
 
-function textOf(message: { parts: { type: string; text?: string }[] } | undefined) {
-    if (!message) return "";
-    return message.parts
-        .filter((p) => p.type === "text")
-        .map((p) => p.text ?? "")
-        .join("");
+type ToolPart = { type: string; state?: string; output?: unknown };
+
+function isToolPart(part: UIMessagePart): part is UIMessagePart & ToolPart {
+    return typeof part.type === "string" && part.type.startsWith("tool-");
 }
 
 export default function ChatPanel({ lang }: ChatPanelProps) {
@@ -27,7 +28,7 @@ export default function ChatPanel({ lang }: ChatPanelProps) {
     const prevStatus = useRef<string>("ready");
 
     const { messages, sendMessage, status, error, stop } = useChat({
-        transport: new DefaultChatTransport({ api: "/api/chat" }),
+        transport: new DefaultChatTransport({ api: "/api/chat", headers: { "x-locale": lang } }),
     });
 
     const isBusy = status === "submitted" || status === "streaming";
@@ -56,7 +57,7 @@ export default function ChatPanel({ lang }: ChatPanelProps) {
     }, [status]);
 
     const lastAssistant = [...messages].reverse().find((m) => m.role === "assistant");
-    const answer = textOf(lastAssistant);
+    const parts = lastAssistant?.parts ?? [];
 
     const onSubmit = (e: React.FormEvent) => {
         e.preventDefault();
@@ -67,28 +68,81 @@ export default function ChatPanel({ lang }: ChatPanelProps) {
         textInputRef.current?.focus();
     };
 
+    const hasContent =
+        parts.length > 0 &&
+        parts.some(
+            (p) =>
+                (p.type === "text" && (p as { text?: string }).text?.trim()) ||
+                (isToolPart(p) && p.state === "output-available"),
+        );
+
     return (
         <div className="flex flex-col gap-3">
             <div className="pr-36">
-                <div className="flex min-h-[220px] items-center rounded-card border border-line bg-badge p-6">
-                    {answer ? (
-                        <p className="font-sans text-lg leading-[1.6] whitespace-pre-wrap text-badge-ink">
-                            {answer}
-                        </p>
-                    ) : isBusy ? (
-                        <p className="font-sans text-lg text-badge-ink" role="status">
-                            {t.typing}
-                        </p>
+                <div className="flex min-h-[200px] flex-col items-start gap-3 rounded-card border border-line bg-badge p-6">
+                    {parts.length === 0 ? (
+                        isBusy ? (
+                            <p className="font-sans text-lg text-badge-ink" role="status">
+                                {t.typing}
+                            </p>
+                        ) : (
+                            <p className="font-sans text-lg leading-[1.6] text-badge-ink">{t.empty}</p>
+                        )
                     ) : (
-                        <p className="font-sans text-lg leading-[1.6] text-badge-ink">{t.empty}</p>
+                        parts.map((part, i) => {
+                            if (part.type === "text") {
+                                const text = (part as { text?: string }).text;
+                                return text ? (
+                                    <p
+                                        key={i}
+                                        className="font-sans text-lg leading-[1.6] whitespace-pre-wrap text-badge-ink"
+                                    >
+                                        {text}
+                                    </p>
+                                ) : null;
+                            }
+
+                            if (isToolPart(part)) {
+                                if (part.state === "output-error") {
+                                    return (
+                                        <p key={i} className="font-sans text-sm text-red-500" role="alert">
+                                            {t.error}
+                                        </p>
+                                    );
+                                }
+                                if (part.state === "output-available") {
+                                    if (part.type === "tool-showProjects") {
+                                        return (
+                                            <ProjectsCard
+                                                key={i}
+                                                data={part.output as { projects: PortfolioProject[] }}
+                                            />
+                                        );
+                                    }
+                                    if (part.type === "tool-showStack") {
+                                        return (
+                                            <TechnologiesCard
+                                                key={i}
+                                                data={part.output as { categories: PortfolioStackCategory[] }}
+                                            />
+                                        );
+                                    }
+                                    return null;
+                                }
+                                return (
+                                    <p key={i} className="font-sans text-sm text-badge-ink/70" role="status">
+                                        {t.toolLoading}
+                                    </p>
+                                );
+                            }
+
+                            return null;
+                        })
                     )}
                 </div>
             </div>
 
-            <form
-                onSubmit={onSubmit}
-                className="flex items-center gap-2"
-            >
+            <form onSubmit={onSubmit} className="flex items-center gap-2">
                 <input
                     ref={textInputRef}
                     value={input}
@@ -110,7 +164,7 @@ export default function ChatPanel({ lang }: ChatPanelProps) {
                             className="flex size-11 items-center justify-center rounded-full border border-line font-sans text-xs font-bold uppercase tracking-[0.12em] text-soft transition-colors hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink"
                         >
                             <span aria-hidden="true">■</span>
-                        <span className="sr-only">{t.stop}</span>
+                            <span className="sr-only">{t.stop}</span>
                         </button>
                     )}
                     <button

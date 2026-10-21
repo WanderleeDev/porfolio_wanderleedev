@@ -230,6 +230,8 @@ const activeIndex = 3;
 </section>
 
 <script>
+  import { applyVolumeInput, formatTime, isGuardedDeckKey, nextTrackIndex, seekPercent, seekTime, toggleMute, transportLabelKey, wrapIndex } from "./music-player/player-core";
+
   const root = document.querySelector<HTMLElement>("[data-music-player]");
 
   if (root) {
@@ -258,14 +260,6 @@ const activeIndex = 3;
     let index = DEFAULT_INDEX;
     let lastVolume = audio.volume;
 
-    const formatTime = (seconds: number) => {
-      if (!Number.isFinite(seconds) || seconds < 0) return "0:00";
-      const total = Math.floor(seconds);
-      const minutes = Math.floor(total / 60);
-      const rest = String(total % 60).padStart(2, "0");
-      return `${minutes}:${rest}`;
-    };
-
     // El relleno de ambos sliders sale de --fill, pintado acá.
     const paint = (input: HTMLInputElement, percent: number) => {
       input.style.setProperty("--fill", `${Math.max(0, Math.min(100, percent))}%`);
@@ -283,10 +277,8 @@ const activeIndex = 3;
       root.dataset.playing = playing ? "true" : "false";
       playIcon.classList.toggle("hidden", playing);
       pauseIcon.classList.toggle("hidden", !playing);
-      playBtn.setAttribute(
-        "aria-label",
-        playing ? playBtn.dataset.labelPause ?? "" : playBtn.dataset.labelPlay ?? "",
-      );
+      const labelKey = transportLabelKey(playing) === "pause" ? "labelPause" : "labelPlay";
+      playBtn.setAttribute("aria-label", playBtn.dataset[labelKey] ?? "");
     };
 
     const syncMute = () => {
@@ -305,7 +297,7 @@ const activeIndex = 3;
     };
 
     const select = (i: number, autoplay: boolean) => {
-      index = ((i % cards.length) + cards.length) % cards.length;
+      index = wrapIndex(i, cards.length);
       const src = cards[index].dataset.src;
 
       if (src && audio.getAttribute("src") !== src) audio.src = src;
@@ -337,11 +329,11 @@ const activeIndex = 3;
     audio.addEventListener("pause", () => syncPlaying(false));
     audio.addEventListener("ended", () => {
       syncPlaying(false);
-      select(index + 1, true);
+      select(nextTrackIndex(index, cards.length), true);
     });
 
     audio.addEventListener("timeupdate", () => {
-      const percent = audio.duration ? (audio.currentTime / audio.duration) * 100 : 0;
+      const percent = seekPercent(audio.currentTime, audio.duration);
       seek.value = String(percent);
       paint(seek, percent);
       currentEl.textContent = formatTime(audio.currentTime);
@@ -357,34 +349,35 @@ const activeIndex = 3;
     seek.addEventListener("input", () => {
       const percent = Number(seek.value);
       if (Number.isFinite(audio.duration) && audio.duration > 0) {
-        audio.currentTime = (percent / 100) * audio.duration;
+        audio.currentTime = seekTime(percent, audio.duration);
       }
       paint(seek, percent);
     });
 
     volume.addEventListener("input", () => {
-      const value = Number(volume.value);
-      audio.volume = value;
-      audio.muted = value === 0;
-      if (value > 0) lastVolume = value;
-      paint(volume, value * 100);
+      const state = applyVolumeInput(Number(volume.value), lastVolume);
+      audio.volume = state.volume;
+      audio.muted = state.muted;
+      lastVolume = state.lastVolume;
+      paint(volume, state.volume * 100);
       syncMute();
     });
 
     muteBtn.addEventListener("click", () => {
-      audio.muted = !audio.muted;
-      if (!audio.muted && audio.volume === 0) audio.volume = lastVolume || 0.8;
-      volume.value = String(audio.volume);
-      paint(volume, audio.volume * 100);
+      const state = toggleMute(audio.muted, audio.volume, lastVolume);
+      audio.muted = state.muted;
+      audio.volume = state.volume;
+      lastVolume = state.lastVolume;
+      volume.value = String(state.volume);
+      paint(volume, state.volume * 100);
       syncMute();
     });
 
     // El deck escucha flechas/Home/End en window: con foco dentro del player,
     // el evento no debe llegar hasta ahí. No se hace preventDefault para no
     // romper el ajuste nativo de los sliders.
-    const guardedKeys = ["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", "Home", "End"];
     root.addEventListener("keydown", (e) => {
-      if (guardedKeys.includes(e.key)) e.stopPropagation();
+      if (isGuardedDeckKey(e.key)) e.stopPropagation();
     });
 
     // Estado inicial: tema central cargado (sin reproducir) y UI sincronizada.

@@ -24,6 +24,15 @@ const option =
 
 const optionIcon = "size-4 shrink-0 opacity-70 [&_svg]:size-full";
 const optionCheck = "ml-auto text-[0.75rem] opacity-0 transition-opacity duration-150 group-aria-selected:opacity-100";
+
+const switchOn =
+  "relative size-7 w-11 shrink-0 rounded-full border border-[color-mix(in_srgb,currentColor_25%,transparent)] bg-transparent transition-colors data-[on=true]:border-sky-400 data-[on=true]:bg-sky-400";
+const switchKnob =
+  "absolute left-0.5 top-0.5 size-6 rounded-full bg-[color-mix(in_srgb,canvas_96%,transparent)] shadow transition-transform data-[on=true]:translate-x-4";
+const settingRow =
+  "group relative flex w-full items-center gap-2.5 rounded-[9px] px-3 py-[9px] text-left font-sans text-[0.8rem] font-medium tracking-[0.04em] text-[canvastext] no-underline transition-[background] duration-150 hover:bg-[color-mix(in_srgb,canvastext_8%,transparent)] focus-visible:outline-2 focus-visible:outline-[canvastext] focus-visible:outline-offset-[-2px] focus-visible:rounded-[9px]";
+const settingLabel = "flex-1";
+const settingIcon = "size-4 shrink-0 opacity-70 [&_svg]:size-full";
 ---
 
 <div class="fixed top-5 right-5 z-[999] flex items-center gap-2" id="theme-picker" transition:animate={false}>
@@ -66,6 +75,59 @@ const optionCheck = "ml-auto text-[0.75rem] opacity-0 transition-opacity duratio
         English
         <span class={optionCheck} aria-hidden="true">✓</span>
       </a>
+    </div>
+  </div>
+
+  <!-- Settings -->
+  <div class="relative">
+    <button
+      class={trigger}
+      id="settings-trigger"
+      data-trigger
+      aria-label="Configuración del deck"
+      aria-expanded="false"
+      aria-controls="settings-panel"
+    >
+      <span class="flex size-5 items-center justify-center [&_svg]:size-full" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+          stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="3"/>
+          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+        </svg>
+      </span>
+    </button>
+
+    <div class={panel} id="settings-panel" data-panel role="group" aria-label="Configuración del deck" hidden>
+      <div class="px-2 py-1.5 text-[0.65rem] font-bold uppercase tracking-[0.16em] text-[canvastext] opacity-50">
+        Deck
+      </div>
+      <button class={settingRow} data-setting="lock" role="switch" aria-pressed="false">
+        <span class={settingIcon} aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+          </svg>
+        </span>
+        <span class={settingLabel}>Bloqueo vertical</span>
+        <span class={switchOn} data-switch><span class={switchKnob}></span></span>
+      </button>
+      <button class={settingRow} data-setting="overview" role="switch" aria-pressed="false">
+        <span class={settingIcon} aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/>
+          </svg>
+        </span>
+        <span class={settingLabel}>Vista general</span>
+        <span class={switchOn} data-switch><span class={switchKnob}></span></span>
+      </button>
+      <button class={settingRow} data-setting="minimap" role="switch" aria-pressed="false">
+        <span class={settingIcon} aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/>
+          </svg>
+        </span>
+        <span class={settingLabel}>Minimapa</span>
+        <span class={switchOn} data-switch><span class={switchKnob}></span></span>
+      </button>
     </div>
   </div>
 
@@ -132,6 +194,8 @@ const optionCheck = "ml-auto text-[0.75rem] opacity-0 transition-opacity duratio
 </div>
 
 <script>
+  import { loadSettings, updateSetting, type DeckSettings } from "./deck/deck-settings";
+
   type Theme = "system" | "light" | "dark" | "neon";
 
   const STORAGE_KEY = "wdev-theme";
@@ -179,10 +243,38 @@ const optionCheck = "ml-auto text-[0.75rem] opacity-0 transition-opacity duratio
     updateUI(theme);
   }
 
+  function reflectSettings(s: DeckSettings) {
+    root.querySelectorAll<HTMLElement>("[data-setting]").forEach((btn) => {
+      const on = Boolean(s[btn.dataset.setting as keyof DeckSettings]);
+      const sw = btn.querySelector<HTMLElement>("[data-switch]")!;
+      sw.setAttribute("data-on", String(on));
+      btn.setAttribute("aria-pressed", String(on));
+    });
+  }
+
+  function bootSettings() {
+    reflectSettings(loadSettings());
+    if (root.dataset.settingsWired === "true") return;
+    root.dataset.settingsWired = "true";
+    root.querySelectorAll<HTMLElement>("[data-setting]").forEach((btn) => {
+      btn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        const key = btn.dataset.setting as keyof DeckSettings;
+        const sw = btn.querySelector<HTMLElement>("[data-switch]")!;
+        const next = sw.getAttribute("data-on") !== "true";
+        updateSetting(key, next);
+        reflectSettings(loadSettings());
+        document.getElementById("settings-panel")!.hidden = true;
+        document.getElementById("settings-trigger")!.setAttribute("aria-expanded", "false");
+      });
+    });
+  }
+
   // Boot: aplica el theme siempre; los listeners se registran una sola vez por DOM.
   function bootPicker() {
     applyTheme(getSaved());
     updateUI(getSaved());
+    bootSettings();
 
     if (root.dataset.wired) return;
     root.dataset.wired = "true";
@@ -207,6 +299,7 @@ const optionCheck = "ml-auto text-[0.75rem] opacity-0 transition-opacity duratio
 
     setupToggle("theme-trigger", "theme-panel");
     setupToggle("lang-trigger", "lang-panel");
+    setupToggle("settings-trigger", "settings-panel");
 
     // Cerrar al hacer click fuera
     document.addEventListener("click", () => {

@@ -27,3 +27,8 @@ pnpm-debug.log*
 # jetbrains setting folder
 .idea/
 .vercel
+
+# local tooling state (never commit)
+.agents/
+.hermes/
+skills-lock.json

@@ -200,6 +200,21 @@ export const en = {
     },
   },
 
+  player: {
+    eyebrow: "Playlist",
+    title: "The stack plays too",
+    subtitle: "Player demo: pick a logo and press play.",
+    play: "Play",
+    pause: "Pause",
+    prev: "Previous track",
+    next: "Next track",
+    progress: "Track progress",
+    volume: "Volume",
+    mute: "Mute",
+    unmute: "Unmute",
+    select: "Pick track",
+  },
+
   footer: {
     tagline: "Fullstack developer",
     contactLabel: "Contact",

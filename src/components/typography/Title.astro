@@ -11,6 +11,9 @@
  *   level 3 → card-level:   Fira condensed, 900, clamp(1.75rem,4.5vw,3rem)
  *   level 4+→ eyebrow-level: sans, 700, 0.7rem, tracking-wide
  *
+ * The size prop replaces the level's default size, so an override never has
+ * to fight a second font-size utility over the !important cascade.
+ *
  * Usage:
  *   <Title level={2}>{title}</Title>
  *   <Title level={3} class="mt-3">{item.title}</Title>
@@ -21,19 +24,35 @@ interface Props {
   class?: string;
   id?: string;
   style?: string;
+  size?: string;
 }
 
-const { level, class: className = "", id, style } = Astro.props;
+const { level, class: className = "", id, style, size } = Astro.props;
+
+const inlineStyle = size
+  ? `--title-size: ${size};${style ? ` ${style}` : ""}`
+  : style;
 
 const titleClass = (lvl: Props["level"]): string => {
   const base = "font-fira-sans-extra-condensed font-black uppercase leading-[0.9] tracking-tight text-ink m-0";
+  const scaled = (lvl: Props["level"]): string => {
+    switch (lvl) {
+      case 1:
+        return "text-[clamp(3rem,10vw,8rem)]";
+      case 2:
+        return "text-[clamp(2.5rem,7vw,5rem)]";
+      case 3:
+        return "text-[clamp(1.75rem,4.5vw,3rem)]";
+      default:
+        return "";
+    }
+  };
+  if (size) return `${base} text-[length:var(--title-size)]`;
   switch (lvl) {
     case 1:
-      return `${base} text-[clamp(3rem,10vw,8rem)]`;
     case 2:
-      return `${base} text-[clamp(2.5rem,7vw,5rem)]`;
     case 3:
-      return `${base} text-[clamp(1.75rem,4.5vw,3rem)]`;
+      return `${base} ${scaled(lvl)}`;
     case 4:
     case 5:
     case 6:
@@ -46,7 +65,7 @@ const finalClass = [titleClass(level), className].filter(Boolean).join(" ").trim
 
 {
   level === 1 && (
-    <h1 {...(id ? { id } : {})} class={finalClass} {...(style ? { style } : {})}>
+    <h1 {...(id ? { id } : {})} class={finalClass} {...(inlineStyle ? { style: inlineStyle } : {})}>
       <slot />
     </h1>
   )
@@ -54,7 +73,7 @@ const finalClass = [titleClass(level), className].filter(Boolean).join(" ").trim
 
 {
   level === 2 && (
-    <h2 {...(id ? { id } : {})} class={finalClass} {...(style ? { style } : {})}>
+    <h2 {...(id ? { id } : {})} class={finalClass} {...(inlineStyle ? { style: inlineStyle } : {})}>
       <slot />
     </h2>
   )
@@ -62,7 +81,7 @@ const finalClass = [titleClass(level), className].filter(Boolean).join(" ").trim
 
 {
   level === 3 && (
-    <h3 {...(id ? { id } : {})} class={finalClass} {...(style ? { style } : {})}>
+    <h3 {...(id ? { id } : {})} class={finalClass} {...(inlineStyle ? { style: inlineStyle } : {})}>
       <slot />
     </h3>
   )
@@ -70,7 +89,7 @@ const finalClass = [titleClass(level), className].filter(Boolean).join(" ").trim
 
 {
   level === 4 && (
-    <h4 {...(id ? { id } : {})} class={finalClass} {...(style ? { style } : {})}>
+    <h4 {...(id ? { id } : {})} class={finalClass} {...(inlineStyle ? { style: inlineStyle } : {})}>
       <slot />
     </h4>
   )
@@ -78,7 +97,7 @@ const finalClass = [titleClass(level), className].filter(Boolean).join(" ").trim
 
 {
   level === 5 && (
-    <h5 {...(id ? { id } : {})} class={finalClass} {...(style ? { style } : {})}>
+    <h5 {...(id ? { id } : {})} class={finalClass} {...(inlineStyle ? { style: inlineStyle } : {})}>
       <slot />
     </h5>
   )
@@ -86,7 +105,7 @@ const finalClass = [titleClass(level), className].filter(Boolean).join(" ").trim
 
 {
   level === 6 && (
-    <h6 {...(id ? { id } : {})} class={finalClass} {...(style ? { style } : {})}>
+    <h6 {...(id ? { id } : {})} class={finalClass} {...(inlineStyle ? { style: inlineStyle } : {})}>
       <slot />
     </h6>
   )

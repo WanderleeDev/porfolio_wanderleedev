@@ -129,7 +129,7 @@ export default function ChatPanel({ lang }: ChatPanelProps) {
                 </p>
             )}
 
-            {!isBusy && messages.length === 0 && (
+            {!isBusy && (
                 <div className="flex flex-wrap gap-2">
                     {suggestions.map((s) => (
                         <button

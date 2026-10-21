@@ -1,0 +1,516 @@
+---
+/**
+ * MusicPlayer — reproductor de demo para el slide inferior del deck.
+ *
+ * Arriba, la tarjeta del reproductor con el tema activo; abajo, un abanico de
+ * siete cards (una por logo del stack) con la central elevada y más grande.
+ *
+ * Una sola instancia de Audio reproduce el mp3 de demo para los siete temas.
+ * Cada card ya lleva su propio data-src, así que conectar mp3 reales por tema
+ * es sólo cambiar ese atributo.
+ */
+import Icon from "astro-iconify";
+import { getTranslations } from "../i18n/utils";
+
+const lang = Astro.currentLocale as "es" | "en";
+const t = getTranslations(lang);
+const p = t("player");
+
+// Demo compartida: los mp3 reales por tema reemplazan este archivo más
+// adelante (ver data-src de cada card).
+const DEMO_SRC = "/meowth.mp3";
+
+const tracks = [
+  { title: "Ollama", artist: "local inference", icon: "simple-icons:ollama" },
+  { title: "OpenAI", artist: "codex cli", icon: "simple-icons:openai" },
+  { title: "Claude", artist: "anthropic", icon: "simple-icons:claude" },
+  { title: "Gemini", artist: "multimodal", icon: "simple-icons:googlegemini" },
+  { title: "GitHub", artist: "workflow", icon: "simple-icons:github" },
+  { title: "Hugging Face", artist: "open models", icon: "simple-icons:huggingface" },
+  { title: "LangChain", artist: "agent tooling", icon: "simple-icons:langchain" },
+];
+
+// Geometría del abanico: rotación, altura, escala y orden de cada card.
+// La subida del centro va en "0rem" (no "0"): dentro de calc(var(--rise) -
+// 1.25rem) un cero sin unidad es un <number> y el cálculo sería inválido.
+const rot = ["-24deg", "-16deg", "-8deg", "0deg", "8deg", "16deg", "24deg"];
+const rise = ["2.75rem", "1.6rem", "0.6rem", "0rem", "0.6rem", "1.6rem", "2.75rem"];
+const scale = ["0.86", "0.92", "0.96", "1.1", "0.96", "0.92", "0.86"];
+const z = [1, 2, 3, 5, 3, 2, 1];
+
+// La card central arranca seleccionada para que el abanico se lea como la
+// composición de referencia.
+const activeIndex = 3;
+---
+
+<section
+  data-music-player
+  data-playing="false"
+  class="flex w-full max-w-4xl flex-col items-center gap-[clamp(1rem,2.5svh,2.5rem)]"
+  aria-labelledby="player-title"
+>
+  <header class="text-center">
+    <span class="font-sans text-xs font-bold uppercase tracking-[0.3em] text-muted">
+      {p.eyebrow}
+    </span>
+    <h2
+      id="player-title"
+      class="mt-4 font-sans font-black uppercase leading-[0.9] tracking-tight text-ink text-[clamp(1.75rem,4.5vw,3rem)]"
+    >
+      {p.title}
+    </h2>
+    <p class="mx-auto mt-3 max-w-[42ch] font-sans text-[clamp(0.95rem,1.6vw,1.1rem)] leading-[1.5] text-soft">
+      {p.subtitle}
+    </p>
+  </header>
+
+  <div class="w-full max-w-xl rounded-card border border-line bg-surface p-5 shadow-card sm:p-6">
+    <!-- Fila 1: portada, tema activo y ecualizador -->
+    <div class="flex items-center gap-4">
+      <div
+        class="grid size-16 shrink-0 place-items-center rounded-card border border-line bg-badge"
+        aria-hidden="true"
+      >
+        {
+          tracks.map((track, i) => (
+            <span
+              data-cover={i}
+              class:list={["col-start-1 row-start-1", i === activeIndex ? "" : "hidden"]}
+            >
+              <Icon name={track.icon} class="size-8 text-badge-ink" />
+            </span>
+          ))
+        }
+      </div>
+
+      <div class="min-w-0 flex-1 text-left">
+        <p class="truncate font-sans text-base font-bold text-ink" data-now-title>
+          {tracks[activeIndex].title}
+        </p>
+        <p
+          class="truncate font-sans text-[11px] uppercase tracking-[0.2em] text-muted"
+          data-now-artist
+        >
+          {tracks[activeIndex].artist}
+        </p>
+      </div>
+
+      <div class="flex h-6 shrink-0 items-end gap-1" aria-hidden="true">
+        {
+          [0, 1, 2, 3, 4].map(() => (
+            <span class="eq-bar w-[3px] rounded-full bg-ink/70"></span>
+          ))
+        }
+      </div>
+    </div>
+
+    <!-- Fila 2: progreso -->
+    <div class="mt-4 flex items-center gap-3">
+      <span
+        class="w-10 shrink-0 font-sans text-[11px] tabular-nums text-muted"
+        data-current>0:00</span
+      >
+      <input
+        type="range"
+        data-seek
+        min="0"
+        max="100"
+        step="0.1"
+        value="0"
+        aria-label={p.progress}
+        class="h-1 min-w-0 flex-1 appearance-none"
+        style="--fill: 0%"
+      />
+      <span
+        class="w-10 shrink-0 text-right font-sans text-[11px] tabular-nums text-muted"
+        data-duration>0:00</span
+      >
+    </div>
+
+    <!-- Fila 3: transporte y volumen -->
+    <div class="mt-5 flex items-center justify-between gap-4">
+      <div class="flex items-center gap-3">
+        <button
+          type="button"
+          data-prev
+          aria-label={p.prev}
+          class="grid size-10 shrink-0 place-items-center rounded-full border border-line text-ink transition-colors hover:bg-badge"
+        >
+          <Icon name="lucide:skip-back" class="size-5" aria-hidden="true" />
+        </button>
+
+        <button
+          type="button"
+          data-play
+          aria-label={p.play}
+          data-label-play={p.play}
+          data-label-pause={p.pause}
+          class="grid size-14 shrink-0 place-items-center rounded-full bg-ink text-contrast shadow-card transition-transform hover:scale-105"
+        >
+          <span data-icon-play class="col-start-1 row-start-1 grid place-items-center">
+            <Icon name="lucide:play" class="size-6" aria-hidden="true" />
+          </span>
+          <span data-icon-pause class="col-start-1 row-start-1 hidden">
+            <Icon name="lucide:pause" class="size-6" aria-hidden="true" />
+          </span>
+        </button>
+
+        <button
+          type="button"
+          data-next
+          aria-label={p.next}
+          class="grid size-10 shrink-0 place-items-center rounded-full border border-line text-ink transition-colors hover:bg-badge"
+        >
+          <Icon name="lucide:skip-forward" class="size-5" aria-hidden="true" />
+        </button>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <button
+          type="button"
+          data-mute
+          aria-label={p.mute}
+          aria-pressed="false"
+          data-label-mute={p.mute}
+          data-label-unmute={p.unmute}
+          class="grid size-9 shrink-0 place-items-center rounded-full text-soft transition-colors hover:bg-badge hover:text-ink"
+        >
+          <span data-icon-volume class="col-start-1 row-start-1">
+            <Icon name="lucide:volume-2" class="size-5" aria-hidden="true" />
+          </span>
+          <span data-icon-muted class="col-start-1 row-start-1 hidden">
+            <Icon name="lucide:volume-x" class="size-5" aria-hidden="true" />
+          </span>
+        </button>
+
+        <input
+          type="range"
+          data-volume
+          min="0"
+          max="1"
+          step="0.01"
+          value="0.8"
+          aria-label={p.volume}
+          class="h-1 w-20 appearance-none"
+          style="--fill: 80%"
+        />
+      </div>
+    </div>
+  </div>
+
+  <!-- Abanico de temas: la central arranca elevada y seleccionada -->
+  <div data-fan class="flex w-full items-end justify-center pt-[clamp(1rem,3svh,1.75rem)]">
+    {
+      tracks.map((track, i) => (
+        <button
+          type="button"
+          data-track={i}
+          data-title={track.title}
+          data-artist={track.artist}
+          data-src={DEMO_SRC}
+          aria-label={`${p.select}: ${track.title}`}
+          aria-pressed={i === activeIndex ? "true" : "false"}
+          class="fan-card -ml-8 grid h-24 w-[4.5rem] shrink-0 place-items-center rounded-card border border-line bg-surface shadow-card first:ml-0 sm:h-32 sm:w-24 md:-ml-6 md:h-[clamp(7rem,19svh,11rem)] md:w-[clamp(5.25rem,14.25svh,8.25rem)]"
+          style={`--rot:${rot[i]}; --rise:${rise[i]}; --scale:${scale[i]}; --z:${z[i]};`}
+        >
+          <span class="pointer-events-none flex flex-col items-center gap-2 px-1">
+            <Icon
+              name={track.icon}
+              class="size-7 text-ink sm:size-9 md:size-12"
+              aria-hidden="true"
+            />
+            <span class="fan-label max-w-full truncate font-sans text-[9px] font-bold uppercase tracking-[0.1em] text-soft sm:text-[10px]">
+              {track.title}
+            </span>
+          </span>
+        </button>
+      ))
+    }
+  </div>
+</section>
+
+<script>
+  const root = document.querySelector<HTMLElement>("[data-music-player]");
+
+  if (root) {
+    const cards = Array.from(root.querySelectorAll<HTMLButtonElement>("[data-track]"));
+    const covers = Array.from(root.querySelectorAll<HTMLElement>("[data-cover]"));
+    const nowTitle = root.querySelector<HTMLElement>("[data-now-title]")!;
+    const nowArtist = root.querySelector<HTMLElement>("[data-now-artist]")!;
+    const seek = root.querySelector<HTMLInputElement>("[data-seek]")!;
+    const volume = root.querySelector<HTMLInputElement>("[data-volume]")!;
+    const currentEl = root.querySelector<HTMLElement>("[data-current]")!;
+    const durationEl = root.querySelector<HTMLElement>("[data-duration]")!;
+    const playBtn = root.querySelector<HTMLButtonElement>("[data-play]")!;
+    const prevBtn = root.querySelector<HTMLButtonElement>("[data-prev]")!;
+    const nextBtn = root.querySelector<HTMLButtonElement>("[data-next]")!;
+    const muteBtn = root.querySelector<HTMLButtonElement>("[data-mute]")!;
+    const playIcon = root.querySelector<HTMLElement>("[data-icon-play]")!;
+    const pauseIcon = root.querySelector<HTMLElement>("[data-icon-pause]")!;
+    const volumeOnIcon = root.querySelector<HTMLElement>("[data-icon-volume]")!;
+    const volumeOffIcon = root.querySelector<HTMLElement>("[data-icon-muted]")!;
+
+    const audio = new Audio();
+    audio.preload = "metadata";
+    audio.volume = 0.8;
+
+    const DEFAULT_INDEX = 3;
+    let index = DEFAULT_INDEX;
+    let lastVolume = audio.volume;
+
+    const formatTime = (seconds: number) => {
+      if (!Number.isFinite(seconds) || seconds < 0) return "0:00";
+      const total = Math.floor(seconds);
+      const minutes = Math.floor(total / 60);
+      const rest = String(total % 60).padStart(2, "0");
+      return `${minutes}:${rest}`;
+    };
+
+    // El relleno de ambos sliders sale de --fill, pintado acá.
+    const paint = (input: HTMLInputElement, percent: number) => {
+      input.style.setProperty("--fill", `${Math.max(0, Math.min(100, percent))}%`);
+    };
+
+    const syncUi = () => {
+      const card = cards[index];
+      covers.forEach((cover, i) => cover.classList.toggle("hidden", i !== index));
+      cards.forEach((item, i) => item.setAttribute("aria-pressed", i === index ? "true" : "false"));
+      nowTitle.textContent = card.dataset.title ?? "";
+      nowArtist.textContent = card.dataset.artist ?? "";
+    };
+
+    const syncPlaying = (playing: boolean) => {
+      root.dataset.playing = playing ? "true" : "false";
+      playIcon.classList.toggle("hidden", playing);
+      pauseIcon.classList.toggle("hidden", !playing);
+      playBtn.setAttribute(
+        "aria-label",
+        playing ? playBtn.dataset.labelPause ?? "" : playBtn.dataset.labelPlay ?? "",
+      );
+    };
+
+    const syncMute = () => {
+      const muted = audio.muted || audio.volume === 0;
+      volumeOnIcon.classList.toggle("hidden", muted);
+      volumeOffIcon.classList.toggle("hidden", !muted);
+      muteBtn.setAttribute("aria-pressed", String(muted));
+      muteBtn.setAttribute(
+        "aria-label",
+        muted ? muteBtn.dataset.labelUnmute ?? "" : muteBtn.dataset.labelMute ?? "",
+      );
+    };
+
+    const play = () => {
+      void audio.play().catch(() => undefined);
+    };
+
+    const select = (i: number, autoplay: boolean) => {
+      index = ((i % cards.length) + cards.length) % cards.length;
+      const src = cards[index].dataset.src;
+
+      if (src && audio.getAttribute("src") !== src) audio.src = src;
+      audio.currentTime = 0;
+      seek.value = "0";
+      paint(seek, 0);
+      currentEl.textContent = "0:00";
+      syncUi();
+
+      if (autoplay) play();
+    };
+
+    // Transporte
+    playBtn.addEventListener("click", () => {
+      if (audio.paused) play();
+      else audio.pause();
+    });
+
+    prevBtn.addEventListener("click", () => select(index - 1, !audio.paused));
+    nextBtn.addEventListener("click", () => select(index + 1, !audio.paused));
+
+    // El sonido sólo arranca desde un gesto del usuario.
+    cards.forEach((card, i) => {
+      card.addEventListener("click", () => select(i, true));
+    });
+
+    // Estado del audio
+    audio.addEventListener("play", () => syncPlaying(true));
+    audio.addEventListener("pause", () => syncPlaying(false));
+    audio.addEventListener("ended", () => {
+      syncPlaying(false);
+      select(index + 1, true);
+    });
+
+    audio.addEventListener("timeupdate", () => {
+      const percent = audio.duration ? (audio.currentTime / audio.duration) * 100 : 0;
+      seek.value = String(percent);
+      paint(seek, percent);
+      currentEl.textContent = formatTime(audio.currentTime);
+    });
+
+    const syncDuration = () => {
+      durationEl.textContent = formatTime(audio.duration);
+    };
+    audio.addEventListener("loadedmetadata", syncDuration);
+    audio.addEventListener("durationchange", syncDuration);
+
+    // Progreso y volumen
+    seek.addEventListener("input", () => {
+      const percent = Number(seek.value);
+      if (Number.isFinite(audio.duration) && audio.duration > 0) {
+        audio.currentTime = (percent / 100) * audio.duration;
+      }
+      paint(seek, percent);
+    });
+
+    volume.addEventListener("input", () => {
+      const value = Number(volume.value);
+      audio.volume = value;
+      audio.muted = value === 0;
+      if (value > 0) lastVolume = value;
+      paint(volume, value * 100);
+      syncMute();
+    });
+
+    muteBtn.addEventListener("click", () => {
+      audio.muted = !audio.muted;
+      if (!audio.muted && audio.volume === 0) audio.volume = lastVolume || 0.8;
+      volume.value = String(audio.volume);
+      paint(volume, audio.volume * 100);
+      syncMute();
+    });
+
+    // El deck escucha flechas/Home/End en window: con foco dentro del player,
+    // el evento no debe llegar hasta ahí. No se hace preventDefault para no
+    // romper el ajuste nativo de los sliders.
+    const guardedKeys = ["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", "Home", "End"];
+    root.addEventListener("keydown", (e) => {
+      if (guardedKeys.includes(e.key)) e.stopPropagation();
+    });
+
+    // Estado inicial: tema central cargado (sin reproducir) y UI sincronizada.
+    paint(volume, audio.volume * 100);
+    syncMute();
+    syncPlaying(false);
+    select(DEFAULT_INDEX, false);
+  }
+</script>
+
+<style>
+  /* Sliders: el relleno lo aporta --fill desde el script. */
+  [data-music-player] input[type="range"] {
+    appearance: none;
+    -webkit-appearance: none;
+    height: 4px;
+    border-radius: 9999px;
+    background: linear-gradient(
+      to right,
+      var(--color-ink) 0,
+      var(--color-ink) var(--fill, 0%),
+      var(--color-line) var(--fill, 0%),
+      var(--color-line) 100%
+    );
+  }
+
+  [data-music-player] input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 12px;
+    height: 12px;
+    border: 2px solid var(--color-surface);
+    border-radius: 9999px;
+    background: var(--color-ink);
+    box-shadow: 0 0 0 1px var(--color-line);
+  }
+
+  [data-music-player] input[type="range"]::-moz-range-thumb {
+    width: 12px;
+    height: 12px;
+    border: 2px solid var(--color-surface);
+    border-radius: 9999px;
+    background: var(--color-ink);
+    box-shadow: 0 0 0 1px var(--color-line);
+  }
+
+  /* Ecualizador: quieto en pausa, animado sólo con data-playing="true". */
+  .eq-bar {
+    height: 100%;
+    transform: scaleY(0.3);
+    transform-origin: bottom;
+  }
+
+  [data-music-player][data-playing="true"] .eq-bar {
+    animation: eq-pulse 0.9s ease-in-out infinite;
+  }
+
+  [data-music-player][data-playing="true"] .eq-bar:nth-child(2) {
+    animation-duration: 0.7s;
+    animation-delay: -0.25s;
+  }
+
+  [data-music-player][data-playing="true"] .eq-bar:nth-child(3) {
+    animation-duration: 1.1s;
+    animation-delay: -0.45s;
+  }
+
+  [data-music-player][data-playing="true"] .eq-bar:nth-child(4) {
+    animation-duration: 0.8s;
+    animation-delay: -0.15s;
+  }
+
+  [data-music-player][data-playing="true"] .eq-bar:nth-child(5) {
+    animation-duration: 1s;
+    animation-delay: -0.6s;
+  }
+
+  @keyframes eq-pulse {
+    0%,
+    100% {
+      transform: scaleY(0.22);
+    }
+
+    50% {
+      transform: scaleY(1);
+    }
+  }
+
+  /* Abanico */
+  .fan-card {
+    transform-origin: bottom center;
+    transform: translateY(var(--rise)) rotate(var(--rot)) scale(var(--scale));
+    z-index: var(--z);
+    transition:
+      transform 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+      border-color 0.3s,
+      box-shadow 0.3s;
+  }
+
+  .fan-card:hover,
+  .fan-card:focus-visible,
+  .fan-card[aria-pressed="true"] {
+    transform: translateY(calc(var(--rise) - 1.25rem)) rotate(0deg) scale(1.06);
+    z-index: 10;
+    border-color: var(--color-ink);
+  }
+
+  .fan-label {
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .fan-card:hover .fan-label,
+  .fan-card:focus-visible .fan-label,
+  .fan-card[aria-pressed="true"] .fan-label {
+    opacity: 1;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    [data-music-player][data-playing="true"] .eq-bar {
+      animation: none;
+    }
+
+    .fan-card,
+    .fan-label {
+      transition: none;
+    }
+  }
+</style>

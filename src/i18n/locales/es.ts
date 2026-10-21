@@ -200,6 +200,21 @@ export const es = {
     },
   },
 
+  player: {
+    eyebrow: "Playlist",
+    title: "El stack también suena",
+    subtitle: "Demo del reproductor: elegí un logo y dale play.",
+    play: "Reproducir",
+    pause: "Pausar",
+    prev: "Tema anterior",
+    next: "Tema siguiente",
+    progress: "Progreso del tema",
+    volume: "Volumen",
+    mute: "Silenciar",
+    unmute: "Activar sonido",
+    select: "Elegir tema",
+  },
+
   footer: {
     tagline: "Fullstack developer",
     contactLabel: "Contacto",

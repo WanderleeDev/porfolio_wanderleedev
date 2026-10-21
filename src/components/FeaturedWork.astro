@@ -105,7 +105,7 @@ const icon = "w-5 h-5";
         closedby="any"
         class="m-auto max-h-[90vh] w-[min(1020px,94vw)] overflow-y-auto rounded-3xl border border-line p-0 text-ink select-none transition-all duration-1000 delay-150 ease-out-elastic starting:scale-0 backdrop:bg-[rgba(0,0,0,0.55)] backdrop:backdrop-blur-[6px] backdrop:transition-all backdrop:duration-150 starting:backdrop:opacity-0"
       >
-        <div class="relative p-5 md:p-8">
+        <div class="relative p-6 md:p-10">
           <button
             type="button"
             command="close"
@@ -133,18 +133,18 @@ const icon = "w-5 h-5";
                 </span>
               </p>
 
-              <Title level={3} id={`fw-dlg-${i}-title`} class="mt-3">
+              <Title level={3} id={`fw-dlg-${i}-title`} class="mt-5">
                 {item.title}
               </Title>
 
               {item.description && (
-                <p class="mt-4 max-w-none font-sans text-[clamp(0.95rem,1.8vw,1.05rem)] leading-[1.6] text-soft">
+                <p class="mt-6 max-w-none font-sans text-[clamp(0.95rem,1.8vw,1.05rem)] leading-[1.6] text-soft">
                   {item.description}
                 </p>
               )}
 
               {item.technologies?.length ? (
-                <div class="mt-5 flex flex-wrap gap-2">
+                <div class="mt-7 flex flex-wrap gap-2">
                   {item.technologies.map((tech) => (
                     <span class={chip}>{tech}</span>
                   ))}
@@ -156,7 +156,7 @@ const icon = "w-5 h-5";
                   href={item.demo_url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  class="mt-7 inline-flex items-center gap-2 font-sans font-bold text-[0.95rem] text-ink transition-colors hover:text-ink/70"
+                  class="mt-9 inline-flex items-center gap-2 font-sans font-bold text-[0.95rem] text-ink transition-colors hover:text-ink/70"
                 >
                   <span>{item.label ?? L.demo}</span>
                   <Icon name="lucide:arrow-right" class="w-4 h-4" aria-hidden="true" />

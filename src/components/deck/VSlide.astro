@@ -1,0 +1,18 @@
+---
+interface Props {
+  title: string;
+  class?: string;
+}
+const { title, class: className } = Astro.props;
+---
+
+<section
+  data-vslide
+  data-title={title}
+  class:list={[
+    'shrink-0 w-full h-dvh box-border snap-start snap-always flex items-center justify-center text-center px-[8vw] py-16',
+    className,
+  ]}
+>
+  <slot />
+</section>

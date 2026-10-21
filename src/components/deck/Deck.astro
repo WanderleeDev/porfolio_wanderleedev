@@ -1,0 +1,50 @@
+---
+interface Props {
+  start?: number;
+  vstart?: number;
+  tasks?: string[];
+}
+const { start = 1, vstart = 1, tasks = [] } = Astro.props;
+---
+
+<div class="relative w-dvw h-dvh overflow-hidden bg-slate-900 text-slate-50 font-sans" data-deck data-start={start} data-vstart={vstart}>
+  <div
+    class="relative h-full w-full flex overflow-x-auto overflow-y-hidden snap-x snap-mandatory scroll-smooth overscroll-contain [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+    data-track
+  >
+    <slot />
+  </div>
+
+  <button class="fixed z-10 w-[52px] h-[52px] rounded-full bg-sky-400 text-slate-900 text-2xl shadow-lg top-1/2 left-5 -translate-y-1/2 cursor-pointer disabled:opacity-25 disabled:cursor-default" data-prev aria-label="Slide anterior">←</button>
+  <button class="fixed z-10 w-[52px] h-[52px] rounded-full bg-sky-400 text-slate-900 text-2xl shadow-lg top-1/2 right-5 -translate-y-1/2 cursor-pointer disabled:opacity-25 disabled:cursor-default" data-next aria-label="Slide siguiente">→</button>
+  <button class="fixed z-10 w-[52px] h-[52px] rounded-full bg-sky-400 text-slate-900 text-2xl shadow-lg top-5 left-1/2 -translate-x-1/2 cursor-pointer disabled:opacity-25 disabled:cursor-default" data-up aria-label="Vertical anterior">↑</button>
+  <button class="fixed z-10 w-[52px] h-[52px] rounded-full bg-sky-400 text-slate-900 text-2xl shadow-lg bottom-5 left-1/2 -translate-x-1/2 cursor-pointer disabled:opacity-25 disabled:cursor-default" data-down aria-label="Vertical siguiente">↓</button>
+
+  <div class="fixed z-10 top-5 left-5 text-sm text-slate-400 tabular-nums" data-counter></div>
+
+  <button class="fixed z-10 top-5 right-5 rounded-full border border-white/15 bg-slate-800 px-4 py-2 text-sm cursor-pointer" data-lock aria-pressed="true">🔒 Vertical bloqueado</button>
+  <button class="fixed z-10 bottom-5 left-5 rounded-full border border-white/15 bg-slate-800 px-4 py-2 text-sm cursor-pointer" data-overview>⊞ Vista general</button>
+
+  {tasks.length > 0 && (
+    <aside class="fixed z-10 top-18 right-5 w-60 rounded-2xl border border-white/10 bg-slate-800 p-4 text-sm">
+      <div class="flex justify-between mb-2.5 text-xs uppercase tracking-widest text-slate-400">
+        <span>Completa para desbloquear</span>
+        <span data-task-count>0/{tasks.length}</span>
+      </div>
+      {tasks.map((t) => (
+        <label class="flex items-center gap-2.5 py-1.5 cursor-pointer">
+          <input type="checkbox" data-task class="w-[18px] h-[18px] accent-sky-400" /> {t}
+        </label>
+      ))}
+    </aside>
+  )}
+
+  <div class="fixed inset-0 z-20 flex items-center justify-center bg-slate-950/95 opacity-0 pointer-events-none scale-[1.08] transition-all duration-300" data-overview-panel aria-hidden="true">
+    <div class="grid w-[min(92vw,1100px)] h-[min(86vh,720px)] gap-[1.5vmin]" data-ov-grid></div>
+  </div>
+</div>
+
+<script>
+  import { initDeck } from './deck-controller';
+  document.querySelectorAll<HTMLElement>('[data-deck]').forEach(initDeck);
+</script>

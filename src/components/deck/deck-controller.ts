@@ -220,7 +220,7 @@ export function initDeck(root: HTMLElement) {
   // por los slides horizontales vecinos.
   const minimap = document.createElement('div');
   minimap.className =
-    'fixed bottom-6 right-6 z-30 grid grid-cols-[48px_60px_48px] grid-rows-[34px_48px_34px] items-center justify-items-center gap-1.5 rounded-[22px] border border-white/20 bg-slate-900/85 p-3 shadow-lg backdrop-blur-md';
+    'fixed bottom-6 right-6 z-30 grid grid-cols-[48px_48px_48px] grid-rows-[48px_48px_48px] items-center justify-items-center gap-1.5 rounded-[22px] border border-white/20 bg-slate-900/85 p-3 shadow-lg backdrop-blur-md';
   minimap.setAttribute('data-minimap', '');
   minimap.setAttribute('role', 'group');
   minimap.setAttribute('aria-label', 'Minimapa del deck');
@@ -228,13 +228,13 @@ export function initDeck(root: HTMLElement) {
   root.appendChild(minimap);
 
   const MM_CELL =
-    'block h-full cursor-pointer rounded-[10px] border-2 bg-white/5 transition-colors hover:border-sky-400';
+    'block h-full w-full cursor-pointer rounded-[10px] border-2 bg-white/5 transition-colors hover:border-sky-400';
   const MM_ON_BORDER = 'rgb(56 189 248)';
   const MM_OFF_BORDER = 'rgb(255 255 255 / 0.2)';
   const MM_ON_FILL = 'rgb(56 189 248 / 0.18)';
   const MM_OFF_FILL = 'rgb(255 255 255 / 0.05)';
 
-  type MmCell = { el: HTMLButtonElement; kind: 'h' | 'v'; i: number };
+  type MmCell = { el: HTMLButtonElement; kind: 'h' | 'v'; i: number; hiddenWhenLocked?: boolean };
   const mmCells: MmCell[] = [];
 
   function mmButton(label: string, placement: string, onClick: () => void) {
@@ -269,14 +269,15 @@ export function initDeck(root: HTMLElement) {
       mmCells.push({
         kind: 'v',
         i: 0,
-        el: mmButton(vslides[0].dataset.title ?? 'Arriba', 'col-start-2 row-start-1 w-[42px]', () => scrollV(0)),
+        hiddenWhenLocked: true,
+        el: mmButton(vslides[0].dataset.title ?? 'Arriba', 'col-start-2 row-start-1', () => scrollV(0)),
       });
     }
     if (left >= 0) {
       mmCells.push({
         kind: 'h',
         i: left,
-        el: mmButton(hslides[left].dataset.title ?? `Slide ${left + 1}`, 'col-start-1 row-start-2 w-full', () => goTo(left)),
+        el: mmButton(hslides[left].dataset.title ?? `Slide ${left + 1}`, 'col-start-1 row-start-2', () => goTo(left)),
       });
     }
     const middle = holder && vslides.length > 1 ? 1 : -1;
@@ -285,19 +286,19 @@ export function initDeck(root: HTMLElement) {
         ? {
             kind: 'v',
             i: middle,
-            el: mmButton(hslides[center].dataset.title ?? `Slide ${center + 1}`, 'col-start-2 row-start-2 w-full', () => scrollV(middle)),
+            el: mmButton(hslides[center].dataset.title ?? `Slide ${center + 1}`, 'col-start-2 row-start-2', () => scrollV(middle)),
           }
         : {
             kind: 'h',
             i: center,
-            el: mmButton(hslides[center].dataset.title ?? `Slide ${center + 1}`, 'col-start-2 row-start-2 w-full', () => goTo(center)),
+            el: mmButton(hslides[center].dataset.title ?? `Slide ${center + 1}`, 'col-start-2 row-start-2', () => goTo(center)),
           },
     );
     if (right < hslides.length) {
       mmCells.push({
         kind: 'h',
         i: right,
-        el: mmButton(hslides[right].dataset.title ?? `Slide ${right + 1}`, 'col-start-3 row-start-2 w-full', () => goTo(right)),
+        el: mmButton(hslides[right].dataset.title ?? `Slide ${right + 1}`, 'col-start-3 row-start-2', () => goTo(right)),
       });
     }
     if (vslides.length > 2) {
@@ -305,17 +306,23 @@ export function initDeck(root: HTMLElement) {
       mmCells.push({
         kind: 'v',
         i: last,
-        el: mmButton(vslides[last].dataset.title ?? 'Abajo', 'col-start-2 row-start-3 w-[42px]', () => scrollV(last)),
+        hiddenWhenLocked: true,
+        el: mmButton(vslides[last].dataset.title ?? 'Abajo', 'col-start-2 row-start-3', () => scrollV(last)),
       });
     }
   }
 
   function updateMinimapActive() {
-    mmCells.forEach(({ el, kind, i }) => {
+    mmCells.forEach(({ el, kind, i, hiddenWhenLocked }) => {
       const on = kind === 'h' ? i === current : current === holderIndex && i === vCurrent;
       el.style.borderColor = on ? MM_ON_BORDER : MM_OFF_BORDER;
       el.style.backgroundColor = on ? MM_ON_FILL : MM_OFF_FILL;
       el.setAttribute('aria-current', on ? 'true' : 'false');
+      // Con el vertical bloqueado no se muestran los slides de arriba/abajo,
+      // pero la grilla conserva su lugar.
+      const off = hiddenWhenLocked === true && locked;
+      el.style.visibility = off ? 'hidden' : '';
+      el.tabIndex = off ? -1 : 0;
     });
   }
 

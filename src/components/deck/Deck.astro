@@ -39,16 +39,25 @@ const { start = 1, vstart = 1, tasks = [] } = Astro.props;
   <dialog
     id="deck-overview"
     data-overview-panel
-    class="m-0 h-full w-full max-w-none max-h-none overflow-hidden border-0 bg-slate-950/95 p-0 text-slate-50 transition-opacity duration-300 starting:opacity-0"
+    class="group m-0 h-full w-full max-w-none max-h-none overflow-hidden border-0 bg-slate-950/95 p-0 text-slate-50 transition-[opacity,display,overlay] duration-300 transition-discrete starting:opacity-0 [&:not([open])]:opacity-0"
   >
-    <div class="flex h-full w-full items-center justify-center">
+    <div class="flex h-full w-full items-center justify-center" data-ov-wrap>
       <div
-        class="grid w-[min(92vw,1100px)] h-[min(86vh,720px)] gap-[1.5vmin] transition-all duration-1000 delay-150 ease-out-elastic starting:scale-0"
+        class="grid w-[min(92vw,1100px)] h-[min(86vh,720px)] gap-[1.5vmin] scale-0 opacity-0 transition-[scale,opacity] duration-200 ease-out group-open:scale-100 group-open:opacity-100 group-open:duration-1000 group-open:delay-150 group-open:ease-out-elastic"
         data-ov-grid
       ></div>
     </div>
   </dialog>
 </div>
+
+<style>
+  @starting-style {
+    #deck-overview[open] [data-ov-grid] {
+      scale: 0;
+      opacity: 0;
+    }
+  }
+</style>
 
 <script>
   import { initDeck } from './deck-controller';

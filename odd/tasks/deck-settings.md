@@ -77,4 +77,17 @@
   - Evidencia T7: muestreo de `scale` computado 0 → 0.62 → 0.99 → 1.0002 →
     `none`; el pico elástico ~1.14 a los 250ms; se reproduce en cada apertura;
     `scrollWidth === clientWidth` en 1440x900 y 390x844.
+  - T8 · salida animada · `Deck.astro`: el dialog cierra con
+    `transition-[opacity,display,overlay] duration-300 transition-discrete`
+    (`transition-behavior: allow-discrete`) más `[&:not([open])]:opacity-0`, así
+    `display` y `overlay` se difieren hasta terminar el fade y el dialog no sale
+    del top layer antes de tiempo. El grid usa la misma técnica de dos
+    velocidades: base `scale-0 opacity-0 duration-200 ease-out` (salida) y
+    `group-open:*` con `duration-1000 delay-150 ease-out-elastic` (entrada).
+    El `@starting-style` del grid va en un `<style>` scoped con selector `#id`
+    porque el `starting:scale-0` de Tailwind pierde por especificidad contra
+    `group-open:scale-100` y la entrada quedaba sin animar.
+  - Evidencia T8: entrada 0 → 1.07 → 0.99 → 1; salida 1 → 0.015 a los 100ms →
+    `display:none` a los 250ms; reapertura vuelve a animar; click en backdrop,
+    Escape, tecla `o` y click en miniatura cierran con fade; 0 errores.
 

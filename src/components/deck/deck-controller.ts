@@ -33,6 +33,7 @@ export function initDeck(root: HTMLElement) {
   const downBtn = q<HTMLButtonElement>('[data-down]')!;
   const counter = q<HTMLElement>('[data-counter]')!;
   const panel = q<HTMLDialogElement>('[data-overview-panel]')!;
+  const ovWrap = q<HTMLElement>('[data-ov-wrap]');
   if (!panel.id) panel.id = 'deck-overview';
   const grid = q<HTMLElement>('[data-ov-grid]')!;
   const taskChecks = qa<HTMLInputElement>('[data-task]');
@@ -198,7 +199,7 @@ export function initDeck(root: HTMLElement) {
   }
 
   panel.addEventListener('click', (e) => {
-    if (e.target === panel) closeOverview();
+    if (e.target === panel || e.target === ovWrap) closeOverview();
   });
 
   // ===== Minimapa =====

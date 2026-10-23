@@ -1,4 +1,4 @@
-import { loadSettings } from './deck-settings';
+import { loadSettings, subscribeSettings } from './deck-settings';
 
 type Cell = { type: 'h' | 'v'; i: number; row: number; col: number; title: string };
 
@@ -333,8 +333,11 @@ export function initDeck(root: HTMLElement) {
     });
   }
 
-  window.addEventListener('deck:settings', (e) => {
-    const s = e.detail as { lock: boolean; overview: boolean; minimap: boolean };
+  // ===== Ajustes: reacciona al store. La primera notificación es el valor
+  // inicial (idéntico a `loadSettings()` ya aplicado arriba) y se descarta. =====
+  let settingsFirst = true;
+  subscribeSettings((s) => {
+    if (settingsFirst) { settingsFirst = false; return; }
     if (s.lock !== locked) setLock(s.lock);
     if (expandBtn) expandBtn.style.display = s.overview ? '' : 'none';
     minimap.style.display = s.minimap ? '' : 'none';

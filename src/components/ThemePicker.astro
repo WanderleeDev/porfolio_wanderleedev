@@ -39,6 +39,16 @@ const settingIcon = "size-4 shrink-0 opacity-70 [&_svg]:size-full";
 
 <div class="fixed top-5 right-5 z-[999] flex items-center gap-2" id="theme-picker" transition:animate={false}>
 
+  <!-- Vista de logros -->
+  <button
+    class={trigger}
+    id="logros-trigger"
+    type="button"
+    aria-label={isEn ? "View achievements" : "Ver logros"}
+  >
+    <Icon name="lucide:trophy" class="size-5" aria-hidden="true" />
+  </button>
+
   <!-- Vista de créditos -->
   <button
     class={trigger}
@@ -207,6 +217,7 @@ const settingIcon = "size-4 shrink-0 opacity-70 [&_svg]:size-full";
 
 <script>
   import { loadSettings, updateSetting, type DeckSettings } from "./deck/deck-settings";
+  import { requestUnlock, toggleLogros } from "../lib/logros-store";
 
   type Theme = "system" | "light" | "dark" | "neon";
 
@@ -325,6 +336,7 @@ const settingIcon = "size-4 shrink-0 opacity-70 [&_svg]:size-full";
     root.querySelectorAll<HTMLElement>("[data-theme]").forEach((opt) => {
       opt.addEventListener("click", () => {
         setTheme(opt.dataset.theme as Theme);
+        requestUnlock("theme-tour");
         document.getElementById("theme-panel")!.hidden = true;
         document.getElementById("theme-trigger")!.setAttribute("aria-expanded", "false");
       });
@@ -340,6 +352,15 @@ const settingIcon = "size-4 shrink-0 opacity-70 [&_svg]:size-full";
     creditsTrigger.addEventListener("click", (e) => {
       e.stopPropagation();
       document.dispatchEvent(new CustomEvent("credits:toggle"));
+    });
+  }
+
+  const logrosTrigger = document.getElementById("logros-trigger");
+  if (logrosTrigger && logrosTrigger.dataset.wired !== "true") {
+    logrosTrigger.dataset.wired = "true";
+    logrosTrigger.addEventListener("click", (e) => {
+      e.stopPropagation();
+      toggleLogros();
     });
   }
 

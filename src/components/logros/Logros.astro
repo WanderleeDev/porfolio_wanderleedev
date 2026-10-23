@@ -1,0 +1,277 @@
+---
+/**
+ * Vista de logros: overlay a pantalla completa con la grilla de logros.
+ * Los logros se desbloquean explorando el sitio y se persisten en localStorage.
+ * La coreografía es una timeline de GSAP que vive pausada: abrir es play(),
+ * cerrar es reverse(), así el mismo recorrido sirve en ambos sentidos.
+ */
+import Icon from "../Icon.astro";
+import { ACHIEVEMENTS } from "../../lib/achievements";
+
+interface Props {
+  lang: "es" | "en";
+}
+
+const { lang } = Astro.props;
+const isEn = lang === "en";
+const labels = {
+  title: isEn ? "Achievements" : "Logros",
+  close: isEn ? "Close achievements" : "Cerrar logros",
+  progress: isEn ? "unlocked" : "desbloqueados",
+  unlocked: isEn ? "Unlocked" : "Desbloqueado",
+  locked: isEn ? "Locked" : "Bloqueado",
+};
+const achievements = ACHIEVEMENTS.map((achievement) => ({
+  id: achievement.id,
+  icon: achievement.icon,
+  title: achievement.title[lang],
+  description: achievement.description[lang],
+}));
+---
+
+<dialog
+  id="deck-logros"
+  data-logros
+  data-label-unlocked={labels.unlocked}
+  data-label-locked={labels.locked}
+  aria-label={labels.title}
+  class="m-0 h-dvh w-dvw max-h-none max-w-none overflow-clip border-0 bg-transparent p-0 text-ink"
+>
+  <div data-logros-root class="relative h-full w-full overflow-clip">
+    <div
+      data-logros-veil
+      aria-hidden="true"
+      class="pointer-events-none absolute inset-0 bg-[color-mix(in_srgb,var(--page-bg-color)_55%,transparent)] backdrop-blur-[3px]"
+    >
+    </div>
+
+    <!-- Bloque principal: entra desde fuera de la pantalla y la ocupa entera. -->
+    <div
+      data-logros-sheet
+      class="relative flex h-full w-full flex-col gap-[clamp(1rem,2.2vw,1.75rem)] bg-[color-mix(in_srgb,var(--page-bg-color)_88%,transparent)] px-[clamp(1.25rem,4vw,4rem)] py-[clamp(1.25rem,3vw,2.25rem)] backdrop-blur-[10px]"
+    >
+      <!-- Sub bloque 1: cabecera. -->
+      <div data-logros-block="head" class="flex items-start justify-between gap-4">
+        <div class="flex flex-col gap-2">
+          <h2
+            class="font-fira-sans-extra-condensed text-[clamp(2rem,5vw,3.5rem)] font-bold uppercase leading-[0.95] tracking-[0.04em] text-ink"
+          >
+            {labels.title}
+          </h2>
+          <p
+            class="flex items-center gap-2 font-sans text-[0.7rem] uppercase tracking-[0.25em] text-muted"
+          >
+            <span
+              data-logros-count
+              class="font-fira-sans-extra-condensed text-base font-bold tracking-[0.1em] text-ink"
+            >
+              0 / {ACHIEVEMENTS.length}
+            </span>
+            <span>{labels.progress}</span>
+          </p>
+        </div>
+        <button
+          data-logros-close
+          type="button"
+          aria-label={labels.close}
+          class="flex size-11 shrink-0 items-center justify-center rounded-full border border-line bg-surface/80 text-ink backdrop-blur-md transition-colors hover:bg-badge"
+        >
+          <Icon name="lucide:x" class="size-4" />
+        </button>
+      </div>
+
+      <!-- Sub bloque 2: grilla de logros, ocupa el alto restante. -->
+      <div
+        data-logros-block="grid"
+        class="mx-auto flex min-h-0 w-full max-w-6xl flex-1 flex-col justify-center"
+      >
+        <div
+          class="grid min-h-0 flex-1 auto-rows-fr grid-cols-1 gap-[clamp(0.75rem,1.6vw,1.25rem)] overflow-y-auto overscroll-contain sm:max-h-[32rem] sm:grid-cols-2"
+        >
+          {
+            achievements.map((achievement) => (
+              <article
+                data-logros-card
+                data-achievement={achievement.id}
+                data-state="locked"
+                class="group flex items-center gap-4 rounded-2xl border border-line bg-surface/50 p-4 transition-colors data-[state=unlocked]:border-ink/25 data-[state=unlocked]:bg-surface/80"
+              >
+                <span
+                  aria-hidden="true"
+                  class="flex size-11 shrink-0 items-center justify-center rounded-xl border border-line bg-badge/30 text-muted transition-colors group-data-[state=unlocked]:bg-badge/60 group-data-[state=unlocked]:text-ink"
+                >
+                  <Icon name={achievement.icon} class="size-5" />
+                </span>
+                <div class="flex min-w-0 flex-1 flex-col gap-1">
+                  <h3 class="font-fira-sans-extra-condensed text-[clamp(1rem,1.6vw,1.35rem)] font-bold uppercase tracking-[0.06em] text-muted transition-colors group-data-[state=unlocked]:text-ink">
+                    {achievement.title}
+                  </h3>
+                  <p class="font-sans text-[clamp(0.75rem,1vw,0.875rem)] leading-snug text-muted/80 transition-colors group-data-[state=unlocked]:text-soft">
+                    {achievement.description}
+                  </p>
+                </div>
+                <span aria-hidden="true" class="shrink-0 text-muted">
+                  <span class="flex group-data-[state=unlocked]:hidden">
+                    <Icon name="lucide:lock" class="size-4" />
+                  </span>
+                  <span class="hidden group-data-[state=unlocked]:flex">
+                    <Icon name="lucide:check" class="size-4" />
+                  </span>
+                </span>
+                <span class="sr-only" data-logros-state-label>
+                  {labels.locked}
+                </span>
+              </article>
+            ))
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+</dialog>
+
+<script>
+  import { gsap } from "../../lib/gsap";
+  import {
+    ACHIEVEMENTS,
+    unlocked,
+    type AchievementId,
+  } from "../../lib/achievements";
+  import {
+    isOpen,
+    mount,
+    requestUnlock,
+    toggleLogros,
+  } from "../../lib/logros-store";
+
+  function initLogros() {
+    const dialog = document.querySelector<HTMLDialogElement>("dialog[data-logros]");
+    if (!dialog || dialog.dataset.wired === "true") return;
+    dialog.dataset.wired = "true";
+
+    const veil = dialog.querySelector<HTMLElement>("[data-logros-veil]")!;
+    const sheet = dialog.querySelector<HTMLElement>("[data-logros-sheet]")!;
+    const head = dialog.querySelector<HTMLElement>('[data-logros-block="head"]')!;
+    const gridBlock = dialog.querySelector<HTMLElement>('[data-logros-block="grid"]')!;
+    const cards = Array.from(dialog.querySelectorAll<HTMLElement>("[data-logros-card]"));
+    const countEl = dialog.querySelector<HTMLElement>("[data-logros-count]")!;
+    const closeBtn = dialog.querySelector<HTMLButtonElement>("[data-logros-close]")!;
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const stateLabels = {
+      unlocked: dialog.dataset.labelUnlocked ?? "",
+      locked: dialog.dataset.labelLocked ?? "",
+    };
+
+    // El deck y la barra viven fuera del componente.
+    const background = [
+      document.querySelector<HTMLElement>("[data-deck]"),
+      document.getElementById("theme-picker"),
+    ].filter((el): el is HTMLElement => el !== null);
+
+    // Una sola timeline, construida pausada: abrir es play(), cerrar reverse().
+    // El recorrido inverso reproduce el cierre sin duplicar la coreografía.
+    const timeline = gsap.timeline({
+      paused: true,
+      onReverseComplete: () => {
+        dialog.close();
+        // El deck no debe quedar con transform inline: crea un containing block
+        // para sus hijos `fixed` aunque el valor sea identidad.
+        gsap.set(background, { clearProps: "all" });
+      },
+    });
+
+    timeline
+      .to(
+        background,
+        { scale: 0.94, opacity: 0.35, duration: 0.55, ease: "power3.inOut", transformOrigin: "50% 50%" },
+        0,
+      )
+      .to(veil, { opacity: 1, duration: 0.35, ease: "power2.out" }, 0)
+      // El bloque principal llega desde abajo, fuera de la pantalla.
+      .fromTo(sheet, { yPercent: 100 }, { yPercent: 0, duration: 0.62, ease: "power3.out" }, 0)
+      // Los sub bloques suben con rotación leve y se enderezan.
+      .fromTo(
+        head,
+        { y: 40, rotate: 3, opacity: 0 },
+        { y: 0, rotate: 0, opacity: 1, duration: 0.5, ease: "power3.out" },
+        0.3,
+      )
+      .fromTo(
+        gridBlock,
+        { y: 90, rotate: -3, opacity: 0 },
+        { y: 0, rotate: 0, opacity: 1, duration: 0.55, ease: "power3.out" },
+        0.44,
+      )
+      // Las cards cierran la secuencia, escalonadas.
+      .fromTo(
+        cards,
+        { y: 50, opacity: 0 },
+        { y: 0, opacity: 1, duration: 0.45, ease: "power3.out", stagger: 0.05 },
+        0.7,
+      );
+
+    // Pinta cada card según el store y actualiza el contador.
+    function syncCards() {
+      const unlockedIds = new Set(unlocked.get());
+      for (const card of cards) {
+        const id = card.dataset.achievement as AchievementId;
+        const isUnlocked = unlockedIds.has(id);
+        card.dataset.state = isUnlocked ? "unlocked" : "locked";
+        const label = card.querySelector<HTMLElement>("[data-logros-state-label]");
+        if (label) label.textContent = isUnlocked ? stateLabels.unlocked : stateLabels.locked;
+      }
+      countEl.textContent = `${unlockedIds.size} / ${ACHIEVEMENTS.length}`;
+    }
+
+    function open() {
+      if (dialog.open) return;
+      // Abrir la lista también es explorar: se desbloquea antes de pintar.
+      requestUnlock("curiosity");
+      syncCards();
+      dialog.showModal();
+      if (reduced) timeline.progress(1).pause();
+      else timeline.play();
+    }
+
+    function close() {
+      if (!dialog.open) return;
+      if (reduced) {
+        timeline.progress(0).pause();
+        dialog.close();
+        return;
+      }
+      timeline.reverse();
+    }
+
+    // El disparador del overlay vive en el store: `mount` suscribe `isOpen`
+    // y llama a `open`/`close`. Los cierres por puntero (botón X, Escape)
+    // pasan por `toggleLogros` para que el store siga siendo la fuente de
+    // verdad del estado abierto/cerrado.
+    mount(open, close);
+
+    // Logros automáticos: visitar el sitio o hablar con el chat. El estado
+    // llega por suscripción al store (llamada inmediata + cada cambio).
+    requestUnlock("hello-world");
+    unlocked.subscribe(syncCards);
+
+    // Los créditos son un evento de otra función (los despacha el botón de
+    // créditos): solo se aprovecha aquí para el logro, sin acoplarlo al store.
+    document.addEventListener("credits:toggle", () => requestUnlock("credits"));
+    window.addEventListener("chat:event", (event) => {
+      if ((event as CustomEvent<string>).detail === "token") requestUnlock("chat");
+    });
+
+    // El blocker cubre todo el viewport, así que no existe clic "afuera":
+    // el único cierre por puntero es el botón X.
+    closeBtn.addEventListener("click", () => toggleLogros());
+
+    // Escape no cierra el dialog de golpe: se intercepta para revertir la timeline.
+    dialog.addEventListener("cancel", (event) => {
+      event.preventDefault();
+      toggleLogros();
+    });
+  }
+
+  document.addEventListener("astro:page-load", initLogros);
+  initLogros();
+</script>

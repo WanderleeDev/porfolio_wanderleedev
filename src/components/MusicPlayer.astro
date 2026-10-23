@@ -231,6 +231,7 @@ const activeIndex = 3;
 
 <script>
   import { applyVolumeInput, formatTime, isGuardedDeckKey, nextTrackIndex, seekPercent, seekTime, toggleMute, transportLabelKey, wrapIndex } from "./music-player/player-core";
+  import { requestUnlock } from "../lib/logros-store";
 
   const root = document.querySelector<HTMLElement>("[data-music-player]");
 
@@ -325,7 +326,10 @@ const activeIndex = 3;
     });
 
     // Estado del audio
-    audio.addEventListener("play", () => syncPlaying(true));
+    audio.addEventListener("play", () => {
+      syncPlaying(true);
+      requestUnlock("soundtrack");
+    });
     audio.addEventListener("pause", () => syncPlaying(false));
     audio.addEventListener("ended", () => {
       syncPlaying(false);

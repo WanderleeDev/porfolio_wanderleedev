@@ -5,6 +5,7 @@ import Hero from "../components/Hero.astro";
 import ThemePicker from "../components/ThemePicker.astro";
 import ChatSection from "../components/ChatSection.astro";
 import Credits from "../components/credits/Credits.astro";
+import Logros from "../components/logros/Logros.astro";
 import MusicPlayer from "../components/MusicPlayer.astro";
 import Icon from "../components/Icon.astro";
 import Title from "../components/typography/Title.astro";
@@ -35,6 +36,7 @@ const links = [
 <BaseLayout title={meta.title} description={meta.description}>
   <ThemePicker />
   <Credits lang="es" />
+  <Logros lang="es" />
   <Deck start={1} vstart={1}>
     <Slide title={c.title}>
       <div class="flex w-full max-w-5xl flex-col items-center gap-10 md:gap-16">

@@ -17,6 +17,8 @@ import Deck from "../../components/deck/Deck.astro";
 import Slide from "../../components/deck/Slide.astro";
 import VStack from "../../components/deck/VStack.astro";
 import VSlide from "../../components/deck/VSlide.astro";
+import ContactForm from "../../components/contact/ContactForm";
+import Title from "../../components/typography/Title.astro";
 import { getTranslations } from "../../i18n/utils";
 
 const lang = Astro.currentLocale as "es" | "en";
@@ -42,15 +44,20 @@ const links = [
   <Logros lang="en" />
   <Deck start={1} vstart={1}>
     <Slide title={c.title}>
-      <div class="flex w-full max-w-3xl flex-col items-center gap-6">
+      <div class="flex w-full max-w-2xl flex-col items-center gap-6 md:gap-8">
         <div class="text-center">
-          <h2 class="text-4xl font-bold md:text-5xl">{c.title}</h2>
-          <p class="mx-auto mt-3 max-w-[46ch] font-sans text-[clamp(0.95rem,1.8vw,1.05rem)] leading-[1.6] text-soft">
+          <span class="font-sans text-[0.65rem] font-bold uppercase tracking-[0.3em] text-muted">
+            {f.contactLabel}
+          </span>
+          <Title level={2} family="sans" size="clamp(2.5rem,5vw,4rem)" class="mt-2">
+            {c.title}
+          </Title>
+          <p class="mx-auto mt-3 max-w-[46ch] font-sans text-[clamp(0.95rem,1.6vw,1.1rem)] leading-[1.5] text-soft">
             {c.subtitle}
           </p>
         </div>
 
-        <ul class="flex flex-wrap items-center justify-center gap-3">
+        <ul class="flex items-center justify-center gap-2">
           {
             links.map((l) => (
               <li>
@@ -58,15 +65,20 @@ const links = [
                   href={l.href}
                   target={l.href.startsWith("http") ? "_blank" : undefined}
                   rel={l.href.startsWith("http") ? "noopener" : undefined}
-                  class="inline-flex items-center gap-2 rounded-full border border-line bg-surface px-4 py-2 font-sans text-sm text-ink transition-colors hover:bg-badge"
+                  aria-label={l.label}
+                  title={l.label}
+                  class="flex size-11 items-center justify-center rounded-full border border-line bg-surface text-ink transition-colors hover:bg-badge"
                 >
-                  <Icon name={l.icon} class="size-4" aria-hidden="true" />
-                  {l.label}
+                  <Icon name={l.icon} class="size-5" aria-hidden="true" />
                 </a>
               </li>
             ))
           }
         </ul>
+
+        <div class="w-full max-w-lg">
+          <ContactForm client:load lang={lang} />
+        </div>
       </div>
     </Slide>
 

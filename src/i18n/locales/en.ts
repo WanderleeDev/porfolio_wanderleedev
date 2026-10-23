@@ -180,6 +180,16 @@ export const en = {
     errorEmail: "Please enter a valid email, like name@domain.com.",
   },
 
+  contactForm: {
+    label: "Your message",
+    placeholder: "Tell me what's on your mind. Leave your email in the text if you'd like a reply.",
+    submit: "Send message",
+    sending: "Sending...",
+    success: "Message sent. Thank you!",
+    error: "Could not send. Please try again.",
+    invalid: "Write a slightly longer message.",
+  },
+
   chat: {
     title: "Chat",
     subtitle: "Ask me about my work",

@@ -180,6 +180,16 @@ export const es = {
     errorEmail: "Escribe un correo válido, por ejemplo nombre@dominio.com.",
   },
 
+  contactForm: {
+    label: "Tu mensaje",
+    placeholder: "Contame qué tenés en mente. Si querés que te responda, dejá tu correo en el texto.",
+    submit: "Enviar mensaje",
+    sending: "Enviando...",
+    success: "Mensaje enviado. ¡Gracias!",
+    error: "No se pudo enviar. Intentalo de nuevo.",
+    invalid: "Escribí un mensaje un poco más largo.",
+  },
+
   chat: {
     title: "Chat",
     subtitle: "Preguntame sobre mi trabajo",

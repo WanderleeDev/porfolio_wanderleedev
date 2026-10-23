@@ -1,0 +1,77 @@
+---
+/**
+ * Icon — renders Iconify icons from the data sets bundled in the repo.
+ *
+ * Replaces astro-iconify, which fetched https://api.iconify.design/ on every
+ * render. A single failed fetch (network blip, rate limit) baked a "Failed to
+ * load" placeholder into the page, and in dev the rejected promise stayed
+ * cached for the life of the process, so the icon never recovered until a
+ * restart.
+ *
+ * The three packs below cover every icon the site uses. Adding a new pack is
+ * one import plus one entry in `sets`; adding an icon that already exists in
+ * one of them needs no code change.
+ */
+import devicon from "@iconify-json/devicon/icons.json";
+import lucide from "@iconify-json/lucide/icons.json";
+import simpleIcons from "@iconify-json/simple-icons/icons.json";
+
+type IconData = {
+  body: string;
+  width?: number;
+  height?: number;
+  left?: number;
+  top?: number;
+};
+
+type IconSet = {
+  width?: number;
+  height?: number;
+  icons: Record<string, IconData>;
+  aliases?: Record<string, { parent: string }>;
+};
+
+interface Props {
+  /** Icon name in `pack:name` form, e.g. `lucide:mail`. */
+  name: string;
+  class?: string;
+  style?: Record<string, string | number>;
+  [key: string]: unknown;
+}
+
+const { name, class: className, style, ...rest } = Astro.props;
+
+const sets: Record<string, IconSet> = {
+  "simple-icons": simpleIcons as IconSet,
+  lucide: lucide as IconSet,
+  devicon: devicon as IconSet,
+};
+
+const [prefix, iconName] = name.split(":");
+const set = sets[prefix];
+
+if (!set) {
+  throw new Error(`Icon: unknown pack "${prefix}" in "${name}".`);
+}
+
+const alias = set.aliases?.[iconName]?.parent;
+const icon = set.icons[iconName] ?? (alias ? set.icons[alias] : undefined);
+
+if (!icon) {
+  throw new Error(`Icon: "${iconName}" does not exist in pack "${prefix}".`);
+}
+
+const width = icon.width ?? set.width ?? 24;
+const height = icon.height ?? set.height ?? 24;
+const offset = icon.left || icon.top ? `translate(${icon.left ?? 0} ${icon.top ?? 0})` : undefined;
+---
+
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  viewBox={`0 0 ${width} ${height}`}
+  class={className}
+  style={style}
+  {...rest}
+>
+  {offset ? <g transform={offset} set:html={icon.body} /> : <Fragment set:html={icon.body} />}
+</svg>

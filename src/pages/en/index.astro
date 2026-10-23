@@ -18,12 +18,21 @@ import Slide from "../../components/deck/Slide.astro";
 import VStack from "../../components/deck/VStack.astro";
 import VSlide from "../../components/deck/VSlide.astro";
 import ContactForm from "../../components/contact/ContactForm";
+import Collage3D from "../../components/Collage3D.astro";
 import Title from "../../components/typography/Title.astro";
 import { getTranslations } from "../../i18n/utils";
 
 const lang = Astro.currentLocale as "es" | "en";
 const t = getTranslations(lang);
 const meta = t("metadata");
+const projectList = t("projects").list;
+const collage = {
+  yellow: projectList[0].image,
+  pink: projectList[1].image,
+  orange: projectList[2].image,
+  green: projectList[3].image,
+  blue: projectList[0].image,
+};
 const c = t("contactSection");
 const f = t("footer");
 
@@ -84,8 +93,8 @@ const links = [
 
     <Slide title="Main">
       <VStack>
-        <VSlide title="Top">
-          <h3 class="text-4xl font-bold">Top content</h3>
+        <VSlide title="Top" class="!p-0">
+          <Collage3D images={collage} />
         </VSlide>
         <VSlide title="Main" class="!p-0">
           <Hero />

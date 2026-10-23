@@ -1,0 +1,110 @@
+---
+interface Props {
+  images?: Partial<Record<'yellow' | 'pink' | 'orange' | 'green' | 'blue', string>>;
+}
+
+const W = 588;
+const H = 463;
+
+const defaultImages = {
+  yellow: 'https://picsum.photos/seed/collage-amarillo/800/800',
+  pink: 'https://picsum.photos/seed/collage-rosa/800/800',
+  orange: 'https://picsum.photos/seed/collage-naranja/800/800',
+  green: 'https://picsum.photos/seed/collage-verde/800/800',
+  blue: 'https://picsum.photos/seed/collage-azul/800/800',
+};
+const images = { ...defaultImages, ...Astro.props.images };
+
+const base = [
+  { k: 'yellow', color: '#ffee99', pts: [[0.85,1.73],[43.37,1.73],[54.42,14.04],[20.07,58.31],[0.85,35.64]], lift: [-2, -2], rot: [4, -5], z: 80 },
+  { k: 'pink',   color: '#ffc9cb', pts: [[43.37,1.73],[98.13,1.73],[98.13,28.08],[83.84,46.44],[54.42,14.04]], lift: [2, -2], rot: [4, 5], z: 80 },
+  { k: 'orange', color: '#ffdaa8', pts: [[54.42,14.04],[83.84,46.44],[49.32,90.71],[20.07,58.31]], lift: [0, 0], rot: [0, 0], z: 90 },
+  { k: 'green',  color: '#b3f5be', pts: [[98.13,28.08],[98.13,98.27],[42.52,98.27],[49.32,90.71],[83.84,46.44]], lift: [2, 2], rot: [-4, 5], z: 80 },
+  { k: 'blue',   color: '#a6d8ff', pts: [[0.85,35.64],[20.07,58.31],[49.32,90.71],[42.52,98.27],[0.85,98.27]], lift: [-2, 2], rot: [-4, -5], z: 80 },
+];
+
+const r2 = (n: number) => Math.round(n * 100) / 100;
+const toPx = (pts: number[][]) => pts.map(([x, y]) => [(x * W) / 100, (y * H) / 100]);
+const rotate = (pts: number[][]) => pts.map(([x, y]) => [H - y, x]);
+const clip = (pts: number[][], w: number, h: number) =>
+  `polygon(${pts.map(([x, y]) => `${r2((x / w) * 100)}% ${r2((y / h) * 100)}%`).join(', ')})`;
+const line = (pts: number[][]) => pts.map(([x, y]) => `${r2(x)},${r2(y)}`).join(' ');
+
+const pieces = base.map((p) => {
+  const land = toPx(p.pts);
+  const port = rotate(land);
+  const cx = port.reduce((a, q) => a + q[0], 0) / port.length;
+  const cy = port.reduce((a, q) => a + q[1], 0) / port.length;
+  const dx = cx - H / 2, dy = cy - W / 2;
+  const len = Math.hypot(dx, dy) || 1;
+  return {
+    ...p,
+    img: images[p.k as keyof typeof images],
+    clipL: clip(land, W, H),
+    clipP: clip(port, H, W),
+    lineL: line(land),
+    lineP: line(port),
+    liftP: [r2((dx / len) * 3), r2((dy / len) * 3)],
+  };
+});
+
+const slotCls = 'pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-400 [transform:translateZ(-2px)] has-[+.piece:hover]:opacity-100';
+const pieceCls = 'piece group pointer-events-none absolute inset-0 transform-3d will-change-transform transition-transform duration-600 ease-[cubic-bezier(.34,1.56,.64,1)] backface-hidden [--lx:var(--lxL)] [--ly:var(--lyL)] max-lg:[--lx:var(--lxP)] max-lg:[--ly:var(--lyP)] hover:[transform:translate3d(var(--lx),var(--ly),var(--lz))_rotateX(var(--rx))_rotateY(var(--ry))_scale(1.03)]';
+const liftCls = 'absolute inset-0 transition-[filter] duration-600 group-hover:[filter:drop-shadow(0_30px_22px_rgba(0,0,0,.38))_drop-shadow(0_10px_6px_rgba(0,0,0,.2))]';
+const shapeCls = 'pointer-events-auto absolute inset-0 overflow-hidden backface-hidden [--clip:var(--clipL)] max-lg:[--clip:var(--clipP)] [clip-path:var(--clip)]';
+const lnL = 'absolute inset-0 h-full w-full pointer-events-none max-lg:hidden';
+const lnP = 'absolute inset-0 hidden h-full w-full pointer-events-none max-lg:block';
+const edgeCls = 'fill-none stroke-[#1d1d1d] [stroke-width:1.5] [vector-effect:non-scaling-stroke]';
+const guideCls = 'fill-black/[.06] stroke-[#1d1d1d] [stroke-width:2] [stroke-dasharray:6_5] [vector-effect:non-scaling-stroke]';
+---
+
+<div class="collage relative mx-auto aspect-[588/463] w-[min(92vw,588px)] [perspective:1100px] max-lg:aspect-[463/588] max-lg:w-[min(86vw,60vh,520px)]">
+  <div class="board absolute inset-0 transform-3d">
+    <div class="pointer-events-none absolute inset-0 border-2 border-neutral-900 [transform:translateZ(-4px)]"></div>
+
+    {pieces.map((p) => {
+      const vars = `--clipL:${p.clipL};--clipP:${p.clipP};--lxL:${p.lift[0]}%;--lyL:${p.lift[1]}%;--lxP:${p.liftP[0]}%;--lyP:${p.liftP[1]}%;--rx:${p.rot[0]}deg;--ry:${p.rot[1]}deg;--lz:${p.z}px`;
+      return (
+        <Fragment>
+          <div class={slotCls} style={vars}>
+            <svg class={lnL} viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none"><polygon class={guideCls} points={p.lineL} /></svg>
+            <svg class={lnP} viewBox={`0 0 ${H} ${W}`} preserveAspectRatio="none"><polygon class={guideCls} points={p.lineP} /></svg>
+          </div>
+
+          <div class={pieceCls} style={vars}>
+            <div class={liftCls}>
+              <div class={shapeCls}>
+                <div class="absolute inset-0 bg-cover bg-center" style={`background-color:${p.color};background-image:url('${p.img}')`}></div>
+                <div class="paint-noise pointer-events-none absolute inset-0 opacity-[.28] mix-blend-multiply"></div>
+                <svg class={lnL} viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none"><polygon class={edgeCls} points={p.lineL} /></svg>
+                <svg class={lnP} viewBox={`0 0 ${H} ${W}`} preserveAspectRatio="none"><polygon class={edgeCls} points={p.lineP} /></svg>
+              </div>
+            </div>
+          </div>
+        </Fragment>
+      );
+    })}
+  </div>
+</div>
+
+<script>
+  import { gsap } from 'gsap';
+
+  gsap.utils.toArray<HTMLElement>('.collage').forEach((stage) => {
+    const board = stage.querySelector<HTMLElement>('.board');
+    if (!board) return;
+
+    stage.addEventListener('pointermove', (e) => {
+      if (e.pointerType !== 'mouse') return;
+      const r = stage.getBoundingClientRect();
+      const mx = ((e.clientX - r.left) / r.width) * 2 - 1;
+      const my = ((e.clientY - r.top) / r.height) * 2 - 1;
+      gsap.to(board, { rotationX: -my * 4, rotationY: mx * 5, duration: 0.8, ease: 'power2.out', overwrite: 'auto' });
+    });
+
+    stage.addEventListener('pointerleave', (e) => {
+      if (e.pointerType !== 'mouse') return;
+      gsap.to(board, { rotationX: 0, rotationY: 0, duration: 0.8, ease: 'power2.out', overwrite: 'auto' });
+    });
+  });
+</script>

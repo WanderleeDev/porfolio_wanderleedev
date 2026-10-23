@@ -3,7 +3,6 @@ import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport, type UIMessagePart } from "ai";
 import { getTranslations } from "../i18n/utils";
 import { ProjectsCard } from "./chat/ProjectsCard";
-import { ReasoningBlock } from "./chat/ReasoningBlock";
 import { TechnologiesCard } from "./chat/TechnologiesCard";
 import type { PortfolioProject, PortfolioStackCategory } from "../i18n/portfolio-data";
 
@@ -60,12 +59,15 @@ export default function ChatPanel({ lang }: ChatPanelProps) {
     const lastAssistant = [...messages].reverse().find((m) => m.role === "assistant");
     const parts = lastAssistant?.parts ?? [];
     const seenTools = new Set<string>();
-    const visibleParts = parts.filter((part) => {
-        if (!isToolPart(part) || part.state !== "output-available") return true;
-        if (seenTools.has(part.type)) return false;
-        seenTools.add(part.type);
-        return true;
-    });
+    const partRank = (part: UIMessagePart) => (part.type === "text" ? 0 : 1);
+    const visibleParts = parts
+        .filter((part) => {
+            if (!isToolPart(part) || part.state !== "output-available") return true;
+            if (seenTools.has(part.type)) return false;
+            seenTools.add(part.type);
+            return true;
+        })
+        .sort((a, b) => partRank(a) - partRank(b));
 
     const onSubmit = (e: React.FormEvent) => {
         e.preventDefault();
@@ -98,23 +100,6 @@ export default function ChatPanel({ lang }: ChatPanelProps) {
                         )
                     ) : (
                         visibleParts.map((part, i) => {
-                            if (part.type === "reasoning") {
-                                const reasoning = part as { text?: string; state?: string };
-                                if (!reasoning.text?.trim()) return null;
-                                return (
-                                    <ReasoningBlock
-                                        key={i}
-                                        text={reasoning.text}
-                                        streaming={reasoning.state === "streaming"}
-                                        labels={{
-                                            thinking: t.thinking,
-                                            show: t.reasoningShow,
-                                            hide: t.reasoningHide,
-                                        }}
-                                    />
-                                );
-                            }
-
                             if (part.type === "text") {
                                 const text = (part as { text?: string }).text;
                                 return text ? (

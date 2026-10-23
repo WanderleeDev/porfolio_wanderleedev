@@ -16,7 +16,7 @@ export function ProjectsCard({ data }: ProjectsCardProps) {
     }
 
     return (
-        <div className="mt-2 flex flex-col gap-3">
+        <div className="mt-2 flex flex-col gap-3" data-card="projects">
             <div className="font-sans text-[0.68rem] font-bold uppercase tracking-[0.16em] text-badge-ink/60">
                 Proyectos
             </div>

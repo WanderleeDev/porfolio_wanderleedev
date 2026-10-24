@@ -1,51 +1,60 @@
-import type { PortfolioStackCategory } from "../../i18n/portfolio-data";
+import { techLabel, type PortfolioStackCategory } from "../../i18n/portfolio-data";
 
 interface TechnologiesCardProps {
     data: { categories: PortfolioStackCategory[] };
+    labels: { title: string; empty: string };
 }
 
-function techLabel(icon: string, name?: string): string {
-    if (name) return name;
-    const raw = icon.split(":").pop() ?? icon;
-    const base = raw.replace(/[-_]/g, " ").trim();
-    return base.charAt(0).toUpperCase() + base.slice(1);
-}
-
-const chip =
-    "inline-flex shrink-0 items-center gap-1.5 rounded-full border border-line bg-field px-2 py-0.5 font-sans text-[0.72rem] text-soft";
-
-export function TechnologiesCard({ data }: TechnologiesCardProps) {
+export function TechnologiesCard({ data, labels }: TechnologiesCardProps) {
     if (!data.categories.length) {
-        return <p className="font-sans text-sm text-badge-ink">No hay tecnologías para mostrar.</p>;
+        return <p className="font-sans text-sm text-badge-ink">{labels.empty}</p>;
     }
 
     return (
-        <div className="mt-2 flex flex-col gap-3" data-card="stack">
-            <div className="font-sans text-[0.68rem] font-bold uppercase tracking-[0.16em] text-badge-ink/60">
-                Stack
-            </div>
-            {data.categories.map((c) => {
-                const all = [...c.techs, ...(c.alsoUsed ?? [])];
-                return (
-                    <div key={c.title} className="flex flex-col gap-2">
-                        <div className="flex items-center gap-2">
-                            <span
-                                className="size-2.5 shrink-0 rounded-full border border-line"
-                                style={{ backgroundColor: c.accent }}
-                                aria-hidden="true"
-                            />
-                            <span className="font-sans text-sm font-bold text-badge-ink">{c.title}</span>
-                        </div>
-                        <div className="flex flex-wrap gap-1.5">
-                            {all.map((t) => (
-                                <span key={t.icon} class={chip} title={t.icon}>
-                                    {techLabel(t.icon, t.name)}
+        <section
+            data-card="stack"
+            aria-label={labels.title}
+            className="w-full overflow-hidden rounded-2xl border border-line bg-surface"
+        >
+            <header className="flex items-center justify-between border-b border-line px-3.5 py-2.5">
+                <span className="font-sans text-[0.64rem] font-bold uppercase tracking-[0.16em] text-muted">
+                    {labels.title}
+                </span>
+                <span className="font-sans text-[0.64rem] tabular-nums text-muted">
+                    {String(data.categories.length).padStart(2, "0")}
+                </span>
+            </header>
+
+            <div className="grid gap-2 p-3 sm:grid-cols-2">
+                {data.categories.map((category) => {
+                    const all = [...category.techs, ...(category.alsoUsed ?? [])];
+                    return (
+                        <div key={category.title} className="rounded-xl border border-line bg-badge/30 p-2.5">
+                            <div className="flex items-center gap-1.5">
+                                <span
+                                    className="size-2 shrink-0 rounded-full"
+                                    style={{ backgroundColor: category.accent }}
+                                    aria-hidden="true"
+                                />
+                                <span className="font-sans text-[0.7rem] font-bold uppercase tracking-[0.08em] text-badge-ink">
+                                    {category.title}
                                 </span>
-                            ))}
+                            </div>
+                            <div className="mt-2 flex flex-wrap gap-1">
+                                {all.map((tech) => (
+                                    <span
+                                        key={tech.icon}
+                                        title={tech.icon}
+                                        className="rounded-md border border-line bg-surface px-1.5 py-0.5 font-sans text-[0.62rem] text-soft"
+                                    >
+                                        {techLabel(tech.icon, tech.name)}
+                                    </span>
+                                ))}
+                            </div>
                         </div>
-                    </div>
-                );
-            })}
-        </div>
+                    );
+                })}
+            </div>
+        </section>
     );
 }

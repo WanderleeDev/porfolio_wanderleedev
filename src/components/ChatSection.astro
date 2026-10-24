@@ -1,5 +1,4 @@
 ---
-import Icon from "./Icon.astro";
 import ChatPanel from "./ChatPanel.tsx";
 import { getTranslations } from "../i18n/utils";
 
@@ -7,33 +6,12 @@ const lang = Astro.currentLocale as "es" | "en";
 const t = getTranslations(lang)("chat");
 ---
 
-<section class="w-full max-w-5xl" aria-label={t.title}>
-  <div class="relative">
-    <ChatPanel client:load lang={lang} />
-
-    <div
-      id="chat-pet-stage"
-      aria-label={t.pet}
-      class="pointer-events-none absolute right-0 top-0 flex items-center justify-center"
-    >
-      <pixel-pet
-        id="chat-pet"
-        src="/pet/cat.json"
-        lang={lang}
-        scale="4"
-        sleep-after="45"
-        class="h-[180px] w-[144px] shrink-0"
-      ></pixel-pet>
-    </div>
-  </div>
+<section class="w-full max-w-6xl" aria-label={t.title}>
+  <ChatPanel client:load lang={lang} />
 </section>
 
 <script>
   import "@wanderleedev/pixel-pet/define";
-
-  const pet = document.getElementById("chat-pet") as (HTMLElement & {
-    feed?: (e: string) => void;
-  }) | null;
 
   let meowAudio: HTMLAudioElement | null = null;
   let lastMeow = 0;
@@ -53,7 +31,10 @@ const t = getTranslations(lang)("chat");
   };
 
   window.addEventListener("chat:event", ((e: CustomEvent<string>) => {
+    const pet = document.getElementById("chat-pet") as (HTMLElement & {
+      feed?: (e: string) => void;
+    }) | null;
     pet?.feed?.(e.detail);
-    if (e.detail === "token") meow();
+    if (e.detail === "send") meow();
   }) as EventListener);
 </script>

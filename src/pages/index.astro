@@ -37,7 +37,6 @@ const collageLabels = {
 };
 const c = t("contactSection");
 const f = t("footer");
-const chat = t("chat");
 
 const links = [
   { icon: "lucide:mail", label: f.email, href: `mailto:${f.email}` },
@@ -108,18 +107,8 @@ const links = [
       </VStack>
     </Slide>
 
-    <Slide title="Final">
-      <div class="flex w-full max-w-5xl flex-col items-center gap-8">
-        <div class="text-center">
-          <span class="font-sans text-xs font-bold uppercase tracking-[0.3em] text-muted">
-            {chat.title}
-          </span>
-          <p class="mt-3 font-sans text-[clamp(1.1rem,2.4vw,1.5rem)] leading-[1.5] text-soft">
-            {chat.subtitle}
-          </p>
-        </div>
-        <ChatSection />
-      </div>
+    <Slide title="Final" class="[@media(max-height:620px)]:!py-2">
+      <ChatSection />
     </Slide>
   </Deck>
 </BaseLayout>

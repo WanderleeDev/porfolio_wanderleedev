@@ -1,48 +1,83 @@
-import type { PortfolioProject } from "../../i18n/portfolio-data";
+import { techLabel, type PortfolioProject } from "../../i18n/portfolio-data";
 
 interface ProjectsCardProps {
     data: { projects: PortfolioProject[] };
+    labels: { title: string; demo: string; empty: string };
 }
 
-const chip =
-    "rounded-full border border-line bg-field px-2 py-0.5 font-sans text-[0.7rem] text-soft";
-
-const link =
-    "inline-flex shrink-0 items-center gap-1 rounded-full border border-line px-2.5 py-1 font-sans text-[0.72rem] font-medium text-ink transition-colors hover:bg-badge";
-
-export function ProjectsCard({ data }: ProjectsCardProps) {
+export function ProjectsCard({ data, labels }: ProjectsCardProps) {
     if (!data.projects.length) {
-        return <p className="font-sans text-sm text-badge-ink">No hay proyectos para mostrar.</p>;
+        return <p className="font-sans text-sm text-badge-ink">{labels.empty}</p>;
     }
 
     return (
-        <div className="mt-2 flex flex-col gap-3" data-card="projects">
-            <div className="font-sans text-[0.68rem] font-bold uppercase tracking-[0.16em] text-badge-ink/60">
-                Proyectos
+        <section
+            data-card="projects"
+            aria-label={labels.title}
+            className="w-full overflow-hidden rounded-2xl border border-line bg-surface"
+        >
+            <header className="flex items-center justify-between border-b border-line px-3.5 py-2.5">
+                <span className="font-sans text-[0.64rem] font-bold uppercase tracking-[0.16em] text-muted">
+                    {labels.title}
+                </span>
+                <span className="font-sans text-[0.64rem] tabular-nums text-muted">
+                    {String(data.projects.length).padStart(2, "0")}
+                </span>
+            </header>
+
+            <div className="divide-y divide-line">
+                {data.projects.map((project) => (
+                    <div key={project.title} className="flex gap-3 p-3.5">
+                        <img
+                            src={project.image}
+                            alt=""
+                            loading="lazy"
+                            className="size-16 shrink-0 rounded-xl border border-line object-cover"
+                        />
+                        <div className="min-w-0 flex-1">
+                            <div className="flex items-start justify-between gap-3">
+                                <p className="truncate font-sans text-sm font-bold text-ink">{project.title}</p>
+                                {project.demo_url && (
+                                    <a
+                                        href={project.demo_url}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="inline-flex shrink-0 items-center gap-1 rounded-full border border-line px-2 py-0.5 font-sans text-[0.62rem] font-bold uppercase tracking-[0.08em] text-soft transition-colors hover:border-ink/30 hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink"
+                                    >
+                                        {labels.demo}
+                                        <svg
+                                            viewBox="0 0 24 24"
+                                            fill="none"
+                                            stroke="currentColor"
+                                            strokeWidth={2}
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                            className="h-2.5 w-2.5"
+                                            aria-hidden="true"
+                                        >
+                                            <path d="M7 17 17 7" />
+                                            <path d="M8 7h9v9" />
+                                        </svg>
+                                    </a>
+                                )}
+                            </div>
+                            <p className="mt-1 line-clamp-2 font-sans text-xs leading-[1.45] text-soft">
+                                {project.description}
+                            </p>
+                            <div className="mt-2 flex flex-wrap gap-1">
+                                {project.technologies.map((tech) => (
+                                    <span
+                                        key={tech}
+                                        className="rounded-md border border-line bg-field px-1.5 py-0.5 font-sans text-[0.62rem] text-soft"
+                                    >
+                                        {techLabel(tech)}
+                                    </span>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+                ))}
             </div>
-            {data.projects.map((p) => (
-                <div
-                    key={p.title}
-                    className="flex flex-col gap-2 rounded-card border border-line bg-surface/60 p-4"
-                >
-                    <div className="flex items-start justify-between gap-3">
-                        <span className="font-sans text-base font-bold text-badge-ink">{p.title}</span>
-                        {p.demo_url && (
-                            <a href={p.demo_url} target="_blank" rel="noopener noreferrer" class={link}>
-                                {p.label || "Demo ↗"}
-                            </a>
-                        )}
-                    </div>
-                    <p className="font-sans text-sm leading-[1.5] text-badge-ink/80">{p.description}</p>
-                    <div className="flex flex-wrap gap-1.5">
-                        {p.technologies.map((t) => (
-                            <span key={t} class={chip}>
-                                {t}
-                            </span>
-                        ))}
-                    </div>
-                </div>
-            ))}
-        </div>
+        </section>
     );
 }

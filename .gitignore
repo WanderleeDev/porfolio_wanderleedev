@@ -31,4 +31,5 @@ pnpm-debug.log*
 # local tooling state (never commit)
 .agents/
 .hermes/
+.qoder/
 skills-lock.json

@@ -5,6 +5,11 @@ interface Props {
   tasks?: string[];
 }
 const { start = 1, vstart = 1, tasks = [] } = Astro.props;
+
+// Mismo lenguaje visual que los triggers flotantes de ThemePicker: círculo
+// de 44px, borde translúcido, fondo canvas con blur y foco visible.
+const arrowBtn =
+  'fixed z-10 flex size-11 items-center justify-center rounded-full border-[1.5px] border-[color-mix(in_srgb,currentColor_20%,transparent)] bg-[color-mix(in_srgb,canvas_85%,transparent)] p-0 text-[canvastext] backdrop-blur-[12px] backdrop-saturate-[1.4] [transition:background_0.2s,border-color_0.2s,scale_0.15s] hover:bg-[color-mix(in_srgb,canvas_95%,transparent)] hover:scale-[1.08] focus-visible:outline-2 focus-visible:outline-[canvastext] focus-visible:outline-offset-[3px] cursor-pointer disabled:opacity-30 disabled:cursor-default disabled:hover:scale-100';
 ---
 
 <div class="relative w-dvw h-dvh overflow-hidden  text-slate-50 font-sans" data-deck data-start={start} data-vstart={vstart}>
@@ -15,10 +20,18 @@ const { start = 1, vstart = 1, tasks = [] } = Astro.props;
     <slot />
   </div>
 
-  <button class="fixed z-10 w-[52px] h-[52px] rounded-full bg-sky-400 text-slate-900 text-2xl shadow-lg top-1/2 left-5 -translate-y-1/2 cursor-pointer disabled:opacity-25 disabled:cursor-default" data-prev aria-label="Slide anterior">←</button>
-  <button class="fixed z-10 w-[52px] h-[52px] rounded-full bg-sky-400 text-slate-900 text-2xl shadow-lg top-1/2 right-5 -translate-y-1/2 cursor-pointer disabled:opacity-25 disabled:cursor-default" data-next aria-label="Slide siguiente">→</button>
-  <button class="fixed z-10 w-[52px] h-[52px] rounded-full bg-sky-400 text-slate-900 text-2xl shadow-lg top-5 left-1/2 -translate-x-1/2 cursor-pointer disabled:opacity-25 disabled:cursor-default" data-up aria-label="Vertical anterior">↑</button>
-  <button class="fixed z-10 w-[52px] h-[52px] rounded-full bg-sky-400 text-slate-900 text-2xl shadow-lg bottom-5 left-1/2 -translate-x-1/2 cursor-pointer disabled:opacity-25 disabled:cursor-default" data-down aria-label="Vertical siguiente">↓</button>
+  <button class:list={[arrowBtn, 'top-1/2 left-5 -translate-y-1/2 max-sm:hidden']} data-prev aria-label="Slide anterior">
+    <img src="/arrow.svg" alt="" aria-hidden="true" class="size-6 rotate-180" />
+  </button>
+  <button class:list={[arrowBtn, 'top-1/2 right-5 -translate-y-1/2 max-sm:hidden']} data-next aria-label="Slide siguiente">
+    <img src="/arrow.svg" alt="" aria-hidden="true" class="size-6" />
+  </button>
+  <button class:list={[arrowBtn, 'top-5 left-1/2 -translate-x-1/2 [@media(max-height:620px)]:hidden']} data-up aria-label="Vertical anterior">
+    <img src="/arrow.svg" alt="" aria-hidden="true" class="size-6 -rotate-90" />
+  </button>
+  <button class:list={[arrowBtn, 'bottom-5 left-1/2 -translate-x-1/2 [@media(max-height:620px)]:hidden']} data-down aria-label="Vertical siguiente">
+    <img src="/arrow.svg" alt="" aria-hidden="true" class="size-6 rotate-90" />
+  </button>
 
   <div class="fixed z-10 top-5 left-5 text-sm text-slate-400 tabular-nums" data-counter></div>
 

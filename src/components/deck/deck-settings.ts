@@ -12,11 +12,13 @@ export interface DeckSettings {
   lock: boolean;
   overview: boolean;
   minimap: boolean;
+  /** Flechas flotantes de navegación (prev/next/up/down). */
+  arrows: boolean;
 }
 
 const KEY = "wdev-deck";
 
-const DEFAULTS: DeckSettings = { lock: true, overview: true, minimap: false };
+const DEFAULTS: DeckSettings = { lock: true, overview: true, minimap: false, arrows: true };
 
 function readStored(): DeckSettings {
   if (typeof localStorage === "undefined") return { ...DEFAULTS };

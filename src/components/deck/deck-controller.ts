@@ -13,7 +13,10 @@ export function initDeck(root: HTMLElement) {
   const qa = <T extends Element>(sel: string) => [...root.querySelectorAll<T>(sel)];
   const instant = 'instant' as ScrollBehavior;
 
-  const track = q<HTMLElement>('[data-track]')!;
+  // Los controles son hijos directos del root: con `:scope >` no se confunden
+  // con los data-* homónimos que usan los componentes slotteados (por ej. el
+  // prev/next de temas del MusicPlayer).
+  const track = q<HTMLElement>(':scope > [data-track]')!;
   const hslides = [...track.querySelectorAll<HTMLElement>(':scope > [data-hslide]')];
   const holder = q<HTMLElement>('[data-vtrack]');
   const vslides = holder
@@ -27,10 +30,10 @@ export function initDeck(root: HTMLElement) {
   const vstart = Number(root.dataset.vstart ?? 0);
   const settings = loadSettings();
 
-  const prevBtn = q<HTMLButtonElement>('[data-prev]')!;
-  const nextBtn = q<HTMLButtonElement>('[data-next]')!;
-  const upBtn = q<HTMLButtonElement>('[data-up]')!;
-  const downBtn = q<HTMLButtonElement>('[data-down]')!;
+  const prevBtn = q<HTMLButtonElement>(':scope > [data-prev]')!;
+  const nextBtn = q<HTMLButtonElement>(':scope > [data-next]')!;
+  const upBtn = q<HTMLButtonElement>(':scope > [data-up]')!;
+  const downBtn = q<HTMLButtonElement>(':scope > [data-down]')!;
   const counter = q<HTMLElement>('[data-counter]')!;
   const panel = q<HTMLDialogElement>('[data-overview-panel]')!;
   const ovWrap = q<HTMLElement>('[data-ov-wrap]');
@@ -115,6 +118,18 @@ export function initDeck(root: HTMLElement) {
   nextBtn.addEventListener('click', () => goTo(current + 1));
   upBtn.addEventListener('click', () => goToV(vCurrent - 1));
   downBtn.addEventListener('click', () => goToV(vCurrent + 1));
+
+  // ===== Flechas flotantes =====
+  // Se pueden ocultar para navegar sólo con el minimapa. `display` inline
+  // (y no el atributo `hidden`) porque las utilidades `flex` del botón le
+  // ganan al `[hidden]` del user agent.
+  let arrowsOn = settings.arrows;
+  function setArrows(on: boolean) {
+    arrowsOn = on;
+    [prevBtn, nextBtn, upBtn, downBtn].forEach((btn) => {
+      btn.style.display = on ? '' : 'none';
+    });
+  }
 
   // ===== Tareas =====
   function syncTasks() {
@@ -341,6 +356,7 @@ export function initDeck(root: HTMLElement) {
     if (s.lock !== locked) setLock(s.lock);
     if (expandBtn) expandBtn.style.display = s.overview ? '' : 'none';
     minimap.style.display = s.minimap ? '' : 'none';
+    if (s.arrows !== arrowsOn) setArrows(s.arrows);
   });
 
   // Otro modal abierto (ej. la vista de créditos) toma el foco: el deck no
@@ -355,10 +371,6 @@ export function initDeck(root: HTMLElement) {
     if (otherModalOpen()) {
       // Sin preventDefault el navegador scrollea el track del deck por su cuenta.
       if (NAV_KEYS.has(e.key)) e.preventDefault();
-      return;
-    }
-    if (e.key === 'o' || e.key === 'O') {
-      panel.open ? closeOverview() : openOverview();
       return;
     }
     if (e.key === 'Escape') return closeOverview();
@@ -387,6 +399,7 @@ export function initDeck(root: HTMLElement) {
   buildMinimap();
   updateMinimapActive();
   minimap.style.display = settings.minimap ? '' : 'none';
+  setArrows(settings.arrows);
 
   updateUI();
 }

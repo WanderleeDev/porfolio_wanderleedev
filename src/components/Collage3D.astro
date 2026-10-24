@@ -1,6 +1,10 @@
 ---
+type PieceKey = 'yellow' | 'pink' | 'orange' | 'green' | 'blue';
+type Pt = [number, number];
+
 interface Props {
-  images?: Partial<Record<'yellow' | 'pink' | 'orange' | 'green' | 'blue', string>>;
+  images?: Partial<Record<PieceKey, string>>;
+  labels?: Partial<Record<PieceKey, string>>;
 }
 
 const W = 588;
@@ -14,6 +18,7 @@ const defaultImages = {
   blue: 'https://picsum.photos/seed/collage-azul/800/800',
 };
 const images = { ...defaultImages, ...Astro.props.images };
+const labels = Astro.props.labels ?? {};
 
 const base = [
   { k: 'yellow', color: '#ffee99', pts: [[0.85,1.73],[43.37,1.73],[54.42,14.04],[20.07,58.31],[0.85,35.64]], lift: [-2, -2], rot: [4, -5], z: 80 },
@@ -21,90 +26,611 @@ const base = [
   { k: 'orange', color: '#ffdaa8', pts: [[54.42,14.04],[83.84,46.44],[49.32,90.71],[20.07,58.31]], lift: [0, 0], rot: [0, 0], z: 90 },
   { k: 'green',  color: '#b3f5be', pts: [[98.13,28.08],[98.13,98.27],[42.52,98.27],[49.32,90.71],[83.84,46.44]], lift: [2, 2], rot: [-4, 5], z: 80 },
   { k: 'blue',   color: '#a6d8ff', pts: [[0.85,35.64],[20.07,58.31],[49.32,90.71],[42.52,98.27],[0.85,98.27]], lift: [-2, 2], rot: [-4, -5], z: 80 },
-];
+] as const;
 
 const r2 = (n: number) => Math.round(n * 100) / 100;
-const toPx = (pts: number[][]) => pts.map(([x, y]) => [(x * W) / 100, (y * H) / 100]);
-const rotate = (pts: number[][]) => pts.map(([x, y]) => [H - y, x]);
-const clip = (pts: number[][], w: number, h: number) =>
+const toPx = (pts: readonly (readonly number[])[]): Pt[] =>
+  pts.map(([x, y]) => [(x * W) / 100, (y * H) / 100]);
+const rotate = (pts: Pt[]): Pt[] => pts.map(([x, y]) => [H - y, x]);
+const centroid = (pts: Pt[]): Pt => [
+  pts.reduce((a, [x]) => a + x, 0) / pts.length,
+  pts.reduce((a, [, y]) => a + y, 0) / pts.length,
+];
+const scaleAround = (pts: Pt[], c: Pt, s: number): Pt[] =>
+  pts.map(([x, y]) => [c[0] + (x - c[0]) * s, c[1] + (y - c[1]) * s]);
+const clip = (pts: Pt[], w: number, h: number) =>
   `polygon(${pts.map(([x, y]) => `${r2((x / w) * 100)}% ${r2((y / h) * 100)}%`).join(', ')})`;
-const line = (pts: number[][]) => pts.map(([x, y]) => `${r2(x)},${r2(y)}`).join(' ');
+const line = (pts: Pt[]) => pts.map(([x, y]) => `${r2(x)},${r2(y)}`).join(' ');
+const bbox = (pts: Pt[]) => {
+  const xs = pts.map(([x]) => x);
+  const ys = pts.map(([, y]) => y);
+  const x = Math.min(...xs);
+  const y = Math.min(...ys);
+  return { x, y, w: Math.max(...xs) - x, h: Math.max(...ys) - y };
+};
+const boxVars = (b: { x: number; y: number; w: number; h: number }, w: number, h: number) => ({
+  x: `${r2((b.x / w) * 100)}%`,
+  y: `${r2((b.y / h) * 100)}%`,
+  w: `${r2((b.w / w) * 100)}%`,
+  h: `${r2((b.h / h) * 100)}%`,
+});
 
-const pieces = base.map((p) => {
+const LEVEL: Record<PieceKey, number> = {
+  yellow: 2,
+  pink: 3,
+  green: 4,
+  blue: 5,
+  orange: 6,
+};
+
+const pieces = base.map((p, i) => {
   const land = toPx(p.pts);
+  const cL = centroid(land);
+  const shardL = scaleAround(land, cL, 0.985);
+  const photoL = scaleAround(land, cL, 0.943);
+
   const port = rotate(land);
-  const cx = port.reduce((a, q) => a + q[0], 0) / port.length;
-  const cy = port.reduce((a, q) => a + q[1], 0) / port.length;
-  const dx = cx - H / 2, dy = cy - W / 2;
+  const cP = centroid(port);
+  const shardP = rotate(shardL);
+  const photoP = rotate(photoL);
+
+  // Cada pieza encuadra su propia miniatura: cubre el bounding box del
+  // fragmento, no el tablero completo, así la imagen se ve a escala real.
+  const boxL = boxVars(bbox(land), W, H);
+  const boxP = boxVars(bbox(port), H, W);
+
+  const dx = cP[0] - H / 2;
+  const dy = cP[1] - W / 2;
   const len = Math.hypot(dx, dy) || 1;
+
   return {
     ...p,
-    img: images[p.k as keyof typeof images],
-    clipL: clip(land, W, H),
-    clipP: clip(port, H, W),
-    lineL: line(land),
-    lineP: line(port),
-    liftP: [r2((dx / len) * 3), r2((dy / len) * 3)],
+    index: String(i + 1).padStart(2, '0'),
+    label: labels[p.k],
+    img: images[p.k],
+    level: LEVEL[p.k],
+    focus: p.k === 'orange',
+    shardL: clip(shardL, W, H),
+    shardP: clip(shardP, H, W),
+    photoL: clip(photoL, W, H),
+    photoP: clip(photoP, H, W),
+    lineL: line(shardL),
+    lineP: line(shardP),
+    rimL: line(photoL),
+    rimP: line(photoP),
+    boxL,
+    boxP,
+    cxL: (cL[0] / W) * 100,
+    cyL: (cL[1] / H) * 100,
+    cxP: (cP[0] / H) * 100,
+    cyP: (cP[1] / W) * 100,
+    liftP: [r2((dx / len) * 2.4), r2((dy / len) * 2.4)] as Pt,
   };
 });
 
-const slotCls = 'pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-400 [transform:translateZ(-2px)] has-[+.piece:hover]:opacity-100';
-const pieceCls = 'piece group pointer-events-none absolute inset-0 transform-3d will-change-transform transition-transform duration-600 ease-[cubic-bezier(.34,1.56,.64,1)] backface-hidden [--lx:var(--lxL)] [--ly:var(--lyL)] max-lg:[--lx:var(--lxP)] max-lg:[--ly:var(--lyP)] hover:[transform:translate3d(var(--lx),var(--ly),var(--lz))_rotateX(var(--rx))_rotateY(var(--ry))_scale(1.03)]';
-const liftCls = 'absolute inset-0 transition-[filter] duration-600 group-hover:[filter:drop-shadow(0_30px_22px_rgba(0,0,0,.38))_drop-shadow(0_10px_6px_rgba(0,0,0,.2))]';
-const shapeCls = 'pointer-events-auto absolute inset-0 overflow-hidden backface-hidden [--clip:var(--clipL)] max-lg:[--clip:var(--clipP)] [clip-path:var(--clip)]';
-const lnL = 'absolute inset-0 h-full w-full pointer-events-none max-lg:hidden';
-const lnP = 'absolute inset-0 hidden h-full w-full pointer-events-none max-lg:block';
-const edgeCls = 'fill-none stroke-[#1d1d1d] [stroke-width:1.5] [vector-effect:non-scaling-stroke]';
-const guideCls = 'fill-black/[.06] stroke-[#1d1d1d] [stroke-width:2] [stroke-dasharray:6_5] [vector-effect:non-scaling-stroke]';
+const varsFor = (p: (typeof pieces)[number]) =>
+  [
+    `--shardL:${p.shardL}`,
+    `--shardP:${p.shardP}`,
+    `--photoL:${p.photoL}`,
+    `--photoP:${p.photoP}`,
+    `--cxL:${r2(p.cxL)}%`,
+    `--cyL:${r2(p.cyL)}%`,
+    `--cxP:${r2(p.cxP)}%`,
+    `--cyP:${r2(p.cyP)}%`,
+    `--photo-xl:${p.boxL.x}`,
+    `--photo-yl:${p.boxL.y}`,
+    `--photo-wl:${p.boxL.w}`,
+    `--photo-hl:${p.boxL.h}`,
+    `--photo-xp:${p.boxP.x}`,
+    `--photo-yp:${p.boxP.y}`,
+    `--photo-wp:${p.boxP.w}`,
+    `--photo-hp:${p.boxP.h}`,
+    `--fitL:${p.k === 'blue' ? '58% auto' : 'cover'}`,
+    `--fitP:${p.k === 'blue' ? '62% auto' : 'cover'}`,
+    `--posL:${p.k === 'blue' ? '18% 97%' : 'center'}`,
+    `--posP:${p.k === 'blue' ? '8% 8%' : 'center'}`,
+    `--mat:${p.color}`,
+    `--lxL:${p.lift[0]}%`,
+    `--lyL:${p.lift[1]}%`,
+    `--lxP:${p.liftP[0]}%`,
+    `--lyP:${p.liftP[1]}%`,
+    `--rx:${p.rot[0]}deg`,
+    `--ry:${p.rot[1]}deg`,
+    `--lz:${p.z}px`,
+  ].join(';');
 ---
 
-<div class="collage relative mx-auto aspect-[588/463] w-[min(92vw,588px)] [perspective:1100px] max-lg:aspect-[463/588] max-lg:w-[min(86vw,60vh,520px)]">
-  <div class="board absolute inset-0 transform-3d">
-    <div class="pointer-events-none absolute inset-0 border-2 border-neutral-900 [transform:translateZ(-4px)]"></div>
+<div
+  class="collage relative mx-auto aspect-[588/463] w-[min(96vw,calc(90dvh*1.27))] [perspective:1100px] max-lg:aspect-[463/588] max-lg:w-[min(96vw,calc(90dvh*0.787))]"
+  aria-hidden="true"
+>
+  <div class="board absolute inset-0 transform-3d" data-board>
+    <div class="paper"></div>
+    <div class="paper-grain paint-noise"></div>
+    <div class="frame"></div>
 
     {pieces.map((p) => {
-      const vars = `--clipL:${p.clipL};--clipP:${p.clipP};--lxL:${p.lift[0]}%;--lyL:${p.lift[1]}%;--lxP:${p.liftP[0]}%;--lyP:${p.liftP[1]}%;--rx:${p.rot[0]}deg;--ry:${p.rot[1]}deg;--lz:${p.z}px`;
+      const vars = varsFor(p);
       return (
         <Fragment>
-          <div class={slotCls} style={vars}>
-            <svg class={lnL} viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none"><polygon class={guideCls} points={p.lineL} /></svg>
-            <svg class={lnP} viewBox={`0 0 ${H} ${W}`} preserveAspectRatio="none"><polygon class={guideCls} points={p.lineP} /></svg>
+          <div class="slot" style={vars}>
+            <svg class="ln land" viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none">
+              <polygon points={p.lineL} />
+            </svg>
+            <svg class="ln port" viewBox={`0 0 ${H} ${W}`} preserveAspectRatio="none">
+              <polygon points={p.lineP} />
+            </svg>
           </div>
 
-          <div class={pieceCls} style={vars}>
-            <div class={liftCls}>
-              <div class={shapeCls}>
-                <div class="absolute inset-0 bg-cover bg-center" style={`background-color:${p.color};background-image:url('${p.img}')`}></div>
-                <div class="paint-noise pointer-events-none absolute inset-0 opacity-[.28] mix-blend-multiply"></div>
-                <svg class={lnL} viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none"><polygon class={edgeCls} points={p.lineL} /></svg>
-                <svg class={lnP} viewBox={`0 0 ${H} ${W}`} preserveAspectRatio="none"><polygon class={edgeCls} points={p.lineP} /></svg>
+          <div class="piece" style={`${vars};z-index:${p.level}`} data-focus={p.focus || undefined}>
+            <div class="lift">
+              <div class="shape">
+                <div class="mat-grain paint-noise"></div>
+                <div class="photo-frame">
+                  <div class="photo" style={`background-image:url('${p.img}')`}></div>
+                  <div class="photo-vignette"></div>
+                </div>
+
+                <svg class="ln land edge" viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none">
+                  <polygon points={p.lineL} />
+                </svg>
+                <svg class="ln port edge" viewBox={`0 0 ${H} ${W}`} preserveAspectRatio="none">
+                  <polygon points={p.lineP} />
+                </svg>
+                <svg class="ln land rim" viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none">
+                  <polygon points={p.rimL} />
+                </svg>
+                <svg class="ln port rim" viewBox={`0 0 ${H} ${W}`} preserveAspectRatio="none">
+                  <polygon points={p.rimP} />
+                </svg>
               </div>
             </div>
+
+            <span class="tag">
+              <span class="tag-dot" aria-hidden="true"></span>
+              <span class="tag-index">{p.index}</span>
+              {p.label && <span class="tag-name">{p.label}</span>}
+            </span>
           </div>
         </Fragment>
       );
     })}
+
+    <div class="sheen" aria-hidden="true"></div>
   </div>
 </div>
+
+<style>
+  .board {
+    --rest-shadow:
+      drop-shadow(0 22px 26px rgb(15 23 42 / 0.2))
+      drop-shadow(0 4px 6px rgb(15 23 42 / 0.14));
+    --hover-shadow:
+      drop-shadow(0 44px 38px rgb(15 23 42 / 0.34))
+      drop-shadow(0 10px 13px rgb(15 23 42 / 0.2));
+  }
+
+  .paper {
+    position: absolute;
+    inset: 0;
+    border-radius: 6px;
+    background-color: color-mix(in srgb, var(--color-ink) 5%, var(--color-surface));
+    background-image: radial-gradient(
+      circle at 1px 1px,
+      color-mix(in srgb, var(--color-ink) 11%, transparent) 1px,
+      transparent 1.4px
+    );
+    background-size: 22px 22px;
+    box-shadow:
+      0 48px 80px -48px rgb(0 0 0 / 0.5),
+      0 12px 28px -22px rgb(0 0 0 / 0.32);
+  }
+
+  :global(html:not(.dark):not(.neon):not(.konami)) .paper {
+    background-color: #f6f1e7;
+  }
+
+  .paper-grain {
+    position: absolute;
+    inset: 0;
+    border-radius: 6px;
+    opacity: 0.3;
+    mix-blend-mode: multiply;
+    pointer-events: none;
+  }
+
+  :global(html.dark) .paper-grain,
+  :global(html.neon) .paper-grain {
+    opacity: 0.16;
+    mix-blend-mode: soft-light;
+  }
+
+  .frame {
+    position: absolute;
+    inset: 0;
+    border: 1px solid color-mix(in srgb, var(--color-ink) 16%, transparent);
+    border-radius: 6px;
+  }
+
+  .frame::before {
+    content: '';
+    position: absolute;
+    inset: 7px;
+    border: 1px solid color-mix(in srgb, var(--color-ink) 8%, transparent);
+    border-radius: 3px;
+  }
+
+  .slot,
+  .piece {
+    --shard: var(--shardL);
+    --photo: var(--photoL);
+    --cx: var(--cxL);
+    --cy: var(--cyL);
+    --lx: var(--lxL);
+    --ly: var(--lyL);
+    --photo-x: var(--photo-xl);
+    --photo-y: var(--photo-yl);
+    --photo-w: var(--photo-wl);
+    --photo-h: var(--photo-hl);
+    --photo-fit: var(--fitL, cover);
+    --photo-pos: var(--posL, center);
+  }
+
+  .slot {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0;
+    transform: translateZ(-2px);
+    transition: opacity 0.35s ease;
+  }
+
+  .slot:has(+ .piece:hover) {
+    opacity: 1;
+  }
+
+  .slot polygon {
+    fill: color-mix(in srgb, var(--mat) 14%, transparent);
+    stroke: color-mix(in srgb, var(--mat) 55%, var(--color-ink));
+    stroke-width: 1.25;
+    stroke-dasharray: 3 6;
+    vector-effect: non-scaling-stroke;
+  }
+
+  .piece {
+    --edge: color-mix(in srgb, var(--mat) 52%, #241a10);
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    transform-style: preserve-3d;
+    will-change: transform;
+    /* Salida sin rebote: el overshoot mandaba translateZ a negativo y la
+       pieza se ocultaba detrás del papel del tablero. */
+    transition:
+      transform 0.62s cubic-bezier(0.22, 1, 0.36, 1),
+      opacity 0.45s ease;
+  }
+
+  .piece:hover {
+    z-index: 50;
+    transform:
+      translate3d(var(--lx), var(--ly), var(--lz))
+      rotateX(var(--rx))
+      rotateY(var(--ry))
+      scale(1.015);
+    transition:
+      transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1),
+      opacity 0.45s ease;
+  }
+
+  .board:has(.piece:hover) .piece:not(:hover) {
+    opacity: 0.55;
+  }
+
+  .lift {
+    position: absolute;
+    inset: 0;
+    filter:
+      drop-shadow(1.5px 2.5px 0 var(--edge))
+      var(--rest-shadow);
+    transition: filter 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .piece[data-focus] .lift {
+    filter:
+      drop-shadow(2px 3.5px 0 var(--edge))
+      drop-shadow(0 30px 32px rgb(15 23 42 / 0.24))
+      drop-shadow(0 6px 9px rgb(15 23 42 / 0.16));
+  }
+
+  .piece:hover .lift {
+    filter:
+      drop-shadow(3.5px 7px 0 var(--edge))
+      var(--hover-shadow);
+  }
+
+  .shape {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: auto;
+    background: linear-gradient(
+      152deg,
+      color-mix(in srgb, var(--mat) 88%, #fff) 0%,
+      var(--mat) 52%,
+      color-mix(in srgb, var(--mat) 84%, #000) 100%
+    );
+    clip-path: var(--shard);
+    backface-visibility: hidden;
+  }
+
+  .mat-grain {
+    position: absolute;
+    inset: 0;
+    opacity: 0.14;
+    mix-blend-mode: multiply;
+    pointer-events: none;
+  }
+
+  .photo-frame {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    clip-path: var(--photo);
+  }
+
+  .photo {
+    position: absolute;
+    left: var(--photo-x);
+    top: var(--photo-y);
+    width: var(--photo-w);
+    height: var(--photo-h);
+    background-size: var(--photo-fit, cover);
+    background-position: var(--photo-pos, center);
+    background-repeat: no-repeat;
+    filter: saturate(1.04) contrast(1.05) brightness(1.02);
+    transform: scale(1.01);
+    transition:
+      filter 0.6s ease,
+      transform 0.9s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  /* Tinte de color en vez de velo pastel: unifica la paleta sin lavar la foto. */
+  .photo::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--mat);
+    mix-blend-mode: color;
+    opacity: 0.12;
+  }
+
+  .photo::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(110% 90% at 18% 4%, rgb(255 255 255 / 0.12), transparent 46%),
+      linear-gradient(180deg, transparent 58%, rgb(0 0 0 / 0.2) 100%);
+  }
+
+  .photo-vignette {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    box-shadow: inset 0 0 44px rgb(0 0 0 / 0.2);
+  }
+
+  .piece:hover .photo {
+    filter: saturate(1.08) contrast(1.07) brightness(1.04);
+    transform: scale(1.06);
+  }
+
+  .ln {
+    position: absolute;
+    inset: 0;
+    height: 100%;
+    width: 100%;
+    pointer-events: none;
+  }
+
+  .port {
+    display: none;
+  }
+
+  .edge polygon {
+    fill: none;
+    stroke: color-mix(in srgb, var(--color-ink) 55%, transparent);
+    stroke-width: 1.25;
+    stroke-linejoin: round;
+    vector-effect: non-scaling-stroke;
+  }
+
+  .rim polygon {
+    fill: none;
+    stroke: rgb(255 255 255 / 0.55);
+    stroke-width: 1;
+    vector-effect: non-scaling-stroke;
+  }
+
+  .tag {
+    position: absolute;
+    left: var(--cx);
+    top: var(--cy);
+    z-index: 2;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    max-width: 80%;
+    padding: 0.44rem 0.78rem 0.44rem 0.62rem;
+    border: 1px solid color-mix(in srgb, var(--color-ink) 13%, transparent);
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--color-badge) 80%, transparent);
+    box-shadow:
+      0 16px 34px -16px rgb(0 0 0 / 0.55),
+      inset 0 1px 0 rgb(255 255 255 / 0.14);
+    color: var(--color-badge-ink);
+    font-size: 0.63rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    line-height: 1;
+    text-transform: uppercase;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    backdrop-filter: blur(12px) saturate(1.3);
+    transform: translate(-50%, -34%) scale(0.92);
+    transition:
+      opacity 0.3s ease,
+      transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .piece:hover .tag {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+
+  .tag-dot {
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 50%;
+    background: var(--mat);
+    box-shadow: inset 0 0 0 1px rgb(0 0 0 / 0.18);
+  }
+
+  .tag-index {
+    color: var(--color-muted);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .tag-name {
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .sheen {
+    position: absolute;
+    inset: 0;
+    z-index: 30;
+    border-radius: 6px;
+    background: radial-gradient(
+      340px circle at var(--mx, 26%) var(--my, 18%),
+      rgb(255 255 255 / 0.17),
+      transparent 68%
+    );
+    mix-blend-mode: soft-light;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.5s ease;
+  }
+
+  .collage:hover .sheen {
+    opacity: 1;
+  }
+
+  @media (max-width: 1023.98px) {
+    .land {
+      display: none;
+    }
+
+    .port {
+      display: block;
+    }
+
+    .slot,
+    .piece {
+      --shard: var(--shardP);
+      --photo: var(--photoP);
+      --cx: var(--cxP);
+      --cy: var(--cyP);
+      --lx: var(--lxP);
+      --ly: var(--lyP);
+      --photo-x: var(--photo-xp);
+      --photo-y: var(--photo-yp);
+      --photo-w: var(--photo-wp);
+      --photo-h: var(--photo-hp);
+      --photo-fit: var(--fitP, cover);
+      --photo-pos: var(--posP, center);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .piece,
+    .lift,
+    .photo,
+    .tag,
+    .slot {
+      transition: none;
+    }
+  }
+</style>
 
 <script>
   import { gsap } from 'gsap';
 
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
   gsap.utils.toArray<HTMLElement>('.collage').forEach((stage) => {
-    const board = stage.querySelector<HTMLElement>('.board');
+    const board = stage.querySelector<HTMLElement>('[data-board]');
     if (!board) return;
+
+    // Entrada: la piezas se arman desde el centro la primera vez que el
+    // collage entra en viewport (en el deck, al subir desde el hero).
+    if (!reduceMotion) {
+      const lifts = gsap.utils.toArray<HTMLElement>('.lift', stage);
+      gsap.set(lifts, { opacity: 0, scale: 0.94, y: 26, transformOrigin: '50% 50%' });
+
+      const io = new IntersectionObserver(
+        (entries) => {
+          if (!entries.some((entry) => entry.isIntersecting)) return;
+          io.disconnect();
+          gsap.to(lifts, {
+            opacity: 1,
+            scale: 1,
+            y: 0,
+            duration: 0.9,
+            ease: 'power3.out',
+            stagger: 0.055,
+            clearProps: 'transform,opacity',
+          });
+        },
+        { threshold: 0.35 },
+      );
+      io.observe(stage);
+    }
+
+    if (reduceMotion) return;
 
     stage.addEventListener('pointermove', (e) => {
       if (e.pointerType !== 'mouse') return;
       const r = stage.getBoundingClientRect();
-      const mx = ((e.clientX - r.left) / r.width) * 2 - 1;
-      const my = ((e.clientY - r.top) / r.height) * 2 - 1;
-      gsap.to(board, { rotationX: -my * 4, rotationY: mx * 5, duration: 0.8, ease: 'power2.out', overwrite: 'auto' });
+      const fx = (e.clientX - r.left) / r.width;
+      const fy = (e.clientY - r.top) / r.height;
+      const mx = fx * 2 - 1;
+      const my = fy * 2 - 1;
+
+      stage.style.setProperty('--mx', `${(fx * 100).toFixed(1)}%`);
+      stage.style.setProperty('--my', `${(fy * 100).toFixed(1)}%`);
+
+      gsap.to(board, {
+        rotationX: -my * 4,
+        rotationY: mx * 5.5,
+        duration: 0.9,
+        ease: 'power2.out',
+        overwrite: 'auto',
+      });
     });
 
     stage.addEventListener('pointerleave', (e) => {
       if (e.pointerType !== 'mouse') return;
-      gsap.to(board, { rotationX: 0, rotationY: 0, duration: 0.8, ease: 'power2.out', overwrite: 'auto' });
+      gsap.to(board, {
+        rotationX: 0,
+        rotationY: 0,
+        duration: 0.9,
+        ease: 'power2.out',
+        overwrite: 'auto',
+      });
     });
   });
 </script>

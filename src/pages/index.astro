@@ -26,7 +26,14 @@ const collage = {
   pink: projectList[1].image,
   orange: projectList[2].image,
   green: projectList[3].image,
-  blue: projectList[0].image,
+  blue: meta.thumbnail,
+};
+const collageLabels = {
+  yellow: projectList[0].title,
+  pink: projectList[1].title,
+  orange: projectList[2].title,
+  green: projectList[3].title,
+  blue: "WanderleeDev",
 };
 const c = t("contactSection");
 const f = t("footer");
@@ -90,7 +97,7 @@ const links = [
     <Slide title="Principal">
       <VStack>
         <VSlide title="Arriba" class="!p-0">
-          <Collage3D images={collage} />
+          <Collage3D images={collage} labels={collageLabels} />
         </VSlide>
         <VSlide title="Principal" class="!p-0">
           <Hero />

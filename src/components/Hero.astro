@@ -213,9 +213,9 @@ const stackLogos = [
 
   // El script inline de arriba ya ocultó la cortina cuando pudo; esto cubre
   // los caminos dev / reducedMotion, que sólo se pueden decidir en JS.
-  // Botón de tema (dark mode) y selector de idioma: ocultos durante la
+  // Botón de tema y menú (vistas, idioma y ajustes): ocultos durante la
   // intro y revelados al final (ver revealHero).
-  const pickers = gsap.utils.toArray<HTMLElement>("#theme-trigger, #lang-trigger");
+  const pickers = gsap.utils.toArray<HTMLElement>("#theme-trigger, #menu-trigger");
 
   if (skipIntro) {
     curtainEl.style.display = "none";

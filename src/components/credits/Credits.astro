@@ -185,17 +185,6 @@ const blocks = t.blocks;
 <script>
   const CREDITS_SPEED_PX_PER_SECOND = 45;
 
-  function isTyping(target: EventTarget | null): boolean {
-    if (!(target instanceof HTMLElement)) return false;
-    const tag = target.tagName;
-    return (
-      tag === "INPUT" ||
-      tag === "TEXTAREA" ||
-      tag === "SELECT" ||
-      target.isContentEditable
-    );
-  }
-
   function initCredits() {
     const dialog = document.querySelector<HTMLDialogElement>("dialog[data-credits]");
     if (!dialog || dialog.dataset.wired === "true") return;
@@ -279,16 +268,6 @@ const blocks = t.blocks;
     }
 
     document.addEventListener("credits:toggle", () => {
-      if (dialog.open) {
-        dialog.close();
-        return;
-      }
-      open();
-    });
-
-    window.addEventListener("keydown", (e) => {
-      if (e.key !== "c" || e.metaKey || e.ctrlKey || e.altKey) return;
-      if (isTyping(e.target)) return;
       if (dialog.open) {
         dialog.close();
         return;

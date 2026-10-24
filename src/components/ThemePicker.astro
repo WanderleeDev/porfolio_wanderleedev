@@ -1,6 +1,6 @@
 ---
 /**
- * ThemePicker + LangPicker — selectores flotantes de tema e idioma.
+ * ThemePicker + menú flotante — tema a un click y el resto agrupado.
  * Posición fija esquina superior derecha.
  * Estilos: utilidades Tailwind (el reveal del panel usa `starting:`).
  */
@@ -9,11 +9,6 @@ import Icon from "./Icon.astro";
 const pathname = Astro.url.pathname;
 const currentLang = pathname.startsWith("/en") ? "en" : "es";
 const isEn = currentLang === "en";
-
-const altLang = currentLang === "es" ? "en" : "es";
-const altPath  = currentLang === "es"
-  ? "/en" + (pathname === "/" ? "" : pathname)
-  : pathname.replace(/^\/en/, "") || "/";
 
 const trigger =
   "flex size-11 items-center justify-center rounded-full border-[1.5px] border-[color-mix(in_srgb,currentColor_20%,transparent)] bg-[color-mix(in_srgb,canvas_85%,transparent)] p-0 text-[canvastext] backdrop-blur-[12px] backdrop-saturate-[1.4] [transition:background_0.2s,border-color_0.2s,scale_0.15s] hover:bg-[color-mix(in_srgb,canvas_95%,transparent)] hover:scale-[1.08] focus-visible:outline-2 focus-visible:outline-[canvastext] focus-visible:outline-offset-[3px]";
@@ -27,10 +22,14 @@ const option =
 const optionIcon = "size-4 shrink-0 opacity-70 [&_svg]:size-full";
 const optionCheck = "ml-auto text-[0.75rem] opacity-0 transition-opacity duration-150 group-aria-selected:opacity-100";
 
+const sectionLabel =
+  "px-2 py-1.5 text-[0.65rem] font-bold uppercase tracking-[0.16em] text-[canvastext] opacity-50";
+const divider = "my-1 h-px bg-[color-mix(in_srgb,currentColor_10%,transparent)]";
+
 const switchOn =
-  "relative size-7 w-11 shrink-0 rounded-full border border-[color-mix(in_srgb,currentColor_25%,transparent)] bg-transparent transition-colors data-[on=true]:border-sky-400 data-[on=true]:bg-sky-400";
+  "group/switch relative size-7 w-11 shrink-0 rounded-full border border-[color-mix(in_srgb,currentColor_25%,transparent)] bg-transparent transition-colors data-[on=true]:border-sky-400 data-[on=true]:bg-sky-400";
 const switchKnob =
-  "absolute left-0.5 top-0.5 size-6 rounded-full bg-[color-mix(in_srgb,canvas_96%,transparent)] shadow transition-transform data-[on=true]:translate-x-4";
+  "absolute left-0.5 top-0.5 size-6 rounded-full bg-[color-mix(in_srgb,canvas_96%,transparent)] shadow transition-transform group-data-[on=true]/switch:translate-x-4";
 const settingRow =
   "group relative flex w-full items-center gap-2.5 rounded-[9px] px-3 py-[9px] text-left font-sans text-[0.8rem] font-medium tracking-[0.04em] text-[canvastext] no-underline transition-[background] duration-150 hover:bg-[color-mix(in_srgb,canvastext_8%,transparent)] focus-visible:outline-2 focus-visible:outline-[canvastext] focus-visible:outline-offset-[-2px] focus-visible:rounded-[9px]";
 const settingLabel = "flex-1";
@@ -39,121 +38,7 @@ const settingIcon = "size-4 shrink-0 opacity-70 [&_svg]:size-full";
 
 <div class="fixed top-5 right-5 z-[999] flex items-center gap-2" id="theme-picker" transition:animate={false}>
 
-  <!-- Vista de logros -->
-  <button
-    class={trigger}
-    id="logros-trigger"
-    type="button"
-    aria-label={isEn ? "View achievements" : "Ver logros"}
-  >
-    <Icon name="lucide:trophy" class="size-5" aria-hidden="true" />
-  </button>
-
-  <!-- Vista de créditos -->
-  <button
-    class={trigger}
-    id="credits-trigger"
-    type="button"
-    aria-label={isEn ? "View credits" : "Ver créditos"}
-  >
-    <Icon name="lucide:scroll-text" class="size-5" aria-hidden="true" />
-  </button>
-
-  <!-- Selector de idioma -->
-  <div class="relative">
-    <button
-      class={trigger}
-      id="lang-trigger"
-      data-trigger
-      aria-label="Cambiar idioma"
-      aria-expanded="false"
-      aria-controls="lang-panel"
-    >
-      <span class="text-[0.75rem] font-sans font-bold tracking-[0.05em]">
-        {currentLang.toUpperCase()}
-      </span>
-    </button>
-
-    <div class={panel} id="lang-panel" data-panel role="listbox" aria-label="Seleccionar idioma" hidden>
-      <a
-        class={option}
-        href="/"
-        role="option"
-        aria-selected={currentLang === "es" ? true : false}
-        hreflang="es"
-      >
-        <span class="flex size-4 shrink-0 items-center justify-center text-base leading-none" aria-hidden="true">🇪🇸</span>
-        Español
-        <span class={optionCheck} aria-hidden="true">✓</span>
-      </a>
-      <a
-        class={option}
-        href="/en"
-        role="option"
-        aria-selected={currentLang === "en" ? true : false}
-        hreflang="en"
-      >
-        <span class="flex size-4 shrink-0 items-center justify-center text-base leading-none" aria-hidden="true">🇺🇸</span>
-        English
-        <span class={optionCheck} aria-hidden="true">✓</span>
-      </a>
-    </div>
-  </div>
-
-  <!-- Settings -->
-  <div class="relative">
-    <button
-      class={trigger}
-      id="settings-trigger"
-      data-trigger
-      aria-label="Configuración del deck"
-      aria-expanded="false"
-      aria-controls="settings-panel"
-    >
-      <span class="flex size-5 items-center justify-center [&_svg]:size-full" aria-hidden="true">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-          stroke-linecap="round" stroke-linejoin="round">
-          <circle cx="12" cy="12" r="3"/>
-          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
-        </svg>
-      </span>
-    </button>
-
-    <div class={panel} id="settings-panel" data-panel role="group" aria-label="Configuración del deck" hidden>
-      <div class="px-2 py-1.5 text-[0.65rem] font-bold uppercase tracking-[0.16em] text-[canvastext] opacity-50">
-        Deck
-      </div>
-      <button class={settingRow} data-setting="lock" role="switch" aria-pressed="false">
-        <span class={settingIcon} aria-hidden="true">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
-          </svg>
-        </span>
-        <span class={settingLabel}>Bloqueo vertical</span>
-        <span class={switchOn} data-switch><span class={switchKnob}></span></span>
-      </button>
-      <button class={settingRow} data-setting="overview" role="switch" aria-pressed="false">
-        <span class={settingIcon} aria-hidden="true">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/>
-          </svg>
-        </span>
-        <span class={settingLabel}>Vista general</span>
-        <span class={switchOn} data-switch><span class={switchKnob}></span></span>
-      </button>
-      <button class={settingRow} data-setting="minimap" role="switch" aria-pressed="false">
-        <span class={settingIcon} aria-hidden="true">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/>
-          </svg>
-        </span>
-        <span class={settingLabel}>Minimapa</span>
-        <span class={switchOn} data-switch><span class={switchKnob}></span></span>
-      </button>
-    </div>
-  </div>
-
-  <!-- Selector de tema -->
+  <!-- Selector de tema: queda a la vista, es el gancho del sitio -->
   <div class="relative">
     <button
       class={trigger}
@@ -210,6 +95,115 @@ const settingIcon = "size-4 shrink-0 opacity-70 [&_svg]:size-full";
         Neón
         <span class={optionCheck} aria-hidden="true">✓</span>
       </button>
+      <button class={option} data-theme="konami" role="option">
+        <span class={optionIcon} aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M9 2h6v7h7v6h-7v7H9v-7H2V9h7z"/><circle cx="12" cy="12" r="1.5"/>
+          </svg>
+        </span>
+        Konami
+        <span class={optionCheck} aria-hidden="true">✓</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Menú: vistas, idioma y ajustes del deck en un solo panel -->
+  <div class="relative">
+    <button
+      class={trigger}
+      id="menu-trigger"
+      data-trigger
+      type="button"
+      aria-label={isEn ? "Menu" : "Menú"}
+      aria-expanded="false"
+      aria-controls="menu-panel"
+    >
+      <Icon name="lucide:menu" class="size-5" aria-hidden="true" />
+    </button>
+
+    <div
+      class:list={[panel, "w-64 max-h-[70dvh] overflow-y-auto"]}
+      id="menu-panel"
+      data-panel
+      role="group"
+      aria-label={isEn ? "Menu" : "Menú"}
+      hidden
+    >
+      <div class={sectionLabel}>{isEn ? "Views" : "Vistas"}</div>
+      <button class={option} type="button" data-view="logros">
+        <span class={optionIcon} aria-hidden="true"><Icon name="lucide:trophy" class="size-full" /></span>
+        {isEn ? "Achievements" : "Logros"}
+      </button>
+      <button class={option} type="button" data-view="credits">
+        <span class={optionIcon} aria-hidden="true"><Icon name="lucide:scroll-text" class="size-full" /></span>
+        {isEn ? "Credits" : "Créditos"}
+      </button>
+
+      <div class={divider} aria-hidden="true"></div>
+
+      <div class={sectionLabel} id="menu-lang-label">{isEn ? "Language" : "Idioma"}</div>
+      <div role="listbox" aria-labelledby="menu-lang-label" class="flex flex-col gap-0.5">
+        <a
+          class={option}
+          href="/"
+          role="option"
+          aria-selected={currentLang === "es" ? true : false}
+          hreflang="es"
+        >
+          <span class="flex size-4 shrink-0 items-center justify-center text-base leading-none" aria-hidden="true">🇪🇸</span>
+          Español
+          <span class={optionCheck} aria-hidden="true">✓</span>
+        </a>
+        <a
+          class={option}
+          href="/en"
+          role="option"
+          aria-selected={currentLang === "en" ? true : false}
+          hreflang="en"
+        >
+          <span class="flex size-4 shrink-0 items-center justify-center text-base leading-none" aria-hidden="true">🇺🇸</span>
+          English
+          <span class={optionCheck} aria-hidden="true">✓</span>
+        </a>
+      </div>
+
+      <div class={divider} aria-hidden="true"></div>
+
+      <div class={sectionLabel} id="menu-deck-label">Deck</div>
+      <div role="group" aria-labelledby="menu-deck-label" class="flex flex-col gap-0.5">
+        <button class={settingRow} data-setting="lock" role="switch" aria-pressed="false">
+          <span class={settingIcon} aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+            </svg>
+          </span>
+          <span class={settingLabel}>Bloqueo vertical</span>
+          <span class={switchOn} data-switch><span class={switchKnob}></span></span>
+        </button>
+        <button class={settingRow} data-setting="overview" role="switch" aria-pressed="false">
+          <span class={settingIcon} aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/>
+            </svg>
+          </span>
+          <span class={settingLabel}>Vista general</span>
+          <span class={switchOn} data-switch><span class={switchKnob}></span></span>
+        </button>
+        <button class={settingRow} data-setting="minimap" role="switch" aria-pressed="false">
+          <span class={settingIcon} aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/>
+            </svg>
+          </span>
+          <span class={settingLabel}>Minimapa</span>
+          <span class={switchOn} data-switch><span class={switchKnob}></span></span>
+        </button>
+        <button class={settingRow} data-setting="arrows" role="switch" aria-pressed="false">
+          <span class={settingIcon} aria-hidden="true"><Icon name="lucide:arrow-left-right" class="size-full" /></span>
+          <span class={settingLabel}>{isEn ? "Arrows" : "Flechas"}</span>
+          <span class={switchOn} data-switch><span class={switchKnob}></span></span>
+        </button>
+      </div>
     </div>
   </div>
 
@@ -219,16 +213,17 @@ const settingIcon = "size-4 shrink-0 opacity-70 [&_svg]:size-full";
   import { loadSettings, updateSetting, type DeckSettings } from "./deck/deck-settings";
   import { requestUnlock, toggleLogros } from "../lib/logros-store";
 
-  type Theme = "system" | "light" | "dark" | "neon";
+  type Theme = "system" | "light" | "dark" | "neon" | "konami";
 
   const STORAGE_KEY = "wdev-theme";
-  const THEMES: Exclude<Theme, "system">[] = ["light", "dark", "neon"];
+  const THEMES: Exclude<Theme, "system">[] = ["light", "dark", "neon", "konami"];
 
   const icons: Record<Theme, string> = {
     system: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>`,
     light:  `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>`,
     dark:   `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>`,
     neon:   `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.8 4.7 4.7 1.8-4.7 1.8L12 16l-1.8-4.7L5.5 9.5l4.7-1.8z"/><path d="M19 15l.9 2.1 2.1.9-2.1.9L19 21l-.9-2.1-2.1-.9 2.1-.9z"/></svg>`,
+    konami: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 2h6v7h7v6h-7v7H9v-7H2V9h7z"/><circle cx="12" cy="12" r="1.5"/></svg>`,
   };
 
   const root = document.getElementById("theme-picker")!;
@@ -266,6 +261,11 @@ const settingIcon = "size-4 shrink-0 opacity-70 [&_svg]:size-full";
     updateUI(theme);
   }
 
+  function closePanel(panelId: string, triggerId: string) {
+    document.getElementById(panelId)!.hidden = true;
+    document.getElementById(triggerId)!.setAttribute("aria-expanded", "false");
+  }
+
   function reflectSettings(s: DeckSettings) {
     root.querySelectorAll<HTMLElement>("[data-setting]").forEach((btn) => {
       const on = Boolean(s[btn.dataset.setting as keyof DeckSettings]);
@@ -286,9 +286,13 @@ const settingIcon = "size-4 shrink-0 opacity-70 [&_svg]:size-full";
         const sw = btn.querySelector<HTMLElement>("[data-switch]")!;
         const next = sw.getAttribute("data-on") !== "true";
         updateSetting(key, next);
+        // Ocultar las flechas sin minimapa dejaría al deck sin navegación
+        // visible: encendemos el minimapa como red de seguridad.
+        if (key === "arrows" && !next && !loadSettings().minimap) {
+          updateSetting("minimap", true);
+        }
         reflectSettings(loadSettings());
-        document.getElementById("settings-panel")!.hidden = true;
-        document.getElementById("settings-trigger")!.setAttribute("aria-expanded", "false");
+        // El panel queda abierto: se pueden tocar varios switches seguidos.
       });
     });
   }
@@ -321,8 +325,7 @@ const settingIcon = "size-4 shrink-0 opacity-70 [&_svg]:size-full";
     }
 
     setupToggle("theme-trigger", "theme-panel");
-    setupToggle("lang-trigger", "lang-panel");
-    setupToggle("settings-trigger", "settings-panel");
+    setupToggle("menu-trigger", "menu-panel");
 
     // Cerrar al hacer click fuera
     document.addEventListener("click", () => {
@@ -337,32 +340,23 @@ const settingIcon = "size-4 shrink-0 opacity-70 [&_svg]:size-full";
       opt.addEventListener("click", () => {
         setTheme(opt.dataset.theme as Theme);
         requestUnlock("theme-tour");
-        document.getElementById("theme-panel")!.hidden = true;
-        document.getElementById("theme-trigger")!.setAttribute("aria-expanded", "false");
+        closePanel("theme-panel", "theme-trigger");
+      });
+    });
+
+    // Filas de navegación del menú: cierran el panel y abren la vista.
+    root.querySelectorAll<HTMLElement>("[data-view]").forEach((row) => {
+      row.addEventListener("click", (e) => {
+        e.stopPropagation();
+        closePanel("menu-panel", "menu-trigger");
+        if (row.dataset.view === "logros") toggleLogros();
+        else document.dispatchEvent(new CustomEvent("credits:toggle"));
       });
     });
   }
 
   document.addEventListener("astro:page-load", bootPicker);
   bootPicker();
-
-  const creditsTrigger = document.getElementById("credits-trigger");
-  if (creditsTrigger && creditsTrigger.dataset.wired !== "true") {
-    creditsTrigger.dataset.wired = "true";
-    creditsTrigger.addEventListener("click", (e) => {
-      e.stopPropagation();
-      document.dispatchEvent(new CustomEvent("credits:toggle"));
-    });
-  }
-
-  const logrosTrigger = document.getElementById("logros-trigger");
-  if (logrosTrigger && logrosTrigger.dataset.wired !== "true") {
-    logrosTrigger.dataset.wired = "true";
-    logrosTrigger.addEventListener("click", (e) => {
-      e.stopPropagation();
-      toggleLogros();
-    });
-  }
 
   // Escuchar cambios del sistema (una vez por carga completa)
   window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => {

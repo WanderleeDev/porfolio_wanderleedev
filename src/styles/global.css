@@ -12,7 +12,7 @@
 
 /* ============================================================
    DESIGN SYSTEM — WanderleeDev Portfolio (tokens centralizados)
-   Claro en :root / .light, oscuro en .dark, neón en .neon.
+   Claro en :root / .light, oscuro en .dark, neón en .neon, Konami en .konami.
    Los componentes usan sólo clases semánticas de Tailwind:
    bg-surface text-ink text-soft text-muted border-line
    bg-badge text-badge-ink — nunca hex sueltos.
@@ -131,6 +131,37 @@
   --page-bg-image: radial-gradient(at 20% 30%, #38bdf859 0%, #0000 60%), radial-gradient(at 80% 70%, #8b5cf647 0%, #0000 70%);
 
   --ct-acc: #8fa0ff;
+}
+
+/* ── Tema Konami: CRT de arcade sobre la identidad de marca ──
+   KONAMI RED es cardinal (#B60014) sobre negro y blanco: no hay azul ni
+   verde en el sistema. El tubo aporta el brillo (rojo cardinal arriba,
+   naranja del wordmark 1986 abajo) y el scanline aporta la época. */
+.konami {
+  color-scheme: dark;
+
+  --color-surface: #120507;
+  --color-ink: #ffffff;
+  --color-contrast: #0a0405;
+  --color-soft: #e3d6d8;
+  --color-muted: #a08e91;
+  --color-line: #3a1216;
+  --color-badge: #1e0a0d;
+  --color-badge-ink: #ffeef0;
+  --color-field: #100405;
+
+  /* 1px de línea cada 3px: al 5.5% ya se lee como monitor y no como
+     suciedad. Los radiales son el brillo del tubo. */
+  --page-bg-color: #080405;
+  --page-bg-image:
+    repeating-linear-gradient(0deg, rgb(255 255 255 / 0.055) 0 1px, transparent 1px 3px),
+    radial-gradient(at 50% -10%, #b6001466 0%, transparent 62%),
+    radial-gradient(at 85% 105%, #da291c4d 0%, transparent 58%);
+
+  /* Acento: el rojo cardinal subido de luminancia para que las estrellas
+     del hero y el glow de contacto se vean sobre el negro (el #B60014
+     puro queda en 2.8:1). Misma familia de tono. */
+  --ct-acc: #e11d2e;
 }
 
 /* El fondo del sitio vive en el elemento raíz: su fondo se pinta como fondo

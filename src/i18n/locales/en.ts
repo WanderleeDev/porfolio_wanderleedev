@@ -156,6 +156,10 @@ export const en = {
   contactSection: {
     title: "Let's Talk",
     subtitle: "Ready to start your next project? Send me a message and let's make it happen.",
+    copy: "Copy",
+    copied: "Copied",
+    available: "Open to new projects",
+    note: "If you prefer, email me directly.",
     submit: "Open in my email",
     preferredText: "Prefer to write yourself?",
     fields: {
@@ -188,6 +192,11 @@ export const en = {
     success: "Message sent. Thank you!",
     error: "Could not send. Please try again.",
     invalid: "Write a slightly longer message.",
+    direct: "Direct message",
+    reply: "I reply within 24–48 h",
+    shortcut: "⌘/Ctrl + Enter to send",
+    again: "Write another",
+    successHint: "I'll get back to you soon.",
   },
 
   chat: {

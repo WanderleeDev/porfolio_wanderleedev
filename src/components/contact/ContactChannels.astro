@@ -1,0 +1,71 @@
+---
+import Icon from "../Icon.astro";
+import { getTranslations } from "../../i18n/utils";
+
+const lang = Astro.currentLocale as "es" | "en";
+const t = getTranslations(lang);
+const c = t("contactSection");
+const f = t("footer");
+
+const links = [
+  { icon: "lucide:mail", label: f.email, href: `mailto:${f.email}` },
+  { icon: "lucide:github", label: "github.com/WanderleeDev", href: "https://github.com/WanderleeDev" },
+  { icon: "lucide:linkedin", label: "linkedin.com/in/wanderlee-max", href: "https://linkedin.com/in/wanderlee-max" },
+];
+---
+
+<div class="flex w-full flex-col items-start gap-3">
+  <div class="flex w-full min-w-0 items-center gap-2 rounded-2xl border border-line bg-surface p-1.5 pl-4">
+    <Icon name="lucide:mail" class="size-4 shrink-0 text-soft" aria-hidden="true" />
+    <span class="min-w-0 flex-1 truncate font-sans text-sm font-medium text-ink">{f.email}</span>
+    <button
+      type="button"
+      data-copy-email={f.email}
+      data-label-copy={c.copy}
+      data-label-copied={c.copied}
+      aria-label={`${c.copy} ${f.email}`}
+      class="flex shrink-0 items-center gap-1.5 rounded-xl bg-badge px-3 py-2 font-sans text-xs font-bold text-badge-ink transition-colors hover:bg-ink hover:text-contrast focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink"
+    >
+      <Icon name="lucide:copy" class="size-3.5" aria-hidden="true" />
+      <span data-copy-label>{c.copy}</span>
+    </button>
+  </div>
+
+  <ul class="flex items-center gap-2">
+    {
+      links.map((l) => (
+        <li>
+          <a
+            href={l.href}
+            target={l.href.startsWith("http") ? "_blank" : undefined}
+            rel={l.href.startsWith("http") ? "noopener" : undefined}
+            aria-label={l.label}
+            title={l.label}
+            class="flex size-10 items-center justify-center rounded-full border border-line bg-surface text-ink transition-colors hover:bg-badge focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink"
+          >
+            <Icon name={l.icon} class="size-4" aria-hidden="true" />
+          </a>
+        </li>
+      ))
+    }
+  </ul>
+</div>
+
+<script>
+  const buttons = document.querySelectorAll<HTMLButtonElement>("[data-copy-email]");
+
+  buttons.forEach((button) => {
+    const label = button.querySelector<HTMLElement>("[data-copy-label]");
+    if (!label) return;
+
+    button.addEventListener("click", async () => {
+      try {
+        await navigator.clipboard.writeText(button.dataset.copyEmail ?? "");
+        label.textContent = button.dataset.labelCopied ?? "";
+        window.setTimeout(() => {
+          label.textContent = button.dataset.labelCopy ?? "";
+        }, 1600);
+      } catch {}
+    });
+  });
+</script>

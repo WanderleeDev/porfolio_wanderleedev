@@ -7,13 +7,13 @@ import ChatSection from "../components/ChatSection.astro";
 import Credits from "../components/credits/Credits.astro";
 import Logros from "../components/logros/Logros.astro";
 import MusicPlayer from "../components/MusicPlayer.astro";
-import Icon from "../components/Icon.astro";
 import Title from "../components/typography/Title.astro";
 import Deck from "../components/deck/Deck.astro";
 import Slide from "../components/deck/Slide.astro";
 import VStack from "../components/deck/VStack.astro";
 import VSlide from "../components/deck/VSlide.astro";
 import ContactForm from "../components/contact/ContactForm";
+import ContactChannels from "../components/contact/ContactChannels.astro";
 import Collage3D from "../components/Collage3D.astro";
 import { getTranslations } from "../i18n/utils";
 
@@ -37,16 +37,6 @@ const collageLabels = {
 };
 const c = t("contactSection");
 const f = t("footer");
-
-const links = [
-  { icon: "lucide:mail", label: f.email, href: `mailto:${f.email}` },
-  { icon: "lucide:github", label: "github.com/WanderleeDev", href: "https://github.com/WanderleeDev" },
-  {
-    icon: "lucide:linkedin",
-    label: "linkedin.com/in/wanderlee-max",
-    href: "https://linkedin.com/in/wanderlee-max",
-  },
-];
 ---
 
 <BaseLayout title={meta.title} description={meta.description}>
@@ -55,39 +45,33 @@ const links = [
   <Logros lang="es" />
   <Deck start={1} vstart={1}>
     <Slide title={c.title}>
-      <div class="flex w-full max-w-2xl flex-col items-center gap-6 md:gap-8">
-        <div class="text-center">
-          <span class="font-sans text-[0.65rem] font-bold uppercase tracking-[0.3em] text-muted">
-            {f.contactLabel}
-          </span>
-          <Title level={2} family="sans" size="clamp(2.5rem,5vw,4rem)" class="mt-2">
-            {c.title}
-          </Title>
-          <p class="mx-auto mt-3 max-w-[46ch] font-sans text-[clamp(0.95rem,1.6vw,1.1rem)] leading-[1.5] text-soft">
-            {c.subtitle}
-          </p>
+      <div class="grid w-full max-w-6xl grid-cols-1 overflow-hidden rounded-[1.75rem] border border-line bg-surface text-left shadow-[0_36px_90px_-52px_rgb(0_0_0_/_0.45)] lg:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)]">
+        <div class="flex flex-col justify-between gap-8 border-b border-line bg-badge/20 p-6 sm:p-8 lg:border-b-0 lg:border-r">
+          <div>
+            <span class="font-sans text-[0.65rem] font-bold uppercase tracking-[0.3em] text-muted">
+              {f.contactLabel}
+            </span>
+            <Title level={2} family="sans" size="clamp(2.5rem,5vw,4rem)" class="mt-2">
+              {c.title}
+            </Title>
+            <p class="mt-3 max-w-[40ch] font-sans text-[0.95rem] leading-[1.6] text-soft">
+              {c.subtitle}
+            </p>
+            <div class="mt-6 flex flex-wrap gap-2">
+              <span class="flex items-center gap-1.5 rounded-full border border-line bg-surface px-3 py-1.5 font-sans text-[0.68rem] font-medium text-ink">
+                <span class="size-1.5 rounded-full bg-emerald-500" aria-hidden="true" />
+                {c.available}
+              </span>
+            </div>
+          </div>
+
+          <div class="space-y-4">
+            <ContactChannels />
+            <p class="max-w-[38ch] font-sans text-xs leading-relaxed text-muted">{c.note}</p>
+          </div>
         </div>
 
-        <ul class="flex items-center justify-center gap-2">
-          {
-            links.map((l) => (
-              <li>
-                <a
-                  href={l.href}
-                  target={l.href.startsWith("http") ? "_blank" : undefined}
-                  rel={l.href.startsWith("http") ? "noopener" : undefined}
-                  aria-label={l.label}
-                  title={l.label}
-                  class="flex size-11 items-center justify-center rounded-full border border-line bg-surface text-ink transition-colors hover:bg-badge"
-                >
-                  <Icon name={l.icon} class="size-5" aria-hidden="true" />
-                </a>
-              </li>
-            ))
-          }
-        </ul>
-
-        <div class="w-full max-w-lg">
+        <div class="bg-badge/10 p-4 sm:p-6 lg:p-8">
           <ContactForm client:load lang={lang} />
         </div>
       </div>

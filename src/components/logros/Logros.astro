@@ -20,6 +20,9 @@ const labels = {
   progress: isEn ? "unlocked" : "desbloqueados",
   unlocked: isEn ? "Unlocked" : "Desbloqueado",
   locked: isEn ? "Locked" : "Bloqueado",
+  minimap: isEn ? "Minimap unlocked" : "Minimapa desbloqueado",
+  vertical: isEn ? "Vertical unlocked" : "Vertical desbloqueado",
+  credits: isEn ? "Credits unlocked" : "Créditos desbloqueados",
 };
 const achievements = ACHIEVEMENTS.map((achievement) => ({
   id: achievement.id,
@@ -34,6 +37,9 @@ const achievements = ACHIEVEMENTS.map((achievement) => ({
   data-logros
   data-label-unlocked={labels.unlocked}
   data-label-locked={labels.locked}
+  data-label-minimap={labels.minimap}
+  data-label-vertical={labels.vertical}
+  data-label-credits={labels.credits}
   aria-label={labels.title}
   class="m-0 h-dvh w-dvw max-h-none max-w-none overflow-clip border-0 bg-transparent p-0 text-ink"
 >
@@ -143,6 +149,8 @@ const achievements = ACHIEVEMENTS.map((achievement) => ({
     requestUnlock,
     toggleLogros,
   } from "../../lib/logros-store";
+  import { creditsUnlocked, minimapUnlocked, verticalUnlocked } from "../../lib/unlocks";
+  import { showToast } from "../../lib/toast";
 
   function initLogros() {
     const dialog = document.querySelector<HTMLDialogElement>("dialog[data-logros]");
@@ -254,11 +262,55 @@ const achievements = ACHIEVEMENTS.map((achievement) => ({
     requestUnlock("hello-world");
     unlocked.subscribe(syncCards);
 
-    // Los créditos son un evento de otra función (los despacha el botón de
-    // créditos): solo se aprovecha aquí para el logro, sin acoplarlo al store.
-    document.addEventListener("credits:toggle", () => requestUnlock("credits"));
     window.addEventListener("chat:event", (event) => {
-      if ((event as CustomEvent<string>).detail === "token") requestUnlock("chat");
+      if ((event as CustomEvent<string>).detail === "send") requestUnlock("chat");
+    });
+    window.addEventListener("contact:sent", () => requestUnlock("contact"));
+
+    const gateLabels = {
+      minimap: dialog.dataset.labelMinimap ?? "",
+      vertical: dialog.dataset.labelVertical ?? "",
+      credits: dialog.dataset.labelCredits ?? "",
+    };
+
+    // El overlay vive en el top layer y tapa los toasts: si una recompensa se
+    // desbloquea con el panel abierto, se anuncia al cerrarlo.
+    let pendingGate: string | null = null;
+    function announceGate(message: string) {
+      if (!message) return;
+      if (isOpen.get()) {
+        pendingGate = message;
+        return;
+      }
+      // El logro que dispara la recompensa se anuncia en este mismo tick:
+      // el timeout deja que ese toast entre primero y la recompensa espere
+      // su turno en la cola.
+      window.setTimeout(() => showToast(message), 0);
+    }
+
+    isOpen.subscribe((openNow) => {
+      if (!openNow && pendingGate) {
+        showToast(pendingGate);
+        pendingGate = null;
+      }
+    });
+
+    let firstMinimap = true;
+    minimapUnlocked.subscribe((on) => {
+      if (firstMinimap) { firstMinimap = false; return; }
+      if (on) announceGate(gateLabels.minimap);
+    });
+
+    let firstVertical = true;
+    verticalUnlocked.subscribe((on) => {
+      if (firstVertical) { firstVertical = false; return; }
+      if (on) announceGate(gateLabels.vertical);
+    });
+
+    let firstCredits = true;
+    creditsUnlocked.subscribe((on) => {
+      if (firstCredits) { firstCredits = false; return; }
+      if (on) announceGate(gateLabels.credits);
     });
 
     // El blocker cubre todo el viewport, así que no existe clic "afuera":

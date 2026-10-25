@@ -9,11 +9,11 @@ import { atom } from "nanostores";
 
 export type AchievementId =
   | "hello-world"
+  | "curiosity"
   | "theme-tour"
-  | "soundtrack"
-  | "credits"
+  | "contact"
   | "chat"
-  | "curiosity";
+  | "soundtrack";
 
 export interface AchievementDefinition {
   id: AchievementId;
@@ -33,12 +33,39 @@ export const ACHIEVEMENTS: AchievementDefinition[] = [
     },
   },
   {
+    id: "curiosity",
+    icon: "lucide:trophy",
+    title: { es: "Curiosidad", en: "Curiosity" },
+    description: {
+      es: "Abriste la lista de logros. Ahora queda el resto.",
+      en: "You opened the achievements list. The rest is up to you.",
+    },
+  },
+  {
     id: "theme-tour",
     icon: "lucide:palette",
     title: { es: "Cambio de piel", en: "Skin Deep" },
     description: {
       es: "Probaste otro tema del sitio.",
       en: "You tried another theme on the site.",
+    },
+  },
+  {
+    id: "contact",
+    icon: "lucide:send",
+    title: { es: "En contacto", en: "In Touch" },
+    description: {
+      es: "Enviaste un mensaje desde el formulario.",
+      en: "You sent a message from the contact form.",
+    },
+  },
+  {
+    id: "chat",
+    icon: "lucide:message-square",
+    title: { es: "Hola, IA", en: "Hello, AI" },
+    description: {
+      es: "Hiciste tu primera consulta al chat del portfolio.",
+      en: "You asked the portfolio chat your first question.",
     },
   },
   {
@@ -50,34 +77,12 @@ export const ACHIEVEMENTS: AchievementDefinition[] = [
       en: "You pressed play on a player track.",
     },
   },
-  {
-    id: "credits",
-    icon: "lucide:clapperboard",
-    title: { es: "Los que hicieron esto", en: "Credits Roll" },
-    description: {
-      es: "Abríste los créditos del sitio.",
-      en: "You opened the site credits.",
-    },
-  },
-  {
-    id: "chat",
-    icon: "lucide:message-square",
-    title: { es: "Hola, IA", en: "Hello, AI" },
-    description: {
-      es: "Le escribiste al chat del portfolio.",
-      en: "You messaged the portfolio chat.",
-    },
-  },
-  {
-    id: "curiosity",
-    icon: "lucide:trophy",
-    title: { es: "Curiosidad", en: "Curiosity" },
-    description: {
-      es: "Abríste la lista de logros. Ahora queda el resto.",
-      en: "You opened the achievements list. The rest is up to you.",
-    },
-  },
 ];
+
+export function achievementTitle(id: AchievementId, lang: "es" | "en"): string {
+  const definition = ACHIEVEMENTS.find((achievement) => achievement.id === id);
+  return definition ? definition.title[lang] : id;
+}
 
 export const ACHIEVEMENTS_STORAGE_KEY = "wdev-logros";
 

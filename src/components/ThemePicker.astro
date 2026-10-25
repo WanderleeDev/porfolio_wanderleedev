@@ -134,9 +134,17 @@ const settingIcon = "size-4 shrink-0 opacity-70 [&_svg]:size-full";
         <span class={optionIcon} aria-hidden="true"><Icon name="lucide:trophy" class="size-full" /></span>
         {isEn ? "Achievements" : "Logros"}
       </button>
-      <button class={option} type="button" data-view="credits">
+      <button
+        class:list={[option, "disabled:cursor-not-allowed disabled:opacity-45 disabled:hover:bg-transparent"]}
+        type="button"
+        data-view="credits"
+        data-credits-row
+        disabled
+        aria-disabled="true"
+      >
         <span class={optionIcon} aria-hidden="true"><Icon name="lucide:scroll-text" class="size-full" /></span>
         {isEn ? "Credits" : "Créditos"}
+        <span data-credits-state class="ml-auto text-[0.7rem] font-semibold tabular-nums opacity-60"></span>
       </button>
 
       <div class={divider} aria-hidden="true"></div>
@@ -171,25 +179,16 @@ const settingIcon = "size-4 shrink-0 opacity-70 [&_svg]:size-full";
 
       <div class={sectionLabel} id="menu-deck-label">Deck</div>
       <div role="group" aria-labelledby="menu-deck-label" class="flex flex-col gap-0.5">
-        <button class={settingRow} data-setting="lock" role="switch" aria-pressed="false">
+        <button class={settingRow} data-setting="lock" role="switch" aria-pressed="false" style="display: none">
           <span class={settingIcon} aria-hidden="true">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
             </svg>
           </span>
-          <span class={settingLabel}>Bloqueo vertical</span>
+          <span class={settingLabel}>{isEn ? "Vertical lock" : "Bloqueo vertical"}</span>
           <span class={switchOn} data-switch><span class={switchKnob}></span></span>
         </button>
-        <button class={settingRow} data-setting="overview" role="switch" aria-pressed="false">
-          <span class={settingIcon} aria-hidden="true">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/>
-            </svg>
-          </span>
-          <span class={settingLabel}>Vista general</span>
-          <span class={switchOn} data-switch><span class={switchKnob}></span></span>
-        </button>
-        <button class={settingRow} data-setting="minimap" role="switch" aria-pressed="false">
+        <button class={settingRow} data-setting="minimap" role="switch" aria-pressed="false" style="display: none">
           <span class={settingIcon} aria-hidden="true">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/>
@@ -210,8 +209,14 @@ const settingIcon = "size-4 shrink-0 opacity-70 [&_svg]:size-full";
 </div>
 
 <script>
-  import { loadSettings, updateSetting, type DeckSettings } from "./deck/deck-settings";
-  import { requestUnlock, toggleLogros } from "../lib/logros-store";
+  import { loadSettings, saveSettings, subscribeSettings, updateSetting, type DeckSettings } from "./deck/deck-settings";
+  import { progress, requestUnlock, toggleLogros } from "../lib/logros-store";
+  import {
+    CREDITS_AT,
+    creditsUnlocked,
+    minimapUnlocked,
+    verticalUnlocked,
+  } from "../lib/unlocks";
 
   type Theme = "system" | "light" | "dark" | "neon" | "konami";
 
@@ -275,19 +280,46 @@ const settingIcon = "size-4 shrink-0 opacity-70 [&_svg]:size-full";
     });
   }
 
+  function reflectGates() {
+    const lockRow = root.querySelector<HTMLElement>('[data-setting="lock"]');
+    const minimapRow = root.querySelector<HTMLElement>('[data-setting="minimap"]');
+    const creditsRow = root.querySelector<HTMLButtonElement>("[data-credits-row]");
+    const creditsState = root.querySelector<HTMLElement>("[data-credits-state]");
+    if (lockRow) lockRow.style.display = verticalUnlocked.get() ? "" : "none";
+    if (minimapRow) minimapRow.style.display = minimapUnlocked.get() ? "" : "none";
+    if (creditsRow) {
+      const on = creditsUnlocked.get();
+      creditsRow.disabled = !on;
+      creditsRow.setAttribute("aria-disabled", String(!on));
+      if (creditsState) creditsState.textContent = on ? "" : `${progress.get()}/${CREDITS_AT}`;
+    }
+  }
+
   function bootSettings() {
     reflectSettings(loadSettings());
+    reflectGates();
     if (root.dataset.settingsWired === "true") return;
     root.dataset.settingsWired = "true";
+    minimapUnlocked.subscribe(reflectGates);
+    verticalUnlocked.subscribe(reflectGates);
+    creditsUnlocked.subscribe(reflectGates);
+    progress.subscribe(reflectGates);
+    // El deck normaliza ajustes al arrancar (y las recompensas cambian el
+    // valor por defecto): el switch tiene que seguir al store, no al boot.
+    subscribeSettings(reflectSettings);
     root.querySelectorAll<HTMLElement>("[data-setting]").forEach((btn) => {
       btn.addEventListener("click", (e) => {
         e.stopPropagation();
         const key = btn.dataset.setting as keyof DeckSettings;
         const sw = btn.querySelector<HTMLElement>("[data-switch]")!;
         const next = sw.getAttribute("data-on") !== "true";
-        updateSetting(key, next);
-        // Ocultar las flechas sin minimapa dejaría al deck sin navegación
-        // visible: encendemos el minimapa como red de seguridad.
+        // Sin minimapa no hay navegación visible que reemplace a las flechas.
+        if (key === "arrows" && !next && !minimapUnlocked.get()) return;
+        const nextSettings = loadSettings();
+        nextSettings[key] = next;
+        if (key === "lock") nextSettings.lockTouched = true;
+        if (key === "minimap") nextSettings.minimapTouched = true;
+        saveSettings(nextSettings);
         if (key === "arrows" && !next && !loadSettings().minimap) {
           updateSetting("minimap", true);
         }
@@ -350,7 +382,9 @@ const settingIcon = "size-4 shrink-0 opacity-70 [&_svg]:size-full";
         e.stopPropagation();
         closePanel("menu-panel", "menu-trigger");
         if (row.dataset.view === "logros") toggleLogros();
-        else document.dispatchEvent(new CustomEvent("credits:toggle"));
+        else if (row.dataset.view === "credits" && creditsUnlocked.get()) {
+          document.dispatchEvent(new CustomEvent("credits:toggle"));
+        }
       });
     });
   }

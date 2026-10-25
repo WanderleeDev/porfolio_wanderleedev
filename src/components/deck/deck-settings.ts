@@ -10,23 +10,41 @@ import { map } from "nanostores";
 
 export interface DeckSettings {
   lock: boolean;
-  overview: boolean;
   minimap: boolean;
   /** Flechas flotantes de navegación (prev/next/up/down). */
   arrows: boolean;
+  /** El usuario tocó el switch: su valor manda sobre el desbloqueo automático. */
+  lockTouched: boolean;
+  minimapTouched: boolean;
 }
 
 const KEY = "wdev-deck";
 
-const DEFAULTS: DeckSettings = { lock: true, overview: true, minimap: false, arrows: true };
+const DEFAULTS: DeckSettings = {
+  lock: true,
+  minimap: false,
+  arrows: true,
+  lockTouched: false,
+  minimapTouched: false,
+};
+
+function flag(value: unknown, fallback: boolean): boolean {
+  return typeof value === "boolean" ? value : fallback;
+}
 
 function readStored(): DeckSettings {
   if (typeof localStorage === "undefined") return { ...DEFAULTS };
   try {
     const raw = localStorage.getItem(KEY);
     if (!raw) return { ...DEFAULTS };
-    const parsed = JSON.parse(raw) as Partial<DeckSettings>;
-    return { ...DEFAULTS, ...parsed };
+    const parsed = JSON.parse(raw) as Record<string, unknown>;
+    return {
+      lock: flag(parsed.lock, DEFAULTS.lock),
+      minimap: flag(parsed.minimap, DEFAULTS.minimap),
+      arrows: flag(parsed.arrows, DEFAULTS.arrows),
+      lockTouched: flag(parsed.lockTouched, DEFAULTS.lockTouched),
+      minimapTouched: flag(parsed.minimapTouched, DEFAULTS.minimapTouched),
+    };
   } catch {
     return { ...DEFAULTS };
   }

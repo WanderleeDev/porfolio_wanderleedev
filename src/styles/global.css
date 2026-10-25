@@ -205,6 +205,14 @@ html {
     cursor: url("/pointer.svg"), auto !important;
   }
 
+  /* Campos que reciben texto: la I custom de /text-cursor.svg. El hotspot
+     (12 19) cae en el centro de la barra vertical del dibujo. */
+  textarea:not(:disabled),
+  input:not([type="button"]):not([type="submit"]):not([type="reset"]):not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]):not([type="color"]):not([type="image"]):not(:disabled),
+  [contenteditable]:not([contenteditable="false"]) {
+    cursor: url("/text-cursor.svg") 12 19, text;
+  }
+
   a *,
   button * {
     cursor: inherit !important;

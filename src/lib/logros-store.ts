@@ -8,7 +8,7 @@
  * GSAP, aquí solo vive el disparador.
  */
 import { atom, computed } from "nanostores";
-import { ACHIEVEMENTS, unlocked, type AchievementId, unlock } from "./achievements";
+import { achievementTitle, unlocked, type AchievementId, unlock } from "./achievements";
 import { showToast } from "./toast";
 
 /** Re-export del store de logros desbloqueados y su progreso total. */
@@ -18,9 +18,10 @@ export const progress = computed(unlocked, (ids) => new Set(ids).size);
 /** Abierto o cerrado el overlay de logros. */
 export const isOpen = atom(false);
 
-function achievementTitle(id: AchievementId): string {
-  const definition = ACHIEVEMENTS.find((a) => a.id === id);
-  return definition ? definition.title.es : id;
+function activeLang(): "es" | "en" {
+  return typeof document !== "undefined" && document.documentElement.lang.startsWith("en")
+    ? "en"
+    : "es";
 }
 
 /**
@@ -39,7 +40,9 @@ export function toggleLogros() {
 export function requestUnlock(id: AchievementId): boolean {
   const fresh = unlock(id);
   if (fresh) {
-    showToast(`Logro desbloqueado: ${achievementTitle(id)}`);
+    const lang = activeLang();
+    const prefix = lang === "en" ? "Achievement unlocked" : "Logro desbloqueado";
+    showToast(`${prefix}: ${achievementTitle(id, lang)}`);
   }
   return fresh;
 }

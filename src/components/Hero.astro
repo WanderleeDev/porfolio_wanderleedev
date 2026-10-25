@@ -168,7 +168,7 @@ const stackLogos = [
 
 
 <script>
-  import { gsap, ScrollTrigger } from "../lib/gsap";
+  import { gsap } from "../lib/gsap";
   import { IS_DEV, storage, reducedMotion } from "../utils/env";
 
   window.scrollTo(0, 0);
@@ -250,7 +250,24 @@ const stackLogos = [
   let warpStars: WarpStar[] = [];
   let scrollStars: ScrollStar[] = [];
 
-  const state = { mode: (skipIntro ? "scroll" : "idle") as Mode, warp: 0, target: 0, v: 0 };
+  const state = { mode: (skipIntro ? "scroll" : "idle") as Mode, warp: 0, vx: 0, vy: 0 };
+
+  // El deck no scrollea la página: mueve dos contenedores internos (horizontal
+  // y vertical). El fondo muestrea ambos por frame para responder a cualquier
+  // dirección, también a los saltos del minimapa y la vista general.
+  const deckTrack = document.querySelector<HTMLElement>("[data-track]");
+  const deckHolder = document.querySelector<HTMLElement>("[data-vtrack]");
+  let lastScrollX: number | null = null;
+  let lastScrollY: number | null = null;
+
+  // Vuelve a tomar la posición como origen: tras la intro (o un resize que
+  // recrea las estrellas) no debe interpretarse el salto como velocidad.
+  function resetScrollOrigin() {
+    lastScrollX = null;
+    lastScrollY = null;
+    state.vx = 0;
+    state.vy = 0;
+  }
 
   const rand = (a: number, b: number) => a + Math.random() * (b - a);
 
@@ -351,44 +368,74 @@ const stackLogos = [
     }
     warpStars = [];
     state.mode = "scroll";
+    resetScrollOrigin();
     htmlEl.style.overflow = "";
     // Terminada la intro, el canvas pasa al fondo (z negativo): queda entre
     // el fondo del sitio (html) y el contenido, así las estrellas se ven
     // detrás del hero en vez de taparlo.
     canvas.style.zIndex = "-1";
     revealHero();
-    revealHero();
     if (!skipIntro) storage.set();
   }
 
   // Scroll (2D)
 
-  function resetScrollStar(s: ScrollStar, fromTop: boolean) {
-    s.x = rand(0, W);
-    s.y = fromTop ? -10 : H + 10;
+  function resetScrollStar(s: ScrollStar, edge: "left" | "right" | "up" | "down") {
     s.z = rand(0.2, 1);
     s.size = rand(0.6, 2) * s.z + 0.3;
     s.alpha = rand(0.4, 1) * s.z + 0.2;
     s.drift = rand(0.05, 0.25) * s.z;
+    if (edge === "left" || edge === "right") {
+      s.x = edge === "left" ? -10 : W + 10;
+      s.y = rand(0, H);
+    } else {
+      s.x = rand(0, W);
+      s.y = edge === "up" ? -10 : H + 10;
+    }
   }
 
   function renderScroll() {
-    state.target *= 0.92;
-    state.v += (state.target - state.v) * 0.12;
+    // Velocidad del deck en los dos ejes, suavizada para que el impulso
+    // sobreviva al snap y se desvanezca cuando el scroll se detiene.
+    const x = deckTrack?.scrollLeft ?? 0;
+    const y = deckHolder?.scrollTop ?? 0;
+    const rawX = lastScrollX === null ? 0 : x - lastScrollX;
+    const rawY = lastScrollY === null ? 0 : y - lastScrollY;
+    lastScrollX = x;
+    lastScrollY = y;
+
+    const limit = (value: number) => gsap.utils.clamp(-MAX_SPEED, MAX_SPEED, value);
+    state.vx = state.vx * 0.85 + limit(rawX) * 0.15;
+    state.vy = state.vy * 0.85 + limit(rawY) * 0.15;
 
     ctx.clearRect(0, 0, W, H);
     ctx.lineCap = "round";
 
     for (const s of scrollStars) {
-      const move = state.v * s.z * 0.8 + s.drift;
-      s.y += move;
+      const moveX = state.vx * s.z * 0.8;
+      const moveY = state.vy * s.z * 0.8 + s.drift;
+      s.x += moveX;
+      s.y += moveY;
 
-      if (move > 0 && s.y > H + 10) resetScrollStar(s, true);
-      if (move < 0 && s.y < -10) resetScrollStar(s, false);
+      if (s.x < -10 || s.x > W + 10 || s.y < -10 || s.y > H + 10) {
+        const horizontal = Math.abs(moveX) > Math.abs(moveY);
+        resetScrollStar(
+          s,
+          horizontal ? (moveX > 0 ? "right" : "left") : moveY > 0 ? "down" : "up",
+        );
+      }
 
-      const tail = move * TRAIL_FACTOR;
+      const tailX = moveX * TRAIL_FACTOR;
+      const tailY = moveY * TRAIL_FACTOR;
       const [cr, cg, cb] = theme.core;
-      strokeSegment(s.x, s.y - tail, s.x, s.y, `rgba(${cr}, ${cg}, ${cb}, ${s.alpha})`, s.size);
+      strokeSegment(
+        s.x - tailX,
+        s.y - tailY,
+        s.x,
+        s.y,
+        `rgba(${cr}, ${cg}, ${cb}, ${s.alpha})`,
+        s.size,
+      );
     }
   }
 
@@ -449,15 +496,6 @@ const stackLogos = [
   resize();
   window.addEventListener("resize", resize);
 
-  ScrollTrigger.create({
-    start: 0,
-    end: "max",
-    onUpdate: (self) => {
-      if (state.mode !== "scroll") return;
-      state.target = gsap.utils.clamp(-MAX_SPEED, MAX_SPEED, self.getVelocity() / 100);
-    },
-  });
-
   gsap.ticker.add(render);
 
   // Reveal del hero: una sola timeline
@@ -513,6 +551,7 @@ const stackLogos = [
 
   if (skipIntro) {
     state.mode = "scroll";
+    resetScrollOrigin();
     gsap.set("#hero .hero-word", { scaleY: 1 });
     gsap.set("#hero .hero-fade", { opacity: 1 });
     gsap.set("#hero .tech-card", { opacity: 1, "--card-scale": 1 });

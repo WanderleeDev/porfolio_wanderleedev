@@ -33,3 +33,6 @@ pnpm-debug.log*
 .hermes/
 .qoder/
 skills-lock.json
+
+# local docs (never commit)
+/TECHNICAL_DEBT.md

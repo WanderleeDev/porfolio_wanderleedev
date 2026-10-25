@@ -2,9 +2,8 @@
 interface Props {
   start?: number;
   vstart?: number;
-  tasks?: string[];
 }
-const { start = 1, vstart = 1, tasks = [] } = Astro.props;
+const { start = 1, vstart = 1 } = Astro.props;
 
 // Mismo lenguaje visual que los triggers flotantes de ThemePicker: círculo
 // de 44px, borde translúcido, fondo canvas con blur y foco visible.
@@ -34,20 +33,6 @@ const arrowBtn =
   </button>
 
   <div class="fixed z-10 top-5 left-5 text-sm text-slate-400 tabular-nums" data-counter></div>
-
-  {tasks.length > 0 && (
-    <aside class="fixed z-10 top-18 right-5 w-60 rounded-2xl border border-white/10 bg-slate-800 p-4 text-sm">
-      <div class="flex justify-between mb-2.5 text-xs uppercase tracking-widest text-slate-400">
-        <span>Completa para desbloquear</span>
-        <span data-task-count>0/{tasks.length}</span>
-      </div>
-      {tasks.map((t) => (
-        <label class="flex items-center gap-2.5 py-1.5 cursor-pointer">
-          <input type="checkbox" data-task class="w-[18px] h-[18px] accent-sky-400" /> {t}
-        </label>
-      ))}
-    </aside>
-  )}
 
   <dialog
     id="deck-overview"

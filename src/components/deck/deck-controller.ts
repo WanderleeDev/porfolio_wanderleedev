@@ -1,4 +1,5 @@
-import { loadSettings, subscribeSettings } from './deck-settings';
+import { loadSettings, saveSettings, subscribeSettings, updateSetting } from './deck-settings';
+import { minimapUnlocked, verticalUnlocked } from '../../lib/unlocks';
 
 type Cell = { type: 'h' | 'v'; i: number; row: number; col: number; title: string };
 
@@ -10,7 +11,6 @@ const NATIVE_COMMAND = 'commandForElement' in HTMLButtonElement.prototype;
 
 export function initDeck(root: HTMLElement) {
   const q = <T extends Element>(sel: string) => root.querySelector<T>(sel);
-  const qa = <T extends Element>(sel: string) => [...root.querySelectorAll<T>(sel)];
   const instant = 'instant' as ScrollBehavior;
 
   // Los controles son hijos directos del root: con `:scope >` no se confunden
@@ -28,6 +28,14 @@ export function initDeck(root: HTMLElement) {
 
   const start = Number(root.dataset.start ?? 0);
   const vstart = Number(root.dataset.vstart ?? 0);
+
+  const stored = loadSettings();
+  if (verticalUnlocked.get() && !stored.lockTouched && stored.lock) {
+    saveSettings({ ...stored, lock: false });
+  }
+  if (minimapUnlocked.get() && !stored.minimapTouched && !stored.minimap) {
+    saveSettings({ ...loadSettings(), minimap: true });
+  }
   const settings = loadSettings();
 
   const prevBtn = q<HTMLButtonElement>(':scope > [data-prev]')!;
@@ -39,12 +47,10 @@ export function initDeck(root: HTMLElement) {
   const ovWrap = q<HTMLElement>('[data-ov-wrap]');
   if (!panel.id) panel.id = 'deck-overview';
   const grid = q<HTMLElement>('[data-ov-grid]')!;
-  const taskChecks = qa<HTMLInputElement>('[data-task]');
-  const taskCount = q<HTMLElement>('[data-task-count]');
 
   let current = start;
   let vCurrent = vstart;
-  let locked = settings.lock;
+  let locked = !verticalUnlocked.get() || settings.lock;
 
   // ===== Movimiento =====
   function goTo(i: number, behavior: ScrollBehavior = 'smooth') {
@@ -130,15 +136,6 @@ export function initDeck(root: HTMLElement) {
       btn.style.display = on ? '' : 'none';
     });
   }
-
-  // ===== Tareas =====
-  function syncTasks() {
-    const done = taskChecks.filter((c) => c.checked).length;
-    if (taskCount) taskCount.textContent = `${done}/${taskChecks.length}`;
-    const shouldLock = done !== taskChecks.length;
-    if (locked !== shouldLock) setLock(shouldLock);
-  }
-  taskChecks.forEach((c) => c.addEventListener('change', syncTasks));
 
   // ===== Vista general =====
   // Cada slide horizontal ocupa una columna. Los verticales ocupan la columna
@@ -269,7 +266,7 @@ export function initDeck(root: HTMLElement) {
     expandBtn = document.createElement('button');
     expandBtn.type = 'button';
     expandBtn.className =
-      'col-start-3 row-start-1 justify-self-end self-start flex size-5 cursor-pointer items-center justify-center rounded-[6px] border border-white/20 bg-white/5 text-white/55 transition-colors hover:border-sky-400 hover:text-sky-400';
+      'col-start-3 row-start-1 justify-self-end self-start flex size-5 cursor-pointer items-center justify-center rounded-[6px] border border-white/20 bg-slate-800 text-white/80 transition-colors hover:border-sky-400 hover:bg-slate-700 hover:text-sky-400';
     expandBtn.setAttribute('aria-label', 'Abrir vista general');
     expandBtn.innerHTML =
       '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="size-3"><path d="M15 3h6v6"/><path d="M9 21H3v-6"/><path d="M21 3l-7 7"/><path d="M3 21l7-7"/></svg>';
@@ -280,7 +277,6 @@ export function initDeck(root: HTMLElement) {
     } else {
       expandBtn.addEventListener('click', openOverview);
     }
-    expandBtn.style.display = settings.overview ? '' : 'none';
     minimap.appendChild(expandBtn);
 
     const center = holderIndex >= 0 ? holderIndex : Math.floor(hslides.length / 2);
@@ -353,10 +349,33 @@ export function initDeck(root: HTMLElement) {
   let settingsFirst = true;
   subscribeSettings((s) => {
     if (settingsFirst) { settingsFirst = false; return; }
-    if (s.lock !== locked) setLock(s.lock);
-    if (expandBtn) expandBtn.style.display = s.overview ? '' : 'none';
-    minimap.style.display = s.minimap ? '' : 'none';
+    if (!verticalUnlocked.get()) {
+      if (!locked) setLock(true);
+    } else if (s.lock !== locked) {
+      setLock(s.lock);
+    }
+    minimap.style.display = s.minimap && minimapUnlocked.get() ? '' : 'none';
     if (s.arrows !== arrowsOn) setArrows(s.arrows);
+  });
+
+  // Los logros desbloquean el minimapa y el vertical una sola vez. El primer
+  // aviso de cada store es el estado inicial y se descarta.
+  let firstMinimapUnlock = true;
+  minimapUnlocked.subscribe((on) => {
+    if (firstMinimapUnlock) { firstMinimapUnlock = false; return; }
+    if (!on) return;
+    const s = loadSettings();
+    if (!s.minimapTouched) updateSetting('minimap', true);
+    else minimap.style.display = s.minimap ? '' : 'none';
+  });
+
+  let firstVerticalUnlock = true;
+  verticalUnlocked.subscribe((on) => {
+    if (firstVerticalUnlock) { firstVerticalUnlock = false; return; }
+    if (!on) return;
+    const s = loadSettings();
+    if (!s.lockTouched) updateSetting('lock', false);
+    else if (s.lock !== locked) setLock(s.lock);
   });
 
   // Otro modal abierto (ej. la vista de créditos) toma el foco: el deck no
@@ -367,7 +386,14 @@ export function initDeck(root: HTMLElement) {
   const NAV_KEYS = new Set(['ArrowRight', 'ArrowLeft', 'ArrowUp', 'ArrowDown', 'Home', 'End', ' ']);
 
   // ===== Teclado =====
+  // Dentro de un campo editable el caret manda: el deck no debe secuestrar
+  // flechas/Home/End ni evitar su comportamiento nativo.
+  const isEditableTarget = (target: EventTarget | null) =>
+    target instanceof HTMLElement &&
+    target.closest('textarea, input, select, [contenteditable]:not([contenteditable="false"])') !== null;
+
   window.addEventListener('keydown', (e) => {
+    if (isEditableTarget(e.target)) return;
     if (otherModalOpen()) {
       // Sin preventDefault el navegador scrollea el track del deck por su cuenta.
       if (NAV_KEYS.has(e.key)) e.preventDefault();
@@ -398,7 +424,7 @@ export function initDeck(root: HTMLElement) {
 
   buildMinimap();
   updateMinimapActive();
-  minimap.style.display = settings.minimap ? '' : 'none';
+  minimap.style.display = settings.minimap && minimapUnlocked.get() ? '' : 'none';
   setArrows(settings.arrows);
 
   updateUI();

@@ -1,10 +1,11 @@
 /**
  * Toast framework-agnostic: un solo aviso activo a la vez, auto-descartable.
  *
- * No usa dependencias. El contenedor fijo se crea una sola vez en el body;
- * `showToast` reemplaza el texto del único nodo y reinicia el timer, así las
- * llamadas rápidas no duplican nodos. El estilo entra (slide + opacidad) y
- * sale con una transición CSS; con prefers-reduced-motion no hay transición.
+ * No usa dependencias. El contenedor fijo se crea una sola vez en el body.
+ * `showToast` muestra el aviso de inmediato si no hay ninguno y, si ya hay uno
+ * visible, lo encola para no pisar mensajes que caen en el mismo tick (un
+ * logro y su recompensa). El estilo entra (slide + opacidad) y sale con una
+ * transición CSS; con prefers-reduced-motion no hay transición.
  */
 
 const DURATION = 3200;
@@ -12,6 +13,7 @@ const DURATION = 3200;
 let container: HTMLElement | null = null;
 let toast: HTMLElement | null = null;
 let timer: number | undefined;
+const queue: string[] = [];
 
 const STYLES = `
   [data-toast-container] {
@@ -76,14 +78,12 @@ function clearTimer() {
   }
 }
 
-/** Muestra un toast. Llamar seguido reemplaza el texto y reinicia el timer. */
-export function showToast(message: string, icon?: string) {
+/** Pinta un aviso y reinicia el timer. */
+function present(text: string) {
   const el = ensureToast();
-  const text = icon ? `${icon} ${message}` : message;
-
-  clearTimer();
   el.textContent = text;
 
+  clearTimer();
   // Reinsertar la clase obliga a recomputar el estilo y dispara de nuevo la
   // transición de entrada cuando el nodo ya existía.
   el.classList.remove("toast--visible");
@@ -96,10 +96,33 @@ export function showToast(message: string, icon?: string) {
   }, DURATION);
 }
 
-/** Cierra el toast activo (si hay). */
+function showNext() {
+  const next = queue.shift();
+  if (next) present(next);
+}
+
+/**
+ * Muestra un toast. Si hay uno en pantalla (o desvaneciéndose), el mensaje
+ * espera en cola; los duplicados consecutivos se descartan para que un loop
+ * no llene la cola.
+ */
+export function showToast(message: string, icon?: string) {
+  const text = icon ? `${icon} ${message}` : message;
+
+  if (toast && toast.isConnected) {
+    if (queue[queue.length - 1] !== text) queue.push(text);
+    return;
+  }
+  present(text);
+}
+
+/** Cierra el toast activo (si hay) y deja pasar al siguiente en cola. */
 export function dismissToast() {
   clearTimer();
-  if (!toast || !toast.isConnected) return;
+  if (!toast || !toast.isConnected) {
+    showNext();
+    return;
+  }
   const el = toast;
   el.classList.remove("toast--visible");
   window.setTimeout(() => {
@@ -109,5 +132,6 @@ export function dismissToast() {
       container.remove();
       container = null;
     }
+    showNext();
   }, 260);
 }

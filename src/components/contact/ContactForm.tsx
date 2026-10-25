@@ -86,6 +86,7 @@ export default function ContactForm({ lang }: { lang: Lang }) {
 
             setMessage("");
             setStatus("success");
+            window.dispatchEvent(new CustomEvent("contact:sent"));
         } catch {
             setError("send");
             setStatus("error");

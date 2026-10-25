@@ -213,11 +213,11 @@ html {
     cursor: url("/text-cursor.svg") 12 19, text;
   }
 
-  /* Deshabilitado: vuelve a la flecha por defecto, no al puntero de mano. */
+  /* Deshabilitado: símbolo de prohibido centrado en el puntero. */
   :disabled,
   [disabled],
   [aria-disabled="true"] {
-    cursor: url("/cursor.svg"), auto !important;
+    cursor: url("/cursor-disabled.svg") 12 12, not-allowed !important;
   }
 
   a *,

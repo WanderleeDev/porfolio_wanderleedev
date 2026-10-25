@@ -1,5 +1,6 @@
 import { loadSettings, saveSettings, subscribeSettings, updateSetting } from './deck-settings';
 import { minimapUnlocked, verticalUnlocked } from '../../lib/unlocks';
+import { reducedMotion } from '../../utils/env';
 
 type Cell = { type: 'h' | 'v'; i: number; row: number; col: number; title: string };
 
@@ -51,15 +52,19 @@ export function initDeck(root: HTMLElement) {
   let current = start;
   let vCurrent = vstart;
   let locked = !verticalUnlocked.get() || settings.lock;
+  // Mientras corre la intro el deck no responde a nada: ni teclado, ni
+  // flechas, ni minimapa, ni rueda/touch.
+  let introPending = !document.documentElement.classList.contains('hero-ready');
 
   // ===== Movimiento =====
   function goTo(i: number, behavior: ScrollBehavior = 'smooth') {
+    if (introPending) return;
     const idx = Math.max(0, Math.min(i, hslides.length - 1));
     track.scrollTo({ left: hslides[idx].offsetLeft, behavior });
   }
 
   function goToV(i: number, behavior: ScrollBehavior = 'smooth') {
-    if (!holder || locked) return;
+    if (introPending || !holder || locked) return;
     const idx = Math.max(0, Math.min(i, vslides.length - 1));
     holder.scrollTo({ top: vslides[idx].offsetTop, behavior });
   }
@@ -82,6 +87,16 @@ export function initDeck(root: HTMLElement) {
       holder.classList.toggle('snap-mandatory', !locked);
       holder.classList.toggle('snap-none', locked);
     }
+
+    // Sólo el slide visible recibe foco y clics: Tab no salta a contenido
+    // fuera de pantalla ni arrastra el deck a otra slide.
+    hslides.forEach((slide, i) => {
+      slide.inert = introPending || i !== current;
+    });
+    vslides.forEach((slide, i) => {
+      slide.inert = introPending || i !== vCurrent;
+    });
+
     updateMinimapActive();
   }
 
@@ -250,7 +265,7 @@ export function initDeck(root: HTMLElement) {
   // Navegación a un slide vertical: el mapa es explícito, así que mueve la
   // columna aunque el bloqueo vertical esté activo.
   function scrollV(i: number) {
-    if (!holder) return;
+    if (introPending || !holder) return;
     const idx = Math.max(0, Math.min(i, vslides.length - 1));
     if (current !== holderIndex) goTo(holderIndex);
     holder.scrollTo({ top: vslides[idx].offsetTop, behavior: 'smooth' });
@@ -393,6 +408,7 @@ export function initDeck(root: HTMLElement) {
     target.closest('textarea, input, select, [contenteditable]:not([contenteditable="false"])') !== null;
 
   window.addEventListener('keydown', (e) => {
+    if (introPending) return;
     if (isEditableTarget(e.target)) return;
     if (otherModalOpen()) {
       // Sin preventDefault el navegador scrollea el track del deck por su cuenta.
@@ -428,4 +444,36 @@ export function initDeck(root: HTMLElement) {
   setArrows(settings.arrows);
 
   updateUI();
+
+  // ===== Intro =====
+  // Al ocultarse la cortina el warp deja ver el deck antes de que el hero
+  // haga su reveal. Hasta que esa timeline termina, flechas y minimapa
+  // siguen inertes (no enfocables ni clickeables), el teclado no navega y
+  // el track no scrollea. Recién ahí se liberan y se anima su opacidad: el
+  // `display` lo siguen mandando los ajustes y el desbloqueo.
+  const controls = [prevBtn, nextBtn, upBtn, downBtn, minimap];
+
+  function releaseDeck() {
+    introPending = false;
+    root.inert = false;
+    updateUI();
+    track.style.overflow = '';
+    if (holder) holder.style.overflow = '';
+    controls.forEach((el) => {
+      if (el.style.opacity !== '0') return;
+      el.style.opacity = '';
+      if (reducedMotion) return;
+      el.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 450, easing: 'ease-out' });
+    });
+  }
+
+  if (introPending) {
+    // Inert en todo el deck: Tab, foco y clics no llegan a ningún control,
+    // slide ni contenido hasta que el reveal termina.
+    root.inert = true;
+    controls.forEach((el) => { el.style.opacity = '0'; });
+    track.style.overflow = 'hidden';
+    if (holder) holder.style.overflow = 'hidden';
+    window.addEventListener('hero:revealed', releaseDeck, { once: true });
+  }
 }

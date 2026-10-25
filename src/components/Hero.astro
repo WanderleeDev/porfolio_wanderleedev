@@ -225,6 +225,8 @@ const stackLogos = [
   } else {
     htmlEl.style.overflow = "hidden";
     gsap.set(pickers, { opacity: 0 });
+    // Ocultos no alcanza: inert los saca del tab order y bloquea clics.
+    pickers.forEach((el) => { el.inert = true; });
   }
 
   const WARP_STAR_COUNT = 1500;
@@ -537,7 +539,19 @@ const stackLogos = [
         0.45 + w * 0.12,
       );
     });
-    tl.to(pickers, { opacity: 1, duration: 0.5, ease: "power2.out" }, "+=0.15");
+    tl.to(
+      pickers,
+      {
+        opacity: 1,
+        duration: 0.5,
+        ease: "power2.out",
+        onStart: () => pickers.forEach((el) => { el.inert = false; }),
+      },
+      "+=0.15",
+    );
+    // El deck espera esta señal para mostrar flechas y minimapa recién
+    // cuando el reveal terminó (no durante el warp).
+    tl.call(() => window.dispatchEvent(new CustomEvent("hero:revealed")));
   }
 
   // Warp: arranca solo cuando el badge terminó de achicarse

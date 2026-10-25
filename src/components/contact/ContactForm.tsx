@@ -168,11 +168,13 @@ export default function ContactForm({ lang }: { lang: Lang }) {
                         }}
                         placeholder={t.placeholder}
                         maxLength={4000}
+                        aria-invalid={error === "invalid"}
+                        aria-describedby={error ? "contact-message-error" : undefined}
                         className="min-h-32 w-full resize-none bg-transparent p-1 font-sans text-[1rem] leading-[1.6] text-ink placeholder:text-muted/70 focus:outline-none"
                     />
 
                     {error && (
-                        <p role="alert" className="px-1 pb-2 font-sans text-sm text-red-500">
+                        <p id="contact-message-error" role="alert" className="px-1 pb-2 font-sans text-sm text-red-500">
                             {error === "invalid" ? t.invalid : t.error}
                         </p>
                     )}

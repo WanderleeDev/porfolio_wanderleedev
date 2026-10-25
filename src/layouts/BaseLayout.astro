@@ -12,6 +12,7 @@ const lang = Astro.currentLocale as "es" | "en";
 const t = getTranslations(lang);
 const meta = t("metadata");
 const site = "https://wanderlee.dev";
+const currentUrl = lang === "en" ? `${site}/en` : site;
 const ogLocale = lang === "en" ? "en_US" : "es_AR";
 const altLang = lang === "es" ? "en" : "es";
 const altHref = altLang === "en" ? `${site}/en` : `${site}/`;
@@ -22,7 +23,7 @@ const altTitle = altLang === "en" ? "WanderleeDev — Portfolio" : "Portafolio W
 <html lang={lang}>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <Font cssVariable="--font-inter" preload />
     <Font
       cssVariable="--font-fira"
@@ -53,8 +54,8 @@ const altTitle = altLang === "en" ? "WanderleeDev — Portfolio" : "Portafolio W
     <meta property="og:image:alt" content={title} />
 
     <!-- Alternative language (i18n link) -->
+    <link rel="alternate" hreflang={lang} href={currentUrl} />
     <link rel="alternate" hreflang={altLang} href={altHref} />
-    <link rel="alternate" hreflang={`${altLang}-${altLang.toUpperCase()}`} href={altHref} />
     <link rel="alternate" hreflang="x-default" href={site} />
 
     <!-- Twitter / X -->
@@ -64,7 +65,33 @@ const altTitle = altLang === "en" ? "WanderleeDev — Portfolio" : "Portafolio W
     <meta name="twitter:image" content={meta.thumbnail} />
 
     <!-- Canonical -->
-    <link rel="canonical" href={lang === "en" ? `${site}/en` : site} />
+    <link rel="canonical" href={currentUrl} />
+
+    <!-- Sin JS: muestra el hero, oculta la intro y deja el deck scrolleable -->
+    <noscript>
+      <style is:inline>
+        #curtain,
+        #badge-layer { display: none !important; }
+        .hero-word { transform: none !important; }
+        .hero-fade,
+        #theme-trigger,
+        #menu-trigger { opacity: 1 !important; }
+        .tech-card { opacity: 1 !important; --card-scale: 1 !important; }
+        body { overflow: auto !important; height: auto !important; }
+        [data-deck] { height: auto !important; overflow: visible !important; }
+        [data-track] {
+          height: auto !important;
+          overflow: visible !important;
+          flex-wrap: wrap;
+          scroll-snap-type: none !important;
+        }
+        [data-vtrack] {
+          height: auto !important;
+          overflow: visible !important;
+          scroll-snap-type: none !important;
+        }
+      </style>
+    </noscript>
 
     <script is:inline>
       try {

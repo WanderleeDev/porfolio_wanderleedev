@@ -14,7 +14,7 @@ import Icon from "./Icon.astro";
 import { getTranslations } from "../i18n/utils";
 import Title from "./typography/Title.astro";
 
-const top = "SOFWARE DEVELOPER";
+const top = "SOFTWARE DEVELOPER";
 const bottom = "WANDERLEEDEV";
 
 const lang = Astro.currentLocale as "es" | "en";
@@ -42,6 +42,7 @@ const stackLogos = [
   </p>
 
   <Title level={1} family="sans" size="clamp(2rem,7.3vw,7rem)" class="mt-4">
+    <span class="sr-only">{heroWordsName.join(" ")}</span>
     {
       heroWordsName.map((w, i) => (
         <span
@@ -69,6 +70,7 @@ const stackLogos = [
   </div>
 
   <Title level={2} family="sans" size="clamp(1.25rem,5.2vw,6.2rem)" class="!text-muted">
+    <span class="sr-only">{t("hero").title} {t("hero").titleSecond}</span>
     {
       heroWordsRoleLine1.map((w, i) => (
         <span

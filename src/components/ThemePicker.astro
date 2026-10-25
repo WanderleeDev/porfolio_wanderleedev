@@ -179,7 +179,7 @@ const settingIcon = "size-4 shrink-0 opacity-70 [&_svg]:size-full";
 
       <div class={sectionLabel} id="menu-deck-label">Deck</div>
       <div role="group" aria-labelledby="menu-deck-label" class="flex flex-col gap-0.5">
-        <button class={settingRow} data-setting="lock" role="switch" aria-pressed="false" style="display: none">
+        <button class={settingRow} data-setting="lock" role="switch" aria-checked="false" style="display: none">
           <span class={settingIcon} aria-hidden="true">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
@@ -188,7 +188,7 @@ const settingIcon = "size-4 shrink-0 opacity-70 [&_svg]:size-full";
           <span class={settingLabel}>{isEn ? "Vertical lock" : "Bloqueo vertical"}</span>
           <span class={switchOn} data-switch><span class={switchKnob}></span></span>
         </button>
-        <button class={settingRow} data-setting="minimap" role="switch" aria-pressed="false" style="display: none">
+        <button class={settingRow} data-setting="minimap" role="switch" aria-checked="false" style="display: none">
           <span class={settingIcon} aria-hidden="true">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/>
@@ -197,7 +197,7 @@ const settingIcon = "size-4 shrink-0 opacity-70 [&_svg]:size-full";
           <span class={settingLabel}>Minimapa</span>
           <span class={switchOn} data-switch><span class={switchKnob}></span></span>
         </button>
-        <button class={settingRow} data-setting="arrows" role="switch" aria-pressed="false">
+        <button class={settingRow} data-setting="arrows" role="switch" aria-checked="false">
           <span class={settingIcon} aria-hidden="true"><Icon name="lucide:arrow-left-right" class="size-full" /></span>
           <span class={settingLabel}>{isEn ? "Arrows" : "Flechas"}</span>
           <span class={switchOn} data-switch><span class={switchKnob}></span></span>
@@ -284,7 +284,7 @@ const settingIcon = "size-4 shrink-0 opacity-70 [&_svg]:size-full";
       const on = Boolean(s[btn.dataset.setting as keyof DeckSettings]);
       const sw = btn.querySelector<HTMLElement>("[data-switch]")!;
       sw.setAttribute("data-on", String(on));
-      btn.setAttribute("aria-pressed", String(on));
+      btn.setAttribute("aria-checked", String(on));
     });
   }
 

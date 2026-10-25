@@ -4,6 +4,7 @@ interface Props {
   vstart?: number;
 }
 const { start = 1, vstart = 1 } = Astro.props;
+const overviewLabel = Astro.currentLocale === "en" ? "Deck overview" : "Vista general del deck";
 
 // Mismo lenguaje visual que los triggers flotantes de ThemePicker: círculo
 // de 44px, borde translúcido, fondo canvas con blur y foco visible.
@@ -51,6 +52,7 @@ const arrowBtn =
   <dialog
     id="deck-overview"
     data-overview-panel
+    aria-label={overviewLabel}
     class="group m-0 h-full w-full max-w-none max-h-none overflow-hidden border-0 bg-slate-950/95 p-0 text-slate-50 transition-[opacity,display,overlay] duration-300 transition-discrete starting:opacity-0 [&:not([open])]:opacity-0"
   >
     <div class="flex h-full w-full items-center justify-center" data-ov-wrap>

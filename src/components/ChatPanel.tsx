@@ -79,11 +79,13 @@ function SuggestionIcon({ kind }: { kind: "projects" | "technologies" | "contact
 export default function ChatPanel({ lang }: ChatPanelProps) {
     const t = getTranslations(lang)("chat");
     const [input, setInput] = useState("");
+    const [lastFinished, setLastFinished] = useState(false);
     const prevStatus = useRef<string>("ready");
+    const [transport] = useState(
+        () => new DefaultChatTransport({ api: "/api/chat", headers: { "x-locale": lang } }),
+    );
 
-    const { messages, sendMessage, status, error, stop } = useChat({
-        transport: new DefaultChatTransport({ api: "/api/chat", headers: { "x-locale": lang } }),
-    });
+    const { messages, sendMessage, status, error, stop } = useChat({ transport });
 
     const isBusy = status === "submitted" || status === "streaming";
     const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -102,8 +104,13 @@ export default function ChatPanel({ lang }: ChatPanelProps) {
 
     useEffect(() => {
         if (status === "submitted") emitPet("send");
-        else if (status === "error") emitPet("error");
-        else if (status === "ready" && prevStatus.current !== "ready") emitPet("done");
+        else if (status === "error") {
+            emitPet("error");
+            setLastFinished(false);
+        } else if (status === "ready" && prevStatus.current !== "ready") {
+            emitPet("done");
+            setLastFinished(true);
+        }
         prevStatus.current = status;
     }, [status]);
 
@@ -182,11 +189,13 @@ export default function ChatPanel({ lang }: ChatPanelProps) {
             </header>
 
             <div className="flex min-h-0 min-w-0 flex-col">
+                <p className="sr-only" aria-live="polite" aria-atomic="true">
+                    {isBusy ? t.typing : lastFinished ? t.online : ""}
+                </p>
                 <div
                     ref={listRef}
                     onScroll={onListScroll}
-                    role="log"
-                    aria-live="polite"
+                    role="group"
                     aria-label={t.conversation}
                     className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto overscroll-contain px-4 py-5 [scrollbar-width:thin] sm:px-6"
                 >

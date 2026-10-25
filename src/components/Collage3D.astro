@@ -602,6 +602,9 @@ const varsFor = (p: (typeof pieces)[number]) =>
 
     if (reduceMotion) return;
 
+    const rotateXTo = gsap.quickTo(board, 'rotationX', { duration: 0.9, ease: 'power2.out' });
+    const rotateYTo = gsap.quickTo(board, 'rotationY', { duration: 0.9, ease: 'power2.out' });
+
     stage.addEventListener('pointermove', (e) => {
       if (e.pointerType !== 'mouse') return;
       const r = stage.getBoundingClientRect();
@@ -613,24 +616,14 @@ const varsFor = (p: (typeof pieces)[number]) =>
       stage.style.setProperty('--mx', `${(fx * 100).toFixed(1)}%`);
       stage.style.setProperty('--my', `${(fy * 100).toFixed(1)}%`);
 
-      gsap.to(board, {
-        rotationX: -my * 4,
-        rotationY: mx * 5.5,
-        duration: 0.9,
-        ease: 'power2.out',
-        overwrite: 'auto',
-      });
+      rotateXTo(-my * 4);
+      rotateYTo(mx * 5.5);
     });
 
     stage.addEventListener('pointerleave', (e) => {
       if (e.pointerType !== 'mouse') return;
-      gsap.to(board, {
-        rotationX: 0,
-        rotationY: 0,
-        duration: 0.9,
-        ease: 'power2.out',
-        overwrite: 'auto',
-      });
+      rotateXTo(0);
+      rotateYTo(0);
     });
   });
 </script>

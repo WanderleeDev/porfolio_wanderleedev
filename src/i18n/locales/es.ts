@@ -143,16 +143,6 @@ export const es = {
     subtitle: "Stack principal",
   },
 
-  featuredWork: {
-    title: "Trabajos Destacados",
-    subtitle: "Proyectos recientes y notables",
-    prev: "Proyecto anterior",
-    next: "Proyecto siguiente",
-    close: "Cerrar",
-    personal: "Trabajo personal",
-    demo: "Ver demo",
-  },
-
   contactSection: {
     title: "Hablemos",
     subtitle: "¿Listo para empezar tu próximo proyecto? Envíame un mensaje y lo hacemos realidad.",

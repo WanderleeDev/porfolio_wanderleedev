@@ -31,6 +31,8 @@ export function ProjectsCard({ data, labels }: ProjectsCardProps) {
                         <img
                             src={project.image}
                             alt=""
+                            width={64}
+                            height={64}
                             loading="lazy"
                             className="size-16 shrink-0 rounded-xl border border-line object-cover"
                         />

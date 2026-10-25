@@ -143,16 +143,6 @@ export const en = {
     subtitle: "Main stack",
   },
 
-  featuredWork: {
-    title: "Featured Work",
-    subtitle: "Select recent and notable projects",
-    prev: "Previous project",
-    next: "Next project",
-    close: "Close",
-    personal: "Personal Work",
-    demo: "View demo",
-  },
-
   contactSection: {
     title: "Let's Talk",
     subtitle: "Ready to start your next project? Send me a message and let's make it happen.",

@@ -50,6 +50,7 @@ export default function ContactForm({ lang }: { lang: Lang }) {
     const [status, setStatus] = useState<Status>("idle");
     const [error, setError] = useState<ErrorKind>(null);
     const textareaRef = useRef<HTMLTextAreaElement>(null);
+    const honeypotRef = useRef<HTMLInputElement>(null);
 
     useEffect(() => {
         const el = textareaRef.current;
@@ -75,7 +76,7 @@ export default function ContactForm({ lang }: { lang: Lang }) {
             const res = await fetch("/api/contact", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ message, lang }),
+                body: JSON.stringify({ message, lang, website: honeypotRef.current?.value ?? "" }),
             });
 
             if (!res.ok) {
@@ -97,8 +98,20 @@ export default function ContactForm({ lang }: { lang: Lang }) {
         <form
             onSubmit={onSubmit}
             noValidate
-            className="overflow-hidden rounded-2xl border border-line bg-surface text-left shadow-[0_24px_60px_-48px_rgb(0_0_0_/_0.6)]"
+            className="relative overflow-hidden rounded-2xl border border-line bg-surface text-left shadow-[0_24px_60px_-48px_rgb(0_0_0_/_0.6)]"
         >
+            <div aria-hidden="true" className="absolute left-[-9999px] top-0 size-px overflow-hidden">
+                <label htmlFor="contact-website">Website</label>
+                <input
+                    ref={honeypotRef}
+                    id="contact-website"
+                    name="website"
+                    type="text"
+                    tabIndex={-1}
+                    autoComplete="off"
+                />
+            </div>
+
             <div className="flex items-center gap-2.5 border-b border-line bg-badge/30 px-5 py-3.5">
                 <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-badge text-badge-ink">
                     <MailIcon />

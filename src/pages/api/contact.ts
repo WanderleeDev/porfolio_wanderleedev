@@ -19,6 +19,8 @@ const FOOTER = {
 const contactSchema = z.object({
     message: z.string().trim().min(10).max(4000),
     lang: z.enum(["es", "en"]).optional(),
+    // Campo trampa: invisible para personas, tentador para bots.
+    website: z.string().max(200).optional(),
 });
 
 function readEnv(
@@ -48,8 +50,11 @@ export const POST: APIRoute = async ({ request }) => {
         return Response.json({ error: "invalid_message" }, { status: 400 });
     }
 
-    const { message, lang: requestedLang } = parsed.data;
+    const { message, lang: requestedLang, website } = parsed.data;
     const lang = requestedLang ?? "es";
+
+    // Respuesta idéntica al éxito para no darle pistas al bot.
+    if (website?.trim()) return Response.json({ ok: true }, { status: 200 });
 
     const apiKey = readEnv("RESEND_API_KEY");
     const to = readEnv("CONTACT_TO_EMAIL");
@@ -72,9 +77,11 @@ export const POST: APIRoute = async ({ request }) => {
         });
 
         if (error) {
+            console.error("[contact] Resend rejected the message:", error.message);
             return Response.json({ error: "send_failed" }, { status: 502 });
         }
-    } catch {
+    } catch (error) {
+        console.error("[contact] send failed:", error instanceof Error ? error.message : "unknown");
         return Response.json({ error: "send_failed" }, { status: 502 });
     }
 

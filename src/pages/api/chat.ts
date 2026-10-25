@@ -65,23 +65,85 @@ function buildSystemPrompt(locale: "es" | "en"): string {
     ].join("\n");
 }
 
-function withoutToolResults(messages: UIMessage[]): UIMessage[] {
-    const stripped = messages.map((message) => {
-        if (message.role !== "assistant") return message;
-        const parts = message.parts.filter(
-            (p) => p.type === "text" && (p as { text?: string }).text?.trim(),
-        );
-        return { ...message, parts } as UIMessage;
-    });
-    return stripped.filter((message) => message.role !== "assistant" || message.parts.length > 0);
+const MAX_MESSAGES = 40;
+const MAX_TEXT_CHARS = 12_000;
+const MAX_PART_CHARS = 4_000;
+
+const chatSchema = z.object({
+    messages: z
+        .array(
+            z.object({
+                // El rol system lo fija el servidor: nunca aceptamos uno del cliente.
+                role: z.enum(["user", "assistant"]),
+                id: z.string().max(128).optional(),
+                parts: z
+                    .array(
+                        z.looseObject({
+                            type: z.string().max(64),
+                            text: z.string().max(MAX_PART_CHARS).optional(),
+                        }),
+                    )
+                    .min(1)
+                    .max(32),
+            }),
+        )
+        .min(1)
+        .max(MAX_MESSAGES),
+});
+
+type ChatMessage = z.infer<typeof chatSchema>["messages"][number];
+
+function sanitizeMessages(messages: ChatMessage[]): UIMessage[] | null {
+    let total = 0;
+    const sanitized: UIMessage[] = [];
+
+    for (const message of messages) {
+        const parts: UIMessage["parts"] = [];
+
+        for (const part of message.parts) {
+            // Sólo viaja texto al modelo: fuera adjuntos, tool calls y reasoning.
+            if (part.type !== "text" || typeof part.text !== "string") continue;
+            const text = part.text.trim();
+            if (!text) continue;
+            total += text.length;
+            parts.push({ type: "text", text });
+        }
+
+        if (parts.length) {
+            sanitized.push({ id: message.id ?? "", role: message.role, parts });
+        }
+    }
+
+    return total > MAX_TEXT_CHARS ? null : sanitized;
 }
 
 export const POST: APIRoute = async ({ request }) => {
     if (!gatewayUrl || !gatewayKey || !gatewayModel) {
-        return new Response("Chat is not configured.", { status: 503 });
+        return Response.json({ error: "not_configured" }, { status: 503 });
     }
 
-    const { messages }: { messages: UIMessage[] } = await request.json();
+    let payload: unknown;
+
+    try {
+        payload = await request.json();
+    } catch {
+        return Response.json({ error: "invalid_json" }, { status: 400 });
+    }
+
+    const parsed = chatSchema.safeParse(payload);
+
+    if (!parsed.success) {
+        return Response.json({ error: "invalid_request" }, { status: 400 });
+    }
+
+    const messages = sanitizeMessages(parsed.data.messages);
+
+    // La conversación debe terminar en el visitante: nada de dictarle respuestas
+    // al asistente ni de gastar tokens sin una pregunta.
+    if (!messages?.length || messages[messages.length - 1]?.role !== "user") {
+        return Response.json({ error: "invalid_request" }, { status: 400 });
+    }
+
     const locale = resolveLocale(request.headers.get("x-locale"));
 
     const llm = createOpenAICompatible({
@@ -123,9 +185,12 @@ export const POST: APIRoute = async ({ request }) => {
     const result = streamText({
         model,
         system: buildSystemPrompt(locale),
-        messages: await convertToModelMessages(withoutToolResults(messages)),
+        messages: await convertToModelMessages(messages),
         tools,
-        stopWhen: stepCountIs(1),
+        // Dos pasos: el modelo llama a la herramienta y después escribe la frase.
+        stopWhen: stepCountIs(2),
+        // El razonamiento del modelo también consume este presupuesto.
+        maxOutputTokens: 800,
         temperature: 0,
     });
 

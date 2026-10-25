@@ -19,6 +19,20 @@ const arrowBtn =
     <slot />
   </div>
 
+  <script is:inline>
+    // El deck arranca en `start` antes de que carguen los módulos, para que
+    // el primer slide no alcance a verse ni hidrate sus islas por un frame.
+    (() => {
+      const deck = document.currentScript && document.currentScript.parentElement;
+      const track = deck && deck.querySelector("[data-track]");
+      const start = Number(deck && deck.dataset.start) || 0;
+      const width = track ? track.clientWidth || window.innerWidth : 0;
+      if (track && width) {
+        track.scrollTo({ left: start * width, behavior: "instant" });
+      }
+    })();
+  </script>
+
   <button class:list={[arrowBtn, 'top-1/2 left-5 -translate-y-1/2 max-sm:hidden']} data-prev aria-label="Slide anterior">
     <img src="/arrow.svg" alt="" aria-hidden="true" class="size-6 rotate-180" />
   </button>

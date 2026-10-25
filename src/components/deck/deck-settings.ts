@@ -33,8 +33,8 @@ function flag(value: unknown, fallback: boolean): boolean {
 }
 
 function readStored(): DeckSettings {
-  if (typeof localStorage === "undefined") return { ...DEFAULTS };
   try {
+    if (typeof localStorage === "undefined") return { ...DEFAULTS };
     const raw = localStorage.getItem(KEY);
     if (!raw) return { ...DEFAULTS };
     const parsed = JSON.parse(raw) as Record<string, unknown>;
@@ -62,12 +62,10 @@ export function loadSettings(): DeckSettings {
 }
 
 export function saveSettings(s: DeckSettings) {
-  if (typeof localStorage !== "undefined") {
-    try {
-      localStorage.setItem(KEY, JSON.stringify(s));
-    } catch {
-      /* ignore quota / private mode */
-    }
+  try {
+    localStorage.setItem(KEY, JSON.stringify(s));
+  } catch {
+    /* cuota, modo privado o storage bloqueado */
   }
   settings.set({ ...s });
 }

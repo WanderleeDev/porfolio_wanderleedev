@@ -256,12 +256,20 @@ const settingIcon = "size-4 shrink-0 opacity-70 [&_svg]:size-full";
   }
 
   function getSaved(): Theme {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    return (THEMES as string[]).includes(raw ?? "") ? (raw as Theme) : "system";
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      return (THEMES as string[]).includes(raw ?? "") ? (raw as Theme) : "system";
+    } catch {
+      return "system";
+    }
   }
 
   function setTheme(theme: Theme) {
-    localStorage.setItem(STORAGE_KEY, theme);
+    try {
+      localStorage.setItem(STORAGE_KEY, theme);
+    } catch {
+      /* modo privado o cuota agotada: el tema sigue aplicándose en la sesión */
+    }
     applyTheme(theme);
     updateUI(theme);
   }

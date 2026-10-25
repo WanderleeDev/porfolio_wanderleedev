@@ -30,6 +30,7 @@ const z = [1, 2, 3, 5, 3, 2, 1];
 
 <section
   data-music-player
+  data-start-index={ACTIVE_INDEX}
   data-playing="false"
   class="w-full max-w-4xl rounded-[1.75rem] border border-line bg-surface p-4 text-left shadow-[0_36px_90px_-52px_rgb(0_0_0_/_0.45)] sm:p-7"
   aria-label={p.title}
@@ -282,8 +283,8 @@ const z = [1, 2, 3, 5, 3, 2, 1];
     audio.preload = "metadata";
     audio.volume = 0.8;
 
-    const DEFAULT_INDEX = 3;
-    let index = DEFAULT_INDEX;
+    const startIndex = Number(root.dataset.startIndex ?? 0);
+    let index = Number.isInteger(startIndex) ? startIndex : 0;
     let lastVolume = audio.volume;
 
     // El relleno de ambos sliders sale de --fill, pintado acá.
@@ -432,7 +433,7 @@ const z = [1, 2, 3, 5, 3, 2, 1];
     paint(volume, audio.volume * 100);
     syncMute();
     syncPlaying(false);
-    select(DEFAULT_INDEX, false, "auto");
+    select(index, false, "auto");
   }
 </script>
 

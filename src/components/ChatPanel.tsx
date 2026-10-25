@@ -164,6 +164,9 @@ export default function ChatPanel({ lang }: ChatPanelProps) {
                         lang={lang}
                         scale="3"
                         sleep-after="45"
+                        // El componente refleja su estado como atributo al
+                        // cargar el manifiesto, antes de que React hidrate.
+                        suppressHydrationWarning
                     />
                 </span>
                 <div className="min-w-0 lg:text-center">
@@ -340,6 +343,7 @@ export default function ChatPanel({ lang }: ChatPanelProps) {
                             }}
                             rows={1}
                             enterKeyHint="send"
+                            maxLength={4000}
                             placeholder={t.placeholder}
                             aria-label={t.placeholder}
                             className="max-h-28 min-h-9 flex-1 resize-none bg-transparent py-2 font-sans text-[0.95rem] leading-[1.5] text-ink placeholder:text-muted focus:outline-none"

@@ -213,6 +213,13 @@ html {
     cursor: url("/text-cursor.svg") 12 19, text;
   }
 
+  /* Deshabilitado: vuelve a la flecha por defecto, no al puntero de mano. */
+  :disabled,
+  [disabled],
+  [aria-disabled="true"] {
+    cursor: url("/cursor.svg"), auto !important;
+  }
+
   a *,
   button * {
     cursor: inherit !important;

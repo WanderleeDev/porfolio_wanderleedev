@@ -196,6 +196,7 @@ export const en = {
     conversation: "Conversation",
     tryAsking: "Try one of these:",
     hint: "Enter to send · Shift + Enter for a new line",
+    hintBusy: "You can type your next message; sending unlocks when the reply ends.",
     empty: "Hi! I'm this portfolio's assistant. Ask me about the projects, the stack or how to get in touch.",
     placeholder: "Type a message…",
     typing: "Typing…",

@@ -234,12 +234,24 @@ export function initDeck(root: HTMLElement) {
   // por los slides horizontales vecinos.
   const minimap = document.createElement('div');
   minimap.className =
-    'fixed bottom-6 right-6 z-30 grid grid-cols-[48px_48px_48px] grid-rows-[48px_48px_48px] items-center justify-items-center gap-1.5 rounded-[22px] border border-white/20 bg-slate-900/85 p-3 shadow-lg backdrop-blur-md';
+    'fixed bottom-6 right-6 z-30 grid grid-cols-[48px_48px_48px] grid-rows-[48px_48px_48px] items-center justify-items-center gap-1.5 rounded-[22px] border border-white/20 bg-slate-900/85 p-3 shadow-lg backdrop-blur-md origin-bottom-right transition-[opacity,scale,display] transition-discrete duration-200 ease-out motion-reduce:transition-none starting:opacity-0 starting:scale-90';
   minimap.setAttribute('data-minimap', '');
   minimap.setAttribute('role', 'group');
   minimap.setAttribute('aria-label', 'Minimapa del deck');
   minimap.style.display = 'none';
   root.appendChild(minimap);
+
+  // El `display` va último: con transition-discrete el navegador lo difiere
+  // hasta que terminan opacity y scale, así el cierre se anima.
+  function setMinimapVisible(on: boolean) {
+    if (on) {
+      minimap.classList.remove('opacity-0', 'scale-90');
+      minimap.style.display = '';
+    } else {
+      minimap.classList.add('opacity-0', 'scale-90');
+      minimap.style.display = 'none';
+    }
+  }
 
   const MM_CELL =
     'block h-full w-full cursor-pointer rounded-[10px] border-2 bg-white/5 transition-colors hover:border-sky-400';
@@ -281,10 +293,12 @@ export function initDeck(root: HTMLElement) {
     expandBtn = document.createElement('button');
     expandBtn.type = 'button';
     expandBtn.className =
-      'col-start-3 row-start-1 justify-self-end self-start flex size-5 cursor-pointer items-center justify-center rounded-[6px] border border-white/20 bg-slate-800 text-white/80 transition-colors hover:border-sky-400 hover:bg-slate-700 hover:text-sky-400';
+      'flex size-5 cursor-pointer items-center justify-center rounded-[6px] border border-sky-400 bg-sky-400 text-slate-950 transition-colors hover:border-sky-300 hover:bg-sky-300';
     expandBtn.setAttribute('aria-label', 'Abrir vista general');
-    expandBtn.innerHTML =
-      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="size-3"><path d="M15 3h6v6"/><path d="M9 21H3v-6"/><path d="M21 3l-7 7"/><path d="M3 21l7-7"/></svg>';
+    const expandIcon = document.getElementById('mm-expand-icon');
+    if (expandIcon instanceof HTMLTemplateElement) {
+      expandBtn.append(expandIcon.content.cloneNode(true));
+    }
     if (NATIVE_COMMAND) {
       expandBtn.setAttribute('command', 'show-modal');
       expandBtn.setAttribute('commandfor', panel.id);
@@ -292,7 +306,27 @@ export function initDeck(root: HTMLElement) {
     } else {
       expandBtn.addEventListener('click', openOverview);
     }
-    minimap.appendChild(expandBtn);
+
+    // Cerrar: oculta el minimapa y recuerda la elección. El switch del menú
+    // vuelve a mostrarlo, así que no se pierde el acceso.
+    const closeBtn = document.createElement('button');
+    closeBtn.type = 'button';
+    closeBtn.className =
+      'flex size-5 cursor-pointer items-center justify-center rounded-[6px] border border-red-400 bg-red-500 text-white transition-colors hover:border-red-300 hover:bg-red-400';
+    closeBtn.setAttribute('aria-label', 'Cerrar minimapa');
+    const closeIcon = document.getElementById('mm-close-icon');
+    if (closeIcon instanceof HTMLTemplateElement) {
+      closeBtn.append(closeIcon.content.cloneNode(true));
+    }
+    closeBtn.addEventListener('click', () => {
+      saveSettings({ ...loadSettings(), minimap: false, minimapTouched: true });
+    });
+
+    const mapActions = document.createElement('div');
+    mapActions.className =
+      'col-start-3 row-start-1 justify-self-end self-start flex items-center gap-1';
+    mapActions.append(closeBtn, expandBtn);
+    minimap.appendChild(mapActions);
 
     const center = holderIndex >= 0 ? holderIndex : Math.floor(hslides.length / 2);
     const left = center - 1;
@@ -369,7 +403,7 @@ export function initDeck(root: HTMLElement) {
     } else if (s.lock !== locked) {
       setLock(s.lock);
     }
-    minimap.style.display = s.minimap && minimapUnlocked.get() ? '' : 'none';
+    setMinimapVisible(Boolean(s.minimap && minimapUnlocked.get()));
     if (s.arrows !== arrowsOn) setArrows(s.arrows);
   });
 
@@ -381,7 +415,7 @@ export function initDeck(root: HTMLElement) {
     if (!on) return;
     const s = loadSettings();
     if (!s.minimapTouched) updateSetting('minimap', true);
-    else minimap.style.display = s.minimap ? '' : 'none';
+    else setMinimapVisible(s.minimap);
   });
 
   let firstVerticalUnlock = true;
@@ -440,7 +474,7 @@ export function initDeck(root: HTMLElement) {
 
   buildMinimap();
   updateMinimapActive();
-  minimap.style.display = settings.minimap && minimapUnlocked.get() ? '' : 'none';
+  setMinimapVisible(Boolean(settings.minimap && minimapUnlocked.get()));
   setArrows(settings.arrows);
 
   updateUI();

@@ -1,4 +1,6 @@
 ---
+import Icon from "../Icon.astro";
+
 interface Props {
   start?: number;
   vstart?: number;
@@ -62,6 +64,14 @@ const arrowBtn =
       ></div>
     </div>
   </dialog>
+
+  <!-- Iconos que el controller clona al construir el minimapa. -->
+  <template id="mm-expand-icon">
+    <Icon name="lucide:maximize-2" class="size-3" aria-hidden="true" />
+  </template>
+  <template id="mm-close-icon">
+    <Icon name="lucide:x" class="size-3" aria-hidden="true" />
+  </template>
 </div>
 
 <style>

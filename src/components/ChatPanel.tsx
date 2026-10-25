@@ -355,6 +355,7 @@ export default function ChatPanel({ lang }: ChatPanelProps) {
                             maxLength={4000}
                             placeholder={t.placeholder}
                             aria-label={t.placeholder}
+                            aria-describedby="chat-hint"
                             className="max-h-28 min-h-9 flex-1 resize-none bg-transparent py-2 font-sans text-[0.95rem] leading-[1.5] text-ink placeholder:text-muted focus:outline-none"
                         />
 
@@ -395,7 +396,7 @@ export default function ChatPanel({ lang }: ChatPanelProps) {
                         </div>
                     </div>
 
-                    <p className="mt-2 hidden px-1 font-sans text-[0.66rem] text-muted sm:block [@media(max-height:620px)]:sm:hidden">{t.hint}</p>
+                    <p id="chat-hint" className="mt-2 hidden px-1 font-sans text-[0.66rem] text-muted sm:block [@media(max-height:620px)]:sm:hidden">{isBusy ? t.hintBusy : t.hint}</p>
                 </form>
             </div>
         </div>

@@ -196,6 +196,7 @@ export const es = {
     conversation: "Conversación",
     tryAsking: "Probá con una de estas:",
     hint: "Enter para enviar · Shift + Enter para otra línea",
+    hintBusy: "Podés escribir tu próximo mensaje; enviar se habilita cuando termine.",
     empty: "Hola! Soy el asistente de este portafolio. Preguntame por los proyectos, el stack o cómo contactarme.",
     placeholder: "Escribí un mensaje…",
     typing: "Escribiendo…",

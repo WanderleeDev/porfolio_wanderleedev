@@ -57,6 +57,37 @@ function hasVisibleContent(parts: UIMessagePart[]): boolean {
     );
 }
 
+function SuggestionButton({
+    kind,
+    prompt,
+    onClick,
+    dense = false,
+}: {
+    kind: "projects" | "technologies" | "contact";
+    prompt: string;
+    onClick: () => void;
+    dense?: boolean;
+}) {
+    return (
+        <button
+            type="button"
+            onClick={onClick}
+            className={`group flex items-center rounded-xl border border-line bg-field text-left font-sans font-medium text-ink transition-colors hover:border-ink/25 hover:bg-badge/60 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink ${
+                dense ? "gap-2 px-2.5 py-2.5 text-[0.82rem]" : "gap-2.5 px-3.5 py-3 text-sm"
+            }`}
+        >
+            <span
+                className={`flex shrink-0 items-center justify-center rounded-lg bg-badge text-badge-ink transition-colors group-hover:bg-surface ${
+                    dense ? "size-6" : "size-7"
+                }`}
+            >
+                <SuggestionIcon kind={kind} />
+            </span>
+            <span className="truncate">{prompt}</span>
+        </button>
+    );
+}
+
 function SuggestionIcon({ kind }: { kind: "projects" | "technologies" | "contact" }) {
     if (kind === "projects") {
         return (
@@ -193,6 +224,23 @@ export default function ChatPanel({ lang }: ChatPanelProps) {
                         {isBusy ? t.typing : t.online}
                     </p>
                 </div>
+
+                {messages.length === 0 && (
+                    <div className="hidden w-full flex-col gap-1.5 lg:[@media(min-height:621px)]:flex">
+                        <p className="font-sans text-[0.66rem] text-soft lg:text-center">{t.tryAsking}</p>
+                        <div className="flex flex-col gap-1.5">
+                            {suggestions.map((s) => (
+                                <SuggestionButton
+                                    key={s.key}
+                                    kind={s.key}
+                                    prompt={s.prompt}
+                                    onClick={() => ask(s.prompt)}
+                                    dense
+                                />
+                            ))}
+                        </div>
+                    </div>
+                )}
             </header>
 
             <div className="flex min-h-0 min-w-0 flex-col">
@@ -216,21 +264,16 @@ export default function ChatPanel({ lang }: ChatPanelProps) {
                                     {t.empty}
                                 </p>
                             </div>
-                            <div>
+                            <div className="lg:[@media(min-height:621px)]:hidden">
                                 <p className="mb-2.5 font-sans text-xs text-soft">{t.tryAsking}</p>
                                 <div className="grid gap-2 sm:grid-cols-3">
                                     {suggestions.map((s) => (
-                                        <button
+                                        <SuggestionButton
                                             key={s.key}
-                                            type="button"
+                                            kind={s.key}
+                                            prompt={s.prompt}
                                             onClick={() => ask(s.prompt)}
-                                            className="group flex items-center gap-2.5 rounded-xl border border-line bg-field px-3.5 py-3 text-left font-sans text-sm font-medium text-ink transition-colors hover:border-ink/25 hover:bg-badge/60 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink"
-                                        >
-                                            <span className="flex size-7 shrink-0 items-center justify-center rounded-lg bg-badge text-badge-ink transition-colors group-hover:bg-surface">
-                                                <SuggestionIcon kind={s.key} />
-                                            </span>
-                                            <span className="truncate">{s.prompt}</span>
-                                        </button>
+                                        />
                                     ))}
                                 </div>
                             </div>

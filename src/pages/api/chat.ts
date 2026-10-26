@@ -11,8 +11,9 @@ import {
 } from "ai";
 import { createOpenAICompatible } from "@ai-sdk/openai-compatible";
 import { z } from "zod";
-import { filterProjects, filterStack, resolveLocale } from "../../i18n/portfolio-data";
+import { resolveLocale } from "../../i18n/portfolio-data";
 import { buildPortfolioContext } from "../../i18n/portfolio-context";
+import { portfolioToolInputSchema, toolIntroSchema } from "../../i18n/portfolio-cards";
 
 export const prerender = false;
 
@@ -36,15 +37,22 @@ linkedin.com/in/wanderlee-max/`;
 
 const TOOL_RULES = `Tool protocol, it overrides everything else:
 
-- Visitor asks about the projects, the work or the portfolio -> call showProjects.
+- Visitor asks about the projects, the work or the portfolio -> call showPortfolio and
+  fill the "projects" array with the real projects from PORTFOLIO CONTEXT.
 - Visitor asks about technologies, stack, tools, languages or frameworks -> call
-  showStack.
-- After the tool runs, write ONE short sentence introducing the card. Never list what
-  the card already shows.
+  showPortfolio and fill the "stack" array.
+- Visitor asks about both -> fill both arrays in the same call.
+- Always include one short "intro" sentence in the same tool call. The card already
+  shows the data, so never list it in the intro.
+- Copy titles, descriptions, technologies, URLs, images and accents verbatim from
+  PORTFOLIO CONTEXT. Never invent projects, technologies, links, images or colors.
+- Omit the array the visitor did not ask about. Call showPortfolio once and stop: do
+  not write a message after the tool call.
 - Anything else: answer without tools.`;
 
 const STYLE_RULES = `Write only what was asked, in at most two short sentences. Do not wrap the text in
-markdown, HTML or lists. This style rule applies to your message, never to a tool call.`;
+markdown, HTML or lists. This applies to the "intro" field and to plain answers; it
+never applies to the card data.`;
 
 const LANGUAGE_RULES = {
     es: "Answer in Spanish.",
@@ -81,6 +89,9 @@ const chatSchema = z.object({
                         z.looseObject({
                             type: z.string().max(64),
                             text: z.string().max(MAX_PART_CHARS).optional(),
+                            // Sólo nos interesa la intro del turno anterior; el
+                            // resto de la data de la card no vuelve al modelo.
+                            input: z.object({ intro: z.string().max(180).optional() }).optional(),
                         }),
                     )
                     .min(1)
@@ -99,14 +110,30 @@ function sanitizeMessages(messages: ChatMessage[]): UIMessage[] | null {
 
     for (const message of messages) {
         const parts: UIMessage["parts"] = [];
+        let hasText = false;
+        let intro = "";
 
         for (const part of message.parts) {
-            // Sólo viaja texto al modelo: fuera adjuntos, tool calls y reasoning.
-            if (part.type !== "text" || typeof part.text !== "string") continue;
-            const text = part.text.trim();
-            if (!text) continue;
-            total += text.length;
-            parts.push({ type: "text", text });
+            if (part.type === "text" && typeof part.text === "string") {
+                const text = part.text.trim();
+                if (!text) continue;
+                total += text.length;
+                parts.push({ type: "text", text });
+                hasText = true;
+                continue;
+            }
+
+            // Un turno con card no trae texto: conservamos sólo su intro para
+            // que el modelo recuerde lo que dijo. La data de la card no viaja.
+            if (!intro && message.role === "assistant" && part.type.startsWith("tool-")) {
+                const parsedIntro = toolIntroSchema.safeParse(part.input);
+                if (parsedIntro.success) intro = parsedIntro.data.intro;
+            }
+        }
+
+        if (!hasText && intro) {
+            total += intro.length;
+            parts.push({ type: "text", text: intro });
         }
 
         if (parts.length) {
@@ -158,27 +185,12 @@ export const POST: APIRoute = async ({ request }) => {
     });
 
     const tools = {
-        showProjects: tool({
+        showPortfolio: tool({
             description:
-                "Show WanderleeDev's featured portfolio projects with their description and technologies.",
-            inputSchema: z.object({
-                focus: z
-                    .string()
-                    .optional()
-                    .describe("Optional filter, e.g. 'frontend', 'angular', 'ecommerce'"),
-            }),
-            execute: async ({ focus }) => ({ projects: filterProjects(locale, focus) }),
-        }),
-        showStack: tool({
-            description:
-                "Show WanderleeDev's technology stack grouped by category (frontend, backend, AI, ...).",
-            inputSchema: z.object({
-                category: z
-                    .string()
-                    .optional()
-                    .describe("Optional category filter, e.g. 'frontend', 'backend', 'ai'"),
-            }),
-            execute: async ({ category }) => ({ categories: filterStack(locale, category) }),
+                "Show WanderleeDev's projects and/or technology stack as cards. Copy the real data from PORTFOLIO CONTEXT into the arrays and include one short intro sentence in the same call.",
+            inputSchema: portfolioToolInputSchema,
+            // La data la emite el modelo: no se filtra nada del portfolio local.
+            execute: async (input) => input,
         }),
     };
 
@@ -187,11 +199,14 @@ export const POST: APIRoute = async ({ request }) => {
         system: buildSystemPrompt(locale),
         messages: await convertToModelMessages(messages),
         tools,
-        // Dos pasos: el modelo llama a la herramienta y después escribe la frase.
-        stopWhen: stepCountIs(2),
-        // El razonamiento del modelo también consume este presupuesto.
-        maxOutputTokens: 800,
+        // Una sola generación: la tool ya trae la data y la intro.
+        stopWhen: stepCountIs(1),
+        // La data de las cards ahora forma parte de la salida.
+        maxOutputTokens: 2000,
         temperature: 0,
+        providerOptions: {
+            wanderleeGateway: { think: false },
+        },
     });
 
     return createUIMessageStreamResponse({

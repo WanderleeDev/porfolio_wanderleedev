@@ -1,7 +1,7 @@
-import { techLabel, type PortfolioStackCategory } from "../../i18n/portfolio-data";
+import type { StackCategoryCard } from "../../i18n/portfolio-cards";
 
 interface TechnologiesCardProps {
-    data: { categories: PortfolioStackCategory[] };
+    data: { categories: StackCategoryCard[] };
     labels: { title: string; empty: string };
 }
 
@@ -26,14 +26,14 @@ export function TechnologiesCard({ data, labels }: TechnologiesCardProps) {
             </header>
 
             <div className="grid gap-2 p-3 sm:grid-cols-2">
-                {data.categories.map((category) => {
+                {data.categories.map((category, index) => {
                     const all = [...category.techs, ...(category.alsoUsed ?? [])];
                     return (
-                        <div key={category.title} className="rounded-xl border border-line bg-badge/30 p-2.5">
+                        <div key={`${category.title}-${index}`} className="rounded-xl border border-line bg-badge/30 p-2.5">
                             <div className="flex items-center gap-1.5">
                                 <span
                                     className="size-2 shrink-0 rounded-full"
-                                    style={{ backgroundColor: category.accent }}
+                                    style={{ backgroundColor: category.accent ?? "#9ca3af" }}
                                     aria-hidden="true"
                                 />
                                 <span className="font-sans text-[0.7rem] font-bold uppercase tracking-[0.08em] text-badge-ink">
@@ -41,13 +41,13 @@ export function TechnologiesCard({ data, labels }: TechnologiesCardProps) {
                                 </span>
                             </div>
                             <div className="mt-2 flex flex-wrap gap-1">
-                                {all.map((tech) => (
+                                {all.map((tech, techIndex) => (
                                     <span
-                                        key={tech.icon}
-                                        title={tech.icon}
+                                        key={`${tech}-${techIndex}`}
+                                        title={tech}
                                         className="rounded-md border border-line bg-surface px-1.5 py-0.5 font-sans text-[0.62rem] text-soft"
                                     >
-                                        {techLabel(tech.icon, tech.name)}
+                                        {tech}
                                     </span>
                                 ))}
                             </div>

@@ -4,7 +4,7 @@ import { DefaultChatTransport, type UIMessage, type UIMessagePart } from "ai";
 import { getTranslations } from "../i18n/utils";
 import { ProjectsCard } from "./chat/ProjectsCard";
 import { TechnologiesCard } from "./chat/TechnologiesCard";
-import type { PortfolioProject, PortfolioStackCategory } from "../i18n/portfolio-data";
+import type { PortfolioToolInput } from "../i18n/portfolio-cards";
 
 type Lang = "es" | "en";
 
@@ -16,10 +16,17 @@ function emitPet(event: string) {
     window.dispatchEvent(new CustomEvent("chat:event", { detail: event }));
 }
 
-type ToolPart = { type: string; state?: string; output?: unknown };
+type ToolPart = { type: string; state?: string; input?: unknown; output?: unknown };
 
 function isToolPart(part: UIMessagePart): part is UIMessagePart & ToolPart {
     return typeof part.type === "string" && part.type.startsWith("tool-");
+}
+
+function portfolioDataOf(part: ToolPart): PortfolioToolInput | null {
+    if (part.type !== "tool-showPortfolio" || part.state !== "output-available") return null;
+    return part.output && typeof part.output === "object"
+        ? (part.output as PortfolioToolInput)
+        : null;
 }
 
 function textOf(parts: UIMessagePart[]): string {
@@ -249,15 +256,21 @@ export default function ChatPanel({ lang }: ChatPanelProps) {
                             const text = textOf(parts);
                             const tools = parts.filter(isToolPart);
                             const streamingThis = status === "streaming" && message.id === last?.id;
+                            const data = tools.reduce<PortfolioToolInput | null>(
+                                (found, part) => found ?? portfolioDataOf(part),
+                                null,
+                            );
+                            // La intro vive dentro de la tool, no como text part.
+                            const bubble = text || data?.intro || "";
 
                             return (
                                 <div
                                     key={message.id}
                                     className={`flex w-full max-w-[42rem] flex-col gap-2.5 self-start ${first}`}
                                 >
-                                    {text && (
+                                    {bubble && (
                                         <div className="max-w-[92%] rounded-2xl rounded-bl-md bg-badge px-4 py-2.5 font-sans text-[0.95rem] leading-[1.6] whitespace-pre-wrap text-badge-ink">
-                                            {text}
+                                            {bubble}
                                             {streamingThis && (
                                                 <span
                                                     className="ml-0.5 inline-block h-3.5 w-[2px] translate-y-0.5 animate-pulse bg-current"
@@ -275,27 +288,7 @@ export default function ChatPanel({ lang }: ChatPanelProps) {
                                                 </p>
                                             );
                                         }
-                                        if (part.state === "output-available") {
-                                            if (part.type === "tool-showProjects") {
-                                                return (
-                                                    <ProjectsCard
-                                                        key={`${part.type}-${i}`}
-                                                        data={part.output as { projects: PortfolioProject[] }}
-                                                        labels={{ title: t.projectsLabel, demo: t.demo, empty: t.noProjects }}
-                                                    />
-                                                );
-                                            }
-                                            if (part.type === "tool-showStack") {
-                                                return (
-                                                    <TechnologiesCard
-                                                        key={`${part.type}-${i}`}
-                                                        data={part.output as { categories: PortfolioStackCategory[] }}
-                                                        labels={{ title: t.stackLabel, empty: t.noStack }}
-                                                    />
-                                                );
-                                            }
-                                            return null;
-                                        }
+                                        if (part.state === "output-available") return null;
                                         return (
                                             <p
                                                 key={`${part.type}-${i}`}
@@ -306,6 +299,20 @@ export default function ChatPanel({ lang }: ChatPanelProps) {
                                             </p>
                                         );
                                     })}
+
+                                    {data?.projects?.length ? (
+                                        <ProjectsCard
+                                            data={{ projects: data.projects }}
+                                            labels={{ title: t.projectsLabel, demo: t.demo, empty: t.noProjects }}
+                                        />
+                                    ) : null}
+
+                                    {data?.stack?.length ? (
+                                        <TechnologiesCard
+                                            data={{ categories: data.stack }}
+                                            labels={{ title: t.stackLabel, empty: t.noStack }}
+                                        />
+                                    ) : null}
                                 </div>
                             );
                         })

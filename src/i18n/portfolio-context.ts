@@ -22,18 +22,26 @@ export function buildPortfolioContext(locale: Locale): string {
         .map((project) => {
             const stack = project.technologies.map((tech) => tech.toLowerCase()).join(", ");
             const description = project.description.replace(/\s+/g, " ").trim();
-            return `- ${project.title}: ${description} | stack: ${stack} | demo: ${project.demo_url}`;
+            return `- ${project.title}: ${description} | stack: ${stack} | demo: ${project.demo_url} | image: ${project.image}`;
         })
         .join("\n");
 
     const stack = getStack(locale)
-        .map((category) => `- ${category.title}: ${category.techs.map(techLabel).join(", ")}`)
+        .map((category) => {
+            const main = category.techs.map(techLabel).join(", ");
+            const extra = category.alsoUsed?.length
+                ? ` | occasionally: ${category.alsoUsed.map(techLabel).join(", ")}`
+                : "";
+            return `- ${category.title} (accent ${category.accent}): ${main}${extra}`;
+        })
         .join("\n");
 
     return `## PORTFOLIO CONTEXT
 
 Source of truth about the portfolio. Never invent projects, technologies or links: if
-something is not listed here, say you do not have that information.
+something is not listed here, say you do not have that information. Copy titles,
+descriptions, tech labels, URLs, image URLs and accents verbatim; these are the only
+valid ones.
 
 Projects:
 ${projects}

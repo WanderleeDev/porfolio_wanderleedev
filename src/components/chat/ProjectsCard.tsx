@@ -1,7 +1,8 @@
-import { techLabel, type PortfolioProject } from "../../i18n/portfolio-data";
+import { techLabel } from "../../i18n/portfolio-data";
+import type { ProjectCard } from "../../i18n/portfolio-cards";
 
 interface ProjectsCardProps {
-    data: { projects: PortfolioProject[] };
+    data: { projects: ProjectCard[] };
     labels: { title: string; demo: string; empty: string };
 }
 
@@ -26,16 +27,25 @@ export function ProjectsCard({ data, labels }: ProjectsCardProps) {
             </header>
 
             <div className="divide-y divide-line">
-                {data.projects.map((project) => (
-                    <div key={project.title} className="flex gap-3 p-3.5">
-                        <img
-                            src={project.image}
-                            alt=""
-                            width={64}
-                            height={64}
-                            loading="lazy"
-                            className="size-16 shrink-0 rounded-xl border border-line object-cover"
-                        />
+                {data.projects.map((project, index) => (
+                    <div key={`${project.title}-${index}`} className="flex gap-3 p-3.5">
+                        {project.image ? (
+                            <img
+                                src={project.image}
+                                alt=""
+                                width={64}
+                                height={64}
+                                loading="lazy"
+                                className="size-16 shrink-0 rounded-xl border border-line object-cover"
+                            />
+                        ) : (
+                            <span
+                                aria-hidden="true"
+                                className="grid size-16 shrink-0 place-items-center rounded-xl border border-line bg-badge font-sans text-lg font-bold text-muted"
+                            >
+                                {project.title.charAt(0)}
+                            </span>
+                        )}
                         <div className="min-w-0 flex-1">
                             <div className="flex items-start justify-between gap-3">
                                 <p className="truncate font-sans text-sm font-bold text-ink">{project.title}</p>
@@ -67,9 +77,9 @@ export function ProjectsCard({ data, labels }: ProjectsCardProps) {
                                 {project.description}
                             </p>
                             <div className="mt-2 flex flex-wrap gap-1">
-                                {project.technologies.map((tech) => (
+                                {project.technologies.map((tech, techIndex) => (
                                     <span
-                                        key={tech}
+                                        key={`${tech}-${techIndex}`}
                                         className="rounded-md border border-line bg-field px-1.5 py-0.5 font-sans text-[0.62rem] text-soft"
                                     >
                                         {techLabel(tech)}

@@ -7,6 +7,9 @@
     "build": "astro build",
     "preview": "astro preview",
     "astro": "astro",
+    "rag:build": "bun scripts/build-rag-index.ts",
+    "rag:ingest": "bun scripts/ingest-qdrant.ts",
+    "rag:query": "bun scripts/query-rag.ts",
     "test": "bun test"
   },
   "dependencies": {
@@ -17,6 +20,7 @@
     "@iconify-json/devicon": "^1.2.71",
     "@iconify-json/lucide": "^1.2.147",
     "@iconify-json/simple-icons": "^1.2.100",
+    "@qdrant/js-client-rest": "^1.20.0",
     "@tailwindcss/vite": "^4.3.0",
     "@wanderleedev/pixel-pet": "^0.1.1",
     "ai": "^7.0.146",
@@ -38,5 +42,8 @@
     "picomatch": "^2.3.2",
     "rollup": "^4.59.0",
     "vite": "^8.3.4"
+  },
+  "devDependencies": {
+    "unpdf": "^1.9.1"
   }
 }

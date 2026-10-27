@@ -1,5 +1,8 @@
 # build output
 dist/
+
+# private corpus source, redaction list and debug snapshots
+data/corpus/
 # generated types
 .astro/
 

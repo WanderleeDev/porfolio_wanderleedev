@@ -11,13 +11,30 @@ import {
 } from "ai";
 import { createOpenAICompatible } from "@ai-sdk/openai-compatible";
 import { z } from "zod";
-import { resolveLocale } from "../../i18n/portfolio-data";
-import { buildPortfolioContext } from "../../i18n/portfolio-context";
+import { getProjects, resolveLocale, techLabel } from "../../i18n/portfolio-data";
+import { buildPortfolioContext, buildStackContext } from "../../i18n/portfolio-context";
 import { portfolioToolInputSchema, toolIntroSchema } from "../../i18n/portfolio-cards";
+import {
+    formatProjectCatalog,
+    loadProjectCatalog,
+    type CatalogExtra,
+} from "../../lib/rag/catalog";
+import { createQdrantClient, readQdrantConfig } from "../../lib/rag/qdrant";
+import { retrieveCorpus } from "../../lib/rag/retrieve";
 
 export const prerender = false;
 
-function readEnv(key: "LLM_BASE_URL" | "LLM_API_KEY" | "LLM_MODEL"): string | undefined {
+type EnvKey =
+    | "LLM_BASE_URL"
+    | "LLM_API_KEY"
+    | "LLM_MODEL"
+    | "LLM_EMBEDDING_MODEL"
+    | "LLM_EMBEDDING_DIMENSIONS"
+    | "QDRANT_URL"
+    | "QDRANT_API_KEY"
+    | "QDRANT_COLLECTION";
+
+function readEnv(key: EnvKey): string | undefined {
     const fromRuntime = typeof process !== "undefined" ? process.env[key] : undefined;
     return fromRuntime ?? import.meta.env[key];
 }
@@ -25,6 +42,8 @@ function readEnv(key: "LLM_BASE_URL" | "LLM_API_KEY" | "LLM_MODEL"): string | un
 const gatewayUrl = readEnv("LLM_BASE_URL");
 const gatewayKey = readEnv("LLM_API_KEY");
 const gatewayModel = readEnv("LLM_MODEL");
+const embeddingModel = readEnv("LLM_EMBEDDING_MODEL") ?? "qwen3-embedding:0.6b";
+const embeddingDimensions = Number(readEnv("LLM_EMBEDDING_DIMENSIONS") ?? 512);
 
 const SYSTEM_PROMPT = `You are the assistant of WanderleeDev's personal portfolio website.
 
@@ -38,16 +57,24 @@ linkedin.com/in/wanderlee-max/`;
 const TOOL_RULES = `Tool protocol, it overrides everything else:
 
 - Visitor asks about the projects, the work or the portfolio -> call showPortfolio and
-  fill the "projects" array with the real projects from PORTFOLIO CONTEXT.
+  include every project from PROJECT CATALOG, in catalog order (up to 10), unless the
+  visitor asked for a subset. For a subset, include only the matching entries.
 - Visitor asks about technologies, stack, tools, languages or frameworks -> call
   showPortfolio and fill the "stack" array.
 - Visitor asks about both -> fill both arrays in the same call.
 - Always include one short "intro" sentence in the same tool call. The card already
   shows the data, so never list it in the intro.
-- Copy titles, descriptions, technologies, URLs, images and accents verbatim from
-  PORTFOLIO CONTEXT. Never invent projects, technologies, links, images or colors.
+- Copy titles, technologies, URLs, images and accents verbatim from PROJECT CATALOG,
+  STACK DATA or PORTFOLIO CONTEXT. Write each description as one sentence of at most 140
+  characters taken from its catalog summary. Never invent projects, technologies, links,
+  images or colors. If an entry has no image or demo, omit those fields; an empty
+  "technologies" array is allowed.
 - Omit the array the visitor did not ask about. Call showPortfolio once and stop: do
   not write a message after the tool call.
+- Factual questions about a project (forks, dates, decisions, architecture, tradeoffs)
+  -> answer in text from CORPUS EXCERPTS or PROJECT CATALOG without tools.
+- Never call showPortfolio with empty "projects" and "stack" arrays. If you have
+  nothing to show, answer in text.
 - Anything else: answer without tools.`;
 
 const STYLE_RULES = `Write only what was asked, in at most two short sentences. Do not wrap the text in
@@ -59,23 +86,176 @@ const LANGUAGE_RULES = {
     en: "Answer in English.",
 } as const;
 
-function buildSystemPrompt(locale: "es" | "en"): string {
-    return [
+const CORPUS_RULES = `The CORPUS EXCERPTS come from the portfolio's technical PDF. Use them only when
+they help answer the question and prefer them over assumptions. Never mention the
+excerpts, the PDF or your sources. If they are unrelated, ignore them.`;
+
+const CATALOG_RULES = `The PROJECT CATALOG is the full list of WanderleeDev's projects, taken from the
+portfolio corpus. It is the only valid source for project cards: follow its order, do
+not drop entries, and do not add projects that are not listed.`;
+
+function buildSystemPrompt(
+    locale: "es" | "en",
+    options: { corpusContext?: string; projectCatalog?: string } = {},
+): string {
+    const sections = [
         SYSTEM_PROMPT,
         "",
-        buildPortfolioContext(locale),
+        // With a catalog the project list is already there; a second, partial
+        // list would only pull a small model back to the old four projects.
+        options.projectCatalog ? buildStackContext(locale) : buildPortfolioContext(locale),
         "",
         LANGUAGE_RULES[locale],
         "",
         STYLE_RULES,
         "",
         TOOL_RULES,
-    ].join("\n");
+    ];
+
+    if (options.projectCatalog) {
+        sections.push("", CATALOG_RULES, "", "PROJECT CATALOG:", options.projectCatalog);
+    }
+
+    if (options.corpusContext) {
+        sections.push("", CORPUS_RULES, "", "CORPUS EXCERPTS:", options.corpusContext);
+    }
+
+    return sections.join("\n");
 }
 
 const MAX_MESSAGES = 40;
 const MAX_TEXT_CHARS = 12_000;
 const MAX_PART_CHARS = 4_000;
+
+function logChatError(scope: string, error: unknown): void {
+    const detail = error instanceof Error ? `${error.name}: ${error.message}` : String(error);
+    console.error(`[chat] ${scope}: ${detail}`);
+}
+
+interface RagContext {
+    retrievalEnabled: boolean;
+    retrieve(query: string): Promise<string>;
+    projectCatalog(): Promise<string>;
+}
+
+/** Corpus ids mapped to the curated local title that owns the image and demo URL. */
+const PROJECT_MEDIA_TITLES: Record<string, string> = {
+    "clior-ecommerce": "Ecommerce",
+    "ngx-theme-stack": "Ngx-theme-stack",
+    "switch-2-clone": "Switch 2 Clone",
+};
+
+function projectExtras(): Map<string, CatalogExtra> {
+    const projects = getProjects("es");
+    const extras = new Map<string, CatalogExtra>();
+
+    for (const [projectId, title] of Object.entries(PROJECT_MEDIA_TITLES)) {
+        const local = projects.find((project) => project.title === title);
+        if (!local) continue;
+        extras.set(projectId, {
+            image: local.image,
+            demo_url: local.demo_url,
+            technologies: local.technologies.map((tech) => techLabel(tech)),
+        });
+    }
+
+    return extras;
+}
+
+function createRagContext(): RagContext | null {
+    const url = readEnv("QDRANT_URL");
+    if (!url) return null;
+
+    try {
+        const config = readQdrantConfig({
+            QDRANT_URL: url,
+            QDRANT_API_KEY: readEnv("QDRANT_API_KEY"),
+            QDRANT_COLLECTION: readEnv("QDRANT_COLLECTION"),
+        });
+        const client = createQdrantClient(config, 10_000);
+        const extras = projectExtras();
+        const hasGateway = Boolean(gatewayUrl && gatewayKey);
+        const retrievalEnabled =
+            hasGateway && Number.isInteger(embeddingDimensions) && embeddingDimensions > 0;
+
+        if (hasGateway && !retrievalEnabled) {
+            logChatError(
+                "retrieval-config",
+                new Error("LLM_EMBEDDING_DIMENSIONS must be a positive integer"),
+            );
+        }
+
+        const embedding =
+            retrievalEnabled && gatewayUrl && gatewayKey
+                ? {
+                      baseURL: gatewayUrl,
+                      apiKey: gatewayKey,
+                      model: embeddingModel,
+                      dimensions: embeddingDimensions,
+                  }
+                : null;
+
+        let catalog: Promise<string> | null = null;
+
+        return {
+            retrievalEnabled,
+            async retrieve(query: string) {
+                if (!embedding) return "";
+
+                const { context } = await retrieveCorpus(query, {
+                    client,
+                    collection: config.alias,
+                    embedding,
+                    limit: 3,
+                    maxPerProject: 2,
+                    // The gateway runs a 4096-token window: keep prompt + cards inside it.
+                    maxCharsPerChunk: 1_300,
+                    embeddingTimeoutMs: 8_000,
+                    queryTimeoutSeconds: 5,
+                });
+                return context;
+            },
+            async projectCatalog() {
+                catalog ??= loadProjectCatalog(client, config.alias).then(
+                    (entries) => formatProjectCatalog(entries, extras),
+                    (error) => {
+                        catalog = null;
+                        throw error;
+                    },
+                );
+                return catalog;
+            },
+        };
+    } catch (error) {
+        logChatError("retrieval-config", error);
+        return null;
+    }
+}
+
+const rag = createRagContext();
+
+const GREETING = /^(hola|hi|hello|hey|buenas|qué tal|que tal|gracias|thanks|thank you)[!.?\s]*$/i;
+
+function shouldRetrieve(text: string): boolean {
+    return text.length >= 4 && !GREETING.test(text);
+}
+
+const PROJECT_INTENT =
+    /\b(proyectos?|projects?|trabajos?|portafolio|portfolio)\b|qué has (hecho|construido)|what have you (built|made)/i;
+
+function wantsProjectCatalog(text: string): boolean {
+    return text.length >= 4 && PROJECT_INTENT.test(text);
+}
+
+function latestUserText(messages: UIMessage[]): string {
+    const last = messages.at(-1);
+    if (!last) return "";
+
+    return last.parts
+        .flatMap((part) => (part.type === "text" ? [part.text] : []))
+        .join(" ")
+        .trim();
+}
 
 const chatSchema = z.object({
     messages: z
@@ -173,6 +353,30 @@ export const POST: APIRoute = async ({ request }) => {
 
     const locale = resolveLocale(request.headers.get("x-locale"));
 
+    let corpusContext = "";
+    let projectCatalog = "";
+    const question = latestUserText(messages);
+
+    if (rag) {
+        if (wantsProjectCatalog(question)) {
+            try {
+                projectCatalog = await rag.projectCatalog();
+            } catch (error) {
+                // Sin catálogo el chat puede seguir con el contexto corto y excerpts.
+                logChatError("catalog", error);
+            }
+        }
+
+        if (!projectCatalog && rag.retrievalEnabled && shouldRetrieve(question)) {
+            try {
+                corpusContext = await rag.retrieve(question);
+            } catch (error) {
+                // La respuesta debe salir aunque Qdrant o el embedding fallen.
+                logChatError("retrieval", error);
+            }
+        }
+    }
+
     const llm = createOpenAICompatible({
         name: "wanderlee-gateway",
         baseURL: gatewayUrl.replace(/\/chat\/completions\/?$/, ""),
@@ -196,20 +400,27 @@ export const POST: APIRoute = async ({ request }) => {
 
     const result = streamText({
         model,
-        system: buildSystemPrompt(locale),
+        system: buildSystemPrompt(locale, { corpusContext, projectCatalog }),
         messages: await convertToModelMessages(messages),
         tools,
         // Una sola generación: la tool ya trae la data y la intro.
         stopWhen: stepCountIs(1),
         // La data de las cards ahora forma parte de la salida.
-        maxOutputTokens: 2000,
+        maxOutputTokens: 1400,
         temperature: 0,
         providerOptions: {
             wanderleeGateway: { think: false },
         },
+        onError: ({ error }) => logChatError("stream", error),
     });
 
     return createUIMessageStreamResponse({
-        stream: result.toUIMessageStream({ sendReasoning: false }),
+        stream: result.toUIMessageStream({
+            sendReasoning: false,
+            onError: (error) => {
+                logChatError("ui-stream", error);
+                return "An error occurred.";
+            },
+        }),
     });
 };

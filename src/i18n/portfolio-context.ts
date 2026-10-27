@@ -12,6 +12,28 @@ function techLabel(tech: { icon: string; name?: string }): string {
     return name.replace(/^file-type-/, "").replace(/-/g, " ");
 }
 
+function stackLines(locale: Locale): string {
+    return getStack(locale)
+        .map((category) => {
+            const main = category.techs.map(techLabel).join(", ");
+            const extra = category.alsoUsed?.length
+                ? ` | occasionally: ${category.alsoUsed.map(techLabel).join(", ")}`
+                : "";
+            return `- ${category.title} (accent ${category.accent}): ${main}${extra}`;
+        })
+        .join("\n");
+}
+
+/**
+ * Stack-only projection. Used when the PROJECT CATALOG already carries the
+ * projects: a second, shorter project list next to it only competes for the
+ * model's attention.
+ */
+export function buildStackContext(locale: Locale): string {
+    return `STACK DATA (copy labels and accents verbatim into the "stack" array):
+${stackLines(locale)}`;
+}
+
 /**
  * Compact, deterministic projection of the portfolio for the model prompt.
  * Order comes straight from the dictionaries so the prefix stays stable and the
@@ -26,26 +48,16 @@ export function buildPortfolioContext(locale: Locale): string {
         })
         .join("\n");
 
-    const stack = getStack(locale)
-        .map((category) => {
-            const main = category.techs.map(techLabel).join(", ");
-            const extra = category.alsoUsed?.length
-                ? ` | occasionally: ${category.alsoUsed.map(techLabel).join(", ")}`
-                : "";
-            return `- ${category.title} (accent ${category.accent}): ${main}${extra}`;
-        })
-        .join("\n");
-
     return `## PORTFOLIO CONTEXT
 
 Source of truth about the portfolio. Never invent projects, technologies or links: if
-something is not listed here, say you do not have that information. Copy titles,
-descriptions, tech labels, URLs, image URLs and accents verbatim; these are the only
-valid ones.
+something is not listed here or in the PROJECT CATALOG, say you do not have that
+information. Copy titles, descriptions, tech labels, URLs, image URLs and accents
+verbatim; these are the only valid ones.
 
-Projects:
+Featured projects (media and demo only; the full list is in the PROJECT CATALOG):
 ${projects}
 
 Stack:
-${stack}`;
+${stackLines(locale)}`;
 }

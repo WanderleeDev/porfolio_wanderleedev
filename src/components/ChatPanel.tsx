@@ -123,7 +123,10 @@ export default function ChatPanel({ lang }: ChatPanelProps) {
         () => new DefaultChatTransport({ api: "/api/chat", headers: { "x-locale": lang } }),
     );
 
-    const { messages, sendMessage, status, error, stop } = useChat({ transport });
+    const { messages, sendMessage, status, error, stop } = useChat({
+        transport,
+        onError: (cause) => console.error("[chat] request failed", cause),
+    });
 
     const isBusy = status === "submitted" || status === "streaming";
     const textareaRef = useRef<HTMLTextAreaElement>(null);

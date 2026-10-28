@@ -1,0 +1,9 @@
+{
+  "title": "Contacto rediseño",
+  "brief": "Rediseño de la sección de contacto del portfolio WanderleeDev para reclutadores y colegas: tono profesional, énfasis en credibilidad y links (GitHub, LinkedIn, email copiable), conservando el design system (tokens semánticos, Fira Sans Extra Condensed para titulares, Inter para UI, radio 1rem, sombra card, tema claro por defecto).",
+  "artboards": [
+    { "file": "01-professional-two-column.html", "title": "Professional two-column", "tradeoff": "Form centrado y limpio; credibilidad alta pero poco diferencial visual", "width": 1280, "height": 900 },
+    { "file": "02-credible-profile.html", "title": "Credible profile", "tradeoff": "Links primero + señales de confianza; más persuasivo para reclutadores, pero añade métricas a validar", "width": 1280, "height": 900 },
+    { "file": "03-editorial-big-cta.html", "title": "Editorial big CTA", "tradeoff": "CTA protagonista y canales en tarjetas; visualmente fuerte, forma secundario al CTA", "width": 1280, "height": 900 }
+  ]
+}

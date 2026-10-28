@@ -1,5 +1,5 @@
 // @ts-check
-import { defineConfig, fontProviders } from "astro/config";
+import { defineConfig, fontProviders, envField } from "astro/config";
 import react from "@astrojs/react";
 import node from "@astrojs/node";
 import tailwindcss from "@tailwindcss/vite";
@@ -35,7 +35,7 @@ export default defineConfig({
   },
 
   integrations: [react()],
-  output: "static",
+  output: "server",
   adapter: node({ mode: "standalone" }),
   i18n: {
     defaultLocale: "es",
@@ -50,5 +50,69 @@ export default defineConfig({
       "127.0.0.1",
       "clan-lace-discounts-steps.trycloudflare.com",
     ],
+  },
+ env: {
+    schema: {
+      // Resend
+      RESEND_API_KEY: envField.string({
+        context: "server",
+        access: "secret",
+      }),
+      CONTACT_TO_EMAIL: envField.string({
+        context: "server",
+        access: "secret",
+      }),
+      CONTACT_FROM_EMAIL: envField.string({
+        context: "server",
+        access: "secret",
+      }),
+      RESEND_TEMPLATE_ID: envField.string({
+        context: "server",
+        access: "secret",
+      }),
+      RESEND_TEMPLATE_ID_EN: envField.string({
+        context: "server",
+        access: "secret",
+      }),
+
+      // LLM (API compatible con OpenAI)
+      LLM_BASE_URL: envField.string({
+        context: "server",
+        access: "secret",
+      }),
+      LLM_API_KEY: envField.string({
+        context: "server",
+        access: "secret",
+      }),
+      LLM_MODEL: envField.string({
+        context: "server",
+        access: "public",
+      }),
+      LLM_EMBEDDING_MODEL: envField.string({
+        context: "server",
+        access: "public",
+      }),
+      LLM_EMBEDDING_DIMENSIONS: envField.number({
+        context: "server",
+        access: "public",
+        int: true,
+        min: 1,
+      }),
+
+      // Qdrant
+      QDRANT_URL: envField.string({
+        context: "server",
+        access: "secret",
+      }),
+      QDRANT_API_KEY: envField.string({
+        context: "server",
+        access: "secret",
+      }),
+      QDRANT_COLLECTION: envField.string({
+        context: "server",
+        access: "public",
+      }),
+    },
+    validateSecrets: true,
   },
 });

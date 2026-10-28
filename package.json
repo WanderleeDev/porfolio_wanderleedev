@@ -21,6 +21,10 @@
     "@iconify-json/lucide": "^1.2.147",
     "@iconify-json/simple-icons": "^1.2.100",
     "@qdrant/js-client-rest": "^1.20.0",
+    "@streamdown/cjk": "^1.0.4",
+    "@streamdown/code": "^2.0.0",
+    "@streamdown/math": "^1.0.3",
+    "@streamdown/mermaid": "^1.0.3",
     "@tailwindcss/vite": "^4.3.0",
     "@wanderleedev/pixel-pet": "^0.1.1",
     "ai": "^7.0.146",
@@ -31,6 +35,7 @@
     "react": "^19.3.1",
     "react-dom": "^19.3.1",
     "resend": "^6.34.1",
+    "streamdown": "^2.7.1",
     "tailwindcss": "^4.3.3",
     "vite": "^8.3.4",
     "zod": "^4.6.7"

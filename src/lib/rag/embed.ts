@@ -32,7 +32,7 @@ function embeddingsUrl(baseURL: string): string {
     return `${base}/embeddings`;
 }
 
-export function normalizeVector(vector: number[]): number[] {
+function normalizeVector(vector: number[]): number[] {
     let sum = 0;
 
     for (const value of vector) sum += value * value;

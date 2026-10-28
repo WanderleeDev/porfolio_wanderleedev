@@ -20,7 +20,7 @@ type TxPathValue<T, P extends string> = P extends `${infer K}.${infer Rest}`
   ? T[P]
   : never;
 
-export type TranslationKey = TxKeyPath<AppDictionary>;
+type TranslationKey = TxKeyPath<AppDictionary>;
 
 export function getTranslations(lang: keyof typeof ui) {
   return function t<K extends TranslationKey>(

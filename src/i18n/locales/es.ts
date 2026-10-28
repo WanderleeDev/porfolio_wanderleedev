@@ -10,9 +10,6 @@ export const es = {
   },
 
   skills: {
-    sectionTitle: "Tecnologías",
-    sectionDescription:
-      "Herramientas modernas que utilizo para construir experiencias web rápidas, escalables y accesibles.",
     alsoUsedLabel: "Ocasionalmente usado",
     list: [
       {
@@ -84,15 +81,6 @@ export const es = {
     ],
   },
 
-  journey: {
-    skillDescriptions: {
-      "Mi Stack": "Las herramientas que uso en la mayoría de mis proyectos.",
-      Frontend: "Interfaces, animación e interacción.",
-      Backend: "APIs, datos y lógica de negocio.",
-      "AI & Tools": "IA, diseño, versiones y despliegue."
-    },
-  },
-
   projects: {
     list: [
       {
@@ -150,28 +138,6 @@ export const es = {
     copied: "Copiado",
     available: "Abierto a nuevos proyectos",
     note: "Si preferís, escribime directo al correo.",
-    submit: "Abrir en mi correo",
-    preferredText: "¿Prefieres escribir tú?",
-    fields: {
-      kind: "Tipo de proyecto",
-      name: "Nombre",
-      what: "Empresa o idea",
-      email: "Correo",
-    },
-    status: {
-      sending: "Enviando...",
-      success: "Mensaje enviado. ¡Gracias!",
-      error: "No se pudo enviar. Intentalo de nuevo.",
-    },
-    labels: [
-      { label: "tu nombre", key: "name" },
-      { label: "tu empresa o idea", key: "what" },
-      { label: "tu@correo.com", key: "email" },
-    ],
-    kinds: ["una web nueva", "rediseñar mi sitio", "una app a medida", "animaciones para mi producto", "otra cosa"],
-    error: "Falta tu nombre en la frase.",
-    errorWhat: "Cuéntame para qué empresa o idea es.",
-    errorEmail: "Escribe un correo válido, por ejemplo nombre@dominio.com.",
   },
 
   contactForm: {
@@ -196,7 +162,6 @@ export const es = {
     conversation: "Conversación",
     tryAsking: "Probá con una de estas:",
     hint: "Enter para enviar · Shift + Enter para otra línea",
-    hintBusy: "Podés escribir tu próximo mensaje; enviar se habilita cuando termine.",
     empty: "Hola! Soy el asistente de este portafolio. Preguntame por los proyectos, el stack o cómo contactarme.",
     placeholder: "Escribí un mensaje…",
     typing: "Escribiendo…",
@@ -204,11 +169,6 @@ export const es = {
     stop: "Detener",
     error: "No pude responder. Probá de nuevo.",
     toolLoading: "Preparando tarjeta…",
-    projectsLabel: "Proyectos",
-    stackLabel: "Stack",
-    noProjects: "No hay proyectos para mostrar.",
-    noStack: "No hay tecnologías para mostrar.",
-    demo: "Demo",
     suggestions: {
       projects: "Mis proyectos",
       technologies: "Tecnologías",
@@ -235,12 +195,6 @@ export const es = {
   },
 
   credits: {
-    title: "Créditos",
-    open: "Ver créditos",
-    close: "Cerrar créditos",
-    pause: "Pausar",
-    resume: "Continuar",
-    restart: "Reiniciar",
     closing: "WanderleeDev",
     roles: {
       role: "Fullstack Developer",
@@ -251,12 +205,7 @@ export const es = {
   },
 
   footer: {
-    tagline: "Fullstack developer",
     contactLabel: "Contacto",
     email: "wanderleedev@gmail.com",
-    ctaLabel: "Empezar un proyecto",
-    ctaAria: "Volver a la sección de contacto",
-    backToTop: "Volver arriba",
-    rights: "© 2026 WanderleeDev. Todos los derechos reservados.",
   },
 };

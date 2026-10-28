@@ -10,9 +10,6 @@ export const en = {
   },
 
   skills: {
-    sectionTitle: "Tech",
-    sectionDescription:
-      "Modern tools I use to build fast, scalable, and accessible web experiences.",
     alsoUsedLabel: "Occasionally used",
     list: [
       {
@@ -84,15 +81,6 @@ export const en = {
     ],
   },
 
-  journey: {
-    skillDescriptions: {
-      "My Stack": "The tools I use for most of my projects.",
-      Frontend: "UI, animation, and interaction.",
-      Backend: "APIs, data, and business logic.",
-      "AI & Tools": "AI, design, versioning, and deployment.",
-    },
-  },
-
   projects: {
     list: [
       {
@@ -150,28 +138,6 @@ export const en = {
     copied: "Copied",
     available: "Open to new projects",
     note: "If you prefer, email me directly.",
-    submit: "Open in my email",
-    preferredText: "Prefer to write yourself?",
-    fields: {
-      kind: "Project type",
-      name: "Name",
-      what: "Company or idea",
-      email: "Email",
-    },
-    status: {
-      sending: "Sending...",
-      success: "Message sent. Thank you!",
-      error: "Could not send. Please try again.",
-    },
-    labels: [
-      { label: "your name", key: "name" },
-      { label: "your enterprise or idea", key: "what" },
-      { label: "your@email.com", key: "email" },
-    ],
-    kinds: ["a new website", "redesign my site", "a custom app", "animations for my product", "something else"],
-    error: "Missing your name in the sentence.",
-    errorWhat: "Tell me what company or idea it's for.",
-    errorEmail: "Please enter a valid email, like name@domain.com.",
   },
 
   contactForm: {
@@ -196,7 +162,6 @@ export const en = {
     conversation: "Conversation",
     tryAsking: "Try one of these:",
     hint: "Enter to send · Shift + Enter for a new line",
-    hintBusy: "You can type your next message; sending unlocks when the reply ends.",
     empty: "Hi! I'm this portfolio's assistant. Ask me about the projects, the stack or how to get in touch.",
     placeholder: "Type a message…",
     typing: "Typing…",
@@ -204,11 +169,6 @@ export const en = {
     stop: "Stop",
     error: "I couldn't answer. Please try again.",
     toolLoading: "Preparing card…",
-    projectsLabel: "Projects",
-    stackLabel: "Stack",
-    noProjects: "No projects to show.",
-    noStack: "No technologies to show.",
-    demo: "Demo",
     suggestions: {
       projects: "My projects",
       technologies: "Technologies",
@@ -235,12 +195,6 @@ export const en = {
   },
 
   credits: {
-    title: "Credits",
-    open: "View credits",
-    close: "Close credits",
-    pause: "Pause",
-    resume: "Resume",
-    restart: "Restart",
     closing: "WanderleeDev",
     roles: {
       role: "Fullstack Developer",
@@ -251,12 +205,7 @@ export const en = {
   },
 
   footer: {
-    tagline: "Fullstack developer",
     contactLabel: "Contact",
     email: "wanderleedev@gmail.com",
-    ctaLabel: "Start a project",
-    ctaAria: "Back to the contact section",
-    backToTop: "Back to top",
-    rights: "© 2026 WanderleeDev. All rights reserved.",
   },
 };

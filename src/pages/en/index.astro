@@ -23,6 +23,8 @@ import MusicPlayer from "../../components/MusicPlayer.astro";
 import Title from "../../components/typography/Title.astro";
 import { getTranslations } from "../../i18n/utils";
 
+export const prerender = true;
+
 const lang = Astro.currentLocale as "es" | "en";
 const t = getTranslations(lang);
 const meta = t("metadata");

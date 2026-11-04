@@ -1,8 +1,11 @@
 // @ts-check
 import { defineConfig, fontProviders, envField } from "astro/config";
 import react from "@astrojs/react";
+import cloudflare from "@astrojs/cloudflare";
 import node from "@astrojs/node";
 import tailwindcss from "@tailwindcss/vite";
+
+const isDev = process.env.NODE_ENV === "development";
 
 export default defineConfig({
   fonts: [
@@ -36,7 +39,13 @@ export default defineConfig({
 
   integrations: [react()],
   output: "server",
-  adapter: node({ mode: "standalone" }),
+  session: false,
+  adapter: isDev
+    ? node({ mode: "standalone" })
+    : cloudflare({
+        imageService: "passthrough",
+        prerenderEnvironment: "node",
+      }),
   i18n: {
     defaultLocale: "es",
     locales: ["es", "en"],
@@ -51,80 +60,23 @@ export default defineConfig({
       "clan-lace-discounts-steps.trycloudflare.com",
     ],
   },
- env: {
+  env: {
     schema: {
-      // Resend
-      RESEND_API_KEY: envField.string({
-        context: "server",
-        access: "secret",
-      }),
-      CONTACT_TO_EMAIL: envField.string({
-        context: "server",
-        access: "secret",
-      }),
-      CONTACT_FROM_EMAIL: envField.string({
-        context: "server",
-        access: "secret",
-      }),
-      RESEND_TEMPLATE_ID: envField.string({
-        context: "server",
-        access: "secret",
-      }),
-      RESEND_TEMPLATE_ID_EN: envField.string({
-        context: "server",
-        access: "secret",
-      }),
-
-      // GEMINI API
-      GEMINI_API_KEY: envField.string({
-        context: "server",
-        access: "secret"
-      }),
-
-      // LLM (API compatible con OpenAI)
-      LLM_BASE_URL: envField.string({
-        context: "server",
-        access: "secret",
-      }),
-      LLM_API_KEY: envField.string({
-        context: "server",
-        access: "secret",
-      }),
-      LLM_MODEL: envField.string({
-        context: "server",
-        access: "public",
-      }),
-      LLM_EMBEDDING_MODEL: envField.string({
-        context: "server",
-        access: "public",
-      }),
-      LLM_EMBEDDING_DIMENSIONS: envField.number({
-        context: "server",
-        access: "public",
-        int: true,
-        min: 1,
-      }),
-
-      // Qdrant
-      QDRANT_URL: envField.string({
-        context: "server",
-        access: "secret",
-      }),
-      QDRANT_API_KEY: envField.string({
-        context: "server",
-        access: "secret",
-      }),
-      QDRANT_COLLECTION: envField.string({
-        context: "server",
-        access: "public",
-      }),
-      RAG_MIN_SCORE: envField.number({
-        context: "server",
-        access: "public",
-        min: 0,
-        max: 1,
-        default: 0.3,
-      }),
+      RESEND_API_KEY: envField.string({ context: "server", access: "secret" }),
+      CONTACT_TO_EMAIL: envField.string({ context: "server", access: "secret" }),
+      CONTACT_FROM_EMAIL: envField.string({ context: "server", access: "secret" }),
+      RESEND_TEMPLATE_ID: envField.string({ context: "server", access: "secret" }),
+      RESEND_TEMPLATE_ID_EN: envField.string({ context: "server", access: "secret" }),
+      GEMINI_API_KEY: envField.string({ context: "server", access: "secret" }),
+      LLM_BASE_URL: envField.string({ context: "server", access: "secret" }),
+      LLM_API_KEY: envField.string({ context: "server", access: "secret" }),
+      LLM_MODEL: envField.string({ context: "server", access: "public" }),
+      LLM_EMBEDDING_MODEL: envField.string({ context: "server", access: "public" }),
+      LLM_EMBEDDING_DIMENSIONS: envField.number({ context: "server", access: "public", int: true, min: 1 }),
+      QDRANT_URL: envField.string({ context: "server", access: "secret" }),
+      QDRANT_API_KEY: envField.string({ context: "server", access: "secret" }),
+      QDRANT_COLLECTION: envField.string({ context: "server", access: "public" }),
+      RAG_MIN_SCORE: envField.number({ context: "server", access: "public", min: 0, max: 1, default: 0.3 }),
     },
     validateSecrets: true,
   },

@@ -73,7 +73,7 @@ export default function ChatPanel({ lang }: { lang: Lang }) {
                                 key={message.id}
                                 message={message}
                                 isStreaming={status === "streaming"}
-                                labels={{ loading: t.toolLoading }}
+                                labels={{ loading: t.toolLoading, tools: t.tools }}
                             />
                         ),
                     )}

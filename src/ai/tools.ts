@@ -1,91 +1,100 @@
 import { tool } from 'ai';
 import { z } from 'zod';
-import { ProjectListSchema, TechListSchema, ContacSchema } from './ui-schema';
+import { ProjectListSchema, TechListSchema, ContacSchema, TrackListSchema, PlaybackSchema } from './ui-schema';
+import { PROJECT_CATALOG, TECH_CATALOG } from './catalog';
+import { TRACKS } from '../components/music-player/tracks';
+
+const PROJECT_CARDS = PROJECT_CATALOG.map(({ nombre, descripcion, url }) => ({
+  nombre,
+  descripcion,
+  ...(url ? { url } : {}),
+}));
 
 export const displayProjects = tool({
   description: 'Devolver la lista de proyectos del portfolio como tarjetas',
   inputSchema: z.object({}),
   outputSchema: ProjectListSchema,
   toModelOutput: ({ output }) => ({
-        type: "text",
-        value: `Mostrados ${output.proyectos.length} proyectos en una tarjeta.`,
-    }),
-  execute: async () => {
-    await new Promise(resolve => setTimeout(resolve, 500));
-    return {
-      titulo: 'Proyectos destacados',
-      proyectos: [
-        {
-          nombre: 'WanderDev Portfolio',
-          descripcion: 'Portafolio personal construido con Astro, TSX y un chat RAG sobre el propio CV.',
-          url: 'https://github.com/wanderlee/porfolio_wanderleedev',
-        },
-        {
-          nombre: 'Qdrant Catalog',
-          descripcion: 'Catálogo vectorial con búsqueda híbrida para indexar y consultar documentos PDF.',
-          url: 'https://github.com/wanderlee/qdrant-catalog',
-        },
-        {
-          nombre: 'AI Chat Panel',
-          descripcion: 'Panel de chat con streaming de respuestas y tarjetas de proyectos generadas por herramientas.',
-          url: 'https://github.com/wanderlee/ai-chat-panel',
-        },
-      ],
-    };
-  },
+    type: "text",
+    value: `Mostrados ${output.proyectos.length} proyectos en una tarjeta.`,
+  }),
+  execute: async () => ({
+    titulo: 'Proyectos',
+    proyectos: PROJECT_CARDS,
+  }),
 });
 
 export const displayTechs = tool({
   description: 'Devolver las tecnologías usadas en los proyectos como tarjetas',
   inputSchema: z.object({}),
   outputSchema: TechListSchema,
-  execute: async () => {
-    await new Promise(resolve => setTimeout(resolve, 500));
-    return {
-      titulo: 'Tecnologías',
-      techs: [
-        {
-          nombre: 'Astro',
-          descripcion: 'Framework de sitio estático con islas de interactividad en React.',
-          url: 'https://astro.build',
-        },
-        {
-          nombre: 'AI SDK',
-          descripcion: 'Streaming de texto y ejecución de herramientas del agente de chat.',
-          url: 'https://ai-sdk.dev',
-        },
-        {
-          nombre: 'Qdrant',
-          descripcion: 'Base de datos vectorial para la búsqueda híbrida del RAG.',
-          url: 'https://qdrant.tech',
-        },
-        {
-          nombre: 'TypeScript',
-          descripcion: 'Lenguaje tipado para el frontend y las rutas de la API.',
-          url: 'https://www.typescriptlang.org',
-        },
-      ],
-    };
-  },
+  toModelOutput: ({ output }) => ({
+    type: 'text',
+    value: `Mostradas ${output.techs.length} tecnologías en una tarjeta.`,
+  }),
+  execute: async () => ({
+    titulo: 'Tecnologías',
+    techs: TECH_CATALOG,
+  }),
 });
 
 export const displayContact = tool({
   description: 'Devolver los datos de contacto del autor del portfolio',
   inputSchema: z.object({}),
   outputSchema: ContacSchema,
-  execute: async () => {
-    await new Promise(resolve => setTimeout(resolve, 500));
-    return {
-      name: 'Wander Lee',
-      email: 'hello@wanderdev.example.com',
-      linkedin: 'https://www.linkedin.com/in/wanderlee',
-      github: 'https://github.com/wanderlee',
-    };
-  },
+  toModelOutput: ({ output }) => ({
+    type: 'text',
+    value: `Mostrados los datos de contacto de ${output.name}.`,
+  }),
+  execute: async () => ({
+    name: 'Wanderlee Max',
+    email: 'wanderleedev@gmail.com',
+    linkedin: 'https://linkedin.com/in/wanderlee-max',
+    github: 'https://github.com/WanderleeDev',
+  }),
+});
+
+export const listTracks = tool({
+  description: 'Devolver los tracks de música disponibles en el reproductor del portfolio',
+  inputSchema: z.object({}),
+  outputSchema: TrackListSchema,
+  toModelOutput: ({ output }) => ({
+    type: 'text',
+    value: `Mostrados ${output.tracks.length} tracks en una tarjeta.`,
+  }),
+  execute: async () => ({
+    titulo: 'Tracks',
+    tracks: TRACKS.map(({ title, artist }) => ({
+      titulo: title,
+      artista: artist,
+    })),
+  }),
+});
+
+// Las dos que siguen se resuelven en el navegador (`onToolCall` en
+// `useChatPanel`): necesitan el DOM del reproductor, así que no llevan `execute`.
+export const playTrack = tool({
+  description:
+    'Reproducir un track puntual del reproductor del portfolio. Acepta el título o la posición en la lista.',
+  inputSchema: z.object({
+    track: z.string().describe('Track title (or part of it) or its 1-based position in the list'),
+  }),
+  outputSchema: PlaybackSchema,
+});
+
+export const controlTrack = tool({
+  description: 'Controlar el reproductor del portfolio: play, pause, next o prev',
+  inputSchema: z.object({
+    action: z.enum(['play', 'pause', 'next', 'prev']).describe('Transport action to run'),
+  }),
+  outputSchema: PlaybackSchema,
 });
 
 export const tools = {
   displayProjects,
   displayTechs,
   displayContact,
+  listTracks,
+  playTrack,
+  controlTrack,
 };

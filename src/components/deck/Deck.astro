@@ -1,5 +1,6 @@
 ---
 import Icon from "../Icon.astro";
+import MusicWidget from "./MusicWidget.astro";
 
 interface Props {
   start?: number;
@@ -51,6 +52,8 @@ const arrowBtn =
 
   <div class="fixed z-10 top-5 left-5 text-sm text-slate-400 tabular-nums" data-counter></div>
 
+  <MusicWidget />
+
   <dialog
     id="deck-overview"
     data-overview-panel
@@ -73,6 +76,42 @@ const arrowBtn =
     <Icon name="lucide:x" class="size-3" aria-hidden="true" />
   </template>
 </div>
+
+<style is:global>
+  /* El minimapa nace y se cierra por JavaScript, así que sus estados de
+     opacidad viven en una sola regla y no compiten con el orden de las
+     utilidades generadas por Tailwind. En reposo se mantiene discreto; al
+     pasar el mouse o al llegar con el teclado recupera su opacidad total. */
+  /* En mobile se superpone al abanico del reproductor y las flechas laterales
+     ya están ocultas: ahí se navega deslizando, así que no se muestra. */
+  @media (max-width: 639px) {
+    [data-minimap] {
+      display: none;
+    }
+  }
+
+  [data-minimap] {
+    opacity: 0.75;
+    transition: opacity 200ms ease, scale 200ms ease, display 200ms allow-discrete;
+  }
+
+  [data-minimap]:hover,
+  [data-minimap]:focus-within {
+    opacity: 1;
+  }
+
+  [data-minimap][data-closing] {
+    display: none;
+    opacity: 0;
+    scale: 0.9;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    [data-minimap] {
+      transition: none;
+    }
+  }
+</style>
 
 <style>
   @starting-style {

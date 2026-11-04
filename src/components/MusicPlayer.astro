@@ -2,30 +2,25 @@
 /**
  * MusicPlayer — reproductor para el slide inferior del deck.
  *
- * Un solo panel: cabecera plegada adentro, vinilo girando con el logo del
- * tema activo y, abajo, el abanico de siete cards (una por logo del stack)
- * con números y etiquetas siempre visibles.
+ * Un solo panel: cabecera plegada adentro, vinilo girando con la portada del
+ * tema activo y, abajo, el abanico de cards (una por tema del catálogo) con
+ * números y etiquetas siempre visibles.
  *
- * Una sola instancia de Audio reproduce el mp3 de demo para los siete temas.
- * Cada card ya lleva su propio data-src, así que conectar mp3 reales por tema
- * es sólo cambiar ese atributo.
+ * El catálogo sale de `data/music.json` vía `music-player/tracks`: agregar un
+ * tema es agregar un objeto ahí, sin tocar este componente. Una sola instancia
+ * de Audio reproduce el mp3 del tema elegido.
  */
 import Icon from "./Icon.astro";
 import Title from "./typography/Title.astro";
 import { getTranslations } from "../i18n/utils";
-import { ACTIVE_INDEX, DEMO_SRC, TRACKS } from "./music-player/tracks";
+import { ACTIVE_INDEX, TRACKS } from "./music-player/tracks";
+import { COVER_FRAME } from "../lib/music-catalog";
 
 const lang = Astro.currentLocale as "es" | "en";
 const t = getTranslations(lang);
 const p = t("player");
 
 const active = TRACKS[ACTIVE_INDEX];
-
-// Geometría del abanico: rotación, altura, escala y orden de cada card.
-const rot = ["-10deg", "-6.5deg", "-3deg", "0deg", "3deg", "6.5deg", "10deg"];
-const rise = ["0.95rem", "0.55rem", "0.2rem", "0rem", "0.2rem", "0.55rem", "0.95rem"];
-const scale = ["0.9", "0.94", "0.97", "1.06", "0.97", "0.94", "0.9"];
-const z = [1, 2, 3, 5, 3, 2, 1];
 ---
 
 <section
@@ -33,8 +28,24 @@ const z = [1, 2, 3, 5, 3, 2, 1];
   data-start-index={ACTIVE_INDEX}
   data-playing="false"
   class="w-full max-w-4xl rounded-[1.75rem] border border-line bg-surface p-4 text-left shadow-[0_36px_90px_-52px_rgb(0_0_0_/_0.45)] sm:p-7"
+  style={`--track-accent: ${active.accent ?? "transparent"}`}
   aria-label={p.title}
 >
+  <!-- Fondo del slide: la portada activa, difusa. Sólo se enciende mientras suena. -->
+  <div class="track-ambient" aria-hidden="true">
+    {
+      TRACKS.map((track, i) => (
+        <img
+          data-ambient-cover={i}
+          src={track.cover}
+          alt=""
+          {...COVER_FRAME}
+          loading="lazy"
+          class:list={["ambient-cover", i === ACTIVE_INDEX ? "is-active" : ""]}
+        />
+      ))
+    }
+  </div>
   <header class="flex flex-wrap items-end justify-between gap-x-6 gap-y-3 border-b border-line pb-4 sm:pb-5">
     <div>
       <span class="font-sans text-[11px] font-bold uppercase tracking-[0.3em] text-muted">
@@ -44,45 +55,28 @@ const z = [1, 2, 3, 5, 3, 2, 1];
         {p.title}
       </Title>
     </div>
-    <p class="max-w-[30ch] font-sans text-[0.85rem] leading-[1.5] text-soft sm:text-[0.9rem]">
-      {p.subtitle}
-    </p>
   </header>
-
   <div class="mt-4 grid items-center gap-5 sm:mt-6 sm:grid-cols-[auto_minmax(0,1fr)] sm:gap-8">
-    <!-- Vinilo -->
-    <div
-      class="relative mx-auto size-[clamp(7.5rem,26vw,13rem)] shrink-0 rounded-full border border-line shadow-[0_24px_50px_-24px_rgb(0_0_0_/_0.7)]"
-      style="background: radial-gradient(circle at 50% 42%, #26262c 0%, #151519 58%, #0b0b0e 100%);"
-      aria-hidden="true"
-    >
-      <div class="vinyl-spin absolute inset-0 rounded-full">
-        <div
-          class="absolute inset-[7%] rounded-full"
-          style="background: repeating-radial-gradient(circle at 50% 50%, rgb(255 255 255 / 0.055) 0 1px, transparent 1px 5px);"
-        >
-        </div>
-        <div
-          class="absolute inset-0 rounded-full"
-          style="background: conic-gradient(from 205deg, transparent 0 22%, rgb(255 255 255 / 0.09) 31%, transparent 41% 100%);"
-        >
-        </div>
-        <div
-          class="absolute inset-[31%] grid place-items-center rounded-full bg-[#f2eee4] shadow-[0_2px_10px_rgb(0_0_0_/_0.5)]"
-        >
-          {
-            TRACKS.map((track, i) => (
-              <span
-                data-cover={i}
-                class:list={["col-start-1 row-start-1", i === ACTIVE_INDEX ? "" : "hidden"]}
-              >
-                <Icon name={track.icon} class="size-6 text-[#1b1b1f] sm:size-8" />
-              </span>
-            ))
-          }
-          <span class="absolute size-1.5 rounded-full bg-[#1b1b1f]/70" aria-hidden="true"></span>
-        </div>
+    <!-- Vinilo: material de la opción «Vinilo real» (design/vinyl-disc/02-vinilo-real.html). -->
+    <div class="vinyl-disc" style="--disc: clamp(7.5rem, 26vw, 13rem);" aria-hidden="true">
+      <div class="vinyl-spin">
+        {
+          TRACKS.map((track, i) => (
+            <img
+              data-cover={i}
+              src={track.cover}
+              alt=""
+              {...COVER_FRAME}
+              loading={i === ACTIVE_INDEX ? "eager" : "lazy"}
+              class:list={["vinyl-art", i === ACTIVE_INDEX ? "" : "hidden"]}
+            />
+          ))
+        }
+        <div class="vinyl-grooves"></div>
       </div>
+      <div class="vinyl-sheen"></div>
+      <div class="vinyl-bevel"></div>
+      <div class="vinyl-hole"></div>
     </div>
 
     <!-- Tema activo y controles -->
@@ -198,7 +192,7 @@ const z = [1, 2, 3, 5, 3, 2, 1];
     </div>
   </div>
 
-  <!-- Abanico de temas -->
+  <!-- Fila de discos -->
   <div class="mt-5 border-t border-line pt-4 sm:mt-7 sm:pt-5">
     <div class="flex items-center justify-between font-sans text-[11px] font-bold uppercase tracking-[0.24em] text-muted">
       <span>{p.choose}</span>
@@ -208,37 +202,35 @@ const z = [1, 2, 3, 5, 3, 2, 1];
     </div>
 
     <div
-      data-fan
-      class="fan-scroll flex items-end justify-start gap-0 overflow-x-auto px-1 pb-2 pt-6 sm:justify-center sm:pt-8"
+      data-disc-row
+      class="disc-row flex items-center gap-3 px-1 pt-4 sm:justify-center sm:gap-5 sm:pt-6"
     >
       {
         TRACKS.map((track, i) => (
           <button
             type="button"
             data-track={i}
+            data-id={track.id}
             data-title={track.title}
             data-artist={track.artist}
-            data-src={DEMO_SRC}
+            data-src={track.src}
+            data-accent={track.accent ?? ""}
             aria-label={`${p.select}: ${track.title}`}
             aria-pressed={i === ACTIVE_INDEX ? "true" : "false"}
-            class="fan-card -ml-1 grid h-[4.75rem] w-[4.25rem] shrink-0 place-items-center rounded-card border border-line bg-surface shadow-card first:ml-0 sm:-ml-2 sm:h-24 sm:w-[4.75rem] lg:h-28 lg:w-24"
-            style={`--rot:${rot[i]}; --rise:${rise[i]}; --scale:${scale[i]}; --z:${z[i]};`}
+            class="disc shrink-0"
           >
-            <span
-              class="absolute left-2 top-1.5 font-sans text-[9px] font-bold tabular-nums text-muted"
-              aria-hidden="true"
-            >
-              {String(i + 1).padStart(2, "0")}
-            </span>
-            <span class="flex min-w-0 flex-col items-center gap-2 px-1.5">
-              <Icon name={track.icon} class="size-5 text-ink sm:size-7 lg:size-8" aria-hidden="true" />
-              <span class="fan-title w-full truncate text-center font-sans text-[9px] font-bold uppercase tracking-[0.08em] text-soft">
-                {track.title}
-              </span>
-            </span>
+            <img src={track.cover} alt="" {...COVER_FRAME} loading="lazy" class="disc-art" />
           </button>
         ))
       }
+    </div>
+
+    <div
+      data-disc-dots
+      aria-hidden="true"
+      class="mt-3 flex items-center justify-center gap-1.5 sm:hidden"
+    >
+      {TRACKS.map((_, i) => <span data-disc-dot={i} />)}
     </div>
   </div>
 </section>
@@ -246,6 +238,7 @@ const z = [1, 2, 3, 5, 3, 2, 1];
 <script>
   import {
     applyVolumeInput,
+    centerScrollLeft,
     formatTime,
     isGuardedDeckKey,
     nextTrackIndex,
@@ -255,13 +248,16 @@ const z = [1, 2, 3, 5, 3, 2, 1];
     wrapIndex,
   } from "./music-player/player-core";
   import { requestUnlock } from "../lib/logros-store";
+  import { nowPlaying, playerCommand } from "./music-player/player-store";
 
   const root = document.querySelector<HTMLElement>("[data-music-player]");
 
   if (root) {
     const cards = Array.from(root.querySelectorAll<HTMLButtonElement>("[data-track]"));
+    const dots = Array.from(root.querySelectorAll<HTMLElement>("[data-disc-dot]"));
     const covers = Array.from(root.querySelectorAll<HTMLElement>("[data-cover]"));
-    const fan = root.querySelector<HTMLElement>("[data-fan]")!;
+    const ambient = Array.from(root.querySelectorAll<HTMLElement>("[data-ambient-cover]"));
+    const row = root.querySelector<HTMLElement>("[data-disc-row]")!;
     const nowTitle = root.querySelector<HTMLElement>("[data-now-title]")!;
     const nowArtist = root.querySelector<HTMLElement>("[data-now-artist]")!;
     const stateLabel = root.querySelector<HTMLElement>("[data-state-label]")!;
@@ -292,38 +288,69 @@ const z = [1, 2, 3, 5, 3, 2, 1];
       input.style.setProperty("--fill", `${Math.max(0, Math.min(100, percent))}%`);
     };
 
-    // En mobile el abanico scrollea: centra la card activa sin tocar el deck.
-    const centerCard = (behavior: ScrollBehavior) => {
-      const card = cards[index];
-      const cardRect = card.getBoundingClientRect();
-      const fanRect = fan.getBoundingClientRect();
-      const target =
-        fan.scrollLeft +
-        (cardRect.left - fanRect.left) -
-        (fan.clientWidth - cardRect.width) / 2;
-      fan.scrollTo({ left: target, behavior });
+    // En mobile la fila scrollea: centra el disco activo sin tocar el deck.
+    const centerDisc = (behavior: ScrollBehavior) => {
+      const disc = cards[index];
+      const discRect = disc.getBoundingClientRect();
+      const rowRect = row.getBoundingClientRect();
+      row.scrollTo({
+        left: centerScrollLeft({
+          itemLeft: row.scrollLeft + (discRect.left - rowRect.left),
+          itemWidth: discRect.width,
+          rowWidth: row.clientWidth,
+          rowScrollWidth: row.scrollWidth,
+        }),
+        behavior,
+      });
     };
 
     const syncUi = () => {
       const card = cards[index];
       covers.forEach((cover, i) => cover.classList.toggle("hidden", i !== index));
+      const accent = card.dataset.accent ?? "";
+      if (accent) root.style.setProperty("--track-accent", accent);
+      ambient.forEach((cover, i) => cover.classList.toggle("is-active", i === index));
       cards.forEach((item, i) => item.setAttribute("aria-pressed", i === index ? "true" : "false"));
+      // Los puntos son el indicador del carrusel mobile; se mueven con la misma
+      // selección que ya mueve el resto de la UI.
+      dots.forEach((dot, i) => dot.toggleAttribute("data-active", i === index));
       nowTitle.textContent = card.dataset.title ?? "";
       nowArtist.textContent = card.dataset.artist ?? "";
       counter.textContent = `${String(index + 1).padStart(2, "0")} / ${String(cards.length).padStart(2, "0")}`;
+      publish();
     };
 
-    const syncPlaying = (playing: boolean) => {
-      root.dataset.playing = playing ? "true" : "false";
-      stateLabel.textContent = playing
+    // Estado que el chat lee justo después de mandar un comando: se publica en
+    // el mismo tick, sin esperar al evento `play` del navegador.
+    let playing = false;
+
+    const publish = (nextPlaying: boolean = playing) => {
+      playing = nextPlaying;
+      const card = cards[index];
+      if (!card) return;
+      nowPlaying.set({
+        id: card.dataset.id ?? "",
+        index,
+        title: card.dataset.title ?? "",
+        artist: card.dataset.artist ?? "",
+        cover: covers[index]?.getAttribute("src") ?? "",
+        accent: card.dataset.accent ?? "",
+        playing,
+      });
+    };
+
+    const syncPlaying = (isPlaying: boolean) => {
+      root.dataset.playing = isPlaying ? "true" : "false";
+      stateLabel.textContent = isPlaying
         ? stateLabel.dataset.labelPlaying ?? ""
         : stateLabel.dataset.labelPaused ?? "";
-      playIcon.classList.toggle("hidden", playing);
-      pauseIcon.classList.toggle("hidden", !playing);
+      playIcon.classList.toggle("hidden", isPlaying);
+      pauseIcon.classList.toggle("hidden", !isPlaying);
       playBtn.setAttribute(
         "aria-label",
-        playing ? playBtn.dataset.labelPause ?? "" : playBtn.dataset.labelPlay ?? "",
+        isPlaying ? playBtn.dataset.labelPause ?? "" : playBtn.dataset.labelPlay ?? "",
       );
+      publish(isPlaying);
     };
 
     const syncMute = () => {
@@ -338,7 +365,15 @@ const z = [1, 2, 3, 5, 3, 2, 1];
     };
 
     const play = () => {
-      void audio.play().catch(() => undefined);
+      // Optimista: el chat recibe `playing: true` en este mismo tick. Si el
+      // navegador bloquea el autoplay, el catch lo corrige.
+      publish(true);
+      void audio.play().catch(() => publish(false));
+    };
+
+    const pause = () => {
+      publish(false);
+      audio.pause();
     };
 
     const select = (i: number, autoplay: boolean, behavior: ScrollBehavior = "smooth") => {
@@ -351,7 +386,7 @@ const z = [1, 2, 3, 5, 3, 2, 1];
       paint(seek, 0);
       currentEl.textContent = "0:00";
       syncUi();
-      centerCard(behavior);
+      centerDisc(behavior);
 
       if (autoplay) play();
     };
@@ -434,6 +469,28 @@ const z = [1, 2, 3, 5, 3, 2, 1];
     syncMute();
     syncPlaying(false);
     select(index, false, "auto");
+
+    // Comandos del chat: el reproductor sigue siendo el dueño del transporte.
+    playerCommand.subscribe((command) => {
+      if (!command) return;
+      switch (command.type) {
+        case "play":
+          play();
+          break;
+        case "pause":
+          pause();
+          break;
+        case "next":
+          select(index + 1, true);
+          break;
+        case "prev":
+          select(index - 1, true);
+          break;
+        case "select":
+          select(command.index, true);
+          break;
+      }
+    });
   }
 </script>
 
@@ -473,10 +530,132 @@ const z = [1, 2, 3, 5, 3, 2, 1];
     box-shadow: 0 0 0 1px var(--color-line);
   }
 
+  /* Disco: material de la opción «Vinilo real» del diseño design/vinyl-disc/02-vinilo-real.html.
+     Aro negro del 3,5%, bisel, surcos al 14% y eje perforado al 8% del diámetro. */
+  .vinyl-disc {
+    position: relative;
+    width: var(--disc);
+    height: var(--disc);
+    flex: none;
+    margin-inline: auto;
+    border-radius: 50%;
+    background: radial-gradient(circle at 50% 42%, #2b2b33 0%, #131318 58%, #08080b 100%);
+    box-shadow:
+      0 30px 60px -30px rgb(0 0 0 / 0.8),
+      0 0 0 1px rgb(0 0 0 / 0.35),
+      inset 0 1px 1px rgb(255 255 255 / 0.35),
+      inset 0 -3px 10px rgb(0 0 0 / 0.55);
+  }
+
+  .vinyl-grooves {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    pointer-events: none;
+    background: repeating-radial-gradient(circle at 50% 50%, rgb(0 0 0 / 0.14) 0 1px, transparent 1px 7px);
+  }
+
+  /* El brillo no gira: la luz está fija aunque el disco dé vueltas. */
+  .vinyl-sheen {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    pointer-events: none;
+    background: conic-gradient(from 205deg, transparent 0 22%, rgb(255 255 255 / 0.14) 31%, transparent 41% 100%);
+  }
+
+  .vinyl-bevel {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    pointer-events: none;
+    background:
+      radial-gradient(circle at 30% 22%, rgb(255 255 255 / 0.2), transparent 44%),
+      radial-gradient(circle at 78% 84%, rgb(0 0 0 / 0.42), transparent 54%);
+    box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.05);
+  }
+
+  .vinyl-hole {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 8%;
+    height: 8%;
+    transform: translate(-50%, -50%);
+    border-radius: 50%;
+    pointer-events: none;
+    background: #050506;
+    box-shadow:
+      inset 0 2px 3px rgb(0 0 0 / 0.95),
+      0 0 0 calc(var(--disc) * 0.012) #2f2f38,
+      0 0 0 calc(var(--disc) * 0.022) rgb(255 255 255 / 0.1),
+      0 1px 0 0 rgb(255 255 255 / 0.14);
+  }
+
   /* Vinilo: quieto en pausa, gira sólo mientras suena. */
   .vinyl-spin {
+    position: absolute;
+    inset: 3.5%;
+    border-radius: 50%;
+    overflow: hidden;
     animation: vinyl-spin 7s linear infinite;
     animation-play-state: paused;
+  }
+
+  .vinyl-art {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+  }
+
+  /* Fondo del slide: la portada activa difusa detrás de todo, sólo mientras suena.
+     El slide es `relative isolate`, así que el z-index negativo queda contenido. */
+  .track-ambient {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    overflow: hidden;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 700ms ease;
+  }
+
+  [data-music-player][data-playing="true"] .track-ambient {
+    opacity: 1;
+  }
+
+  .ambient-cover {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transform: scale(1.4);
+    filter: blur(56px) saturate(1.4);
+    /* Se apaga en los bordes: el fondo respira sin pelear con el resto del deck. */
+    mask-image: radial-gradient(circle at 50% 42%, #000 8%, rgb(0 0 0 / 0.55) 46%, transparent 78%);
+    -webkit-mask-image: radial-gradient(circle at 50% 42%, #000 8%, rgb(0 0 0 / 0.55) 46%, transparent 78%);
+    opacity: 0;
+    transition: opacity 600ms ease;
+  }
+
+  .ambient-cover.is-active {
+    opacity: 1;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .track-ambient,
+    .ambient-cover {
+      transition: none;
+    }
+  }
+
+  /* La tarjeta toma un tinte característico de la tapa activa. */
+  [data-music-player] {
+    background: color-mix(in oklab, var(--track-accent, transparent) 14%, var(--color-surface));
   }
 
   [data-music-player][data-playing="true"] .vinyl-spin {
@@ -541,36 +720,150 @@ const z = [1, 2, 3, 5, 3, 2, 1];
     }
   }
 
-  /* Abanico */
-  .fan-scroll {
+  /* Fila de discos: cada tema es un vinilo y el activo escala con `transform`
+     (no mueve a sus vecinos, así que no salta la fila ni la tarjeta). La
+     altura de la fila se reserva para el disco escalado más su sombra. */
+  .disc-row {
+    /* El disco activo escala 1.25× por `transform` y su sombra queda afuera de
+       su caja. `overflow-x:auto` arrastra el eje Y a `auto` (CSS no deja un
+       eje auto y el otro visible), así que hay que reservar el vuelo del disco
+       escalado + su sombra o la fila lo recorta. */
+    --disc-size: 4.25rem;
+    --disc-scale: 1.25;
+    min-height: calc(var(--disc-size) * 0.5 + (var(--disc-size) * var(--disc-scale)) / 2 + 1.75rem);
     scrollbar-width: none;
+    overscroll-behavior-x: contain;
   }
 
-  .fan-scroll::-webkit-scrollbar {
+  .disc-row::-webkit-scrollbar {
     display: none;
   }
 
-  .fan-card {
+  .disc {
     position: relative;
-    transform-origin: bottom center;
-    transform: translateY(var(--rise)) rotate(var(--rot)) scale(var(--scale));
-    z-index: var(--z);
+    width: var(--disc-size);
+    height: var(--disc-size);
+    border-radius: 50%;
+    /* Mismo material radial que el disco grande (ver .vinyl-disc). */
+    background: radial-gradient(circle at 50% 42%, #2b2b33 0%, #131318 58%, #08080b 100%);
+    box-shadow:
+      inset 0 1px 1px rgb(255 255 255 / 0.35),
+      0 12px 24px -18px rgb(0 0 0 / 0.6);
     transition:
-      transform 0.45s cubic-bezier(0.22, 1, 0.36, 1),
-      border-color 0.3s,
+      filter 0.4s,
+      opacity 0.4s,
+      transform 0.35s cubic-bezier(0.22, 1, 0.36, 1),
       box-shadow 0.3s;
   }
 
-  .fan-card:hover,
-  .fan-card:focus-visible,
-  .fan-card[aria-pressed="true"] {
-    transform: translateY(calc(var(--rise) - 0.75rem)) rotate(0deg) scale(1.06);
-    z-index: 10;
-    border-color: var(--color-ink);
+  .disc-art {
+    position: absolute;
+    inset: 6%;
+    width: 88%;
+    height: 88%;
+    border-radius: 50%;
+    object-fit: cover;
   }
 
-  [data-music-player][data-playing="true"] .fan-card[aria-pressed="true"] .fan-title {
-    color: var(--color-ink);
+  /* Eje central: el .vinyl-hole en miniatura. */
+  .disc::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 13%;
+    height: 13%;
+    transform: translate(-50%, -50%);
+    border-radius: 50%;
+    background: #050506;
+    box-shadow:
+      inset 0 2px 3px rgb(0 0 0 / 0.95),
+      0 0 0 1.5px #2f2f38,
+      0 0 0 3px rgb(255 255 255 / 0.1);
+  }
+
+  .disc:hover,
+  .disc:focus-visible {
+    box-shadow:
+      inset 0 1px 1px rgb(255 255 255 / 0.35),
+      0 0 0 2px var(--color-line),
+      0 14px 26px -16px rgb(0 0 0 / 0.6);
+  }
+
+  .disc[aria-pressed="true"] {
+    /* `transform: scale` en vez de `width`/`height`: el box no se mueve, no
+       salta el layout y no hay que pelear con `overflow` de la fila. */
+    transform: scale(var(--disc-scale));
+    z-index: 1;
+    box-shadow:
+      0 0 0 2px var(--track-accent, var(--color-ink)),
+      0 18px 34px -18px rgb(0 0 0 / 0.55);
+  }
+
+  /* Cuando el disco está sonando, los demás se agrisan y se atenúan: se lee
+     de un golpe cuál va al tocadiscos. En pausa se queda la fila a color para
+     que no pierda el selector su información mientras la persona elige. */
+  [data-music-player][data-playing="true"] .disc:not([aria-pressed="true"]) {
+    filter: grayscale(1) opacity(0.55);
+  }
+
+  /* Puntos de la fila: sin barra de scroll son la única señal de que hay más
+     temas afuera. El activo se estira y toma el accent del tema que suena. */
+  [data-disc-dot] {
+    width: 0.4375rem;
+    height: 0.4375rem;
+    border-radius: 9999px;
+    /* `currentColor` acá hereda un casi-blanco: el punto necesita el token. */
+    background: var(--color-muted);
+    opacity: 0.7;
+    transition:
+      width 0.25s cubic-bezier(0.22, 1, 0.36, 1),
+      opacity 0.25s;
+  }
+
+  [data-disc-dot][data-active] {
+    width: 1.125rem;
+    background: var(--track-accent, var(--color-ink));
+    opacity: 1;
+  }
+
+  /* En mobile los seis discos no entran: la fila se desliza con snap y los
+     bordes se desvanecen, que es la señal de que hay más temas afuera. */
+  @media (max-width: 639px) {
+    .disc-row {
+      overflow-x: auto;
+      scroll-snap-type: x proximity;
+      -webkit-mask-image: linear-gradient(
+        90deg,
+        transparent 0,
+        #000 0.5rem,
+        #000 calc(100% - 0.75rem),
+        transparent 100%
+      );
+      mask-image: linear-gradient(
+        90deg,
+        transparent 0,
+        #000 0.5rem,
+        #000 calc(100% - 0.75rem),
+        transparent 100%
+      );
+    }
+
+    .disc {
+      scroll-snap-align: center;
+    }
+  }
+
+  @media (min-width: 640px) {
+    .disc-row {
+      --disc-size: 4.75rem;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .disc-row {
+      --disc-size: 5.25rem;
+    }
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -579,8 +872,10 @@ const z = [1, 2, 3, 5, 3, 2, 1];
       animation: none;
     }
 
-    .fan-card {
+    .disc {
       transition: none;
     }
   }
+
 </style>
+

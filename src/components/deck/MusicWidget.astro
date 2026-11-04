@@ -1,0 +1,194 @@
+---
+import Icon from "../Icon.astro";
+
+// Widget de música del deck: aparece sólo cuando hay audio sonando y la slide
+// del reproductor no está a la vista (ahí ya está su transporte completo).
+const isEn = Astro.currentLocale === "en";
+const p = isEn
+  ? {
+      group: "Music",
+      prev: "Previous track",
+      next: "Next track",
+      play: "Play",
+      pause: "Pause",
+    }
+  : {
+      group: "Música",
+      prev: "Tema anterior",
+      next: "Tema siguiente",
+      play: "Reproducir",
+      pause: "Pausar",
+    };
+const button =
+  "flex size-9 shrink-0 cursor-pointer items-center justify-center rounded-full border-0 bg-transparent p-0 text-inherit transition-[background,scale] duration-150 hover:bg-[color-mix(in_srgb,currentColor_12%,transparent)] focus-visible:outline-2 focus-visible:outline-current focus-visible:outline-offset-2 active:scale-95";
+---
+
+<div
+  data-music-widget
+  data-visible="false"
+  data-playing="false"
+  role="group"
+  aria-label={p.group}
+  class="fixed bottom-5 left-5 z-20 flex max-w-[calc(100vw-2.5rem)] items-center gap-0.5 rounded-full border-[1.5px] border-[var(--color-line)] bg-[color-mix(in_oklab,var(--color-surface)_88%,transparent)] py-1 pr-3 pl-2.5 text-[var(--color-ink)] shadow-[var(--shadow-card)] backdrop-blur-[12px] backdrop-saturate-[1.4] max-sm:bottom-[5.5rem] max-sm:left-4"
+>
+  <span class="music-led" aria-hidden="true"></span>
+
+  <button type="button" class={button} data-widget="prev" aria-label={p.prev}>
+    <Icon name="lucide:skip-back" class="size-4" aria-hidden="true" />
+  </button>
+  <button
+    type="button"
+    class:list={[button, "music-toggle"]}
+    data-widget="toggle"
+    data-label-play={p.play}
+    data-label-pause={p.pause}
+    aria-label={p.pause}
+  >
+    <Icon name="lucide:pause" class="size-4" data-widget-icon="pause" aria-hidden="true" />
+    <Icon name="lucide:play" class="size-4" data-widget-icon="play" aria-hidden="true" />
+  </button>
+  <button type="button" class={button} data-widget="next" aria-label={p.next}>
+    <Icon name="lucide:skip-forward" class="size-4" aria-hidden="true" />
+  </button>
+
+  <span class="ml-1.5 flex min-w-0 items-center gap-2">
+    <img data-widget-cover alt="" class="music-cover size-7 shrink-0 rounded-full object-cover" />
+    <span data-widget-title class="max-w-[9rem] truncate font-sans text-xs font-semibold max-sm:hidden"></span>
+  </span>
+</div>
+
+<style>
+  /* Fuera del flujo del deck: el estado lo publica el reproductor y el script
+     de abajo sólo traduce. Acá sólo vive cómo se ve encendido y apagado. */
+  [data-music-widget] {
+    opacity: 0;
+    scale: 0.92;
+    pointer-events: none;
+    transition:
+      opacity 250ms ease,
+      scale 250ms ease;
+  }
+
+  [data-music-widget][data-visible="true"] {
+    opacity: 1;
+    scale: 1;
+    pointer-events: auto;
+  }
+
+  /* Indicador de "está prendido": el color sale del accent de la portada activa. */
+  .music-led {
+    width: 0.5rem;
+    height: 0.5rem;
+    flex: none;
+    border-radius: 50%;
+    background: var(--widget-accent, currentColor);
+    box-shadow: 0 0 0 0.2rem color-mix(in srgb, var(--widget-accent, currentColor) 25%, transparent);
+    animation: music-led-pulse 2.4s ease-in-out infinite;
+  }
+
+  .music-cover {
+    box-shadow: 0 0 0 1px color-mix(in srgb, currentColor 18%, transparent);
+  }
+
+  [data-music-widget][data-playing="true"] .music-cover {
+    animation: music-cover-spin 7s linear infinite;
+  }
+
+  /* El botón muestra la acción disponible, no el estado: sonando ofrece pausa. */
+  [data-music-widget] [data-widget-icon="pause"] {
+    display: none;
+  }
+
+  [data-music-widget][data-playing="true"] [data-widget-icon="play"] {
+    display: none;
+  }
+
+  [data-music-widget][data-playing="true"] [data-widget-icon="pause"] {
+    display: block;
+  }
+
+  @keyframes music-led-pulse {
+    50% {
+      opacity: 0.45;
+    }
+  }
+
+  @keyframes music-cover-spin {
+    to {
+      rotate: 360deg;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    [data-music-widget],
+    .music-led,
+    .music-cover {
+      transition: none;
+      animation: none;
+    }
+  }
+</style>
+
+<script>
+  import { nowPlaying, sendPlayerCommand, type PlayerCommand } from "../music-player/player-store";
+  import { shouldShowTransport, transportCommand, type TransportAction } from "./music-widget";
+
+  const widget = document.querySelector<HTMLElement>("[data-music-widget]");
+  const player = document.querySelector<HTMLElement>("[data-music-player]");
+
+  if (widget) {
+    const title = widget.querySelector<HTMLElement>("[data-widget-title]");
+    const cover = widget.querySelector<HTMLImageElement>("[data-widget-cover]");
+    const toggle = widget.querySelector<HTMLButtonElement>('[data-widget="toggle"]');
+
+    let playing = false;
+    let playerVisible = true;
+
+    const render = () => {
+      widget.dataset.visible = shouldShowTransport({ playing, playerVisible }) ? "true" : "false";
+      widget.dataset.playing = playing ? "true" : "false";
+      toggle?.setAttribute(
+        "aria-label",
+        playing ? (toggle.dataset.labelPause ?? "") : (toggle.dataset.labelPlay ?? ""),
+      );
+    };
+
+    // El reproductor no sabe dónde está el deck: acá se mide si su slide está a
+    // la vista. Con la mitad de la tarjeta en pantalla alcanza para no duplicar.
+    if (player) {
+      new IntersectionObserver(
+        ([entry]) => {
+          playerVisible = entry.isIntersecting && entry.intersectionRatio >= 0.5;
+          render();
+        },
+        { threshold: [0, 0.5, 1] },
+      ).observe(player);
+    }
+
+    nowPlaying.subscribe((state) => {
+      playing = state?.playing ?? false;
+      if (title) title.textContent = state?.title ?? "";
+      if (cover) {
+        if (state?.cover) cover.src = state.cover;
+        cover.hidden = !state?.cover;
+      }
+      const accent = state?.accent;
+      if (accent) widget.style.setProperty("--widget-accent", accent);
+      render();
+    });
+
+    for (const button of widget.querySelectorAll<HTMLButtonElement>("[data-widget]")) {
+      button.addEventListener("click", () => {
+        const command: PlayerCommand = transportCommand(
+          button.dataset.widget as TransportAction,
+          playing,
+        );
+        // El reproductor publica su estado en el mismo tick, así que el widget
+        // no adivina: espera el estado real y recién ahí se redibuja.
+        sendPlayerCommand(command);
+      });
+    }
+
+    render();
+  }
+</script>

@@ -168,7 +168,15 @@ export const en = {
     send: "Send",
     stop: "Stop",
     error: "I couldn't answer. Please try again.",
-    toolLoading: "Preparing card…",
+    toolLoading: "Preparing card...",
+    tools: {
+      displayProjects: "Looking up projects",
+      displayTechs: "Checking the stack",
+      displayContact: "Preparing contact",
+      listTracks: "Looking up tracks",
+      playTrack: "Queuing the track",
+      controlTrack: "Driving the player",
+    },
     suggestions: {
       projects: "My projects",
       technologies: "Technologies",
@@ -178,8 +186,7 @@ export const en = {
 
   player: {
     eyebrow: "Playlist",
-    title: "The stack plays too",
-    subtitle: "Player demo: pick a logo and press play.",
+    title: "It plays while I build",
     paused: "Paused",
     playing: "Playing",
     choose: "Pick a track",

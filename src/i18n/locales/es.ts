@@ -168,7 +168,15 @@ export const es = {
     send: "Enviar",
     stop: "Detener",
     error: "No pude responder. Probá de nuevo.",
-    toolLoading: "Preparando tarjeta…",
+    toolLoading: "Preparando tarjeta...",
+    tools: {
+      displayProjects: "Buscando proyectos",
+      displayTechs: "Revisando el stack",
+      displayContact: "Preparando el contacto",
+      listTracks: "Buscando tracks",
+      playTrack: "Eligiendo el tema",
+      controlTrack: "Moviendo el reproductor",
+    },
     suggestions: {
       projects: "Mis proyectos",
       technologies: "Tecnologías",
@@ -178,8 +186,7 @@ export const es = {
 
   player: {
     eyebrow: "Playlist",
-    title: "El stack también suena",
-    subtitle: "Demo del reproductor: elegí un logo y dale play.",
+    title: "Suena mientras construyo",
     paused: "En pausa",
     playing: "Reproduciendo",
     choose: "Elegí el tema",

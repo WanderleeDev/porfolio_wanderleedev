@@ -7,11 +7,12 @@ import { code } from "@streamdown/code";
 import { math } from "@streamdown/math";
 import { mermaid } from "@streamdown/mermaid";
 import { toolRegistry, type ToolRegistryName } from "./toolRegistry";
+import { ToolStatus } from "./ToolStatus";
 
 interface AssistantMessageProps {
     message: UIMessage;
     isStreaming: boolean;
-    labels: { loading: string };
+    labels: { loading: string; tools?: Record<string, string> };
 }
 
 export function AssistantMessage({ message, isStreaming, labels }: AssistantMessageProps) {
@@ -37,15 +38,15 @@ export function AssistantMessage({ message, isStreaming, labels }: AssistantMess
                     const name = getToolName(part);
                     if (!(name in toolRegistry)) return null;
                     const Component = toolRegistry[name as ToolRegistryName] as ComponentType;
+                    // El nombre de la herramienta se dice explícitamente: el
+                    // estado de espera no es un "cargando" genérico, es "estoy
+                    // buscando tracks" o "estoy preparando el contacto".
+                    const runningLabel = labels.tools?.[name] ?? labels.loading;
 
                     switch (part.state) {
                         case "input-streaming":
                         case "input-available":
-                            return (
-                                <p key={i} role="status" className="self-start rounded-full border border-line bg-field px-3 py-1.5 font-sans text-xs text-soft">
-                                    {labels.loading}
-                                </p>
-                            );
+                            return <ToolStatus key={i} label={runningLabel} />;
                         case "output-available":
                             return <Component key={i} {...(part.output as object)} />;
                         case "output-error":
@@ -54,6 +55,10 @@ export function AssistantMessage({ message, isStreaming, labels }: AssistantMess
                                     {part.errorText}
                                 </p>
                             );
+                        default:
+                            // `approval-*` y `output-denied` no se usan todavía:
+                            // sin rama explícita el part no pinta nada.
+                            return null;
                     }
                 }
 

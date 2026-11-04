@@ -10,9 +10,11 @@
     "rag:build": "bun scripts/build-rag-index.ts",
     "rag:ingest": "bun scripts/ingest-qdrant.ts",
     "rag:query": "bun scripts/query-rag.ts",
+    "eval:chat": "bun scripts/eval-chat.ts",
     "test": "bun test"
   },
   "dependencies": {
+    "@ai-sdk/google": "^4.0.107",
     "@ai-sdk/openai-compatible": "^3.0.74",
     "@ai-sdk/react": "^4.0.150",
     "@astrojs/node": "^11.1.9",
@@ -48,6 +50,7 @@
     "vite": "^8.3.4"
   },
   "devDependencies": {
+    "@types/node": "^26.6.6",
     "unpdf": "^1.9.1"
   }
 }

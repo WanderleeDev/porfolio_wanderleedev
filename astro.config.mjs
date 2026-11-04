@@ -75,6 +75,12 @@ export default defineConfig({
         access: "secret",
       }),
 
+      // GEMINI API
+      GEMINI_API_KEY: envField.string({
+        context: "server",
+        access: "secret"
+      }),
+
       // LLM (API compatible con OpenAI)
       LLM_BASE_URL: envField.string({
         context: "server",
@@ -111,6 +117,13 @@ export default defineConfig({
       QDRANT_COLLECTION: envField.string({
         context: "server",
         access: "public",
+      }),
+      RAG_MIN_SCORE: envField.number({
+        context: "server",
+        access: "public",
+        min: 0,
+        max: 1,
+        default: 0.3,
       }),
     },
     validateSecrets: true,

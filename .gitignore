@@ -39,3 +39,5 @@ skills-lock.json
 
 # local docs (never commit)
 /TECHNICAL_DEBT.md
+# Local AI runtime state
+.atl/

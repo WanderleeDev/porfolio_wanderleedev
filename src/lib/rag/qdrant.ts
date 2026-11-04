@@ -5,7 +5,7 @@ import type { SparseVector } from "./sparse";
 
 const COLLECTION_NAME = /^[a-z0-9][a-z0-9_-]{0,63}$/;
 
-export interface QdrantConfig {
+interface QdrantConfig {
     url: string;
     apiKey?: string;
     /** Stable alias the app reads from; ingestion swaps it atomically. */
@@ -45,11 +45,6 @@ export function createQdrantClient(config: QdrantConfig, timeoutMs = 15_000): Qd
 
 export function versionedCollectionName(alias: string, buildVersion: string): string {
     return `${alias}_${buildVersion.slice(0, 12)}`;
-}
-
-export async function collectionExists(client: QdrantClient, name: string): Promise<boolean> {
-    const { exists } = await client.collectionExists(name);
-    return exists;
 }
 
 export async function createCorpusCollection(
@@ -145,7 +140,7 @@ export async function pruneOldCollections(
     return stale;
 }
 
-export interface HybridQueryOptions {
+interface HybridQueryOptions {
     dense: number[];
     sparse: SparseVector;
     limit?: number;

@@ -89,7 +89,7 @@ export function removePageNumberLines(page: string, pageNumber: number, totalPag
         .join("\n");
 }
 
-export interface ChunkOptions {
+interface ChunkOptions {
     maxChars?: number;
     overlapChars?: number;
     minChars?: number;
@@ -233,7 +233,7 @@ export interface SectionSource {
     text: string;
 }
 
-export interface SectionBuildResult {
+interface SectionBuildResult {
     sections: SectionSource[];
     warnings: string[];
 }

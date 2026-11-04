@@ -4,7 +4,7 @@ import { queryHybrid, type HybridHit } from "./qdrant";
 import { corpusPayloadSchema, type CorpusPayload } from "./schema";
 import { encodeSparse } from "./sparse";
 
-export interface RetrievedChunk {
+interface RetrievedChunk {
     id: string;
     projectId?: string;
     section: CorpusPayload["section"];
@@ -14,7 +14,7 @@ export interface RetrievedChunk {
     score: number;
 }
 
-export interface SelectOptions {
+interface SelectOptions {
     limit?: number;
     /** Caps how many chunks one project can contribute after fusion. */
     maxPerProject?: number;
@@ -52,7 +52,7 @@ export function selectChunks(hits: HybridHit[], options: SelectOptions = {}): Re
     return selected;
 }
 
-export interface FormatOptions {
+interface FormatOptions {
     /** Keeps the excerpt context inside the model's window; chunks arrive up to 1800 chars. */
     maxCharsPerChunk?: number;
 }
@@ -74,7 +74,7 @@ export function formatContext(chunks: RetrievedChunk[], options: FormatOptions =
         .join("\n\n");
 }
 
-export interface RetrieveOptions {
+interface RetrieveOptions {
     client: QdrantClient;
     collection: string;
     embedding: EmbeddingOptions;
@@ -88,7 +88,7 @@ export interface RetrieveOptions {
     queryTimeoutSeconds?: number;
 }
 
-export interface RetrievalResult {
+interface RetrievalResult {
     chunks: RetrievedChunk[];
     context: string;
 }

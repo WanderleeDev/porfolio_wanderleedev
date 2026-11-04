@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-export const CORPUS_SECTIONS = [
+const CORPUS_SECTIONS = [
     "profile",
     "summary",
     "challenge",
@@ -114,7 +114,6 @@ export const corpusIndexSchema = z
     });
 
 export type CorpusIndex = z.infer<typeof corpusIndexSchema>;
-export type CorpusChunk = CorpusIndex["chunks"][number];
 
 export interface CorpusChunkInput {
     id: string;

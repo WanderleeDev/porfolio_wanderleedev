@@ -8,7 +8,7 @@ export interface EmbeddingOptions {
     retries?: number;
 }
 
-export interface EmbeddingResult {
+interface EmbeddingResult {
     vectors: number[][];
     dimensions: number;
 }

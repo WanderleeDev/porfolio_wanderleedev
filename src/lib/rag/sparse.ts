@@ -3,10 +3,7 @@ export interface SparseVector {
     values: number[];
 }
 
-export type SparseMode = "document" | "query";
-
-/** Bump when tokenization or weighting changes; ingestion uses it in the collection version. */
-export const SPARSE_ENCODER_VERSION = 1;
+type SparseMode = "document" | "query";
 
 const MAX_TOKEN_CHARS = 40;
 

@@ -22,7 +22,7 @@ export const DEFAULT_MANIFEST = "data/corpus/manifest.json";
 export const DEFAULT_MAX_CHARS = 1800;
 export const DEFAULT_OVERLAP_CHARS = 240;
 
-export interface CorpusLoadOptions {
+interface CorpusLoadOptions {
     pdf: string;
     /** Explicit manifest path; pass null to skip it and use the whole-document fallback. */
     manifest?: string | null;
@@ -31,7 +31,7 @@ export interface CorpusLoadOptions {
     keepRunningLines?: boolean;
 }
 
-export interface LoadedCorpus {
+interface LoadedCorpus {
     chunks: CorpusChunkInput[];
     sections: SectionSource[];
     /** Cleaned page text, useful for reviewing the manifest mapping. */
@@ -46,7 +46,7 @@ export interface LoadedCorpus {
     warnings: string[];
 }
 
-export function sha256(value: string | Uint8Array): string {
+function sha256(value: string | Uint8Array): string {
     return createHash("sha256").update(value).digest("hex");
 }
 
@@ -68,7 +68,7 @@ function canonicalJson(value: unknown): string {
  * Hashing the parsed manifest instead of the raw bytes means reformatting the
  * JSON (indentation, key order) does not mark the index stale.
  */
-export function manifestSha256(manifest: CorpusManifest): string {
+function manifestSha256(manifest: CorpusManifest): string {
     return sha256(canonicalJson(manifest));
 }
 

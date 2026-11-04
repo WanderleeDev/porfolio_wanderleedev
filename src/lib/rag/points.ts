@@ -2,13 +2,13 @@ import { createHash } from "node:crypto";
 import type { CorpusChunkInput } from "./schema";
 import { encodeSparse, type SparseVector } from "./sparse";
 
-export interface CorpusPointMeta {
+interface CorpusPointMeta {
     sourceSha256: string;
     embeddingModel: string;
     embeddingDimensions: number;
 }
 
-export interface CorpusPointPayload {
+interface CorpusPointPayload {
     chunkId: string;
     projectId?: string;
     section: CorpusChunkInput["section"];

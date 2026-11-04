@@ -12,29 +12,4 @@ const t = getTranslations(lang)("chat");
 
 <script>
   import "@wanderleedev/pixel-pet/define";
-
-  let meowAudio: HTMLAudioElement | null = null;
-  let lastMeow = 0;
-
-  const meow = () => {
-    try {
-      if (!meowAudio) {
-        meowAudio = new Audio("/meowth.mp3");
-        meowAudio.volume = 0.35;
-      }
-      const now = Date.now();
-      if (now - lastMeow < 2500) return;
-      lastMeow = now;
-      meowAudio.currentTime = 0;
-      void meowAudio.play()?.catch(() => undefined);
-    } catch (e) {}
-  };
-
-  window.addEventListener("chat:event", ((e: CustomEvent<string>) => {
-    const pet = document.getElementById("chat-pet") as (HTMLElement & {
-      feed?: (e: string) => void;
-    }) | null;
-    pet?.feed?.(e.detail);
-    if (e.detail === "send") meow();
-  }) as EventListener);
 </script>

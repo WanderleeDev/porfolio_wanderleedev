@@ -7,7 +7,14 @@ type Cell = { type: 'h' | 'v'; i: number; row: number; col: number; title: strin
 // Clases Tailwind reutilizables
 const ARROW_OFF = 'pointer-events-none';
 const THUMB = 'flex flex-col items-center justify-center gap-1.5 p-4 rounded-[18px] border-2 border-transparent bg-slate-800 text-slate-50 cursor-pointer transition-all enabled:hover:scale-[1.03] enabled:hover:border-sky-400 disabled:opacity-35 disabled:cursor-not-allowed';
-const THUMB_CURRENT = ['border-sky-400', 'ring-4', 'ring-sky-400/20'];
+// El borde y el fondo del estado activo van por estilo inline: `border-transparent`
+// de la clase base y `border-sky-400` tienen la misma especificidad y el orden del
+// CSS generado decide por nosotros. El `ring` no compite con nada, así que va en clase.
+const THUMB_CURRENT = ['ring-4', 'ring-sky-400/25'];
+const ACTIVE_BORDER = 'rgb(56 189 248)';
+const IDLE_BORDER = 'rgb(255 255 255 / 0.2)';
+const ACTIVE_FILL = 'rgb(56 189 248 / 0.18)';
+const IDLE_FILL = 'rgb(255 255 255 / 0.05)';
 const NATIVE_COMMAND = 'commandForElement' in HTMLButtonElement.prototype;
 
 export function initDeck(root: HTMLElement) {
@@ -177,12 +184,17 @@ export function initDeck(root: HTMLElement) {
   });
 
   function renderOverview() {
-    // El número de columnas y filas depende de cuántos slides haya
+    // El número de columnas y filas depende de cuántos slides haya. Con el
+    // vertical bloqueado la navegación de arriba hacia abajo todavía no existe:
+    // esas filas quedan vacías y sólo se dibuja la banda horizontal.
     grid.style.gridTemplateColumns = `repeat(${hslides.length}, minmax(0, 1fr))`;
     grid.style.gridTemplateRows = `repeat(${Math.max(vslides.length, 1)}, minmax(0, 1fr))`;
     grid.innerHTML = '';
 
     cells.forEach((c) => {
+      // Arriba y abajo del holder quedan ocultos hasta desbloquear el vertical.
+      if (locked && c.type === 'v') return;
+
       const b = document.createElement('button');
       b.className = THUMB;
       b.style.gridColumn = String(c.col + 1);
@@ -192,13 +204,12 @@ export function initDeck(root: HTMLElement) {
 
       const isCurrent =
         c.type === 'h'
-          ? current === c.i && !(c.i === holderIndex && vCurrent !== vstart)
+          ? current === c.i && (locked || !(c.i === holderIndex && vCurrent !== vstart))
           : current === holderIndex && vCurrent === c.i;
-      if (isCurrent) b.classList.add(...THUMB_CURRENT);
-
-      if (c.type === 'v' && locked) {
-        b.disabled = true;
-        b.title = 'Desbloquea el vertical para ir aquí';
+      if (isCurrent) {
+        b.classList.add(...THUMB_CURRENT);
+        b.style.borderColor = ACTIVE_BORDER;
+        b.style.backgroundColor = ACTIVE_FILL;
       }
 
       b.addEventListener('click', () => jumpTo(c));
@@ -234,33 +245,34 @@ export function initDeck(root: HTMLElement) {
   // por los slides horizontales vecinos.
   const minimap = document.createElement('div');
   minimap.className =
-    'fixed bottom-6 right-6 z-30 grid grid-cols-[48px_48px_48px] grid-rows-[48px_48px_48px] items-center justify-items-center gap-1.5 rounded-[22px] border border-white/20 bg-slate-900/85 p-3 shadow-lg backdrop-blur-md origin-bottom-right transition-[opacity,scale,display] transition-discrete duration-200 ease-out motion-reduce:transition-none starting:opacity-0 starting:scale-90';
+    'fixed bottom-6 right-6 z-30 grid grid-cols-[48px_48px_48px] grid-rows-[48px_48px_48px] items-center justify-items-center gap-1.5 rounded-[22px] border border-white/20 bg-slate-900/85 p-3 shadow-lg backdrop-blur-md origin-bottom-right';
   minimap.setAttribute('data-minimap', '');
+  minimap.setAttribute('data-closing', '');
   minimap.setAttribute('role', 'group');
   minimap.setAttribute('aria-label', 'Minimapa del deck');
-  minimap.style.display = 'none';
   root.appendChild(minimap);
 
-  // El `display` va último: con transition-discrete el navegador lo difiere
-  // hasta que terminan opacity y scale, así el cierre se anima.
+  // Opacidad y transición viven en `Deck.astro` (regla global sobre
+  // `[data-minimap]`): así el estado discreto y el hover no compiten por el
+  // orden del CSS generado. Acá sólo se marca si el mapa está cerrado.
   function setMinimapVisible(on: boolean) {
-    if (on) {
-      minimap.classList.remove('opacity-0', 'scale-90');
-      minimap.style.display = '';
-    } else {
-      minimap.classList.add('opacity-0', 'scale-90');
-      minimap.style.display = 'none';
-    }
+    if (on) minimap.removeAttribute('data-closing');
+    else minimap.setAttribute('data-closing', '');
   }
 
   const MM_CELL =
-    'block h-full w-full cursor-pointer rounded-[10px] border-2 bg-white/5 transition-colors hover:border-sky-400';
-  const MM_ON_BORDER = 'rgb(56 189 248)';
-  const MM_OFF_BORDER = 'rgb(255 255 255 / 0.2)';
-  const MM_ON_FILL = 'rgb(56 189 248 / 0.18)';
-  const MM_OFF_FILL = 'rgb(255 255 255 / 0.05)';
+    'flex h-full w-full cursor-pointer items-center justify-center rounded-[10px] border-2 bg-white/5 transition-[color,background-color,border-color,scale] hover:border-sky-400';
 
-  type MmCell = { el: HTMLButtonElement; kind: 'h' | 'v'; i: number; hiddenWhenLocked?: boolean };
+  type MmCell = {
+    el: HTMLButtonElement;
+    /** Punto que marca la celda donde está parado el deck. */
+    dot: HTMLSpanElement;
+    /** Halo del punto: late sólo en la celda activa. */
+    halo: HTMLSpanElement;
+    kind: 'h' | 'v';
+    i: number;
+    hiddenWhenLocked?: boolean;
+  };
   const mmCells: MmCell[] = [];
   let expandBtn: HTMLButtonElement | null = null;
 
@@ -270,8 +282,22 @@ export function initDeck(root: HTMLElement) {
     box.setAttribute('aria-label', label);
     box.className = `${MM_CELL} ${placement}`;
     box.addEventListener('click', onClick);
+    // Punto con halo: existe siempre y se enciende en la celda activa, así el
+    // cambio de posición se anima en vez de aparecer de golpe. El halo nace
+    // sin animación para no dejar cinco `ping` corriendo fuera de pantalla.
+    const dot = document.createElement('span');
+    dot.className =
+      'pointer-events-none relative flex size-3 scale-0 opacity-0 transition-[scale,opacity] duration-200 ease-out motion-reduce:transition-none';
+    const halo = document.createElement('span');
+    halo.className =
+      'absolute inline-flex h-full w-full animate-none rounded-full bg-sky-400 opacity-75 motion-reduce:animate-none';
+    const core = document.createElement('span');
+    core.className = 'relative inline-flex size-3 rounded-full bg-sky-500';
+    dot.append(halo, core);
+    dot.setAttribute('aria-hidden', 'true');
+    box.appendChild(dot);
     minimap.appendChild(box);
-    return box;
+    return { el: box, dot, halo };
   }
 
   // Navegación a un slide vertical: el mapa es explícito, así que mueve la
@@ -337,14 +363,14 @@ export function initDeck(root: HTMLElement) {
         kind: 'v',
         i: 0,
         hiddenWhenLocked: true,
-        el: mmButton(vslides[0].dataset.title ?? 'Arriba', 'col-start-2 row-start-1', () => scrollV(0)),
+        ...mmButton(vslides[0].dataset.title ?? 'Arriba', 'col-start-2 row-start-1', () => scrollV(0)),
       });
     }
     if (left >= 0) {
       mmCells.push({
         kind: 'h',
         i: left,
-        el: mmButton(hslides[left].dataset.title ?? `Slide ${left + 1}`, 'col-start-1 row-start-2', () => goTo(left)),
+        ...mmButton(hslides[left].dataset.title ?? `Slide ${left + 1}`, 'col-start-1 row-start-2', () => goTo(left)),
       });
     }
     const middle = holder && vslides.length > 1 ? 1 : -1;
@@ -353,19 +379,19 @@ export function initDeck(root: HTMLElement) {
         ? {
             kind: 'v',
             i: middle,
-            el: mmButton(hslides[center].dataset.title ?? `Slide ${center + 1}`, 'col-start-2 row-start-2', () => scrollV(middle)),
+            ...mmButton(hslides[center].dataset.title ?? `Slide ${center + 1}`, 'col-start-2 row-start-2', () => scrollV(middle)),
           }
         : {
             kind: 'h',
             i: center,
-            el: mmButton(hslides[center].dataset.title ?? `Slide ${center + 1}`, 'col-start-2 row-start-2', () => goTo(center)),
+            ...mmButton(hslides[center].dataset.title ?? `Slide ${center + 1}`, 'col-start-2 row-start-2', () => goTo(center)),
           },
     );
     if (right < hslides.length) {
       mmCells.push({
         kind: 'h',
         i: right,
-        el: mmButton(hslides[right].dataset.title ?? `Slide ${right + 1}`, 'col-start-3 row-start-2', () => goTo(right)),
+        ...mmButton(hslides[right].dataset.title ?? `Slide ${right + 1}`, 'col-start-3 row-start-2', () => goTo(right)),
       });
     }
     if (vslides.length > 2) {
@@ -374,17 +400,31 @@ export function initDeck(root: HTMLElement) {
         kind: 'v',
         i: last,
         hiddenWhenLocked: true,
-        el: mmButton(vslides[last].dataset.title ?? 'Abajo', 'col-start-2 row-start-3', () => scrollV(last)),
+        ...mmButton(vslides[last].dataset.title ?? 'Abajo', 'col-start-2 row-start-3', () => scrollV(last)),
       });
     }
   }
 
   function updateMinimapActive() {
-    mmCells.forEach(({ el, kind, i, hiddenWhenLocked }) => {
-      const on = kind === 'h' ? i === current : current === holderIndex && i === vCurrent;
-      el.style.borderColor = on ? MM_ON_BORDER : MM_OFF_BORDER;
-      el.style.backgroundColor = on ? MM_ON_FILL : MM_OFF_FILL;
+    mmCells.forEach(({ el, dot, halo, kind, i, hiddenWhenLocked }) => {
+      // Con el vertical bloqueado el punto vive en la columna: marca la slide
+      // horizontal en la que está parado el deck, no la fila vertical que ya
+      // no se muestra.
+      const on = locked
+        ? kind === 'h'
+          ? i === current
+          : i === vstart && current === holderIndex
+        : kind === 'h'
+          ? i === current && !(i === holderIndex && vCurrent !== vstart)
+          : current === holderIndex && i === vCurrent;
+      el.style.borderColor = on ? ACTIVE_BORDER : IDLE_BORDER;
+      el.style.backgroundColor = on ? ACTIVE_FILL : IDLE_FILL;
+      el.style.scale = on ? '1.08' : '';
       el.setAttribute('aria-current', on ? 'true' : 'false');
+      dot.classList.toggle('opacity-100', on);
+      dot.classList.toggle('scale-100', on);
+      halo.classList.toggle('animate-ping', on);
+      halo.classList.toggle('animate-none', !on);
       // Con el vertical bloqueado no se muestran los slides de arriba/abajo,
       // pero la grilla conserva su lugar.
       const off = hiddenWhenLocked === true && locked;
@@ -497,7 +537,13 @@ export function initDeck(root: HTMLElement) {
       if (el.style.opacity !== '0') return;
       el.style.opacity = '';
       if (reducedMotion) return;
-      el.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 450, easing: 'ease-out' });
+      // El destino es la opacidad que ya declara la hoja de estilos (el
+      // minimapa en reposo no llega a 1), no un 1 fijo que después salta.
+      const target = Number(getComputedStyle(el).opacity);
+      el.animate([{ opacity: 0 }, { opacity: Number.isFinite(target) ? target : 1 }], {
+        duration: 450,
+        easing: 'ease-out',
+      });
     });
   }
 

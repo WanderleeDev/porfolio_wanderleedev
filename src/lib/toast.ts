@@ -117,7 +117,7 @@ export function showToast(message: string, icon?: string) {
 }
 
 /** Cierra el toast activo (si hay) y deja pasar al siguiente en cola. */
-export function dismissToast() {
+function dismissToast() {
   clearTimer();
   if (!toast || !toast.isConnected) {
     showNext();

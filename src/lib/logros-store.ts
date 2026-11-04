@@ -11,8 +11,7 @@ import { atom, computed } from "nanostores";
 import { achievementTitle, unlocked, type AchievementId, unlock } from "./achievements";
 import { showToast } from "./toast";
 
-/** Re-export del store de logros desbloqueados y su progreso total. */
-export { unlocked };
+/** Progreso total de logros desbloqueados. */
 export const progress = computed(unlocked, (ids) => new Set(ids).size);
 
 /** Abierto o cerrado el overlay de logros. */

@@ -11,6 +11,8 @@ const { title, class: className } = Astro.props;
   data-title={title}
   class:list={[
     'shrink-0 w-full h-dvh box-border snap-start snap-always flex items-center justify-center text-center px-[8vw] py-16',
+    // `relative isolate` contiene el fondo difuso del reproductor, que usa z-index negativo.
+    'relative overflow-hidden isolate',
     className,
   ]}
 >

@@ -74,10 +74,6 @@ export function updateSetting<K extends keyof DeckSettings>(key: K, value: DeckS
   saveSettings({ ...loadSettings(), [key]: value });
 }
 
-export function onSettings(fn: (s: DeckSettings) => void) {
-  return settings.subscribe(fn);
-}
-
 /** Suscripción inmediata + cada cambio: firma estable para los llamadores. */
 export function subscribeSettings(fn: (s: DeckSettings) => void): () => void {
   return settings.subscribe(fn);

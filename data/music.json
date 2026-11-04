@@ -1,0 +1,56 @@
+{
+  "bucket": "porfolio-music",
+  "base_url": "https://pub-857ec293a66142f5935891fb2071638c.r2.dev",
+  "cover_size": "200x200",
+  "cover_format": "webp",
+  "songs": [
+    {
+      "slug": "between_us_inoha",
+      "title": "Between Us",
+      "artist": "INOHA",
+      "mp3": "https://pub-857ec293a66142f5935891fb2071638c.r2.dev/porfolio-music_between_us_inoha.mp3",
+      "cover": "https://pub-857ec293a66142f5935891fb2071638c.r2.dev/porfolio-music_between_us_inoha.webp",
+      "accent": "#2c9edd"
+    },
+    {
+      "slug": "ginger_root_pi",
+      "title": "Pi",
+      "artist": "Ginger Root",
+      "mp3": "https://pub-857ec293a66142f5935891fb2071638c.r2.dev/porfolio-music_ginger_root_pi.mp3",
+      "cover": "https://pub-857ec293a66142f5935891fb2071638c.r2.dev/porfolio-music_ginger_root_pi.webp",
+      "accent": "#dd4d2c"
+    },
+    {
+      "slug": "take_me_back_owakare_no_jikan",
+      "title": "Take Me Back (Owakare No Jikan)",
+      "artist": "Ginger Root",
+      "mp3": "https://pub-857ec293a66142f5935891fb2071638c.r2.dev/porfolio-music_take_me_back_owakare_no_jikan.mp3",
+      "cover": "https://pub-857ec293a66142f5935891fb2071638c.r2.dev/porfolio-music_take_me_back_owakare_no_jikan.webp",
+      "accent": "#40acc9"
+    },
+    {
+      "slug": "is_it_any_wonder_keane",
+      "title": "Is It Any Wonder",
+      "artist": "Keane",
+      "mp3": "https://pub-857ec293a66142f5935891fb2071638c.r2.dev/porfolio-music_is_it_any_wonder_keane.mp3",
+      "cover": "https://pub-857ec293a66142f5935891fb2071638c.r2.dev/porfolio-music_is_it_any_wonder_keane.webp",
+      "accent": "#2cd4dd"
+    },
+    {
+      "slug": "ode_to_the_mets_strokes",
+      "title": "Ode To The Mets",
+      "artist": "The Strokes",
+      "mp3": "https://pub-857ec293a66142f5935891fb2071638c.r2.dev/porfolio-music_ode_to_the_mets_strokes.mp3",
+      "cover": "https://pub-857ec293a66142f5935891fb2071638c.r2.dev/porfolio-music_ode_to_the_mets_strokes.webp",
+      "accent": "#c89b41"
+    },
+    {
+      "slug": "remember_the_time_michael_jackson",
+      "title": "Remember The Time",
+      "artist": "Michael Jackson",
+      "mp3": "https://pub-857ec293a66142f5935891fb2071638c.r2.dev/porfolio-music_remember_the_time_michael_jackson.mp3",
+      "cover": "https://pub-857ec293a66142f5935891fb2071638c.r2.dev/porfolio-music_remember_the_time_michael_jackson.webp",
+      "accent": "#2f6f63"
+    }
+  ]
+}

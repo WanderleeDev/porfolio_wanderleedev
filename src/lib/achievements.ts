@@ -103,23 +103,11 @@ export function readUnlocked(): AchievementId[] {
   }
 }
 
-export function isUnlocked(id: AchievementId): boolean {
-  return readUnlocked().includes(id);
-}
-
 /**
  * Store de logros desbloqueados. Se inicializa con lo persistido en
  * localStorage; en SSR queda vacío porque `readUnlocked()` ya lo respeta.
  */
 export const unlocked = atom<AchievementId[]>(readUnlocked());
-
-/**
- * Llama a `fn` de inmediato con el valor actual y en cada cambio posterior.
- * Es el envoltorio fino sobre el subscribe nativo del nano store.
- */
-export function subscribe(fn: (ids: readonly AchievementId[]) => void): () => void {
-  return unlocked.subscribe((ids) => fn(ids));
-}
 
 /**
  * Marca un logro como desbloqueado. Devuelve true sólo la primera vez, así

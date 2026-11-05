@@ -13,6 +13,7 @@ describe("MUSIC_CATALOG", () => {
       "ode_to_the_mets_strokes",
       "remember_the_time_michael_jackson",
       "hard_landing_yamajet",
+      "mirrorball_airride_yamajet",
     ]);
   });
 
@@ -40,7 +41,7 @@ describe("MUSIC_TRACKS", () => {
       accent: "#2c9edd",
       aliases: ["between us inoha", "INOHA"],
     });
-    expect(MUSIC_TRACKS.at(-1)?.title).toBe("Hard Landing");
+    expect(MUSIC_TRACKS.at(-1)?.title).toBe("Mirrorball Airride");
   });
 
   test("gives every track spoken aliases covering its slug, artist and declared ones", () => {

@@ -1,6 +1,9 @@
 # build output
 dist/
 
+# wrangler local state
+.cloudflare/
+
 # private corpus source, redaction list and debug snapshots
 data/corpus/
 # generated types

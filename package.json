@@ -4,7 +4,8 @@
   "version": "0.0.1",
   "scripts": {
     "dev": "astro dev",
-    "build": "astro build",
+    "build": "bun run scripts/sync-manifest.ts && astro build",
+    "sync:manifest": "bun run scripts/sync-manifest.ts",
     "preview": "astro preview",
     "astro": "astro",
     "rag:build": "bun scripts/build-rag-index.ts",

@@ -51,6 +51,14 @@
       "mp3": "https://pub-857ec293a66142f5935891fb2071638c.r2.dev/porfolio-music_remember_the_time_michael_jackson.mp3",
       "cover": "https://pub-857ec293a66142f5935891fb2071638c.r2.dev/porfolio-music_remember_the_time_michael_jackson.webp",
       "accent": "#2f6f63"
+    },
+    {
+      "slug": "hard_landing_yamajet",
+      "title": "Hard Landing",
+      "artist": "Yamajet",
+      "mp3": "https://pub-857ec293a66142f5935891fb2071638c.r2.dev/porfolio-music_hard_landing_yamajet.mp3",
+      "cover": "https://pub-857ec293a66142f5935891fb2071638c.r2.dev/porfolio-music_hard_landing_yamajet.webp",
+      "accent": "#6b7280"
     }
   ]
 }

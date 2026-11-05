@@ -10,10 +10,9 @@
  * para no romper builds offline. En CI usar SYNC_MANIFEST_STRICT=1 para fallar.
  */
 
-const MANIFEST_URL =
-    process.env.MANIFEST_URL ??
-    process.env.R2_MANIFEST_PUBLIC_URL ??
-    "https://pub-857ec293a66142f5935891fb2071638c.r2.dev/manifest.json";
+import { resolveManifestUrl } from "./manifest-url";
+
+const MANIFEST_URL = resolveManifestUrl(process.env);
 
 const STRICT = process.env.SYNC_MANIFEST_STRICT === "1";
 

@@ -684,9 +684,16 @@ const active = TRACKS[ACTIVE_INDEX];
     object-fit: cover;
     transform: scale(1.4);
     filter: blur(56px) saturate(1.4);
-    /* Se apaga en los bordes: el fondo respira sin pelear con el resto del deck. */
-    mask-image: radial-gradient(circle at 50% 42%, #000 8%, rgb(0 0 0 / 0.55) 46%, transparent 78%);
-    -webkit-mask-image: radial-gradient(circle at 50% 42%, #000 8%, rgb(0 0 0 / 0.55) 46%, transparent 78%);
+    /* Mask ligero: se difuminan sólo los laterales y arriba, para que el
+       fondo respire sin comerse la portada. El centro queda nítido. */
+    mask-image:
+      linear-gradient(to bottom, transparent 0%, #000 20%, #000 100%),
+      linear-gradient(to right, transparent 0%, #000 12%, #000 88%, transparent 100%);
+    mask-composite: intersect;
+    -webkit-mask-image:
+      linear-gradient(to bottom, transparent 0%, #000 20%, #000 100%),
+      linear-gradient(to right, transparent 0%, #000 12%, #000 88%, transparent 100%);
+    -webkit-mask-composite: source-in;
     opacity: 0;
     transition: opacity 600ms ease;
   }

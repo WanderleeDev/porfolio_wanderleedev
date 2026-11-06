@@ -18,6 +18,10 @@
   "vars": {
     "R2_MANIFEST_PUBLIC_URL": "https://pub-857ec293a66142f5935891fb2071638c.r2.dev/manifest.json"
   },
-  "r2_buckets": [{ "binding": "MANIFEST_BUCKET", "bucket_name": "portfolio-manifest" }],
+  // El bucket se llama `porfolio-music`, no `portfolio-manifest` (ese era el
+  // nombre del binding en la config vieja de `cf`). Lo confirma el propio
+  // manifest: declara `"bucket": "porfolio-music"` y tanto los mp3 como
+  // manifest.json se sirven del mismo dominio público de R2.
+  "r2_buckets": [{ "binding": "MANIFEST_BUCKET", "bucket_name": "porfolio-music" }],
   "observability": { "enabled": true }
 }

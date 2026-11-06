@@ -44,3 +44,5 @@ skills-lock.json
 /TECHNICAL_DEBT.md
 # Local AI runtime state
 .atl/
+
+.dev.vars

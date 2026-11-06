@@ -23,6 +23,22 @@ jobs:
         env:
           MANIFEST_URL: ${{ vars.MANIFEST_URL }}
           SYNC_MANIFEST_STRICT: "1"
+          # Públicas: se inlinan en el bundle del servidor, por eso necesitan su valor real en CI.
+          LLM_MODEL: ${{ vars.LLM_MODEL }}
+          LLM_EMBEDDING_MODEL: ${{ vars.LLM_EMBEDDING_MODEL }}
+          LLM_EMBEDDING_DIMENSIONS: ${{ vars.LLM_EMBEDDING_DIMENSIONS }}
+          QDRANT_COLLECTION: ${{ vars.QDRANT_COLLECTION }}
+          # Secretas: el build sólo las valida (algo importa astro:env/server); su valor real vive como secret del Worker en Cloudflare, nunca en GitHub.
+          RESEND_API_KEY: build-placeholder
+          CONTACT_TO_EMAIL: build-placeholder
+          CONTACT_FROM_EMAIL: build-placeholder
+          RESEND_TEMPLATE_ID: build-placeholder
+          RESEND_TEMPLATE_ID_EN: build-placeholder
+          GEMINI_API_KEY: build-placeholder
+          LLM_BASE_URL: build-placeholder
+          LLM_API_KEY: build-placeholder
+          QDRANT_URL: build-placeholder
+          QDRANT_API_KEY: build-placeholder
 
       - name: Deploy to Cloudflare Workers
         run: bunx cf deploy --prebuilt

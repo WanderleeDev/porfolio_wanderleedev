@@ -2,11 +2,9 @@
 # Carga los secrets del Worker desde .env local.
 # Uso: bash scripts/setup-secrets.sh [--dry-run]
 #
-# Usa `cf workers secrets bulk`: un solo request con los N secretos, sin desplegar
-# el Worker (el CLI avisa que cambiar secretos de a uno crea una versión por
-# llamada y que para varios conviene el patch en lote). Tampoco usa
-# `cf deploy --secrets-file` a propósito: eso publicaría el build que tengas en
-# `.cloudflare/output`, posiblemente viejo, desde tu máquina.
+# Usa `wrangler secret bulk`: un solo request con los N secretos, sin desplegar
+# el Worker. No usa valores en argv (quedarían en el historial del shell):
+# los valores viajan en un archivo temporal que se borra siempre.
 set -euo pipefail
 
 if [ ! -f .env ]; then
@@ -23,25 +21,25 @@ secrets=(
   QDRANT_URL QDRANT_API_KEY
 )
 
-# El nombre del Worker sale de cloudflare.config.ts para no duplicar la verdad.
-worker="$(python3 -c "
-import re
-src = open('cloudflare.config.ts', encoding='utf-8').read()
-found = re.search(r'worker:\s*\{.*?name:\s*\"([^\"]+)\"', src, re.S)
-print(found.group(1) if found else '')
-")"
+# El nombre del Worker sale de wrangler.jsonc para no duplicar la verdad.
+# Se lee con sed y NO con un parser JSON: wrangler.jsonc es jsonc (lleva
+# comentarios) y limpiarlos con un re.sub ingenuo de `//` rompe cualquier valor
+# que contenga "https://" — el script moría antes de subir nada.
+# `"name"` aparece una sola vez en el archivo, así que no hay ambigüedad.
+worker="$(sed -n 's/.*"name"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p' wrangler.jsonc | head -1)"
 
 if [ -z "$worker" ]; then
-  echo "No pude leer el nombre del Worker de cloudflare.config.ts"; exit 1
+  echo "No pude leer el nombre del Worker de wrangler.jsonc"; exit 1
 fi
+
+echo "Worker: $worker"
 
 # El archivo de secretos vive fuera del repo y se borra siempre, incluso si el
 # comando falla: son valores, no configuración versionada.
+# Formato wrangler: JSON simple {"KEY": "value"} (no el {type,name,text} de cf).
 tmpfile="$(mktemp)"
 trap 'rm -f "$tmpfile"' EXIT
 
-# JSON Merge Patch: cada secreto va como {type, name, text}. Lo arma python para
-# no pelear con el escaping de comillas, backslashes y saltos de línea.
 python3 - "$tmpfile" "${secrets[@]}" <<'PY'
 import json
 import os
@@ -52,7 +50,7 @@ payload = {}
 for name in names:
     value = os.environ.get(name)
     if value:
-        payload[name] = {"type": "secret_text", "name": name, "text": value}
+        payload[name] = value
     else:
         print(f"Saltando {name} (vacío en .env)", file=sys.stderr)
 
@@ -64,6 +62,6 @@ with open(path, "w", encoding="utf-8") as handle:
     json.dump(payload, handle)
 PY
 
-bunx cf workers secrets bulk --worker "$worker" --secrets "@$tmpfile" "$@"
+bunx wrangler secret bulk "$tmpfile" --name "$worker" "$@"
 
 echo "Listo."

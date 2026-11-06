@@ -1,0 +1,23 @@
+// Configuración del Worker para Cloudflare (wrangler, toolchain oficial).
+// Los bindings y vars se leen en runtime desde el `env` del Worker;
+// los secretos NO van acá, se suben con `wrangler secret bulk` (ver scripts/setup-secrets.sh).
+{
+  "name": "porfolio-wanderleedev",
+  "compatibility_date": "2025-01-01",
+  // Lo pide el SSR de Astro.
+  "compatibility_flags": ["nodejs_compat"],
+  // El `main` NO apunta a un archivo de dist/ sino al entrypoint unificado
+  // del adapter, que resuelve el worker en build y en deploy (modelo Astro 6+;
+  // si `main` apuntara a dist/... el build fallaría porque el archivo aún no
+  // existe cuando el plugin valida la config). El adapter emite el worker
+  // real en dist/server/entry.mjs y el sitio en dist/client/ (ver
+  // dist/server/wrangler.json generado). `assets.directory` apunta a ./dist
+  // porque el plugin lo reescribe al cliente real en el build.
+  "main": "@astrojs/cloudflare/entrypoints/server",
+  "assets": { "binding": "ASSETS", "directory": "./dist" },
+  "vars": {
+    "R2_MANIFEST_PUBLIC_URL": "https://pub-857ec293a66142f5935891fb2071638c.r2.dev/manifest.json"
+  },
+  "r2_buckets": [{ "binding": "MANIFEST_BUCKET", "bucket_name": "portfolio-manifest" }],
+  "observability": { "enabled": true }
+}

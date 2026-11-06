@@ -2,6 +2,7 @@
 dist/
 
 # wrangler local state
+.wrangler/
 .cloudflare/
 
 # private corpus source, redaction list and debug snapshots

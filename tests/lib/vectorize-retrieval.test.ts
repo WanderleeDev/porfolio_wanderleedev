@@ -1,10 +1,7 @@
 import { afterEach, describe, expect, mock, test } from "bun:test";
 
 const ENV = {
-    QDRANT_URL: "https://qdrant.example.com",
-    QDRANT_COLLECTION: "portfolio_corpus",
-    QDRANT_API_KEY: "test-api-key",
-    LLM_EMBEDDING_DIMENSIONS: 512,
+    LLM_EMBEDDING_DIMENSIONS: 3,
     RAG_MIN_SCORE: 0.35,
 };
 
@@ -13,11 +10,20 @@ mock.module("astro:env/server", () => ENV);
 // El binding sólo existe en workerd; en el test se simula con un objeto
 // mutable para que cada caso arme su propio índice falso. Sin binding
 // (VECTORIZE ausente) el código sigue la misma rama que cuando el import
-// dinámico falla en dev: getIndex devuelve null y se cae al fallback.
+// dinámico falla en dev: getIndex devuelve null y se cae al fallback local.
 const fakeEnv: { VECTORIZE?: unknown } = {};
 
 mock.module("cloudflare:workers", () => ({
     env: fakeEnv,
+}));
+
+// El fallback de dev lee `data/rag-vectors.ndjson` con `node:fs/promises`
+// importado de forma dinámica (para no romper en workerd); acá se stubbea
+// ese módulo para probar la rama sin tocar el FS real.
+const fakeFs: { ndjson: string } = { ndjson: "" };
+
+mock.module("node:fs/promises", () => ({
+    readFile: async () => fakeFs.ndjson,
 }));
 
 const { searchCorpus } = await import("../../src/lib/rag/vectorize");
@@ -28,11 +34,8 @@ function stubVectorize(matches: unknown) {
     return query;
 }
 
-const originalFetch = globalThis.fetch;
-
 afterEach(() => {
     fakeEnv.VECTORIZE = undefined;
-    globalThis.fetch = originalFetch;
 });
 
 describe("searchCorpus sobre Vectorize", () => {
@@ -79,23 +82,41 @@ describe("searchCorpus sobre Vectorize", () => {
 
         expect(hits).toEqual([{ score: 0.9, texto: "válido" }]);
     });
+});
 
-    test("sin binding: cae al fallback de Qdrant y devuelve su resultado", async () => {
+describe("searchCorpus sin binding (fallback NDJSON de dev)", () => {
+    fakeFs.ndjson = [
+        JSON.stringify({ id: "a", values: [1, 0, 0], metadata: { text: "texto a", source: "s" } }),
+        JSON.stringify({ id: "b", values: [0.9, 0.1, 0], metadata: { text: "texto b", source: "s" } }),
+        JSON.stringify({ id: "c", values: [0, 1, 0], metadata: { text: "texto c", source: "s" } }),
+        "línea rota",
+        JSON.stringify({ id: "d", values: [1, 0, 0], metadata: { text: 42, source: "s" } }),
+    ].join("\n");
+
+    test("lee el NDJSON y ordena por similitud coseno", async () => {
         fakeEnv.VECTORIZE = undefined;
-        let requestedUrl: string | null = null;
-        globalThis.fetch = (async (input: string | URL | Request) => {
-            const request = input instanceof Request ? input : new Request(input);
-            requestedUrl = request.url;
-            return Response.json({
-                result: { points: [{ score: 0.9, payload: { texto: "desde qdrant" } }] },
-            });
-        }) as typeof fetch;
 
-        const hits = await searchCorpus([0.1, 0.2], 3);
+        const hits = await searchCorpus([1, 0, 0], 4);
 
-        expect(requestedUrl).toBe(
-            "https://qdrant.example.com/collections/portfolio_corpus/points/query",
-        );
-        expect(hits).toEqual([{ score: 0.9, texto: "desde qdrant" }]);
+        expect(hits).toEqual([
+            { score: 1, texto: "texto a" },
+            { score: 0.9, texto: "texto b" },
+        ]);
+    });
+
+    test("filtra por RAG_MIN_SCORE, recorta a limit e ignora líneas rotas", async () => {
+        fakeEnv.VECTORIZE = undefined;
+
+        const hits = await searchCorpus([1, 0, 0], 1);
+
+        expect(hits).toEqual([{ score: 1, texto: "texto a" }]);
+    });
+
+    test("otra query encuentra su propio vecino e ignora metadata sin texto", async () => {
+        fakeEnv.VECTORIZE = undefined;
+
+        const hits = await searchCorpus([0, 1, 0], 4);
+
+        expect(hits).toEqual([{ score: 1, texto: "texto c" }]);
     });
 });

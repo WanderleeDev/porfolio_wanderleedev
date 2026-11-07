@@ -1,10 +1,16 @@
 import { LLM_EMBEDDING_DIMENSIONS, RAG_MIN_SCORE } from "astro:env/server";
-import { searchCorpus as searchQdrant } from "../qdrant";
 
 // En producción (workerd) el retrieval usa el binding nativo VECTORIZE, sin
 // SDK ni fetch propio. En dev (adapter de Node) ese binding no existe y ni
-// siquiera resuelve `cloudflare:workers`, así que se cae al searchCorpus de
-// Qdrant por fetch, que ya funciona en Node.
+// siquiera resuelve `cloudflare:workers`, así que el fallback lee el índice
+// local `data/rag-vectors.ndjson` (emitido por `bun run rag:build`) en
+// memoria y ordena por similitud coseno.
+// El NDJSON reemplaza al antiguo fallback a Qdrant por fetch: con Vectorize
+// como store de producción ya no hay ningún servicio que mantener ni SDKs
+// que puedan no correr en workerd. El `node:fs` se importa de forma dinámica
+// dentro de la función (nunca en el top-level del módulo) para que este
+// archivo se evalúe sin romper en workerd, donde `node:fs` no existe; esa
+// rama sólo se ejecuta en dev, donde el binding falta.
 export interface CorpusHit {
   score: number;
   texto: string;
@@ -17,6 +23,71 @@ interface VectorizeIndex {
     vector: number[],
     options: { topK: number; returnMetadata: "all" },
   ): Promise<{ matches?: unknown }>;
+}
+
+interface LocalEntry {
+  values: number[];
+  texto: string;
+}
+
+// Cacheado en module scope: el NDJSON se lee una sola vez por proceso.
+let cachedEntries: LocalEntry[] | null = null;
+
+async function loadLocalEntries(): Promise<LocalEntry[]> {
+  if (cachedEntries) return cachedEntries;
+
+  const fs = await import("node:fs/promises");
+  const { join } = await import("node:path");
+  const ndjsonPath = join(process.cwd(), "data", "rag-vectors.ndjson");
+  const raw = await fs.readFile(ndjsonPath, "utf8");
+
+  const entries: LocalEntry[] = [];
+  for (const line of raw.split("\n")) {
+    const trimmed = line.trim();
+    if (!trimmed) continue;
+    let parsed: unknown;
+    try {
+      parsed = JSON.parse(trimmed);
+    } catch {
+      continue;
+    }
+    if (typeof parsed !== "object" || parsed === null) continue;
+    const { values, metadata } = parsed as { values?: unknown; metadata?: unknown };
+    if (
+      !Array.isArray(values) ||
+      !values.every((value): value is number => typeof value === "number")
+    )
+      continue;
+    if (typeof metadata !== "object" || metadata === null) continue;
+    const text = (metadata as { text?: unknown }).text;
+    if (typeof text !== "string") continue;
+    entries.push({ values, texto: text });
+  }
+
+  cachedEntries = entries;
+  return entries;
+}
+
+// Los vectores de ingesta ya vienen normalizados, así que el producto punto
+// equivale a la similitud coseno sin dividir por las normas.
+function dotProduct(a: number[], b: number[]): number {
+  const length = Math.min(a.length, b.length);
+  let sum = 0;
+  for (let index = 0; index < length; index += 1) {
+    sum += (a[index] ?? 0) * (b[index] ?? 0);
+  }
+  return sum;
+}
+
+async function searchLocal(embedding: number[], limit: number): Promise<CorpusHit[]> {
+  const entries = await loadLocalEntries();
+  const query = embedding.slice(0, LLM_EMBEDDING_DIMENSIONS);
+
+  return entries
+    .map((entry) => ({ score: dotProduct(query, entry.values), texto: entry.texto }))
+    .filter((hit) => hit.score >= RAG_MIN_SCORE)
+    .sort((a, b) => b.score - a.score)
+    .slice(0, limit);
 }
 
 // Vectorize no tiene score_threshold, así que se pide de más y se filtra acá.
@@ -48,7 +119,7 @@ async function getIndex(): Promise<VectorizeIndex | null> {
 export async function searchCorpus(embedding: number[], limit = 4): Promise<CorpusHit[]> {
   const index = await getIndex();
 
-  if (!index) return searchQdrant(embedding, limit);
+  if (!index) return searchLocal(embedding, limit);
 
   // Red de fondo: la query debe tener las dimensiones del índice (512). Si el
   // gateway devuelve otra cosa (qwen3 es Matryoshka y su nativo es 1024), se

@@ -150,8 +150,9 @@ function parseArguments(argv: string[]): Arguments {
 function printHelp(): void {
     console.log(`Export the PDF corpus to a JSON snapshot (debug tool).
 
-Qdrant is the production store; see scripts/ingest-qdrant.ts. This script keeps
-the offline preview, --check and --init-manifest workflows.
+Vectorize is the production store; this script emits the NDJSON for
+`wrangler vectorize insert` (see --vectors-out). It also keeps the offline
+preview, --check and --init-manifest workflows.
 
 Usage:
   bun run rag:build -- --pdf data/corpus/corpus.pdf [options]
@@ -176,7 +177,7 @@ Workflow:
   1. bun run rag:build -- --pdf <pdf> --init-manifest
   2. Group the pages into projects/sections in ${DEFAULT_MANIFEST}
   3. bun run rag:build -- --pdf <pdf> --dry-run
-  4. bun run rag:ingest -- --pdf <pdf>
+  4. bun run rag:build -- --pdf <pdf>  (emite el NDJSON para Vectorize)
 `);
 }
 
@@ -407,7 +408,7 @@ async function main(): Promise<void> {
 
     // Ingesta Vectorize (T4): una línea por chunk, lista para
     // `wrangler vectorize insert <index> --file <ndjson>`. Reusa los
-    // embeddings ya calculados; no toca la lógica de Qdrant.
+    // embeddings ya calculados; no genera nada para otros stores.
     const vectorsPath = resolve(args.vectorsOut);
     const vectorsTemporaryPath = `${vectorsPath}.tmp`;
     const vectorsNdjson = parsed.data.chunks

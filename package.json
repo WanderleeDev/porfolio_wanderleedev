@@ -9,8 +9,6 @@
     "preview": "astro preview",
     "astro": "astro",
     "rag:build": "bun scripts/build-rag-index.ts",
-    "rag:ingest": "bun scripts/ingest-qdrant.ts",
-    "rag:query": "bun scripts/query-rag.ts",
     "eval:chat": "bun scripts/eval-chat.ts",
     "test": "bun test"
   },
@@ -24,7 +22,6 @@
     "@iconify-json/devicon": "^1.2.71",
     "@iconify-json/lucide": "^1.2.147",
     "@iconify-json/simple-icons": "^1.2.100",
-    "@qdrant/js-client-rest": "^1.20.0",
     "@streamdown/cjk": "^1.0.4",
     "@streamdown/code": "^2.0.0",
     "@streamdown/math": "^1.0.3",

@@ -18,7 +18,6 @@ secrets=(
   RESEND_API_KEY CONTACT_TO_EMAIL CONTACT_FROM_EMAIL
   RESEND_TEMPLATE_ID RESEND_TEMPLATE_ID_EN
   GEMINI_API_KEY LLM_BASE_URL LLM_API_KEY
-  QDRANT_URL QDRANT_API_KEY
 )
 
 # El nombre del Worker sale de wrangler.jsonc para no duplicar la verdad.

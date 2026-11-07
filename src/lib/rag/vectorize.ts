@@ -79,15 +79,55 @@ function dotProduct(a: number[], b: number[]): number {
   return sum;
 }
 
-async function searchLocal(embedding: number[], limit: number): Promise<CorpusHit[]> {
-  const entries = await loadLocalEntries();
-  const query = embedding.slice(0, LLM_EMBEDDING_DIMENSIONS);
+// Boost por keyword: recupera parte del híbrido dense+sparse que se perdió
+// al salir de Qdrant, gratis y sin modelo reranker. Sólo reordena los hits ya
+// recuperados por el vector denso: los que mencionan palabras de la pregunta
+// suben, sin cambiar cuántos se piden (VECTORIZE_TOP_K) ni cuántos se
+// devuelven (limit). Sin pregunta no toca el orden.
+const KEYWORD_STOPWORDS = new Set([
+  "que", "para", "con", "del", "los", "las", "una", "este",
+  "tiene", "tienen", "hola", "por", "como",
+]);
 
-  return entries
-    .map((entry) => ({ score: dotProduct(query, entry.values), texto: entry.texto }))
+function tokenizeQuery(value: string): string[] {
+  return value
+    .toLowerCase()
+    .split(/[^\p{L}]+/u)
+    .filter((token) => token.length >= 3 && !KEYWORD_STOPWORDS.has(token));
+}
+
+function applyKeywordBoost(hits: CorpusHit[], query?: string): CorpusHit[] {
+  if (!query) return hits;
+  const tokens = tokenizeQuery(query);
+  if (!tokens.length) return hits;
+
+  return hits
+    .map((hit, index) => {
+      const textTokens = new Set(tokenizeQuery(hit.texto));
+      let matches = 0;
+      for (const token of tokens) {
+        if (textTokens.has(token)) matches += 1;
+      }
+      return { hit, matches, index };
+    })
+    .sort((a, b) => b.matches - a.matches || a.index - b.index)
+    .map(({ hit }) => hit);
+}
+
+async function searchLocal(
+  embedding: number[],
+  limit: number,
+  query?: string,
+): Promise<CorpusHit[]> {
+  const entries = await loadLocalEntries();
+  const vector = embedding.slice(0, LLM_EMBEDDING_DIMENSIONS);
+
+  const ranked = entries
+    .map((entry) => ({ score: dotProduct(vector, entry.values), texto: entry.texto }))
     .filter((hit) => hit.score >= RAG_MIN_SCORE)
-    .sort((a, b) => b.score - a.score)
-    .slice(0, limit);
+    .sort((a, b) => b.score - a.score);
+
+  return applyKeywordBoost(ranked, query).slice(0, limit);
 }
 
 // Vectorize no tiene score_threshold, así que se pide de más y se filtra acá.
@@ -116,10 +156,14 @@ async function getIndex(): Promise<VectorizeIndex | null> {
   }
 }
 
-export async function searchCorpus(embedding: number[], limit = 4): Promise<CorpusHit[]> {
+export async function searchCorpus(
+  embedding: number[],
+  limit = 4,
+  query?: string,
+): Promise<CorpusHit[]> {
   const index = await getIndex();
 
-  if (!index) return searchLocal(embedding, limit);
+  if (!index) return searchLocal(embedding, limit, query);
 
   // Red de fondo: la query debe tener las dimensiones del índice (512). Si el
   // gateway devuelve otra cosa (qwen3 es Matryoshka y su nativo es 1024), se
@@ -143,5 +187,5 @@ export async function searchCorpus(embedding: number[], limit = 4): Promise<Corp
     hits.push({ score, texto: text });
   }
 
-  return hits.slice(0, limit);
+  return applyKeywordBoost(hits, query).slice(0, limit);
 }

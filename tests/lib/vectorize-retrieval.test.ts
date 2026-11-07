@@ -120,3 +120,63 @@ describe("searchCorpus sin binding (fallback NDJSON de dev)", () => {
         expect(hits).toEqual([{ score: 1, texto: "texto c" }]);
     });
 });
+
+describe("boost por keyword (T7)", () => {
+    test("con binding: la pregunta con el nombre de un proyecto sube su chunk", async () => {
+        stubVectorize([
+            { score: 0.9, metadata: { text: "perfil general de wanderlee" } },
+            { score: 0.85, metadata: { text: "proyecto clior-ecommerce con checkout" } },
+        ]);
+
+        const hits = await searchCorpus([0.1], 4, "contame del clior-ecommerce");
+
+        expect(hits.map((hit) => hit.texto)).toEqual([
+            "proyecto clior-ecommerce con checkout",
+            "perfil general de wanderlee",
+        ]);
+    });
+
+    test("las stopwords no cuentan para el boost", async () => {
+        stubVectorize([
+            { score: 0.9, metadata: { text: "que para con del los las" } },
+            { score: 0.85, metadata: { text: "proyecto portfolio con astro" } },
+        ]);
+
+        const hits = await searchCorpus([0.1], 4, "que para con hola");
+
+        expect(hits.map((hit) => hit.texto)).toEqual([
+            "que para con del los las",
+            "proyecto portfolio con astro",
+        ]);
+    });
+
+    test("sin pregunta el orden no cambia", async () => {
+        stubVectorize([
+            { score: 0.9, metadata: { text: "primero" } },
+            { score: 0.8, metadata: { text: "segundo" } },
+        ]);
+
+        expect(await searchCorpus([0.1], 4)).toEqual([
+            { score: 0.9, texto: "primero" },
+            { score: 0.8, texto: "segundo" },
+        ]);
+        expect(await searchCorpus([0.1], 4, "")).toEqual([
+            { score: 0.9, texto: "primero" },
+            { score: 0.8, texto: "segundo" },
+        ]);
+    });
+
+    test("en el fallback local el boost no rompe el orden ni el limit", async () => {
+        fakeEnv.VECTORIZE = undefined;
+
+        // Ambos chunks comparten el token "texto" ("a"/"b" se filtran
+        // por cortos): el boost empata y se conserva el orden denso.
+        const hits = await searchCorpus([1, 0, 0], 4, "texto");
+
+        expect(hits.map((hit) => hit.texto)).toEqual(["texto a", "texto b"]);
+
+        // El slice a limit se aplica después del boost.
+        const one = await searchCorpus([1, 0, 0], 1, "texto");
+        expect(one).toEqual([{ score: 1, texto: "texto a" }]);
+    });
+});

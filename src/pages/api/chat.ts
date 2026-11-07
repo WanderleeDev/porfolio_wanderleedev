@@ -55,7 +55,7 @@ export const POST: APIRoute = async ({ request }) => {
         model: embeddingModel,
     })
 
-    const hits = await searchCorpus(embedding);
+    const hits = await searchCorpus(embedding, 4, lastQuestion);
 
     // Sin contexto recuperado el endpoint no llama al modelo. Los pedidos de
     // música son la excepción: el catálogo y el reproductor no viven en el
@@ -68,6 +68,19 @@ export const POST: APIRoute = async ({ request }) => {
         .map((hit) => hit.texto)
         .join("\n---\n");
 
+    // RECORTE PROPUESTO (Parte A, no aplicado: cambia semántica si se
+    // quitan tools). Hoy el system menciona 6 tools en 2 instrucciones
+    // (~200 bytes) y `tools` expone 6 schemas (displayProjects,
+    // displayTechs, displayContact + listTracks, playTrack, controlTrack).
+    // Cada tool-call es 1 turno generativo extra del lfm3:1.7b (5-15 s).
+    // Flujo típico "proyectos": texto inicial + displayProjects + resumen
+    // = 3 turnos con stopWhen(3). Recorte: sacar del prompt la línea de
+    // música (3 tool-names + "No inventes tracks...") en pedidos no
+    // musicales — la excepción isMusicRequest ya cubre ese camino — y/o
+    // fusionar displayProjects/displayTechs en una sola tool. Ahorro
+    // típico: 1 turno generativo (~5-15 s, 1/3 del flujo). La personalidad
+    // ("asistente personal de Wanderlee Max", responder sólo con
+    // contexto) no se toca.
     const result = streamText({
         model: chatModel,
         reasoning: 'none',

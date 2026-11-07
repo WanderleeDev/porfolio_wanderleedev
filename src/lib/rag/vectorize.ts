@@ -1,4 +1,4 @@
-import { RAG_MIN_SCORE } from "astro:env/server";
+import { LLM_EMBEDDING_DIMENSIONS, RAG_MIN_SCORE } from "astro:env/server";
 import { searchCorpus as searchQdrant } from "../qdrant";
 
 // En producción (workerd) el retrieval usa el binding nativo VECTORIZE, sin
@@ -50,7 +50,12 @@ export async function searchCorpus(embedding: number[], limit = 4): Promise<Corp
 
   if (!index) return searchQdrant(embedding, limit);
 
-  const { matches } = await index.query(embedding, {
+  // Red de fondo: la query debe tener las dimensiones del índice (512). Si el
+  // gateway devuelve otra cosa (qwen3 es Matryoshka y su nativo es 1024), se
+  // recorta a las primeras N. El índice ya entrenó su métrica sobre 512.
+  const vector = embedding.slice(0, LLM_EMBEDDING_DIMENSIONS);
+
+  const { matches } = await index.query(vector, {
     topK: VECTORIZE_TOP_K,
     returnMetadata: "all",
   });

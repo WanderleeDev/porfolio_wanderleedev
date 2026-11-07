@@ -4,6 +4,7 @@ const ENV = {
     QDRANT_URL: "https://qdrant.example.com",
     QDRANT_COLLECTION: "portfolio_corpus",
     QDRANT_API_KEY: "test-api-key",
+    LLM_EMBEDDING_DIMENSIONS: 512,
     RAG_MIN_SCORE: 0.35,
 };
 

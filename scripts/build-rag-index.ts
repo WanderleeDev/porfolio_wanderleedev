@@ -18,6 +18,7 @@ import {
 import { estimateTokens } from "../src/lib/rag/text";
 
 const DEFAULT_OUT = "data/corpus/corpus-index.json";
+const DEFAULT_VECTORS_OUT = "data/rag-vectors.ndjson";
 const DEFAULT_MODEL = "qwen3-embedding:0.6b";
 const DEFAULT_DIMENSIONS = 512;
 const PAGE_PREVIEW_CHARS = 90;
@@ -26,6 +27,7 @@ interface Arguments {
     pdf?: string;
     manifest?: string;
     out: string;
+    vectorsOut: string;
     model: string;
     dimensions: number;
     maxChars: number;
@@ -52,6 +54,7 @@ function readDimensions(): number {
 function parseArguments(argv: string[]): Arguments {
     const args: Arguments = {
         out: DEFAULT_OUT,
+        vectorsOut: DEFAULT_VECTORS_OUT,
         model: process.env.LLM_EMBEDDING_MODEL?.trim() || DEFAULT_MODEL,
         dimensions: readDimensions(),
         maxChars: DEFAULT_MAX_CHARS,
@@ -82,6 +85,9 @@ function parseArguments(argv: string[]): Arguments {
                 break;
             case "--out":
                 args.out = next();
+                break;
+            case "--vectors-out":
+                args.vectorsOut = next();
                 break;
             case "--model":
                 args.model = next();
@@ -154,6 +160,7 @@ Options:
   --pdf <path>             PDF to ingest (required)
   --manifest <path>        Page map (default: ${DEFAULT_MANIFEST} when it exists)
   --out <path>             Snapshot output (default: ${DEFAULT_OUT})
+  --vectors-out <path>     Vectorize NDJSON output (default: ${DEFAULT_VECTORS_OUT})
   --init-manifest          Write a page-per-section manifest skeleton and exit
   --dry-run                Extract and chunk without calling the gateway
   --check                  Exit 1 when the snapshot is stale for this PDF/manifest
@@ -397,6 +404,28 @@ async function main(): Promise<void> {
 
     const size = (await stat(outPath)).size;
     console.log(`wrote      ${args.out} · ${formatSize(size)} · ${index.chunks.length} chunks · ${dimensions} dims`);
+
+    // Ingesta Vectorize (T4): una línea por chunk, lista para
+    // `wrangler vectorize insert <index> --file <ndjson>`. Reusa los
+    // embeddings ya calculados; no toca la lógica de Qdrant.
+    const vectorsPath = resolve(args.vectorsOut);
+    const vectorsTemporaryPath = `${vectorsPath}.tmp`;
+    const vectorsNdjson = parsed.data.chunks
+        .map((chunk) =>
+            JSON.stringify({
+                id: chunk.id,
+                values: chunk.vector,
+                metadata: { text: chunk.text, source: args.pdf },
+            }),
+        )
+        .join("\n");
+
+    await mkdir(dirname(vectorsPath), { recursive: true });
+    await writeFile(vectorsTemporaryPath, `${vectorsNdjson}\n`, "utf8");
+    await rename(vectorsTemporaryPath, vectorsPath);
+
+    const vectorsSize = (await stat(vectorsPath)).size;
+    console.log(`wrote      ${args.vectorsOut} · ${formatSize(vectorsSize)} · ${index.chunks.length} vectors`);
 }
 
 main().catch((error: unknown) => {

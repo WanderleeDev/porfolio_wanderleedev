@@ -5,7 +5,7 @@ import z from 'zod';
 import { tools } from '../../ai/tools';
 import { isMusicRequest } from '../../ai/music-intent';
 import { BodySchema } from '../../ai/ui-schema';
-import { searchCorpus } from '../../lib/qdrant';
+import { searchCorpus } from '../../lib/rag/vectorize';
 
 const FALLBACK_MESSAGE =
     'No tengo ese dato en el corpus de Wanderlee. Puedo contarte sobre sus proyectos, su stack o pasarte sus datos de contacto.';

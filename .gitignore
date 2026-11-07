@@ -7,6 +7,8 @@ dist/
 
 # private corpus source, redaction list and debug snapshots
 data/corpus/
+# derived Vectorize ingest artifact (regenerable con bun run rag:build)
+data/rag-vectors.ndjson
 # generated types
 .astro/
 

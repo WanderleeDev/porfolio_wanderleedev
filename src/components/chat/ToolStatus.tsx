@@ -1,8 +1,4 @@
-interface ToolStatusProps {
-    label: string;
-}
-
-export function ToolStatus({ label }: ToolStatusProps) {
+export function ToolStatus({ label }: { label: string }) {
     return (
         <div
             data-tool-status={label}

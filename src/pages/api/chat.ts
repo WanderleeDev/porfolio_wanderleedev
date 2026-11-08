@@ -1,32 +1,17 @@
-import { streamText, embed, convertToModelMessages, type UIMessage, stepCountIs, createUIMessageStream, createUIMessageStreamResponse, toUIMessageStream } from 'ai';
+import { streamText, convertToModelMessages, type UIMessage, createUIMessageStreamResponse, toUIMessageStream, isStepCount, hasToolCall } from 'ai';
 import type { APIRoute } from 'astro';
-import { chatModel, embeddingModel } from '../../lib/llm';
+import { chatModel } from '../../lib/llm';
 import z from 'zod';
 import { tools } from '../../ai/tools';
-import { isMusicRequest } from '../../ai/music-intent';
 import { BodySchema } from '../../ai/ui-schema';
-import { searchCorpus } from '../../lib/rag/vectorize';
-
-const FALLBACK_MESSAGE =
-    'No tengo ese dato en el corpus de Wanderlee. Puedo contarte sobre sus proyectos, su stack o pasarte sus datos de contacto.';
-
-function fallbackResponse(): Response {
-    return createUIMessageStreamResponse({
-        stream: createUIMessageStream({
-            execute({ writer }) {
-                writer.write({ type: 'start' });
-                writer.write({ type: 'start-step' });
-                writer.write({ type: 'text-start', id: 'fallback' });
-                writer.write({ type: 'text-delta', id: 'fallback', delta: FALLBACK_MESSAGE });
-                writer.write({ type: 'text-end', id: 'fallback' });
-                writer.write({ type: 'finish-step' });
-                writer.write({ type: 'finish', finishReason: 'stop' });
-            },
-        }),
-    });
-}
 
 export const prerender = false;
+const DISPLAY_TOOLS = [
+    'displayProjects',
+    'displayTechs',
+    'displayContact',
+    'listTracks',
+] as const;
 
 export const POST: APIRoute = async ({ request }) => {
     const { success, data, error } = BodySchema.safeParse(await request.json().catch(() => null));
@@ -49,54 +34,21 @@ export const POST: APIRoute = async ({ request }) => {
         return Response.json({ error: 'La pregunta está vacía' }, { status: 400 });
     }
 
-    const { embedding } = await embed({
-        value: lastQuestion,
-        abortSignal: request.signal,
-        model: embeddingModel,
-    })
-
-    const hits = await searchCorpus(embedding, 4, lastQuestion);
-
-    // Sin contexto recuperado el endpoint no llama al modelo. Los pedidos de
-    // música son la excepción: el catálogo y el reproductor no viven en el
-    // corpus, así que se responden con las herramientas y contexto vacío.
-    if (!hits.length && !isMusicRequest(lastQuestion)) {
-        return fallbackResponse();
-    }
-
-    const ctx = hits
-        .map((hit) => hit.texto)
-        .join("\n---\n");
-
-    // RECORTE PROPUESTO (Parte A, no aplicado: cambia semántica si se
-    // quitan tools). Hoy el system menciona 6 tools en 2 instrucciones
-    // (~200 bytes) y `tools` expone 6 schemas (displayProjects,
-    // displayTechs, displayContact + listTracks, playTrack, controlTrack).
-    // Cada tool-call es 1 turno generativo extra del lfm3:1.7b (5-15 s).
-    // Flujo típico "proyectos": texto inicial + displayProjects + resumen
-    // = 3 turnos con stopWhen(3). Recorte: sacar del prompt la línea de
-    // música (3 tool-names + "No inventes tracks...") en pedidos no
-    // musicales — la excepción isMusicRequest ya cubre ese camino — y/o
-    // fusionar displayProjects/displayTechs en una sola tool. Ahorro
-    // típico: 1 turno generativo (~5-15 s, 1/3 del flujo). La personalidad
-    // ("asistente personal de Wanderlee Max", responder sólo con
-    // contexto) no se toca.
     const result = streamText({
         model: chatModel,
-        reasoning: 'none',
-        system: `Eres el asistente personal de Wanderlee Max.
-        Responde usando solo el contexto recuperado. Si no está ahí, dilo.
-        No atribuyas experiencia que el corpus marca como declarada pero no ejercida.
-        Cuando el usuario pida proyectos, tecnologías o datos de contacto, usá las herramientas displayProjects, displayTechs o displayContact.
-        Cuando pida música, un tema puntual o controlar el reproductor, usá listTracks, playTrack o controlTrack. No inventes tracks: la lista real sale de listTracks.
-
-        CONTEXTO:
-        ${ctx || 'Sin contexto recuperado para esta consulta.'}`,
+        instructions: `ou are a helpful assistant with access to a knowledge base. 
+          When users ask questions, search the knowledge base for relevant information.
+          Always search before answering if the question might relate to uploaded documents.
+          Base your answers on the search results when available. Give concise answers that correctly answer what the user is asking for. Do not flood them with all the information from the search results.`,
         messages,
         abortSignal: request.signal,
-        stopWhen: stepCountIs(3),
+        stopWhen: [isStepCount(3),
+        hasToolCall(...DISPLAY_TOOLS)],
         maxOutputTokens: 1000,
         tools,
+          onStepFinish: ({ stepNumber, finishReason, toolCalls, text }) => {
+    console.log({ stepNumber, finishReason, tools: toolCalls.map((c) => c.toolName), text });
+  },
     });
 
     return createUIMessageStreamResponse({

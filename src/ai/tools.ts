@@ -77,8 +77,6 @@ export const listTracks = tool({
   }),
 });
 
-// Las dos que siguen se resuelven en el navegador (`onToolCall` en
-// `useChatPanel`): necesitan el DOM del reproductor, así que no llevan `execute`.
 export const playTrack = tool({
   description:
     'Start playing a specific track in the portfolio\'s music player. Use only when the user names or refers to a particular song, by title (full or partial) or by its position in the list (e.g. "play Midnight Drive", "play the third song", "pon la canción 2"). Do not use for generic transport commands like pause, skip, or go back without a specific track; use controlTrack for those.',

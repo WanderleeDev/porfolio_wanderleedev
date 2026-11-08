@@ -46,9 +46,7 @@ export const POST: APIRoute = async ({ request }) => {
         hasToolCall(...DISPLAY_TOOLS)],
         maxOutputTokens: 1000,
         tools,
-          onStepFinish: ({ stepNumber, finishReason, toolCalls, text }) => {
-    console.log({ stepNumber, finishReason, tools: toolCalls.map((c) => c.toolName), text });
-  },
+
     });
 
     return createUIMessageStreamResponse({

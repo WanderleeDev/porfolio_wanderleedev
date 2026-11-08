@@ -1,4 +1,3 @@
-// src/components/chat/toolRegistry.ts
 import type { ComponentType } from "react";
 import { ProjectList } from "./ProjectList";
 import { TechList } from "./TechList";

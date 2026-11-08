@@ -81,14 +81,14 @@ const f = t("footer");
 
     <Slide title="Principal">
       <VStack>
-        <VSlide title="Arriba" class="!p-0">
-          <Collage3D images={collage} labels={collageLabels} />
+        <VSlide title="Arriba" class="[@media(max-height:700px)]:!py-2">
+          <MusicPlayer />
         </VSlide>
         <VSlide title="Principal" class="!p-0">
           <Hero />
         </VSlide>
-        <VSlide title="Abajo" class="[@media(max-height:700px)]:!py-2">
-          <MusicPlayer />
+        <VSlide title="Abajo" class="!p-0">
+          <Collage3D images={collage} labels={collageLabels} />
         </VSlide>
       </VStack>
     </Slide>

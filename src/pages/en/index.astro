@@ -1,10 +1,4 @@
 ---
-/**
- * English home page. BaseLayout provides <html>/<head> with i18n Open Graph
- * tags and the theme-preset script; Hero owns the curtain intro, the stars
- * canvas and the hero word-reveal. The global stylesheet is imported here so
- * fonts/Tailwind/theme vars load on every locale page.
- */
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import "../../styles/global.css";
 import Hero from "../../components/Hero.astro";
@@ -87,14 +81,14 @@ const f = t("footer");
 
     <Slide title="Main">
       <VStack>
-        <VSlide title="Top" class="!p-0">
-          <Collage3D images={collage} labels={collageLabels} />
+        <VSlide title="Top" class="[@media(max-height:700px)]:!py-2">
+          <MusicPlayer />
         </VSlide>
         <VSlide title="Main" class="!p-0">
           <Hero />
         </VSlide>
-        <VSlide title="Bottom" class="[@media(max-height:700px)]:!py-2">
-          <MusicPlayer />
+        <VSlide title="Bottom" class="!p-0">
+          <Collage3D images={collage} labels={collageLabels} />
         </VSlide>
       </VStack>
     </Slide>

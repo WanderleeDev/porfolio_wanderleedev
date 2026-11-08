@@ -1,6 +1,6 @@
 import { getTranslations } from "../i18n/utils";
 import { useChatPanel } from "./chat/useChatPanel";
-import { toolRegistry, type ToolRegistryName } from "./chat/toolRegistry";
+import { toolRegistry, TOOL_LABELS, type ToolRegistryName } from "./chat/toolRegistry";
 import { ToolStatus } from "./chat/ToolStatus";
 import { TypingIndicator } from "./chat/TypingIndicator";
 import { ProjectsIcon, TechIcon, ContactIcon, ChevronIcon, SendIcon } from "./chat/icons";
@@ -153,15 +153,23 @@ export default function ChatPanel({ lang }: { lang: Lang }) {
 
                                     if (isToolUIPart(part)) {
                                         const name = getToolName(part);
-                                        if (!(name in toolRegistry)) return null;
-                                        const Component = toolRegistry[name as ToolRegistryName] as ComponentType;
-                                        const runningLabel = t.tools[name as ToolRegistryName] ?? t.toolLoading;
+                                        const Component = (name in toolRegistry)
+                                            ? (toolRegistry[name as ToolRegistryName] as ComponentType)
+                                            : null;
+                                        const input = (part.input as Record<string, string> | undefined);
+                                        const query =
+                                            typeof input?.query === 'string' ? input.query : '';
+                                        const runningLabel =
+                                            name === 'searchKnowledgeBase'
+                                                ? `${t.toolLoading}: "${query.slice(0, 48)}${query.length > 48 ? '…' : ''}"`
+                                                : (TOOL_LABELS[name as ToolRegistryName] ?? t.toolLoading);
 
                                         switch (part.state) {
                                             case "input-streaming":
                                             case "input-available":
                                                 return <ToolStatus key={i} label={runningLabel} />;
                                             case "output-available":
+                                                if (!Component) return null;
                                                 return <Component key={i} {...(part.output as object)} />;
                                             case "output-error":
                                                 return (

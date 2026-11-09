@@ -2,23 +2,37 @@
 type PieceKey = 'yellow' | 'pink' | 'orange' | 'green' | 'blue';
 type Pt = [number, number];
 
+import { getTranslations } from "../i18n/utils";
+
 interface Props {
   images?: Partial<Record<PieceKey, string>>;
   labels?: Partial<Record<PieceKey, string>>;
 }
 
+const lang = Astro.currentLocale as "es" | "en";
+const t = getTranslations(lang);
+const projectList = t("projects").list;
+const meta = t("metadata");
+
 const W = 588;
 const H = 463;
 
 const defaultImages = {
-  yellow: 'https://picsum.photos/seed/collage-amarillo/800/800',
-  pink: 'https://picsum.photos/seed/collage-rosa/800/800',
-  orange: 'https://picsum.photos/seed/collage-naranja/800/800',
-  green: 'https://picsum.photos/seed/collage-verde/800/800',
-  blue: 'https://picsum.photos/seed/collage-azul/800/800',
+  yellow: projectList[0]?.image ?? 'https://picsum.photos/seed/collage-amarillo/800/800',
+  pink: projectList[1]?.image ?? 'https://picsum.photos/seed/collage-rosa/800/800',
+  orange: projectList[2]?.image ?? 'https://picsum.photos/seed/collage-naranja/800/800',
+  green: projectList[3]?.image ?? 'https://picsum.photos/seed/collage-verde/800/800',
+  blue: meta.thumbnail,
+};
+const defaultLabels = {
+  yellow: projectList[0]?.title,
+  pink: projectList[1]?.title,
+  orange: projectList[2]?.title,
+  green: projectList[3]?.title,
+  blue: "WanderleeDev",
 };
 const images = { ...defaultImages, ...Astro.props.images };
-const labels = Astro.props.labels ?? {};
+const labels = { ...defaultLabels, ...Astro.props.labels };
 
 const base = [
   { k: 'yellow', color: '#ffee99', pts: [[0.85,1.73],[43.37,1.73],[54.42,14.04],[20.07,58.31],[0.85,35.64]], lift: [-2, -2], rot: [4, -5], z: 80 },
@@ -74,8 +88,6 @@ const pieces = base.map((p, i) => {
   const shardP = rotate(shardL);
   const photoP = rotate(photoL);
 
-  // Cada pieza encuadra su propia miniatura: cubre el bounding box del
-  // fragmento, no el tablero completo, así la imagen se ve a escala real.
   const boxL = boxVars(bbox(land), W, H);
   const boxP = boxVars(bbox(port), H, W);
 
@@ -305,8 +317,6 @@ const varsFor = (p: (typeof pieces)[number]) =>
     pointer-events: none;
     transform-style: preserve-3d;
     will-change: transform;
-    /* Salida sin rebote: el overshoot mandaba translateZ a negativo y la
-       pieza se ocultaba detrás del papel del tablero. */
     transition:
       transform 0.62s cubic-bezier(0.22, 1, 0.36, 1),
       opacity 0.45s ease;
@@ -396,7 +406,6 @@ const varsFor = (p: (typeof pieces)[number]) =>
       transform 0.9s cubic-bezier(0.22, 1, 0.36, 1);
   }
 
-  /* Tinte de color en vez de velo pastel: unifica la paleta sin lavar la foto. */
   .photo::before {
     content: '';
     position: absolute;
@@ -575,8 +584,6 @@ const varsFor = (p: (typeof pieces)[number]) =>
     const board = stage.querySelector<HTMLElement>('[data-board]');
     if (!board) return;
 
-    // Entrada: la piezas se arman desde el centro la primera vez que el
-    // collage entra en viewport (en el deck, al subir desde el hero).
     if (!reduceMotion) {
       const lifts = gsap.utils.toArray<HTMLElement>('.lift', stage);
       gsap.set(lifts, { opacity: 0, scale: 0.94, y: 26, transformOrigin: '50% 50%' });

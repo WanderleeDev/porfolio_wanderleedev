@@ -4,16 +4,13 @@ import "../styles/global.css";
 import Hero from "../components/Hero.astro";
 import ThemePicker from "../components/ThemePicker.astro";
 import ChatSection from "../components/ChatSection.astro";
-import Credits from "../components/credits/Credits.astro";
 import Logros from "../components/logros/Logros.astro";
 import MusicPlayer from "../components/MusicPlayer.astro";
-import Title from "../components/typography/Title.astro";
 import Deck from "../components/deck/Deck.astro";
 import Slide from "../components/deck/Slide.astro";
 import VStack from "../components/deck/VStack.astro";
 import VSlide from "../components/deck/VSlide.astro";
-import ContactForm from "../components/contact/ContactForm";
-import ContactChannels from "../components/contact/ContactChannels.astro";
+import ContactSection from "../components/ContactSection.astro";
 import Collage3D from "../components/Collage3D.astro";
 import { getTranslations } from "../i18n/utils";
 
@@ -22,61 +19,15 @@ export const prerender = true;
 const lang = Astro.currentLocale as "es" | "en";
 const t = getTranslations(lang);
 const meta = t("metadata");
-const projectList = t("projects").list;
-const collage = {
-  yellow: projectList[0].image,
-  pink: projectList[1].image,
-  orange: projectList[2].image,
-  green: projectList[3].image,
-  blue: meta.thumbnail,
-};
-const collageLabels = {
-  yellow: projectList[0].title,
-  pink: projectList[1].title,
-  orange: projectList[2].title,
-  green: projectList[3].title,
-  blue: "WanderleeDev",
-};
 const c = t("contactSection");
-const f = t("footer");
 ---
 
 <BaseLayout title={meta.title} description={meta.description}>
   <ThemePicker />
-  <Credits lang="es" />
   <Logros lang="es" />
   <Deck start={1} vstart={1}>
     <Slide title={c.title}>
-      <div class="grid w-full max-w-6xl grid-cols-1 overflow-hidden rounded-[1.75rem] border border-line bg-surface text-left shadow-[0_36px_90px_-52px_rgb(0_0_0_/_0.45)] lg:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)]">
-        <div class="flex flex-col justify-between gap-8 border-b border-line bg-badge/20 p-6 sm:p-8 lg:border-b-0 lg:border-r">
-          <div>
-            <span class="font-sans text-[0.65rem] font-bold uppercase tracking-[0.3em] text-muted">
-              {f.contactLabel}
-            </span>
-            <Title level={2} family="sans" size="clamp(2.5rem,5vw,4rem)" class="mt-2">
-              {c.title}
-            </Title>
-            <p class="mt-3 max-w-[40ch] font-sans text-[0.95rem] leading-[1.6] text-soft">
-              {c.subtitle}
-            </p>
-            <div class="mt-6 flex flex-wrap gap-2">
-              <span class="flex items-center gap-1.5 rounded-full border border-line bg-surface px-3 py-1.5 font-sans text-[0.68rem] font-medium text-ink">
-                <span class="size-1.5 rounded-full bg-emerald-500" aria-hidden="true" />
-                {c.available}
-              </span>
-            </div>
-          </div>
-
-          <div class="space-y-4">
-            <ContactChannels />
-            <p class="max-w-[38ch] font-sans text-xs leading-relaxed text-muted">{c.note}</p>
-          </div>
-        </div>
-
-        <div class="bg-badge/10 p-4 sm:p-6 lg:p-8">
-          <ContactForm client:visible lang={lang} />
-        </div>
-      </div>
+      <ContactSection />
     </Slide>
 
     <Slide title="Principal">
@@ -88,7 +39,7 @@ const f = t("footer");
           <Hero />
         </VSlide>
         <VSlide title="Abajo" class="!p-0">
-          <Collage3D images={collage} labels={collageLabels} />
+          <Collage3D />
         </VSlide>
       </VStack>
     </Slide>

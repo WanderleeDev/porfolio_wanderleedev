@@ -1,9 +1,4 @@
 ---
-/**
- * ThemePicker + menú flotante — tema a un click y el resto agrupado.
- * Posición fija esquina superior derecha.
- * Estilos: utilidades Tailwind (el reveal del panel usa `starting:`).
- */
 import Icon from "./Icon.astro";
 
 const pathname = Astro.url.pathname;
@@ -125,19 +120,6 @@ const settingIcon = "size-4 shrink-0 opacity-70 [&_svg]:size-full";
         <span class={optionIcon} aria-hidden="true"><Icon name="lucide:trophy" class="size-full" /></span>
         {isEn ? "Achievements" : "Logros"}
       </button>
-      <button
-        class:list={[option, "disabled:cursor-not-allowed disabled:opacity-45 disabled:hover:bg-transparent"]}
-        type="button"
-        data-view="credits"
-        data-credits-row
-        disabled
-        aria-disabled="true"
-      >
-        <span class={optionIcon} aria-hidden="true"><Icon name="lucide:scroll-text" class="size-full" /></span>
-        {isEn ? "Credits" : "Créditos"}
-        <span data-credits-state class="ml-auto text-[0.7rem] font-semibold tabular-nums opacity-60"></span>
-      </button>
-
       <div class={divider} aria-hidden="true"></div>
 
       <div class={sectionLabel} id="menu-lang-label">{isEn ? "Language" : "Idioma"}</div>
@@ -203,8 +185,6 @@ const settingIcon = "size-4 shrink-0 opacity-70 [&_svg]:size-full";
   import { loadSettings, saveSettings, subscribeSettings, updateSetting, type DeckSettings } from "./deck/deck-settings";
   import { progress, requestUnlock, toggleLogros } from "../lib/logros-store";
   import {
-    CREDITS_AT,
-    creditsUnlocked,
     minimapUnlocked,
     verticalUnlocked,
   } from "../lib/unlocks";
@@ -258,7 +238,6 @@ const settingIcon = "size-4 shrink-0 opacity-70 [&_svg]:size-full";
     try {
       localStorage.setItem(STORAGE_KEY, theme);
     } catch {
-      /* modo privado o cuota agotada: el tema sigue aplicándose en la sesión */
     }
     applyTheme(theme);
     updateUI(theme);
@@ -281,16 +260,8 @@ const settingIcon = "size-4 shrink-0 opacity-70 [&_svg]:size-full";
   function reflectGates() {
     const lockRow = root.querySelector<HTMLElement>('[data-setting="lock"]');
     const minimapRow = root.querySelector<HTMLElement>('[data-setting="minimap"]');
-    const creditsRow = root.querySelector<HTMLButtonElement>("[data-credits-row]");
-    const creditsState = root.querySelector<HTMLElement>("[data-credits-state]");
     if (lockRow) lockRow.style.display = verticalUnlocked.get() ? "" : "none";
     if (minimapRow) minimapRow.style.display = minimapUnlocked.get() ? "" : "none";
-    if (creditsRow) {
-      const on = creditsUnlocked.get();
-      creditsRow.disabled = !on;
-      creditsRow.setAttribute("aria-disabled", String(!on));
-      if (creditsState) creditsState.textContent = on ? "" : `${progress.get()}/${CREDITS_AT}`;
-    }
   }
 
   function bootSettings() {
@@ -300,10 +271,7 @@ const settingIcon = "size-4 shrink-0 opacity-70 [&_svg]:size-full";
     root.dataset.settingsWired = "true";
     minimapUnlocked.subscribe(reflectGates);
     verticalUnlocked.subscribe(reflectGates);
-    creditsUnlocked.subscribe(reflectGates);
     progress.subscribe(reflectGates);
-    // El deck normaliza ajustes al arrancar (y las recompensas cambian el
-    // valor por defecto): el switch tiene que seguir al store, no al boot.
     subscribeSettings(reflectSettings);
     root.querySelectorAll<HTMLElement>("[data-setting]").forEach((btn) => {
       btn.addEventListener("click", (e) => {
@@ -311,7 +279,6 @@ const settingIcon = "size-4 shrink-0 opacity-70 [&_svg]:size-full";
         const key = btn.dataset.setting as keyof DeckSettings;
         const sw = btn.querySelector<HTMLElement>("[data-switch]")!;
         const next = sw.getAttribute("data-on") !== "true";
-        // Sin minimapa no hay navegación visible que reemplace a las flechas.
         if (key === "arrows" && !next && !minimapUnlocked.get()) return;
         const nextSettings = loadSettings();
         nextSettings[key] = next;
@@ -322,12 +289,10 @@ const settingIcon = "size-4 shrink-0 opacity-70 [&_svg]:size-full";
           updateSetting("minimap", true);
         }
         reflectSettings(loadSettings());
-        // El panel queda abierto: se pueden tocar varios switches seguidos.
       });
     });
   }
 
-  // Boot: aplica el theme siempre; los listeners se registran una sola vez por DOM.
   function bootPicker() {
     applyTheme(getSaved());
     updateUI(getSaved());
@@ -357,7 +322,6 @@ const settingIcon = "size-4 shrink-0 opacity-70 [&_svg]:size-full";
     setupToggle("theme-trigger", "theme-panel");
     setupToggle("menu-trigger", "menu-panel");
 
-    // Cerrar al hacer click fuera
     document.addEventListener("click", () => {
       root.querySelectorAll<HTMLElement>("[data-panel]").forEach((p) => (p.hidden = true));
       root.querySelectorAll<HTMLElement>("[data-trigger]").forEach((t) =>
@@ -365,7 +329,6 @@ const settingIcon = "size-4 shrink-0 opacity-70 [&_svg]:size-full";
       );
     });
 
-    // Opciones de tema
     root.querySelectorAll<HTMLElement>("[data-theme]").forEach((opt) => {
       opt.addEventListener("click", () => {
         setTheme(opt.dataset.theme as Theme);
@@ -374,15 +337,12 @@ const settingIcon = "size-4 shrink-0 opacity-70 [&_svg]:size-full";
       });
     });
 
-    // Filas de navegación del menú: cierran el panel y abren la vista.
     root.querySelectorAll<HTMLElement>("[data-view]").forEach((row) => {
       row.addEventListener("click", (e) => {
         e.stopPropagation();
         closePanel("menu-panel", "menu-trigger");
         if (row.dataset.view === "logros") toggleLogros();
-        else if (row.dataset.view === "credits" && creditsUnlocked.get()) {
-          document.dispatchEvent(new CustomEvent("credits:toggle"));
-        }
+
       });
     });
   }
@@ -390,7 +350,6 @@ const settingIcon = "size-4 shrink-0 opacity-70 [&_svg]:size-full";
   document.addEventListener("astro:page-load", bootPicker);
   bootPicker();
 
-  // Escuchar cambios del sistema (una vez por carga completa)
   window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => {
     const saved = getSaved();
     if (saved === "system") {

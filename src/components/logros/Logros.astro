@@ -1,10 +1,4 @@
 ---
-/**
- * Vista de logros: overlay a pantalla completa con la grilla de logros.
- * Los logros se desbloquean explorando el sitio y se persisten en localStorage.
- * La coreografía es una timeline de GSAP que vive pausada: abrir es play(),
- * cerrar es reverse(), así el mismo recorrido sirve en ambos sentidos.
- */
 import Icon from "../Icon.astro";
 import { ACHIEVEMENTS } from "../../lib/achievements";
 
@@ -22,7 +16,6 @@ const labels = {
   locked: isEn ? "Locked" : "Bloqueado",
   minimap: isEn ? "Minimap unlocked" : "Minimapa desbloqueado",
   vertical: isEn ? "Vertical unlocked" : "Vertical desbloqueado",
-  credits: isEn ? "Credits unlocked" : "Créditos desbloqueados",
 };
 const achievements = ACHIEVEMENTS.map((achievement) => ({
   id: achievement.id,
@@ -39,7 +32,6 @@ const achievements = ACHIEVEMENTS.map((achievement) => ({
   data-label-locked={labels.locked}
   data-label-minimap={labels.minimap}
   data-label-vertical={labels.vertical}
-  data-label-credits={labels.credits}
   aria-label={labels.title}
   class="m-0 h-dvh w-dvw max-h-none max-w-none overflow-clip border-0 bg-transparent p-0 text-ink"
 >
@@ -149,7 +141,7 @@ const achievements = ACHIEVEMENTS.map((achievement) => ({
     requestUnlock,
     toggleLogros,
   } from "../../lib/logros-store";
-  import { creditsUnlocked, minimapUnlocked, verticalUnlocked } from "../../lib/unlocks";
+  import { minimapUnlocked, verticalUnlocked } from "../../lib/unlocks";
   import { showToast } from "../../lib/toast";
 
   function initLogros() {
@@ -170,20 +162,15 @@ const achievements = ACHIEVEMENTS.map((achievement) => ({
       locked: dialog.dataset.labelLocked ?? "",
     };
 
-    // El deck y la barra viven fuera del componente.
     const background = [
       document.querySelector<HTMLElement>("[data-deck]"),
       document.getElementById("theme-picker"),
     ].filter((el): el is HTMLElement => el !== null);
 
-    // Una sola timeline, construida pausada: abrir es play(), cerrar reverse().
-    // El recorrido inverso reproduce el cierre sin duplicar la coreografía.
     const timeline = gsap.timeline({
       paused: true,
       onReverseComplete: () => {
         dialog.close();
-        // El deck no debe quedar con transform inline: crea un containing block
-        // para sus hijos `fixed` aunque el valor sea identidad.
         gsap.set(background, { clearProps: "all" });
       },
     });
@@ -195,9 +182,7 @@ const achievements = ACHIEVEMENTS.map((achievement) => ({
         0,
       )
       .to(veil, { opacity: 1, duration: 0.35, ease: "power2.out" }, 0)
-      // El bloque principal llega desde abajo, fuera de la pantalla.
       .fromTo(sheet, { yPercent: 100 }, { yPercent: 0, duration: 0.62, ease: "power3.out" }, 0)
-      // Los sub bloques suben con rotación leve y se enderezan.
       .fromTo(
         head,
         { y: 40, rotate: 3, opacity: 0 },
@@ -210,7 +195,6 @@ const achievements = ACHIEVEMENTS.map((achievement) => ({
         { y: 0, rotate: 0, opacity: 1, duration: 0.55, ease: "power3.out" },
         0.44,
       )
-      // Las cards cierran la secuencia, escalonadas.
       .fromTo(
         cards,
         { y: 50, opacity: 0 },
@@ -218,7 +202,6 @@ const achievements = ACHIEVEMENTS.map((achievement) => ({
         0.7,
       );
 
-    // Pinta cada card según el store y actualiza el contador.
     function syncCards() {
       const unlockedIds = new Set(unlocked.get());
       for (const card of cards) {
@@ -233,7 +216,6 @@ const achievements = ACHIEVEMENTS.map((achievement) => ({
 
     function open() {
       if (dialog.open) return;
-      // Abrir la lista también es explorar: se desbloquea antes de pintar.
       requestUnlock("curiosity");
       syncCards();
       dialog.showModal();
@@ -251,14 +233,8 @@ const achievements = ACHIEVEMENTS.map((achievement) => ({
       timeline.reverse();
     }
 
-    // El disparador del overlay vive en el store: `mount` suscribe `isOpen`
-    // y llama a `open`/`close`. Los cierres por puntero (botón X, Escape)
-    // pasan por `toggleLogros` para que el store siga siendo la fuente de
-    // verdad del estado abierto/cerrado.
     mount(open, close);
 
-    // Logros automáticos: visitar el sitio o hablar con el chat. El estado
-    // llega por suscripción al store (llamada inmediata + cada cambio).
     requestUnlock("hello-world");
     unlocked.subscribe(syncCards);
 
@@ -270,11 +246,8 @@ const achievements = ACHIEVEMENTS.map((achievement) => ({
     const gateLabels = {
       minimap: dialog.dataset.labelMinimap ?? "",
       vertical: dialog.dataset.labelVertical ?? "",
-      credits: dialog.dataset.labelCredits ?? "",
     };
 
-    // El overlay vive en el top layer y tapa los toasts: si una recompensa se
-    // desbloquea con el panel abierto, se anuncia al cerrarlo.
     let pendingGate: string | null = null;
     function announceGate(message: string) {
       if (!message) return;
@@ -282,9 +255,6 @@ const achievements = ACHIEVEMENTS.map((achievement) => ({
         pendingGate = message;
         return;
       }
-      // El logro que dispara la recompensa se anuncia en este mismo tick:
-      // el timeout deja que ese toast entre primero y la recompensa espere
-      // su turno en la cola.
       window.setTimeout(() => showToast(message), 0);
     }
 
@@ -307,17 +277,8 @@ const achievements = ACHIEVEMENTS.map((achievement) => ({
       if (on) announceGate(gateLabels.vertical);
     });
 
-    let firstCredits = true;
-    creditsUnlocked.subscribe((on) => {
-      if (firstCredits) { firstCredits = false; return; }
-      if (on) announceGate(gateLabels.credits);
-    });
-
-    // El blocker cubre todo el viewport, así que no existe clic "afuera":
-    // el único cierre por puntero es el botón X.
     closeBtn.addEventListener("click", () => toggleLogros());
 
-    // Escape no cierra el dialog de golpe: se intercepta para revertir la timeline.
     dialog.addEventListener("cancel", (event) => {
       event.preventDefault();
       toggleLogros();

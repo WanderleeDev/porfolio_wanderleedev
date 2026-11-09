@@ -201,16 +201,6 @@ export const en = {
     select: "Pick track",
   },
 
-  credits: {
-    closing: "WanderleeDev",
-    roles: {
-      role: "Fullstack Developer",
-      stack: "Stack",
-      projects: "Projects",
-      contact: "Contact",
-    },
-  },
-
   footer: {
     contactLabel: "Contact",
     email: "wanderleedev@gmail.com",

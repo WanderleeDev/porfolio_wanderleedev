@@ -201,16 +201,6 @@ export const es = {
     select: "Elegir tema",
   },
 
-  credits: {
-    closing: "WanderleeDev",
-    roles: {
-      role: "Fullstack Developer",
-      stack: "Stack",
-      projects: "Proyectos",
-      contact: "Contacto",
-    },
-  },
-
   footer: {
     contactLabel: "Contacto",
     email: "wanderleedev@gmail.com",

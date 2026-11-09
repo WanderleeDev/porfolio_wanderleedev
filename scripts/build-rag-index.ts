@@ -356,7 +356,6 @@ async function main(): Promise<void> {
     console.log(`embedding  ${corpus.chunks.length} chunks with ${args.model} (${Math.ceil(corpus.chunks.length / 32)} batches)...`);
 
     const { vectors, dimensions } = await embedTexts(
-        // The title is part of the embedding so project names are searchable.
         corpus.chunks.map((chunk) => `${chunk.title}\n${chunk.text}`),
         {
             baseURL,
@@ -406,9 +405,6 @@ async function main(): Promise<void> {
     const size = (await stat(outPath)).size;
     console.log(`wrote      ${args.out} · ${formatSize(size)} · ${index.chunks.length} chunks · ${dimensions} dims`);
 
-    // Ingesta Vectorize (T4): una línea por chunk, lista para
-    // `wrangler vectorize insert <index> --file <ndjson>`. Reusa los
-    // embeddings ya calculados; no genera nada para otros stores.
     const vectorsPath = resolve(args.vectorsOut);
     const vectorsTemporaryPath = `${vectorsPath}.tmp`;
     const vectorsNdjson = parsed.data.chunks

@@ -195,7 +195,6 @@ async function readStream(response: Response): Promise<Captured> {
                 try {
                     handle(JSON.parse(payload) as Record<string, unknown>);
                 } catch {
-                    // Ignore non-JSON keepalives.
                 }
             }
 

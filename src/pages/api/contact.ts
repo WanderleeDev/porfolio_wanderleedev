@@ -14,7 +14,6 @@ export const prerender = false;
 const contactSchema = z.object({
     message: z.string().trim().min(10).max(4000),
     lang: z.enum(["es", "en"]).default("es"),
-    // Honeypot: sin límite de longitud para que un bot no reciba un 400 que lo delate.
     website: z.string().optional(),
 });
 

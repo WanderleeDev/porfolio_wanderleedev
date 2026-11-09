@@ -1,15 +1,4 @@
 ---
-/**
- * Hero — contenido del hero y su intro (cortina, canvas de estrellas, badge).
- *
- * Capas, de abajo hacia arriba:
- *   #hero content -> #curtain (opaca) -> #stars-bg (warp) -> #badge-layer
- *
- * La cortina oculta el hero mientras corre la intro y el canvas va por encima
- * para que el warp se vea. Al terminar, el canvas pasa a z-index negativo:
- * el fondo del sitio vive en <html>, así las estrellas quedan entre ese
- * fondo y el contenido.
- */
 import Icon from "./Icon.astro";
 import { getTranslations } from "../i18n/utils";
 import Title from "./typography/Title.astro";
@@ -155,8 +144,6 @@ const stackLogos = [
 </div>
 
 <script is:inline define:vars={{ isDev: import.meta.env.DEV }}>
-  // Corre inline apenas la cortina existe en el DOM: si viviera en <head>,
-  // vería un #curtain null y el skip de visita repetida no funcionaría.
   try {
     if (!isDev && localStorage.getItem("wdev-intro-seen") === "1") {
       document.getElementById("curtain").style.display = "none";
@@ -183,8 +170,6 @@ const stackLogos = [
   const petEl = document.getElementById("pet") as HTMLElement;
   const catEl = document.getElementById("cat") as HTMLElement;
 
-  // Colores del canvas desde los tokens del theme activo: el navegador
-  // resuelve cualquier valor CSS (var, hex, color-mix) a rgb().
   const probe = document.createElement("span");
   probe.style.display = "none";
   document.body.appendChild(probe);
@@ -210,13 +195,8 @@ const stackLogos = [
     theme = themeColors();
   }).observe(htmlEl, { attributes: true, attributeFilter: ["data-theme", "class"] });
 
-  // Sin intro en visitas repetidas (salvo en dev) o con reducedMotion
   const skipIntro = (storage.get() && !IS_DEV) || reducedMotion;
 
-  // El script inline de arriba ya ocultó la cortina cuando pudo; esto cubre
-  // los caminos dev / reducedMotion, que sólo se pueden decidir en JS.
-  // Botón de tema y menú (vistas, idioma y ajustes): ocultos durante la
-  // intro y revelados al final (ver revealHero).
   const pickers = gsap.utils.toArray<HTMLElement>("#theme-trigger, #menu-trigger");
 
   if (skipIntro) {
@@ -227,7 +207,6 @@ const stackLogos = [
   } else {
     htmlEl.style.overflow = "hidden";
     gsap.set(pickers, { opacity: 0 });
-    // Ocultos no alcanza: inert los saca del tab order y bloquea clics.
     pickers.forEach((el) => { el.inert = true; });
   }
 
@@ -241,7 +220,6 @@ const stackLogos = [
   const TRAIL_FACTOR = 5;
   const MAX_SPEED = 40;
 
-  // idle: no pinta nada (el canvas espera al badge); warp; scroll
   type Mode = "idle" | "warp" | "scroll";
   type WarpStar = { x: number; y: number; z: number; px: number; py: number };
   type ScrollStar = { x: number; y: number; z: number; size: number; alpha: number; drift: number };
@@ -256,16 +234,11 @@ const stackLogos = [
 
   const state = { mode: (skipIntro ? "scroll" : "idle") as Mode, warp: 0, vx: 0, vy: 0 };
 
-  // El deck no scrollea la página: mueve dos contenedores internos (horizontal
-  // y vertical). El fondo muestrea ambos por frame para responder a cualquier
-  // dirección, también a los saltos del minimapa y la vista general.
   const deckTrack = document.querySelector<HTMLElement>("[data-track]");
   const deckHolder = document.querySelector<HTMLElement>("[data-vtrack]");
   let lastScrollX: number | null = null;
   let lastScrollY: number | null = null;
 
-  // Vuelve a tomar la posición como origen: tras la intro (o un resize que
-  // recrea las estrellas) no debe interpretarse el salto como velocidad.
   function resetScrollOrigin() {
     lastScrollX = null;
     lastScrollY = null;
@@ -275,7 +248,6 @@ const stackLogos = [
 
   const rand = (a: number, b: number) => a + Math.random() * (b - a);
 
-  // Warp (3D)
 
   function project(s: WarpStar) {
     const k = FOCAL / s.z;
@@ -322,8 +294,6 @@ const stackLogos = [
   function renderWarp() {
     const speed = state.warp * MAX_WARP_SPEED;
 
-    // Desvanece las estelas hacia transparencia: el canvas nunca tapa el
-    // fondo real de la página (en neón es un gradiente, no un color plano).
     ctx.globalCompositeOperation = "destination-out";
     ctx.fillStyle = "rgba(0, 0, 0, 0.35)";
     ctx.fillRect(0, 0, W, H);
@@ -352,9 +322,6 @@ const stackLogos = [
     ctx.globalCompositeOperation = "source-over";
   }
 
-  // Hand-off: warp -> scroll
-  // Sólo pasan las estrellas visibles, en su posición exacta. No se reubica
-  // ni se agrega ninguna, así que la densidad final es la que ya se veía.
   function handOffToScroll() {
     scrollStars = [];
     for (const s of warpStars) {
@@ -374,15 +341,11 @@ const stackLogos = [
     state.mode = "scroll";
     resetScrollOrigin();
     htmlEl.style.overflow = "";
-    // Terminada la intro, el canvas pasa al fondo (z negativo): queda entre
-    // el fondo del sitio (html) y el contenido, así las estrellas se ven
-    // detrás del hero en vez de taparlo.
     canvas.style.zIndex = "-1";
     revealHero();
     if (!skipIntro) storage.set();
   }
 
-  // Scroll (2D)
 
   function resetScrollStar(s: ScrollStar, edge: "left" | "right" | "up" | "down") {
     s.z = rand(0.2, 1);
@@ -399,8 +362,6 @@ const stackLogos = [
   }
 
   function renderScroll() {
-    // Velocidad del deck en los dos ejes, suavizada para que el impulso
-    // sobreviva al snap y se desvanezca cuando el scroll se detiene.
     const x = deckTrack?.scrollLeft ?? 0;
     const y = deckHolder?.scrollTop ?? 0;
     const rawX = lastScrollX === null ? 0 : x - lastScrollX;
@@ -443,8 +404,6 @@ const stackLogos = [
     }
   }
 
-  // idle: estrellas fijas, sin movimiento ni velo. Así el canvas aparece con
-  // el gato y no se anima hasta que el gato termine su animación.
   function renderIdle() {
     ctx.clearRect(0, 0, W, H);
     ctx.globalCompositeOperation = theme.additive ? "lighter" : "source-over";
@@ -502,9 +461,6 @@ const stackLogos = [
 
   gsap.ticker.add(render);
 
-  // Reveal del hero: una sola timeline
-  // email/stack -> palabras con stagger elástico -> fan de cards.
-  // fontWeight del h1 usa steps(1) porque font-weight no interpola.
   function revealHero() {
     htmlEl.classList.add("hero-ready");
     const hero = document.getElementById("hero");
@@ -513,9 +469,6 @@ const stackLogos = [
     const fades = hero.querySelectorAll(".hero-fade");
     const cards = hero.querySelectorAll(".tech-card");
 
-    // Entrada de las cards: scale desde el centro, en oleadas simétricas
-    // (cada oleada es un par espejo: una card impar y una par). Sin stagger
-    // lineal y sin animar opacity: aparecen al 100% y crecen desde el centro.
     const mid = (cards.length - 1) / 2;
     const waves = new Map<number, HTMLElement[]>();
     cards.forEach((card, i) => {
@@ -530,10 +483,8 @@ const stackLogos = [
     tl.to(fades, { opacity: 1, duration: 0.6, ease: "power2.out" }, 0)
       .to(words, { scaleY: 1, duration: 0.8, ease: "elastic.out(1, 0.45)", stagger: 0.08 }, 0.1);
 
-    // Opacity sin animación: las cards aparecen de golpe y sólo crece el scale.
     gsap.set(cards, { opacity: 1 });
 
-    // Botón de tema (dark mode) y selector de idioma: aparecen al final.
     waveKeys.forEach((key, w) => {
       tl.to(
         waves.get(key)!,
@@ -551,12 +502,9 @@ const stackLogos = [
       },
       "+=0.15",
     );
-    // El deck espera esta señal para mostrar flechas y minimapa recién
-    // cuando el reveal terminó (no durante el warp).
     tl.call(() => window.dispatchEvent(new CustomEvent("hero:revealed")));
   }
 
-  // Warp: arranca solo cuando el badge terminó de achicarse
   function startWarp() {
     state.mode = "warp";
     gsap
@@ -572,8 +520,6 @@ const stackLogos = [
     gsap.set("#hero .hero-fade", { opacity: 1 });
     gsap.set("#hero .tech-card", { opacity: 1, "--card-scale": 1 });
   } else {
-    // Badge aparece con el canvas quieto; al terminar la animación del gato
-    // arranca el warp, junto con su salida.
     const badgeTl = gsap.timeline({
       paused: true,
       onComplete: () => {
@@ -582,10 +528,6 @@ const stackLogos = [
       },
     });
 
-    // El `animationend` del gato es la señal para continuar, pero si por
-    // cualquier motivo no dispara (fuente, tab oculta, animation cancelada),
-    // el fallback por tiempo evita que la intro quede trabada con las
-    // cards en opacity 0. Bandera once: solo el primero que llegue resume.
     let badgeResumed = false;
     const resumeBadge = () => {
       if (badgeResumed) return;
@@ -604,14 +546,11 @@ const stackLogos = [
       .call(startWarp)
       .to(petEl, { scale: 0, duration: 0.4, ease: "power3.in" });
 
-    // Última red: si a los 20s el hero no hizo reveal, se fuerza el
-    // hand-off para no dejar la página con el contenido invisible.
     window.setTimeout(() => {
       if (!htmlEl.classList.contains("hero-ready")) {
         try {
           handOffToScroll();
         } catch {
-          /* el hand-off ya corrió o el canvas no existe */
         }
       }
     }, 20000);

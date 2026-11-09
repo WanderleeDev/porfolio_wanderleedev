@@ -4,12 +4,8 @@ import { reducedMotion } from '../../utils/env';
 
 type Cell = { type: 'h' | 'v'; i: number; row: number; col: number; title: string };
 
-// Clases Tailwind reutilizables
 const ARROW_OFF = 'pointer-events-none';
 const THUMB = 'flex flex-col items-center justify-center gap-1.5 p-4 rounded-[18px] border-2 border-transparent bg-slate-800 text-slate-50 cursor-pointer transition-all enabled:hover:scale-[1.03] enabled:hover:border-sky-400 disabled:opacity-35 disabled:cursor-not-allowed';
-// El borde y el fondo del estado activo van por estilo inline: `border-transparent`
-// de la clase base y `border-sky-400` tienen la misma especificidad y el orden del
-// CSS generado decide por nosotros. El `ring` no compite con nada, así que va en clase.
 const THUMB_CURRENT = ['ring-4', 'ring-sky-400/25'];
 const ACTIVE_BORDER = 'rgb(56 189 248)';
 const IDLE_BORDER = 'rgb(255 255 255 / 0.2)';
@@ -21,9 +17,6 @@ export function initDeck(root: HTMLElement) {
   const q = <T extends Element>(sel: string) => root.querySelector<T>(sel);
   const instant = 'instant' as ScrollBehavior;
 
-  // Los controles son hijos directos del root: con `:scope >` no se confunden
-  // con los data-* homónimos que usan los componentes slotteados (por ej. el
-  // prev/next de temas del MusicPlayer).
   const track = q<HTMLElement>(':scope > [data-track]')!;
   const hslides = [...track.querySelectorAll<HTMLElement>(':scope > [data-hslide]')];
   const holder = q<HTMLElement>('[data-vtrack]');
@@ -59,11 +52,8 @@ export function initDeck(root: HTMLElement) {
   let current = start;
   let vCurrent = vstart;
   let locked = !verticalUnlocked.get() || settings.lock;
-  // Mientras corre la intro el deck no responde a nada: ni teclado, ni
-  // flechas, ni minimapa, ni rueda/touch.
   let introPending = !document.documentElement.classList.contains('hero-ready');
 
-  // ===== Movimiento =====
   function goTo(i: number, behavior: ScrollBehavior = 'smooth') {
     if (introPending) return;
     const idx = Math.max(0, Math.min(i, hslides.length - 1));
@@ -76,7 +66,6 @@ export function initDeck(root: HTMLElement) {
     holder.scrollTo({ top: vslides[idx].offsetTop, behavior });
   }
 
-  // ===== Estado visual =====
   function updateUI() {
     counter.textContent = `${current + 1} / ${hslides.length}`;
     prevBtn.disabled = current === 0;
@@ -86,7 +75,6 @@ export function initDeck(root: HTMLElement) {
     upBtn.disabled = !holder || locked || !onHolder || vCurrent === 0;
     downBtn.disabled = !holder || locked || !onHolder || vCurrent === vslides.length - 1;
 
-    // Congelar el vertical: sin overflow ni snap
     if (holder) {
       holder.classList.toggle('overflow-hidden', locked);
       holder.classList.toggle('overflow-y-auto', !locked);
@@ -95,8 +83,6 @@ export function initDeck(root: HTMLElement) {
       holder.classList.toggle('snap-none', locked);
     }
 
-    // Sólo el slide visible recibe foco y clics: Tab no salta a contenido
-    // fuera de pantalla ni arrastra el deck a otra slide.
     hslides.forEach((slide, i) => {
       slide.inert = introPending || i !== current;
     });
@@ -112,7 +98,6 @@ export function initDeck(root: HTMLElement) {
     updateUI();
   }
 
-  // ===== Observadores =====
   const hObserver = new IntersectionObserver(
     (entries) => {
       entries.forEach((e) => {
@@ -141,16 +126,11 @@ export function initDeck(root: HTMLElement) {
     vslides.forEach((s) => vObserver.observe(s));
   }
 
-  // ===== Controles =====
   prevBtn.addEventListener('click', () => goTo(current - 1));
   nextBtn.addEventListener('click', () => goTo(current + 1));
   upBtn.addEventListener('click', () => goToV(vCurrent - 1));
   downBtn.addEventListener('click', () => goToV(vCurrent + 1));
 
-  // ===== Flechas flotantes =====
-  // Se pueden ocultar para navegar sólo con el minimapa. `display` inline
-  // (y no el atributo `hidden`) porque las utilidades `flex` del botón le
-  // ganan al `[hidden]` del user agent.
   let arrowsOn = settings.arrows;
   function setArrows(on: boolean) {
     arrowsOn = on;
@@ -159,9 +139,6 @@ export function initDeck(root: HTMLElement) {
     });
   }
 
-  // ===== Vista general =====
-  // Cada slide horizontal ocupa una columna. Los verticales ocupan la columna
-  // del holder, cada uno en su propia fila.
   const cells: Cell[] = [];
   hslides.forEach((s, j) =>
     cells.push({
@@ -184,15 +161,11 @@ export function initDeck(root: HTMLElement) {
   });
 
   function renderOverview() {
-    // El número de columnas y filas depende de cuántos slides haya. Con el
-    // vertical bloqueado la navegación de arriba hacia abajo todavía no existe:
-    // esas filas quedan vacías y sólo se dibuja la banda horizontal.
     grid.style.gridTemplateColumns = `repeat(${hslides.length}, minmax(0, 1fr))`;
     grid.style.gridTemplateRows = `repeat(${Math.max(vslides.length, 1)}, minmax(0, 1fr))`;
     grid.innerHTML = '';
 
     cells.forEach((c) => {
-      // Arriba y abajo del holder quedan ocultos hasta desbloquear el vertical.
       if (locked && c.type === 'v') return;
 
       const b = document.createElement('button');
@@ -240,9 +213,6 @@ export function initDeck(root: HTMLElement) {
     if (e.target === panel || e.target === ovWrap) closeOverview();
   });
 
-  // ===== Minimapa =====
-  // Esquema en cruz: columna central (arriba / principal / abajo) flanqueada
-  // por los slides horizontales vecinos.
   const minimap = document.createElement('div');
   minimap.className =
     'fixed bottom-6 right-6 z-30 grid grid-cols-[48px_48px_48px] grid-rows-[48px_48px_48px] items-center justify-items-center gap-1.5 rounded-[22px] border border-white/20 bg-slate-900/85 p-3 shadow-lg backdrop-blur-md origin-bottom-right';
@@ -252,9 +222,6 @@ export function initDeck(root: HTMLElement) {
   minimap.setAttribute('aria-label', 'Minimapa del deck');
   root.appendChild(minimap);
 
-  // Opacidad y transición viven en `Deck.astro` (regla global sobre
-  // `[data-minimap]`): así el estado discreto y el hover no compiten por el
-  // orden del CSS generado. Acá sólo se marca si el mapa está cerrado.
   function setMinimapVisible(on: boolean) {
     if (on) minimap.removeAttribute('data-closing');
     else minimap.setAttribute('data-closing', '');
@@ -265,9 +232,7 @@ export function initDeck(root: HTMLElement) {
 
   type MmCell = {
     el: HTMLButtonElement;
-    /** Punto que marca la celda donde está parado el deck. */
     dot: HTMLSpanElement;
-    /** Halo del punto: late sólo en la celda activa. */
     halo: HTMLSpanElement;
     kind: 'h' | 'v';
     i: number;
@@ -282,9 +247,6 @@ export function initDeck(root: HTMLElement) {
     box.setAttribute('aria-label', label);
     box.className = `${MM_CELL} ${placement}`;
     box.addEventListener('click', onClick);
-    // Punto con halo: existe siempre y se enciende en la celda activa, así el
-    // cambio de posición se anima en vez de aparecer de golpe. El halo nace
-    // sin animación para no dejar cinco `ping` corriendo fuera de pantalla.
     const dot = document.createElement('span');
     dot.className =
       'pointer-events-none relative flex size-3 scale-0 opacity-0 transition-[scale,opacity] duration-200 ease-out motion-reduce:transition-none';
@@ -300,8 +262,6 @@ export function initDeck(root: HTMLElement) {
     return { el: box, dot, halo };
   }
 
-  // Navegación a un slide vertical: el mapa es explícito, así que mueve la
-  // columna aunque el bloqueo vertical esté activo.
   function scrollV(i: number) {
     if (introPending || !holder) return;
     const idx = Math.max(0, Math.min(i, vslides.length - 1));
@@ -314,8 +274,6 @@ export function initDeck(root: HTMLElement) {
     mmCells.length = 0;
     if (hslides.length === 0) return;
 
-    // Botón expandir: esquina libre de la grilla. Usa el invocador de comandos
-    // nativo (`command="show-modal"`) para abrir el <dialog> de vista general.
     expandBtn = document.createElement('button');
     expandBtn.type = 'button';
     expandBtn.className =
@@ -333,8 +291,6 @@ export function initDeck(root: HTMLElement) {
       expandBtn.addEventListener('click', openOverview);
     }
 
-    // Cerrar: oculta el minimapa y recuerda la elección. El switch del menú
-    // vuelve a mostrarlo, así que no se pierde el acceso.
     const closeBtn = document.createElement('button');
     closeBtn.type = 'button';
     closeBtn.className =
@@ -407,9 +363,6 @@ export function initDeck(root: HTMLElement) {
 
   function updateMinimapActive() {
     mmCells.forEach(({ el, dot, halo, kind, i, hiddenWhenLocked }) => {
-      // Con el vertical bloqueado el punto vive en la columna: marca la slide
-      // horizontal en la que está parado el deck, no la fila vertical que ya
-      // no se muestra.
       const on = locked
         ? kind === 'h'
           ? i === current
@@ -425,16 +378,12 @@ export function initDeck(root: HTMLElement) {
       dot.classList.toggle('scale-100', on);
       halo.classList.toggle('animate-ping', on);
       halo.classList.toggle('animate-none', !on);
-      // Con el vertical bloqueado no se muestran los slides de arriba/abajo,
-      // pero la grilla conserva su lugar.
       const off = hiddenWhenLocked === true && locked;
       el.style.visibility = off ? 'hidden' : '';
       el.tabIndex = off ? -1 : 0;
     });
   }
 
-  // ===== Ajustes: reacciona al store. La primera notificación es el valor
-  // inicial (idéntico a `loadSettings()` ya aplicado arriba) y se descarta. =====
   let settingsFirst = true;
   subscribeSettings((s) => {
     if (settingsFirst) { settingsFirst = false; return; }
@@ -447,8 +396,6 @@ export function initDeck(root: HTMLElement) {
     if (s.arrows !== arrowsOn) setArrows(s.arrows);
   });
 
-  // Los logros desbloquean el minimapa y el vertical una sola vez. El primer
-  // aviso de cada store es el estado inicial y se descarta.
   let firstMinimapUnlock = true;
   minimapUnlocked.subscribe((on) => {
     if (firstMinimapUnlock) { firstMinimapUnlock = false; return; }
@@ -467,16 +414,11 @@ export function initDeck(root: HTMLElement) {
     else if (s.lock !== locked) setLock(s.lock);
   });
 
-  // Otro modal abierto (ej. la vista de créditos) toma el foco: el deck no
-  // se navega con las flechas mientras esté.
   const otherModalOpen = () =>
     [...document.querySelectorAll('dialog[open]')].some((d) => d.id !== panel.id);
 
   const NAV_KEYS = new Set(['ArrowRight', 'ArrowLeft', 'ArrowUp', 'ArrowDown', 'Home', 'End', ' ']);
 
-  // ===== Teclado =====
-  // Dentro de un campo editable el caret manda: el deck no debe secuestrar
-  // flechas/Home/End ni evitar su comportamiento nativo.
   const isEditableTarget = (target: EventTarget | null) =>
     target instanceof HTMLElement &&
     target.closest('textarea, input, select, [contenteditable]:not([contenteditable="false"])') !== null;
@@ -485,7 +427,6 @@ export function initDeck(root: HTMLElement) {
     if (introPending) return;
     if (isEditableTarget(e.target)) return;
     if (otherModalOpen()) {
-      // Sin preventDefault el navegador scrollea el track del deck por su cuenta.
       if (NAV_KEYS.has(e.key)) e.preventDefault();
       return;
     }
@@ -508,7 +449,6 @@ export function initDeck(root: HTMLElement) {
     }
   });
 
-  // ===== Estado inicial =====
   track.scrollLeft = hslides[start]?.offsetLeft ?? 0;
   if (holder && vslides[vstart]) holder.scrollTop = vslides[vstart].offsetTop;
 
@@ -519,12 +459,6 @@ export function initDeck(root: HTMLElement) {
 
   updateUI();
 
-  // ===== Intro =====
-  // Al ocultarse la cortina el warp deja ver el deck antes de que el hero
-  // haga su reveal. Hasta que esa timeline termina, flechas y minimapa
-  // siguen inertes (no enfocables ni clickeables), el teclado no navega y
-  // el track no scrollea. Recién ahí se liberan y se anima su opacidad: el
-  // `display` lo siguen mandando los ajustes y el desbloqueo.
   const controls = [prevBtn, nextBtn, upBtn, downBtn, minimap];
 
   function releaseDeck() {
@@ -537,8 +471,6 @@ export function initDeck(root: HTMLElement) {
       if (el.style.opacity !== '0') return;
       el.style.opacity = '';
       if (reducedMotion) return;
-      // El destino es la opacidad que ya declara la hoja de estilos (el
-      // minimapa en reposo no llega a 1), no un 1 fijo que después salta.
       const target = Number(getComputedStyle(el).opacity);
       el.animate([{ opacity: 0 }, { opacity: Number.isFinite(target) ? target : 1 }], {
         duration: 450,
@@ -548,8 +480,6 @@ export function initDeck(root: HTMLElement) {
   }
 
   if (introPending) {
-    // Inert en todo el deck: Tab, foco y clics no llegan a ningún control,
-    // slide ni contenido hasta que el reveal termina.
     root.inert = true;
     controls.forEach((el) => { el.style.opacity = '0'; });
     track.style.overflow = 'hidden';

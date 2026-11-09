@@ -64,11 +64,6 @@ export interface RowCenterInput {
   rowScrollWidth: number;
 }
 
-/**
- * Posición de scroll que centra un ítem dentro de una fila horizontal, acotada
- * al rango desplazable. El disco activo crece, así que la fila lo sigue; el
- * tope evita pasarse del primer o del último tema y dejar un hueco al costado.
- */
 export function centerScrollLeft({
   itemLeft,
   itemWidth,
@@ -86,11 +81,6 @@ const normalize = (value: string) =>
     .trim()
     .toLowerCase();
 
-/**
- * Resuelve el pedido de una persona (título, id o posición) al índice del
- * catálogo. Devuelve -1 cuando no hay match: quien llama decide qué decir en
- * vez de reproducir un track al azar.
- */
 export function resolveTrackIndex(
   query: string,
   tracks: readonly { id: string; title: string; aliases?: readonly string[] }[],
@@ -111,8 +101,6 @@ export function resolveTrackIndex(
   );
   if (exact !== -1) return exact;
 
-  // El catálogo está titulado en su idioma original: los alias cubren lo que
-  // la persona escribe de verdad ("balada" para "Ballade no. 1").
   return tracks.findIndex(
     (track) =>
       normalize(track.title).includes(wanted) ||

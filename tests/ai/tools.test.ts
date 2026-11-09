@@ -4,7 +4,6 @@ import { PROJECT_CATALOG, TECH_CATALOG } from "../../src/ai/catalog";
 import { TRACKS } from "../../src/components/music-player/tracks";
 import type { ContactProps, ProjectListProps, TechListProps, TrackListProps } from "../../src/ai/ui-schema";
 
-// The tool runtime passes real execution options; these tools ignore them.
 const options = {} as never;
 
 describe("display tools", () => {

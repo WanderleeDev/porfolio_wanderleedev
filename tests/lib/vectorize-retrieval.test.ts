@@ -7,19 +7,12 @@ const ENV = {
 
 mock.module("astro:env/server", () => ENV);
 
-// El binding sólo existe en workerd; en el test se simula con un objeto
-// mutable para que cada caso arme su propio índice falso. Sin binding
-// (VECTORIZE ausente) el código sigue la misma rama que cuando el import
-// dinámico falla en dev: getIndex devuelve null y se cae al fallback local.
 const fakeEnv: { VECTORIZE?: unknown } = {};
 
 mock.module("cloudflare:workers", () => ({
     env: fakeEnv,
 }));
 
-// El fallback de dev lee `data/rag-vectors.ndjson` con `node:fs/promises`
-// importado de forma dinámica (para no romper en workerd); acá se stubbea
-// ese módulo para probar la rama sin tocar el FS real.
 const fakeFs: { ndjson: string } = { ndjson: "" };
 
 mock.module("node:fs/promises", () => ({
@@ -169,13 +162,10 @@ describe("boost por keyword (T7)", () => {
     test("en el fallback local el boost no rompe el orden ni el limit", async () => {
         fakeEnv.VECTORIZE = undefined;
 
-        // Ambos chunks comparten el token "texto" ("a"/"b" se filtran
-        // por cortos): el boost empata y se conserva el orden denso.
         const hits = await searchCorpus([1, 0, 0], 4, "texto");
 
         expect(hits.map((hit) => hit.texto)).toEqual(["texto a", "texto b"]);
 
-        // El slice a limit se aplica después del boost.
         const one = await searchCorpus([1, 0, 0], 1, "texto");
         expect(one).toEqual([{ score: 1, texto: "texto a" }]);
     });

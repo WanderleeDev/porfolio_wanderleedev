@@ -44,7 +44,6 @@ export const POST: APIRoute = async ({ request }) => {
         abortSignal: request.signal,
         stopWhen: [isStepCount(3),
         hasToolCall(...DISPLAY_TOOLS)],
-        maxOutputTokens: 1000,
         tools,
 
     });

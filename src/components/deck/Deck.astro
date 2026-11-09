@@ -9,8 +9,6 @@ interface Props {
 const { start = 1, vstart = 1 } = Astro.props;
 const overviewLabel = Astro.currentLocale === "en" ? "Deck overview" : "Vista general del deck";
 
-// Mismo lenguaje visual que los triggers flotantes de ThemePicker: círculo
-// de 44px, borde translúcido, fondo canvas con blur y foco visible.
 const arrowBtn =
   'fixed z-10 flex size-11 items-center justify-center rounded-full border-[1.5px] border-[color-mix(in_srgb,currentColor_20%,transparent)] bg-[color-mix(in_srgb,canvas_85%,transparent)] p-0 text-[canvastext] backdrop-blur-[12px] backdrop-saturate-[1.4] [transition:background_0.2s,border-color_0.2s,scale_0.15s] hover:bg-[color-mix(in_srgb,canvas_95%,transparent)] hover:scale-[1.08] focus-visible:outline-2 focus-visible:outline-[canvastext] focus-visible:outline-offset-[3px] cursor-pointer disabled:opacity-30 disabled:cursor-default disabled:hover:scale-100';
 ---
@@ -24,8 +22,6 @@ const arrowBtn =
   </div>
 
   <script is:inline>
-    // El deck arranca en `start` antes de que carguen los módulos, para que
-    // el primer slide no alcance a verse ni hidrate sus islas por un frame.
     (() => {
       const deck = document.currentScript && document.currentScript.parentElement;
       const track = deck && deck.querySelector("[data-track]");
@@ -78,12 +74,6 @@ const arrowBtn =
 </div>
 
 <style is:global>
-  /* El minimapa nace y se cierra por JavaScript, así que sus estados de
-     opacidad viven en una sola regla y no compiten con el orden de las
-     utilidades generadas por Tailwind. En reposo se mantiene discreto; al
-     pasar el mouse o al llegar con el teclado recupera su opacidad total. */
-  /* En mobile se superpone al abanico del reproductor y las flechas laterales
-     ya están ocultas: ahí se navega deslizando, así que no se muestra. */
   @media (max-width: 639px) {
     [data-minimap] {
       display: none;

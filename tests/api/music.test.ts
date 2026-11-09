@@ -3,7 +3,6 @@ import { describe, expect, test } from "bun:test";
 import { GET } from "../../src/pages/api/music";
 import { MUSIC_CATALOG } from "../../src/lib/music-catalog";
 
-// The endpoint ignores its context; it only reads the module-level catalog.
 const context = {} as never;
 
 describe("GET /api/music", () => {

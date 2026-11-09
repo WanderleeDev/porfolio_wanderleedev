@@ -1,17 +1,4 @@
 ---
-/**
- * Icon — renders Iconify icons from the data sets bundled in the repo.
- *
- * Replaces astro-iconify, which fetched https://api.iconify.design/ on every
- * render. A single failed fetch (network blip, rate limit) baked a "Failed to
- * load" placeholder into the page, and in dev the rejected promise stayed
- * cached for the life of the process, so the icon never recovered until a
- * restart.
- *
- * The three packs below cover every icon the site uses. Adding a new pack is
- * one import plus one entry in `sets`; adding an icon that already exists in
- * one of them needs no code change.
- */
 import devicon from "@iconify-json/devicon/icons.json";
 import lucide from "@iconify-json/lucide/icons.json";
 import simpleIcons from "@iconify-json/simple-icons/icons.json";
@@ -32,7 +19,6 @@ type IconSet = {
 };
 
 interface Props {
-  /** Icon name in `pack:name` form, e.g. `lucide:mail`. */
   name: string;
   class?: string;
   style?: Record<string, string | number>;

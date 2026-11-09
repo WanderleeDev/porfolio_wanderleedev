@@ -1,8 +1,6 @@
 ---
 import Icon from "../Icon.astro";
 
-// Widget de música del deck: aparece sólo cuando hay audio sonando y la slide
-// del reproductor no está a la vista (ahí ya está su transporte completo).
 const isEn = Astro.currentLocale === "en";
 const p = isEn
   ? {
@@ -58,8 +56,6 @@ const button =
 </div>
 
 <style>
-  /* Fuera del flujo del deck: el estado lo publica el reproductor y el script
-     de abajo sólo traduce. Acá sólo vive cómo se ve encendido y apagado. */
   [data-music-widget] {
     opacity: 0;
     scale: 0.92;
@@ -75,7 +71,6 @@ const button =
     pointer-events: auto;
   }
 
-  /* Indicador de "está prendido": el color sale del accent de la portada activa. */
   .music-led {
     width: 0.5rem;
     height: 0.5rem;
@@ -94,7 +89,6 @@ const button =
     animation: music-cover-spin 7s linear infinite;
   }
 
-  /* El botón muestra la acción disponible, no el estado: sonando ofrece pausa. */
   [data-music-widget] [data-widget-icon="pause"] {
     display: none;
   }
@@ -153,8 +147,6 @@ const button =
       );
     };
 
-    // El reproductor no sabe dónde está el deck: acá se mide si su slide está a
-    // la vista. Con la mitad de la tarjeta en pantalla alcanza para no duplicar.
     if (player) {
       new IntersectionObserver(
         ([entry]) => {
@@ -183,8 +175,6 @@ const button =
           button.dataset.widget as TransportAction,
           playing,
         );
-        // El reproductor publica su estado en el mismo tick, así que el widget
-        // no adivina: espera el estado real y recién ahí se redibuja.
         sendPlayerCommand(command);
       });
     }

@@ -1,12 +1,3 @@
-/**
- * Toast framework-agnostic: un solo aviso activo a la vez, auto-descartable.
- *
- * No usa dependencias. El contenedor fijo se crea una sola vez en el body.
- * `showToast` muestra el aviso de inmediato si no hay ninguno y, si ya hay uno
- * visible, lo encola para no pisar mensajes que caen en el mismo tick (un
- * logro y su recompensa). El estilo entra (slide + opacidad) y sale con una
- * transición CSS; con prefers-reduced-motion no hay transición.
- */
 
 const DURATION = 3200;
 
@@ -78,14 +69,11 @@ function clearTimer() {
   }
 }
 
-/** Pinta un aviso y reinicia el timer. */
 function present(text: string) {
   const el = ensureToast();
   el.textContent = text;
 
   clearTimer();
-  // Reinsertar la clase obliga a recomputar el estilo y dispara de nuevo la
-  // transición de entrada cuando el nodo ya existía.
   el.classList.remove("toast--visible");
   void el.offsetWidth;
   el.classList.add("toast--visible");
@@ -101,11 +89,6 @@ function showNext() {
   if (next) present(next);
 }
 
-/**
- * Muestra un toast. Si hay uno en pantalla (o desvaneciéndose), el mensaje
- * espera en cola; los duplicados consecutivos se descartan para que un loop
- * no llene la cola.
- */
 export function showToast(message: string, icon?: string) {
   const text = icon ? `${icon} ${message}` : message;
 
@@ -116,7 +99,6 @@ export function showToast(message: string, icon?: string) {
   present(text);
 }
 
-/** Cierra el toast activo (si hay) y deja pasar al siguiente en cola. */
 function dismissToast() {
   clearTimer();
   if (!toast || !toast.isConnected) {

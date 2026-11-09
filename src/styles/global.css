@@ -1,44 +1,12 @@
 @import "tailwindcss";
 
-/* ── Tipografía ──
-   Las familias las descarga y auto-hospeda la Fonts API de Astro (provider
-   fontsource en astro.config.mjs). Las variables --font-inter y --font-fira
-   las expone el componente <Font /> del layout. */
 @theme inline {
   --font-sans: var(--font-inter);
   --font-fira-sans-extra-condensed: var(--font-fira);
 }
 
 
-/* ============================================================
-   DESIGN SYSTEM — WanderleeDev Portfolio (tokens centralizados)
-   Claro en :root / .light, oscuro en .dark, neón en .neon.
-   Los componentes usan sólo clases semánticas de Tailwind:
-   bg-surface text-ink text-soft text-muted border-line
-   bg-badge text-badge-ink — nunca hex sueltos.
-
-   INVENTARIO (lo que usa la página actual: Hero + chat + theme picker)
-   ─────────────────────────────────────────────────────────────────────
-   Color      surface  superficie de tarjeta (cards de stack del hero)
-              ink      texto principal
-              contrast texto sobre superficies de color (ink invertido)
-              soft     texto secundario (descripciones, metadatos)
-              muted    texto terciario (eyebrows, hints, contador)
-              line     bordes y separadores
-              badge    relleno de superficies secundarias (burbuja del chat)
-              badge-ink  texto sobre badge
-              field    fondo de inputs (en neón, panel sólido)
-   Radius     card     radio de tarjetas y burbujas
-   Shadow     card     sombra de superficies elevated
-   Motion     ease-out-elastic  entrada elástica (badge del hero, diálogo)
-              move-x   desplazamiento por pasos (gato de la intro)
-              badge-spin  rotación continua del badge
-   Tipografía sans    Inter — UI y cuerpo de texto
-              fira-sans-extra-condensed  titulares (heredada de Title)
-   Contexto   ct-acc   acento del hero (glow de estrellas y contacto)
-   ============================================================ */
 @theme {
-  /* ── Tokens semánticos (light por defecto = .light) ── */
   --color-surface: #ffffff;
   --color-ink: #111111;
   --color-contrast: #ffffff;
@@ -47,11 +15,8 @@
   --color-line: #e5e7eb;
   --color-badge: #e5e5e5;
   --color-badge-ink: #374151;
-  /* Fondo de campos de formulario: en light/dark igual que la superficie,
-     en neón un panel sólido para que los inputs se lean sobre el card. */
   --color-field: #ffffff;
 
-  /* ── Radius & shadows centralizados ── */
   --radius-card: 1rem;
   --shadow-card: 0 20px 50px -30px rgba(0, 0, 0, 0.25);
 
@@ -77,22 +42,17 @@
   }
 }
 
-/* ── Tema claro (por defecto) ── */
 :root,
 :root.light,
 .light {
   color-scheme: light;
 
-  /* Contacto temático: sigue el fondo de página (transparente) */
   --ct-acc: #4f46e5;
 
-  /* Fondo del sitio: lo comparten <html> y la cortina de la intro, para
-     que el paso de la intro al tema no produzca un salto de color. */
   --page-bg-color: #ffffff;
   --page-bg-image: none;
 }
 
-/* ── Tema oscuro: mismos nombres, valores dark ── */
 .dark {
   color-scheme: dark;
 
@@ -109,11 +69,9 @@
   --page-bg-color: #161824;
   --page-bg-image: none;
 
-  /* Contacto temático en dark: vuelve al celeste claro */
   --ct-acc: #8fa0ff;
 }
 
-/* ── Tema neón: negro con glows, secciones transparentes ── */
 .neon {
   color-scheme: dark;
 
@@ -134,17 +92,12 @@
 }
 
 
-/* El fondo del sitio vive en el elemento raíz: su fondo se pinta como fondo
-   del canvas del navegador, es decir SIEMPRE debajo de cualquier capa (el
-   canvas de estrellas con z-index negativo queda entre el fondo y el
-   contenido). */
 html {
   background-color: var(--page-bg-color);
   background-image: var(--page-bg-image);
   background-attachment: fixed;
 }
 
-/* ── Base layer (fonts, cursor, scroll) ── */
 @layer base {
   html {
     scroll-behavior: auto;
@@ -160,7 +113,6 @@ html {
     color: var(--color-ink);
   }
 
-  /* Scroll lock puro CSS: con cualquier modal abierto, el documento no scrollea */
   html:has(dialog[open]) {
     overflow: hidden !important;
   }
@@ -175,15 +127,12 @@ html {
     cursor: url("/pointer.svg"), auto !important;
   }
 
-  /* Campos que reciben texto: la I custom de /text-cursor.svg. El hotspot
-     (12 19) cae en el centro de la barra vertical del dibujo. */
   textarea:not(:disabled),
   input:not([type="button"]):not([type="submit"]):not([type="reset"]):not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]):not([type="color"]):not([type="image"]):not(:disabled),
   [contenteditable]:not([contenteditable="false"]) {
     cursor: url("/text-cursor.svg") 12 19, text;
   }
 
-  /* Deshabilitado: símbolo de prohibido centrado en el puntero. */
   :disabled,
   [disabled],
   [aria-disabled="true"] {
@@ -215,7 +164,6 @@ html {
   }
 }
 
-/* ── Font faces ── */
 
 @utility paint-noise {
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='matrix' values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 -1.4 0.9'/%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");

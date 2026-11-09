@@ -11,13 +11,7 @@ export interface ReferenceQuestion {
     expectativa: ReferenceExpectation;
 }
 
-/**
- * Fixed corpus of questions to run before changing chat behaviour. Card
- * questions must hit their tool and return the canonical catalog; narrative
- * questions are answered from Qdrant; rejections cover out-of-corpus asks.
- */
 export const REFERENCE_QUESTIONS: ReferenceQuestion[] = [
-    // Tarjetas
     { id: "proyectos-basico", pregunta: "Mostrame tus proyectos", expectativa: { tipo: "herramienta", herramienta: "displayProjects" } },
     { id: "proyectos-tarjetas", pregunta: "Quiero ver las tarjetas de proyectos", expectativa: { tipo: "herramienta", herramienta: "displayProjects" } },
     { id: "proyectos-lista", pregunta: "¿Qué proyectos hiciste?", expectativa: { tipo: "herramienta", herramienta: "displayProjects" } },
@@ -28,7 +22,6 @@ export const REFERENCE_QUESTIONS: ReferenceQuestion[] = [
     { id: "contacto-datos", pregunta: "Pasame tu email y tu LinkedIn", expectativa: { tipo: "herramienta", herramienta: "displayContact" } },
     { id: "contacto-github", pregunta: "¿Cuál es tu GitHub?", expectativa: { tipo: "herramienta", herramienta: "displayContact" } },
 
-    // Narrativa desde el corpus
     { id: "clior-arquitectura", pregunta: "¿Cómo está organizado clior-ecommerce?", expectativa: { tipo: "narrativa" } },
     { id: "llm-gateway", pregunta: "Contame qué hace llm-gateway", expectativa: { tipo: "narrativa" } },
     { id: "fastty-defecto", pregunta: "¿Qué defecto tiene fastty-chat?", expectativa: { tipo: "narrativa" } },
@@ -40,7 +33,6 @@ export const REFERENCE_QUESTIONS: ReferenceQuestion[] = [
     { id: "commits", pregunta: "¿Cuántos commits tenés en total?", expectativa: { tipo: "narrativa" } },
     { id: "pixel-pet", pregunta: "Contame sobre pixel-pet", expectativa: { tipo: "narrativa" } },
 
-    // Fuera del corpus: deben rechazar, no inventar
     { id: "capital-francia", pregunta: "¿Cuál es la capital de Francia?", expectativa: { tipo: "rechazo" } },
     { id: "clima-lima", pregunta: "¿Qué clima hace hoy en Lima?", expectativa: { tipo: "rechazo" } },
     { id: "tarifa", pregunta: "¿Cuánto cobrás por hora?", expectativa: { tipo: "rechazo" } },

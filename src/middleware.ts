@@ -21,7 +21,6 @@ function limitedPath(pathname: string): LimitedPath | null {
 }
 
 function clientIp(request: Request, address: string | undefined): string {
-    // El deploy vive detrás de un proxy; el primer salto es el cliente real.
     const forwarded = request.headers.get("x-forwarded-for");
     if (forwarded) {
         const first = forwarded.split(",")[0]?.trim();
@@ -51,7 +50,6 @@ function isCrossOrigin(request: Request): boolean {
 }
 
 function prune(now: number) {
-    // Barrido periódico: el Map no puede crecer sin límite con IPs rotativas.
     if (++requests % 200 !== 0) return;
     for (const [key, bucket] of buckets) {
         if (bucket.resetAt <= now) buckets.delete(key);

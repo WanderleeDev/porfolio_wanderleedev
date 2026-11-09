@@ -1,15 +1,4 @@
 ---
-/**
- * MusicPlayer — reproductor para el slide inferior del deck.
- *
- * Un solo panel: cabecera plegada adentro, vinilo girando con la portada del
- * tema activo y, abajo, el abanico de cards (una por tema del catálogo) con
- * números y etiquetas siempre visibles.
- *
- * El catálogo sale de `data/music.json` vía `music-player/tracks`: agregar un
- * tema es agregar un objeto ahí, sin tocar este componente. Una sola instancia
- * de Audio reproduce el mp3 del tema elegido.
- */
 import Icon from "./Icon.astro";
 import Title from "./typography/Title.astro";
 import { getTranslations } from "../i18n/utils";
@@ -293,12 +282,10 @@ const active = TRACKS[ACTIVE_INDEX];
     let index = Number.isInteger(startIndex) ? startIndex : 0;
     let lastVolume = audio.volume;
 
-    // El relleno de ambos sliders sale de --fill, pintado acá.
     const paint = (input: HTMLInputElement, percent: number) => {
       input.style.setProperty("--fill", `${Math.max(0, Math.min(100, percent))}%`);
     };
 
-    // En mobile + tablet la fila scrollea: centra el disco activo sin tocar el deck.
     const centerDisc = (behavior: ScrollBehavior) => {
       const disc = cards[index];
       const discRect = disc.getBoundingClientRect();
@@ -321,7 +308,6 @@ const active = TRACKS[ACTIVE_INDEX];
       if (accent) root.style.setProperty("--track-accent", accent);
       ambient.forEach((cover, i) => cover.classList.toggle("is-active", i === index));
       cards.forEach((item, i) => item.setAttribute("aria-pressed", i === index ? "true" : "false"));
-      // La selección mueve el disco activo; las flechas del header mueven el scroll.
       nowTitle.textContent = card.dataset.title ?? "";
       nowArtist.textContent = card.dataset.artist ?? "";
       if (counter) {
@@ -331,8 +317,6 @@ const active = TRACKS[ACTIVE_INDEX];
       publish();
     };
 
-    // Estado que el chat lee justo después de mandar un comando: se publica en
-    // el mismo tick, sin esperar al evento `play` del navegador.
     let playing = false;
 
     const publish = (nextPlaying: boolean = playing) => {
@@ -376,8 +360,6 @@ const active = TRACKS[ACTIVE_INDEX];
     };
 
     const play = () => {
-      // Optimista: el chat recibe `playing: true` en este mismo tick. Si el
-      // navegador bloquea el autoplay, el catch lo corrige.
       publish(true);
       void audio.play().catch(() => publish(false));
     };
@@ -402,7 +384,6 @@ const active = TRACKS[ACTIVE_INDEX];
       if (autoplay) play();
     };
 
-    // Flechas del header: desplazan el scroll del carousel un disco por ves.
     const updateDiscArrows = () => {
       const atStart = row.scrollLeft <= 0;
       const atEnd = row.scrollWidth - row.clientWidth - row.scrollLeft <= 1;
@@ -428,18 +409,12 @@ const active = TRACKS[ACTIVE_INDEX];
 
     row.addEventListener("scroll", updateDiscArrows, { passive: true });
 
-    // El primer cálculo corre antes de que el layout asiente (fuentes, portadas
-    // diferidas, salto de breakpoint), así que `scrollWidth` todavía mide igual
-    // que `clientWidth` y la flecha "next" queda deshabilitada para siempre.
-    // Se recalcula cuando el ancho real ya existe y cada vez que la fila cambia
-    // de tamaño.
     requestAnimationFrame(updateDiscArrows);
     window.addEventListener("load", updateDiscArrows);
     if ("ResizeObserver" in window) {
       new ResizeObserver(updateDiscArrows).observe(row);
     }
 
-    // Transporte
     playBtn.addEventListener("click", () => {
       if (audio.paused) play();
       else audio.pause();
@@ -449,12 +424,10 @@ const active = TRACKS[ACTIVE_INDEX];
     prevBtn.addEventListener("click", () => select(index - 1, !audio.paused));
     nextBtn.addEventListener("click", () => select(index + 1, !audio.paused));
 
-    // El sonido sólo arranca desde un gesto del usuario.
     cards.forEach((card, i) => {
       card.addEventListener("click", () => select(i, true));
     });
 
-    // Estado del audio
     audio.addEventListener("play", () => {
       syncPlaying(true);
       requestUnlock("soundtrack");
@@ -478,7 +451,6 @@ const active = TRACKS[ACTIVE_INDEX];
     audio.addEventListener("loadedmetadata", syncDuration);
     audio.addEventListener("durationchange", syncDuration);
 
-    // Progreso y volumen
     seek.addEventListener("input", () => {
       const percent = Number(seek.value);
       if (Number.isFinite(audio.duration) && audio.duration > 0) {
@@ -506,20 +478,15 @@ const active = TRACKS[ACTIVE_INDEX];
       syncMute();
     });
 
-    // El deck escucha flechas/Home/End en window: con foco dentro del player,
-    // el evento no debe llegar hasta ahí. No se hace preventDefault para no
-    // romper el ajuste nativo de los sliders.
     root.addEventListener("keydown", (e) => {
       if (isGuardedDeckKey(e.key)) e.stopPropagation();
     });
 
-    // Estado inicial: tema central cargado (sin reproducir) y UI sincronizada.
     paint(volume, audio.volume * 100);
     syncMute();
     syncPlaying(false);
     select(index, false, "auto");
 
-    // Comandos del chat: el reproductor sigue siendo el dueño del transporte.
     playerCommand.subscribe((command) => {
       if (!command) return;
       switch (command.type) {
@@ -544,7 +511,6 @@ const active = TRACKS[ACTIVE_INDEX];
 </script>
 
 <style>
-  /* Sliders: el relleno lo aporta --fill desde el script. */
   [data-music-player] input[type="range"] {
     appearance: none;
     -webkit-appearance: none;
@@ -579,8 +545,6 @@ const active = TRACKS[ACTIVE_INDEX];
     box-shadow: 0 0 0 1px var(--color-line);
   }
 
-  /* Disco: material de la opción «Vinilo real» del diseño design/vinyl-disc/02-vinilo-real.html.
-     Aro negro del 3,5%, bisel, surcos al 14% y eje perforado al 8% del diámetro. */
   .vinyl-disc {
     position: relative;
     width: var(--disc);
@@ -604,7 +568,6 @@ const active = TRACKS[ACTIVE_INDEX];
     background: repeating-radial-gradient(circle at 50% 50%, rgb(0 0 0 / 0.14) 0 1px, transparent 1px 7px);
   }
 
-  /* El brillo no gira: la luz está fija aunque el disco dé vueltas. */
   .vinyl-sheen {
     position: absolute;
     inset: 0;
@@ -641,7 +604,6 @@ const active = TRACKS[ACTIVE_INDEX];
       0 1px 0 0 rgb(255 255 255 / 0.14);
   }
 
-  /* Vinilo: quieto en pausa, gira sólo mientras suena. */
   .vinyl-spin {
     position: absolute;
     inset: 3.5%;
@@ -660,8 +622,6 @@ const active = TRACKS[ACTIVE_INDEX];
     object-fit: cover;
   }
 
-  /* Fondo del slide: la portada activa difusa detrás de todo, sólo mientras suena.
-     El slide es `relative isolate`, así que el z-index negativo queda contenido. */
   .track-ambient {
     position: absolute;
     inset: 0;
@@ -684,8 +644,6 @@ const active = TRACKS[ACTIVE_INDEX];
     object-fit: cover;
     transform: scale(1.4);
     filter: blur(56px) saturate(1.4);
-    /* Mask ligero: se difuminan sólo los laterales y arriba, para que el
-       fondo respire sin comerse la portada. El centro queda nítido. */
     mask-image:
       linear-gradient(to bottom, transparent 0%, #000 20%, #000 100%),
       linear-gradient(to right, transparent 0%, #000 12%, #000 88%, transparent 100%);
@@ -709,7 +667,6 @@ const active = TRACKS[ACTIVE_INDEX];
     }
   }
 
-  /* La tarjeta toma un tinte característico de la tapa activa. */
   [data-music-player] {
     background: color-mix(in oklab, var(--track-accent, transparent) 14%, var(--color-surface));
   }
@@ -724,7 +681,6 @@ const active = TRACKS[ACTIVE_INDEX];
     }
   }
 
-  /* Ecualizador junto al estado */
   .eq-bar {
     height: 100%;
     transform-origin: bottom;
@@ -776,7 +732,6 @@ const active = TRACKS[ACTIVE_INDEX];
     }
   }
 
-  /* Flechas del header del carousel: botones circulares en mobile + tablet. */
   .disc-arrow {
     display: inline-flex;
     align-items: center;
@@ -815,15 +770,8 @@ const active = TRACKS[ACTIVE_INDEX];
     }
   }
 
-  /* Fila de discos: cada tema es un vinilo y el activo escala con `transform`
-     (no mueve a sus vecinos, así que no salta la fila ni la tarjeta). La
-     altura de la fila se reserva para el disco escalado más su sombra. */
   .disc-row {
     anchor-name: --disc-row;
-    /* El disco activo escala 1.25× por `transform` y su sombra queda afuera de
-       su caja. `overflow-x:auto` arrastra el eje Y a `auto` (CSS no deja un
-       eje auto y el otro visible), así que hay que reservar el vuelo del disco
-       escalado + su sombra o la fila lo recorta. */
     --disc-size: 4.25rem;
     --disc-scale: 1.25;
     min-height: calc(var(--disc-size) * 0.5 + (var(--disc-size) * var(--disc-scale)) / 2 + 1.75rem);
@@ -840,7 +788,6 @@ const active = TRACKS[ACTIVE_INDEX];
     width: var(--disc-size);
     height: var(--disc-size);
     border-radius: 50%;
-    /* Mismo material radial que el disco grande (ver .vinyl-disc). */
     background: radial-gradient(circle at 50% 42%, #2b2b33 0%, #131318 58%, #08080b 100%);
     box-shadow:
       inset 0 1px 1px rgb(255 255 255 / 0.35),
@@ -861,7 +808,6 @@ const active = TRACKS[ACTIVE_INDEX];
     object-fit: cover;
   }
 
-  /* Eje central: el .vinyl-hole en miniatura. */
   .disc::after {
     content: "";
     position: absolute;
@@ -887,8 +833,6 @@ const active = TRACKS[ACTIVE_INDEX];
   }
 
   .disc[aria-pressed="true"] {
-    /* `transform: scale` en vez de `width`/`height`: el box no se mueve, no
-       salta el layout y no hay que pelear con `overflow` de la fila. */
     transform: scale(var(--disc-scale));
     z-index: 1;
     box-shadow:
@@ -896,17 +840,10 @@ const active = TRACKS[ACTIVE_INDEX];
       0 18px 34px -18px rgb(0 0 0 / 0.55);
   }
 
-  /* Cuando el disco está sonando, los demás se agrisan y se atenúan: se lee
-     de un golpe cuál va al tocadiscos. En pausa se queda la fila a color para
-     que no pierda el selector su información mientras la persona elige. */
   [data-music-player][data-playing="true"] .disc:not([aria-pressed="true"]) {
     filter: grayscale(1) opacity(0.55);
   }
 
-  /* En mobile + tablet (hasta lg) los seis discos no entran: la fila se
-     desliza con snap y los bordes se desvanecen, que es la señal de que hay
-     más temas afuera. En lg se lista completa, centrada, sin scroll.
-     Se deja padding horizontal para que el fade no coma los discos de los bordes. */
   @media (max-width: 1023px) {
     .disc-row {
       overflow-x: auto;
@@ -915,7 +852,6 @@ const active = TRACKS[ACTIVE_INDEX];
       scrollbar-width: none;
       overscroll-behavior-x: contain;
       padding-inline: 0.75rem;
-      /* Las flechas ya marcan el ciclo: se conserva el fade de bordes. */
       -webkit-mask-image: linear-gradient(
         90deg,
         transparent 0,

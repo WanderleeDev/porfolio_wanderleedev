@@ -1,22 +1,10 @@
 import { LLM_EMBEDDING_DIMENSIONS, RAG_MIN_SCORE } from "astro:env/server";
 
-// En producción (workerd) el retrieval usa el binding nativo VECTORIZE, sin
-// SDK ni fetch propio. En dev (adapter de Node) ese binding no existe y ni
-// siquiera resuelve `cloudflare:workers`, así que el fallback lee el índice
-// local `data/rag-vectors.ndjson` (emitido por `bun run rag:build`) en
-// memoria y ordena por similitud coseno.
-// El NDJSON reemplaza al antiguo fallback a Qdrant por fetch: con Vectorize
-// como store de producción ya no hay ningún servicio que mantener ni SDKs
-// que puedan no correr en workerd. El `node:fs` se importa de forma dinámica
-// dentro de la función (nunca en el top-level del módulo) para que este
-// archivo se evalúe sin romper en workerd, donde `node:fs` no existe; esa
-// rama sólo se ejecuta en dev, donde el binding falta.
 export interface CorpusHit {
   score: number;
   texto: string;
 }
 
-// Forma mínima del binding: sólo lo que usa el retrieval, sin
 // @cloudflare/workers-types para no sumar una dependencia al Worker.
 interface VectorizeIndex {
   query(
@@ -30,7 +18,6 @@ interface LocalEntry {
   texto: string;
 }
 
-// Cacheado en module scope: el NDJSON se lee una sola vez por proceso.
 let cachedEntries: LocalEntry[] | null = null;
 
 async function loadLocalEntries(): Promise<LocalEntry[]> {
@@ -68,8 +55,6 @@ async function loadLocalEntries(): Promise<LocalEntry[]> {
   return entries;
 }
 
-// Los vectores de ingesta ya vienen normalizados, así que el producto punto
-// equivale a la similitud coseno sin dividir por las normas.
 function dotProduct(a: number[], b: number[]): number {
   const length = Math.min(a.length, b.length);
   let sum = 0;
@@ -79,11 +64,6 @@ function dotProduct(a: number[], b: number[]): number {
   return sum;
 }
 
-// Boost por keyword: recupera parte del híbrido dense+sparse que se perdió
-// al salir de Qdrant, gratis y sin modelo reranker. Sólo reordena los hits ya
-// recuperados por el vector denso: los que mencionan palabras de la pregunta
-// suben, sin cambiar cuántos se piden (VECTORIZE_TOP_K) ni cuántos se
-// devuelven (limit). Sin pregunta no toca el orden.
 const KEYWORD_STOPWORDS = new Set([
   "que", "para", "con", "del", "los", "las", "una", "este",
   "tiene", "tienen", "hola", "por", "como",
@@ -130,7 +110,6 @@ async function searchLocal(
   return applyKeywordBoost(ranked, query).slice(0, limit);
 }
 
-// Vectorize no tiene score_threshold, así que se pide de más y se filtra acá.
 const VECTORIZE_TOP_K = 20;
 
 function isVectorizeIndex(value: unknown): value is VectorizeIndex {
@@ -143,9 +122,6 @@ function isVectorizeIndex(value: unknown): value is VectorizeIndex {
 
 async function getIndex(): Promise<VectorizeIndex | null> {
   try {
-    // Import dinámico como en src/pages/api/manifest.ts: el módulo
-    // `cloudflare:workers` sólo existe en workerd; en dev este import falla
-    // y el catch deriva al fallback sin romper el arranque.
     const mod = (await import("cloudflare:workers")) as unknown as {
       env?: { VECTORIZE?: unknown };
     };
@@ -165,9 +141,6 @@ export async function searchCorpus(
 
   if (!index) return searchLocal(embedding, limit, query);
 
-  // Red de fondo: la query debe tener las dimensiones del índice (512). Si el
-  // gateway devuelve otra cosa (qwen3 es Matryoshka y su nativo es 1024), se
-  // recorta a las primeras N. El índice ya entrenó su métrica sobre 512.
   const vector = embedding.slice(0, LLM_EMBEDDING_DIMENSIONS);
 
   const { matches } = await index.query(vector, {

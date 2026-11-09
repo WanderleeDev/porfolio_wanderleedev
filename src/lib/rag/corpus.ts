@@ -24,7 +24,6 @@ export const DEFAULT_OVERLAP_CHARS = 240;
 
 interface CorpusLoadOptions {
     pdf: string;
-    /** Explicit manifest path; pass null to skip it and use the whole-document fallback. */
     manifest?: string | null;
     maxChars?: number;
     overlapChars?: number;
@@ -34,7 +33,6 @@ interface CorpusLoadOptions {
 interface LoadedCorpus {
     chunks: CorpusChunkInput[];
     sections: SectionSource[];
-    /** Cleaned page text, useful for reviewing the manifest mapping. */
     pages: string[];
     totalPages: number;
     pdfSha256: string;
@@ -64,10 +62,6 @@ function canonicalJson(value: unknown): string {
     return JSON.stringify(value);
 }
 
-/**
- * Hashing the parsed manifest instead of the raw bytes means reformatting the
- * JSON (indentation, key order) does not mark the index stale.
- */
 function manifestSha256(manifest: CorpusManifest): string {
     return sha256(canonicalJson(manifest));
 }

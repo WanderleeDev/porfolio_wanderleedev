@@ -2,7 +2,7 @@ import type { APIRoute } from "astro";
 
 export const prerender = false;
 
-const CACHE_TTL = 300; // seconds
+const CACHE_TTL = 300;
 const MANIFEST_PUBLIC_URL =
     "https://pub-857ec293a66142f5935891fb2071638c.r2.dev/manifest.json";
 
@@ -44,7 +44,6 @@ export const GET: APIRoute = async () => {
             },
         });
     } else {
-        // Dev fallback (node adapter): fetch from the public R2 URL.
         const upstream = await fetch(MANIFEST_PUBLIC_URL);
         if (!upstream.ok) {
             return new Response(JSON.stringify({ error: "upstream_error" }), {

@@ -1,11 +1,3 @@
-/**
- * Detecta si un mensaje pide música.
- *
- * Se evalúa sólo cuando el corpus no devolvió nada: sin esto, `/api/chat`
- * corta en el fallback y el modelo nunca llega a ver las herramientas del
- * reproductor. Por eso el matcher puede ser generoso con las frases de música
- * sin ensuciar el camino normal, que ya respondió con contexto.
- */
 const MUSIC_WORDS = [
   "musica",
   "music",

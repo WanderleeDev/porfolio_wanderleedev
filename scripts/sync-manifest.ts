@@ -1,14 +1,3 @@
-/**
- * Sincroniza data/music.json con el manifest publicado en R2.
- *
- * Se ejecuta antes de `astro build` (ver package.json "build"). El manifest de
- * R2 es la fuente de verdad del catálogo de música; este script lo descarga,
- * lo transforma al formato que consume src/lib/music-catalog.ts y reescribe
- * data/music.json para que el build valide el catálogo (Zod) como siempre.
- *
- * Si la descarga falla, se mantiene data/music.json existente y se avisa,
- * para no romper builds offline. En CI usar SYNC_MANIFEST_STRICT=1 para fallar.
- */
 
 import { resolveManifestUrl } from "./manifest-url";
 
@@ -49,8 +38,6 @@ async function main() {
     const bucket = process.env.MUSIC_BUCKET ?? "porfolio-music";
     const coverFormat = manifest.cover_format ?? "webp";
 
-    // Preservar metadata que el manifest no lleva (accent, aliases, note) del
-    // catálogo local existente, para no perder colores ni alias al sincronizar.
     let existingBySlug = new Map<string, any>();
     try {
         const fs0 = await import("node:fs/promises");
@@ -59,7 +46,6 @@ async function main() {
         const parsed = JSON.parse(raw);
         for (const s of parsed.songs ?? []) existingBySlug.set(s.slug, s);
     } catch {
-        // no existing file; skip merge
     }
 
     const songs = manifest.songs.map((s) => {

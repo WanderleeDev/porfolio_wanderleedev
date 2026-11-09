@@ -1,10 +1,3 @@
-/**
- * Logros del portfolio: definiciones y estado persistido en localStorage.
- *
- * Los logros se desbloquean explorando el sitio. El estado vivo del cliente
- * vive en el store `unlocked` (nano store); el HTML se renderiza bloqueado y
- * los suscriptores sincronizan cada card al cambiar el valor.
- */
 import { atom } from "nanostores";
 
 export type AchievementId =
@@ -86,7 +79,6 @@ export function achievementTitle(id: AchievementId, lang: "es" | "en"): string {
 
 export const ACHIEVEMENTS_STORAGE_KEY = "wdev-logros";
 
-/** Ids desbloqueados, filtrados contra las definiciones actuales. */
 export function readUnlocked(): AchievementId[] {
   if (typeof window === "undefined") return [];
   try {
@@ -103,17 +95,8 @@ export function readUnlocked(): AchievementId[] {
   }
 }
 
-/**
- * Store de logros desbloqueados. Se inicializa con lo persistido en
- * localStorage; en SSR queda vacío porque `readUnlocked()` ya lo respeta.
- */
 export const unlocked = atom<AchievementId[]>(readUnlocked());
 
-/**
- * Marca un logro como desbloqueado. Devuelve true sólo la primera vez, así
- * los llamadores pueden reaccionar sin duplicar notificaciones. Actualiza el
- * store en lugar de despachar el evento antiguo `logros:unlocked`.
- */
 export function unlock(id: AchievementId): boolean {
   if (typeof window === "undefined") return false;
   const current = unlocked.get();

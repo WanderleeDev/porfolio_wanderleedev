@@ -7,11 +7,6 @@ export function estimateTokens(text: string): number {
     return Math.ceil(text.length / 4);
 }
 
-/**
- * Extracted PDF text carries soft hyphens, broken line wraps and stray spaces.
- * Rejoining a word broken at the end of a line only when the next line starts
- * lowercase avoids eating real hyphens such as "NestJS-based".
- */
 export function normalizeText(input: string): string {
     return input
         .normalize("NFC")
@@ -28,10 +23,6 @@ export function normalizeText(input: string): string {
         .trim();
 }
 
-/**
- * Running headers and footers repeat on almost every page and only add noise to
- * the index. A line must appear on at least half the pages to be dropped.
- */
 export function stripRunningLines(pages: string[]): string[] {
     if (pages.length < 4) return pages;
 
@@ -65,10 +56,6 @@ export function stripRunningLines(pages: string[]): string[] {
     );
 }
 
-/**
- * Removes a standalone page number only when it matches this page's position
- * (or the page count), so real metrics such as "42" inside the body survive.
- */
 export function removePageNumberLines(page: string, pageNumber: number, totalPages: number): string {
     return page
         .split("\n")
@@ -95,10 +82,6 @@ interface ChunkOptions {
     minChars?: number;
 }
 
-/**
- * Paragraph-aware chunking with a sentence-level fallback. `maxChars` is a hard
- * cap that already includes the overlap carried from the previous chunk.
- */
 export function chunkText(text: string, options: ChunkOptions = {}): string[] {
     const maxChars = options.maxChars ?? 1800;
     const overlapChars = options.overlapChars ?? 240;

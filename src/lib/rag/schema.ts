@@ -17,10 +17,6 @@ const pageRange = z
     .trim()
     .regex(/^\d+(-\d+)?$/, "use '12' or '3-7'");
 
-/**
- * Hand-written map from PDF pages to projects and sections. Heading detection on
- * extracted text is unreliable, so the page ranges are the source of truth.
- */
 export const corpusManifestSchema = z.object({
     locale: z.enum(["es", "en"]).default("es"),
     sections: z
@@ -124,14 +120,3 @@ export interface CorpusChunkInput {
     text: string;
 }
 
-/** Payload stored in Qdrant, validated again on the read path. */
-export const corpusPayloadSchema = z.object({
-    chunkId: z.string().min(1),
-    projectId: z.string().min(1).optional(),
-    section: z.enum(CORPUS_SECTIONS),
-    title: z.string().min(1),
-    pages: z.array(z.number().int().positive()).min(1),
-    text: z.string().min(1),
-});
-
-export type CorpusPayload = z.infer<typeof corpusPayloadSchema>;
